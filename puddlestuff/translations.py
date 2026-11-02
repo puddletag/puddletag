@@ -51,7 +51,8 @@ def dont_execute():
     translate("Menus", "&Rename Directories")
     translate("Menus", "&QuickActions")
     translate("Menus", "&Properties")
-    translate("Menus", "&Delete")
+    translate("Menus", "Move to &Trash")
+    translate("Menus", "Remove from &List")
     translate("Menus", "Paste &Onto Selection")
     translate("Menus", "&Undo")
     translate("Menus", "&File->Tag")
@@ -68,7 +69,7 @@ def dont_execute():
     translate("Menus", "&Refresh")
     translate("Menus", "Refresh current file-view.")
     translate("Menus", "Sa&ve playlist")
-    translate("Menus", "Save all files to m3u playlist.")
+    translate("Menus", "Save the selected files, or every file when none is selected, to an m3u playlist.")
     translate("Menus", "E&xtended Tags")
     translate("Menus", "Move Selected Do&wn")
     translate("Menus", "Select &Previous Directory")
@@ -214,7 +215,8 @@ def dont_execute():
     translate("Functions", "&Tag")
     translate("Functions", "APEv2")
     translate("Functions", "ID3")
-    translate("Functions", "Converts all unicode chars to ASCII.")
+    translate("Functions", "Convert $0 to ASCII")
+    translate("Functions", "Convert to ASCII")
 
     # Dialogs
     translate("Dialogs", "Tag Panel")

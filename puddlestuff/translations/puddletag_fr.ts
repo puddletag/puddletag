@@ -9,78 +9,82 @@
 
 &lt;br /&gt;&lt;br /&gt;Features include: Batch editing of tags, renaming files using tags, retrieving tags from filenames, using Actions to automate repetitive tasks, importing your music library and loads of other awesome stuff. &lt;br /&gt;&lt;br /&gt;
 
-Supported formats: id3v1, id3v2 (.mp3), AAC (.mp4, .m4a), VorbisComments (.ogg, .flac) and APEv2 (.ape) &lt;br /&gt;&lt; br /&gt;
+Supported formats: ID3v1, ID3v2 (mp3, and in AIFF, DSF and DSDIFF files), MP4 (mp4, m4a, etc.), VorbisComments (ogg, opus, flac), APEv2 (Musepack mpc, Monkey's Audio ape, WavPack wv) and Windows Media (wma). &lt;br /&gt;&lt;br /&gt;
 
-Visit the puddletag website (&lt;a href="http://puddletag.sourceforge.net"&gt;http://puddletag.sourceforge.net&lt;/a&gt;) for help and updates.&lt;br /&gt;&lt;br /&gt;
+Visit the puddletag website (&lt;a href="https://docs.puddletag.net"&gt;https://docs.puddletag.net&lt;/a&gt;) for help and updates.&lt;br /&gt;&lt;br /&gt;
 &amp;copy; 2008-2012 concentricpuddle (concentricpuddle@gmail.com) &lt;br /&gt;
-Licensed under GPLv3 (&lt;a href="www.gnu.org/licenses/gpl-3.0.html"&gt;www.gnu.org/licenses/gpl-3.0.html&lt;/a&gt;).
-</source>
-      <translation>puddletag est un éditeur de tags audio pour GNU/Linux similaire à Mp3tag sous Windows.
-
-&lt;br /&gt;&lt;br /&gt;Il inclut les fonctionnalités suivantes : édition   par lots, renommage de fichiers depuis les tags, récupération des tags depuis les noms de fichiers, utilisation d'Actions pour automatiser les tâches répétitives, importation de votre discothèque et encore plein de choses étonnantes.&lt;br /&gt;&lt;br /&gt;
-
-Formats supportés : id3v1, id3v2 (.mp3); AAC(.mp4, .m4a), Vorbis (.ogg, .flac) et APEv2 (.ape) &lt;br /&gt;&lt;.br/&gt;
-
-Visitez le site web puddletag (&lt;a href="http://puddletag.sourceforge.net"&gt;http://puddletag.sourceforge.net&lt;/a&gt;) pour de l'aide et des mises à jour.&lt;br /&gt;&lt;br /&gt;
-&amp;copy; 2008-2012 concentricpuddle (concentricpuddle@gmail.com) &lt;br /&gt;
-Distribué sous licence GPLv3 (&lt;a href="www.gnu.org/licenses/gpl-3.0.html"&gt;www.gnu.org/licenses/gpl-3.0.html&lt;/a&gt;).</translation>
-    </message>
-    <message>
-      <location filename="../about.py" line="24" />
-      <source>&lt;b&gt;Evan Devetzis&lt;/b&gt; for his many, many awesome ideas and putting up with more bugs than humanly possible.&lt;br /&gt;&lt;br /&gt;
-
-First off, a big thanks to **Evan Devetzis** for working tirelessly in helping me make puddletag better by contributing many, many awesome ideas and for being a great bug hunter.
-
-Thanks to &lt;b&gt;Raphaël Rochet&lt;/b&gt;, &lt;b&gt;Fabian Bakkum&lt;/b&gt;, &lt;b&gt;Alan Gomes&lt;/b&gt; and others for contributing translations.
-
-To the writers of the libraries puddletag depends on (without which I'll probably still be writing an id3 reader).&lt;br /&gt;&lt;br /&gt;
-
-&lt;b&gt;Paul McGuire&lt;/b&gt; for PyParsing.&lt;br /&gt;
-&lt;b&gt;Michael Urman&lt;/b&gt; and &lt;b&gt;Joe Wreschnig&lt;/b&gt; for Mutagen (It. Is. Awesome).&lt;br /&gt;
-&lt;b&gt;Phil Thomson&lt;/b&gt; and everyone responsible for PyQt4.&lt;br /&gt;
-&lt;b&gt;Michael Foord&lt;/b&gt; and &lt;b&gt;Nicola Larosa&lt;/b&gt; for ConfigObj (seriously, they should replace ConfigParser with this).&lt;br /&gt;
-The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
-
+Licensed under GPLv3 (&lt;a href="http://www.gnu.org/licenses/gpl-3.0.html"&gt;http://www.gnu.org/licenses/gpl-3.0.html&lt;/a&gt;).
 </source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../about.py" line="52" />
+      <location filename="../about.py" line="24" />
+      <source>&lt;b&gt;Thank yous&lt;/b&gt;&lt;br /&gt;&lt;br /&gt;
+
+First off, a big thanks to &lt;b&gt;Evan Devetzis&lt;/b&gt; for working tirelessly in helping me make puddletag better by contributing many, many awesome ideas and for being a great bug hunter.&lt;br /&gt;&lt;br /&gt;
+
+To the writers of the libraries puddletag depends on (without which I'll probably still be writing an id3 reader).&lt;br /&gt;&lt;br /&gt;
+
+&lt;b&gt;Paul McGuire&lt;/b&gt; for PyParsing and for being extraordinarily helpful.&lt;br /&gt;
+&lt;b&gt;Michael Urman&lt;/b&gt; and &lt;b&gt;Joe Wreschnig&lt;/b&gt; for Mutagen (It. Is. Awesome).&lt;br /&gt;
+&lt;b&gt;Nokia, Phil Thomson&lt;/b&gt; and all parties responsible for PyQt4.&lt;br /&gt;
+&lt;b&gt;Michael Foord&lt;/b&gt; and &lt;b&gt;Nicola Larosa&lt;/b&gt; for ConfigObj (seriously, they should replace ConfigParser with this).&lt;br /&gt;
+The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.&lt;br /&gt;&lt;br /&gt;
+
+And for those who've contributed, the people whose code I stole, those who helped me out on discussion boards and to open-source creators, &lt;b&gt;Thanks a bunch&lt;/b&gt;.&lt;br /&gt;&lt;br /&gt;
+
+&lt;b&gt;Translators&lt;/b&gt;&lt;br /&gt;&lt;br /&gt;
+
+Thank you to the translators below for their contributions.&lt;br /&gt;&lt;br /&gt;
+
+Dutch (Nederlands) by &lt;b&gt;Fabian Bakkum&lt;/b&gt;.&lt;br /&gt;
+French by &lt;b&gt;Raphaël Rochet&lt;/b&gt;.&lt;br /&gt;
+German by &lt;b&gt;Ralf Sarholz&lt;/b&gt;.&lt;br /&gt;
+Portuguese (Brazilian) by &lt;b&gt;Alan Gomes&lt;/b&gt;.&lt;br /&gt;
+Russian by &lt;b&gt;Viktor Yu. Kovalskiy&lt;/b&gt;.&lt;br /&gt;
+Czech by &lt;b&gt;Pavel Fric&lt;/b&gt;.&lt;br /&gt;
+Spanish by &lt;b&gt;José Vidal&lt;/b&gt;&lt;br /&gt;
+Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
+</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../about.py" line="64" />
       <source>unknown version</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../about.py" line="54" />
+      <location filename="../about.py" line="66" />
       <source>not installed</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../about.py" line="92" />
+      <location filename="../about.py" line="105" />
       <source>About puddletag</source>
       <translation>A propos de puddletag</translation>
     </message>
     <message>
-      <location filename="../about.py" line="100" />
+      <location filename="../about.py" line="113" />
       <source>&lt;h2&gt;puddletag {}&lt;/h2&gt;Changeset {}</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../about.py" line="104" />
+      <location filename="../about.py" line="117" />
       <source>&lt;h2&gt;puddletag {}&lt;/h2&gt;</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../about.py" line="110" />
+      <location filename="../about.py" line="123" />
       <source>&amp;About</source>
       <translation>&amp;A propos</translation>
     </message>
     <message>
-      <location filename="../about.py" line="112" />
+      <location filename="../about.py" line="125" />
       <source>&amp;Thanks</source>
       <translation>&amp;Remerciements</translation>
     </message>
     <message>
-      <location filename="../about.py" line="114" />
+      <location filename="../about.py" line="127" />
       <source>&amp;Libraries</source>
       <translation type="unfinished" />
     </message>
@@ -161,32 +165,32 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
       <translation>Entrez un nom pour le raccourci.</translation>
     </message>
     <message>
-      <location filename="../actiondlg.py" line="528" />
+      <location filename="../actiondlg.py" line="540" />
       <source>Error: Using &lt;b&gt;__selected&lt;/b&gt; in Actions is not allowed.</source>
       <translation>Erreur: Utiliser &lt;b&gt;__selected&lt;/b&gt; dans les Actions n'est pas possible.</translation>
     </message>
     <message>
-      <location filename="../actiondlg.py" line="534" />
+      <location filename="../actiondlg.py" line="546" />
       <source>Please enter some fields to write to.</source>
       <translation>Merci d'indiquer quelques champs à écrire.</translation>
     </message>
     <message>
-      <location filename="../actiondlg.py" line="575" />
+      <location filename="../actiondlg.py" line="587" />
       <source>Modify Action</source>
       <translation>Modifier l'action</translation>
     </message>
     <message>
-      <location filename="../actiondlg.py" line="712" />
+      <location filename="../actiondlg.py" line="726" />
       <source>Actions</source>
       <translation>Actions</translation>
     </message>
     <message>
-      <location filename="../actiondlg.py" line="738" />
+      <location filename="../actiondlg.py" line="752" />
       <source>Assign &amp;Shortcut</source>
       <translation>&amp;Affecter le raccourci</translation>
     </message>
     <message>
-      <location filename="../actiondlg.py" line="741" />
+      <location filename="../actiondlg.py" line="755" />
       <source>&lt;p&gt;Creates a
             shortcut for the checked actions on the Actions menu.
             Use Edit Shortcuts (found by pressing down on this button)
@@ -197,33 +201,33 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
             pour modifier les raccourcis après coup.&lt;/p&gt;</translation>
     </message>
     <message>
-      <location filename="../actiondlg.py" line="746" />
+      <location filename="../actiondlg.py" line="760" />
       <source>Edit Shortcuts</source>
       <translation>Modifier les raccourcis</translation>
     </message>
     <message>
-      <location filename="../actiondlg.py" line="966" />
+      <location filename="../actiondlg.py" line="962" />
       <source>New Action</source>
       <translation>Nouvelle action</translation>
     </message>
     <message>
-      <location filename="../actiondlg.py" line="1056" />
-      <location filename="../actiondlg.py" line="967" />
+      <location filename="../actiondlg.py" line="1052" />
+      <location filename="../actiondlg.py" line="963" />
       <source>Enter a name for the new action.</source>
       <translation>Entrez un nom pour la nouvelle action.</translation>
     </message>
     <message>
-      <location filename="../actiondlg.py" line="978" />
+      <location filename="../actiondlg.py" line="974" />
       <source>Add Action: </source>
       <translation>Ajouter action: </translation>
     </message>
     <message>
-      <location filename="../actiondlg.py" line="996" />
+      <location filename="../actiondlg.py" line="992" />
       <source>Edit Action: </source>
       <translation>Modifier l'action: </translation>
     </message>
     <message>
-      <location filename="../actiondlg.py" line="1066" />
+      <location filename="../actiondlg.py" line="1062" />
       <source>Edit Action: {}</source>
       <translation>Modifier l'action: {}</translation>
     </message>
@@ -239,83 +243,83 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
   <context>
     <name>Artwork</name>
     <message>
-      <location filename="../puddleobjects.py" line="1944" />
-      <location filename="../puddleobjects.py" line="1588" />
+      <location filename="../puddleobjects.py" line="1990" />
+      <location filename="../puddleobjects.py" line="1615" />
       <source>Enter a description</source>
       <translation>Entrez une description</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1593" />
+      <location filename="../puddleobjects.py" line="1620" />
       <source>&lt;p&gt;Enter a description for the current cover.&lt;/p&gt;&lt;p&gt;For ID3 tags the description has to be different for each cover as per the ID3 spec. If they don't differ then spaces are appended to the description when the tag is saved.&lt;/p&gt;</source>
       <translation>&lt;p&gt;Entrez une description pour l'image séleectionnée.&lt;/p&gt;&lt;p&gt;Pour les tags ID3 la description doit être différente pour chaque pochette. Sinon des espaces seront ajoutés au moment de sauvegarder.&lt;/p&gt;</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1603" />
+      <location filename="../puddleobjects.py" line="1630" />
       <source>&amp;Description</source>
       <translation>&amp;Description</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1611" />
+      <location filename="../puddleobjects.py" line="1638" />
       <source>&amp;Type</source>
       <translation>&amp;Type</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1623" />
+      <location filename="../puddleobjects.py" line="1650" />
       <source>&lt;p&gt;Select a cover type for the artwork.&lt;/p&gt;</source>
       <translation>&lt;p&gt;Sélectionnez un type d'image.&lt;/p&gt;</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1715" />
+      <location filename="../puddleobjects.py" line="1742" />
       <source>&amp;Save cover to file</source>
       <translation>Enregistrer dans un &amp;fichier</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1718" />
+      <location filename="../puddleobjects.py" line="1745" />
       <source>&amp;Add cover</source>
       <translation>&amp;Ajouter une image</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1721" />
+      <location filename="../puddleobjects.py" line="1748" />
       <source>C&amp;opy cover</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1724" />
+      <location filename="../puddleobjects.py" line="1751" />
       <source>&amp;Paste cover</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1727" />
+      <location filename="../puddleobjects.py" line="1754" />
       <source>&amp;Remove cover</source>
       <translation>&amp;Enlever l'image</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1730" />
+      <location filename="../puddleobjects.py" line="1757" />
       <source>&amp;Change cover</source>
       <translation>&amp;Changer l'image</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1797" />
+      <location filename="../puddleobjects.py" line="1824" />
       <source>Select Image...</source>
       <translation>Sélectionner une image...</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1798" />
+      <location filename="../puddleobjects.py" line="1825" />
       <source>JPEG &amp; PNG Images (*.jpg *.jpeg *.png);;JPEG Images (*.jpg *.jpeg);;PNG Images (*.png);;All Files(*.*)</source>
       <translation>Images JPEG &amp; PNG (*.jpg *.jpeg *.png);;Images JPEG (*.jpg *.jpeg);;Images PNG (*.png);;All Files(*.*)</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1992" />
+      <location filename="../puddleobjects.py" line="2038" />
       <source>Save artwork as...</source>
       <translation>Sauver l'image sous ...</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1994" />
+      <location filename="../puddleobjects.py" line="2040" />
       <source>JPEG Images (*.jpg);;PNG Images (*.png);;All Files(*.*)</source>
       <translation>Images JPEG (*.jpg);;Images PNG (*.png);;Tous les Fichiers(*.*)</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="2001" />
+      <location filename="../puddleobjects.py" line="2050" />
       <source>Writing to &lt;b&gt;{}&lt;/b&gt; failed.</source>
       <translation>Ecriture de &lt;b&gt;{}&lt;/b&gt; échouée.</translation>
     </message>
@@ -333,7 +337,7 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
       <translation>Pas d'images</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1559" />
+      <location filename="../puddleobjects.py" line="1586" />
       <source>{}/{}</source>
       <translation>{}/{}</translation>
     </message>
@@ -341,21 +345,26 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
   <context>
     <name>Autonumbering Wizard</name>
     <message>
-      <location filename="../helperwin.py" line="41" />
-      <source>Autonumbering Wizard</source>
-      <translation>Assistant Numérotation</translation>
-    </message>
-    <message>
-      <location filename="../functions_dialogs.py" line="35" />
       <location filename="../helperwin.py" line="56" />
+      <location filename="../functions_dialogs.py" line="35" />
       <source>&amp;Start: </source>
       <translation>&amp;Démarrer: </translation>
     </message>
     <message>
-      <location filename="../functions_dialogs.py" line="43" />
       <location filename="../helperwin.py" line="66" />
+      <location filename="../functions_dialogs.py" line="43" />
       <source>Max length after padding with zeroes: </source>
       <translation>Longueur maximale (y compris les zéros):</translation>
+    </message>
+    <message>
+      <location filename="../functions_dialogs.py" line="51" />
+      <source>&amp;Restart numbering at each directory.</source>
+      <translation>&amp;Recomencer à chaque dossier.</translation>
+    </message>
+    <message>
+      <location filename="../helperwin.py" line="41" />
+      <source>Autonumbering Wizard</source>
+      <translation>Assistant Numérotation</translation>
     </message>
     <message>
       <location filename="../helperwin.py" line="143" />
@@ -389,24 +398,29 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
       <translation>Ajouter un &amp;séparateur de pistes ['/']</translation>
     </message>
     <message>
-      <location filename="../functions_dialogs.py" line="51" />
-      <source>&amp;Restart numbering at each directory.</source>
-      <translation>&amp;Recomencer à chaque dossier.</translation>
-    </message>
-    <message>
-      <location filename="../mainwin/funcs.py" line="297" />
-      <location filename="../mainwin/funcs.py" line="290" />
+      <location filename="../mainwin/funcs.py" line="316" />
+      <location filename="../mainwin/funcs.py" line="309" />
+      <location filename="../helperwin.py" line="158" />
+      <location filename="../helperwin.py" line="150" />
       <source>Field empty...</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../mainwin/funcs.py" line="291" />
+      <location filename="../mainwin/funcs.py" line="310" />
+      <location filename="../helperwin.py" line="151" />
       <source>The field specified to use as a directory splitter was invalid. Please check your values.</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../mainwin/funcs.py" line="298" />
+      <location filename="../mainwin/funcs.py" line="317" />
+      <location filename="../helperwin.py" line="167" />
+      <location filename="../helperwin.py" line="159" />
       <source>The output field specified was invalid. Please check your values.</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../helperwin.py" line="166" />
+      <source>Invalid field...</source>
       <translation type="unfinished" />
     </message>
   </context>
@@ -447,30 +461,30 @@ Double cliquer pour changer la couleur&lt;/p&gt;</translation>
   <context>
     <name>Column Settings</name>
     <message>
-      <location filename="../tagmodel.py" line="403" />
+      <location filename="../puddleobjects.py" line="997" />
+      <source>Title</source>
+      <translation>Titre</translation>
+    </message>
+    <message>
+      <location filename="../tagmodel.py" line="382" />
       <source>Columns</source>
       <translation>Colonnes</translation>
     </message>
     <message>
-      <location filename="../tagmodel.py" line="432" />
+      <location filename="../tagmodel.py" line="411" />
       <source>Adjust visibility of columns.</source>
       <translation>Ajuster la visibilité des colonnes.</translation>
     </message>
     <message>
-      <location filename="../tagmodel.py" line="1327" />
+      <location filename="../tagmodel.py" line="1363" />
       <source>&amp;Select Columns</source>
       <translation>&amp;Sélectionner des colonnes</translation>
-    </message>
-    <message>
-      <location filename="../puddleobjects.py" line="970" />
-      <source>Title</source>
-      <translation>Titre</translation>
     </message>
   </context>
   <context>
     <name>Combo Box</name>
     <message>
-      <location filename="../puddleobjects.py" line="2253" />
+      <location filename="../puddleobjects.py" line="2305" />
       <source>Remove current item.</source>
       <translation>Retirer l'élément.</translation>
     </message>
@@ -478,267 +492,267 @@ Double cliquer pour changer la couleur&lt;/p&gt;</translation>
   <context>
     <name>Confirmations</name>
     <message>
-      <location filename="../puddletag.py" line="56" />
+      <location filename="../puddletag.py" line="57" />
       <source>Confirm when exiting preview mode.</source>
       <translation>Confirmer pour sortir du mode Aperçu.</translation>
     </message>
     <message>
-      <location filename="../puddletag.py" line="57" />
-      <source>Confirm when deleting files.</source>
-      <translation>Confirmer pour supprimer des fichiers.</translation>
+      <location filename="../puddletag.py" line="58" />
+      <source>Confirm when moving files to the trash.</source>
+      <translation type="unfinished" />
     </message>
   </context>
   <context>
     <name>Cover Type</name>
     <message>
-      <location filename="../puddleobjects.py" line="115" />
-      <location filename="../puddleobjects.py" line="89" />
+      <location filename="../puddleobjects.py" line="116" />
+      <location filename="../puddleobjects.py" line="90" />
       <source>Other</source>
       <translation>Autre</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="115" />
-      <location filename="../puddleobjects.py" line="89" />
+      <location filename="../puddleobjects.py" line="116" />
+      <location filename="../puddleobjects.py" line="90" />
       <source>O</source>
       <translation>A</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="116" />
-      <location filename="../puddleobjects.py" line="90" />
+      <location filename="../puddleobjects.py" line="117" />
+      <location filename="../puddleobjects.py" line="91" />
       <source>File Icon</source>
       <translation>Icône de fichier</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="116" />
-      <location filename="../puddleobjects.py" line="90" />
+      <location filename="../puddleobjects.py" line="117" />
+      <location filename="../puddleobjects.py" line="91" />
       <source>I</source>
       <translation>Ic</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="117" />
-      <location filename="../puddleobjects.py" line="91" />
+      <location filename="../puddleobjects.py" line="118" />
+      <location filename="../puddleobjects.py" line="92" />
       <source>Other File Icon</source>
       <translation>Autre Icône de fichier</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="117" />
-      <location filename="../puddleobjects.py" line="91" />
+      <location filename="../puddleobjects.py" line="118" />
+      <location filename="../puddleobjects.py" line="92" />
       <source>OI</source>
       <translation>AIc</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="118" />
-      <location filename="../puddleobjects.py" line="92" />
+      <location filename="../puddleobjects.py" line="119" />
+      <location filename="../puddleobjects.py" line="93" />
       <source>Cover (front)</source>
       <translation>Pochette (avant)</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="118" />
-      <location filename="../puddleobjects.py" line="92" />
+      <location filename="../puddleobjects.py" line="119" />
+      <location filename="../puddleobjects.py" line="93" />
       <source>CF</source>
       <translation>PAv</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="119" />
-      <location filename="../puddleobjects.py" line="93" />
+      <location filename="../puddleobjects.py" line="120" />
+      <location filename="../puddleobjects.py" line="94" />
       <source>Cover (back)</source>
       <translation>Pochette (arrière)</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="119" />
-      <location filename="../puddleobjects.py" line="93" />
+      <location filename="../puddleobjects.py" line="120" />
+      <location filename="../puddleobjects.py" line="94" />
       <source>CB</source>
       <translation>PAr</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="120" />
-      <location filename="../puddleobjects.py" line="94" />
+      <location filename="../puddleobjects.py" line="121" />
+      <location filename="../puddleobjects.py" line="95" />
       <source>Leaflet page</source>
       <translation>Livret Intérieur</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="120" />
-      <location filename="../puddleobjects.py" line="94" />
+      <location filename="../puddleobjects.py" line="121" />
+      <location filename="../puddleobjects.py" line="95" />
       <source>LF</source>
       <translation>LI</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="121" />
-      <location filename="../puddleobjects.py" line="95" />
+      <location filename="../puddleobjects.py" line="122" />
+      <location filename="../puddleobjects.py" line="96" />
       <source>Media (e.g. label side of CD)</source>
       <translation>Media (par ex le CD)</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="121" />
-      <location filename="../puddleobjects.py" line="95" />
+      <location filename="../puddleobjects.py" line="122" />
+      <location filename="../puddleobjects.py" line="96" />
       <source>M</source>
       <translation>M</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="122" />
-      <location filename="../puddleobjects.py" line="96" />
+      <location filename="../puddleobjects.py" line="123" />
+      <location filename="../puddleobjects.py" line="97" />
       <source>Lead artist</source>
       <translation>Artiste principal/Soliste</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="122" />
-      <location filename="../puddleobjects.py" line="96" />
+      <location filename="../puddleobjects.py" line="123" />
+      <location filename="../puddleobjects.py" line="97" />
       <source>LA</source>
       <translation>AP</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="123" />
-      <location filename="../puddleobjects.py" line="97" />
+      <location filename="../puddleobjects.py" line="124" />
+      <location filename="../puddleobjects.py" line="98" />
       <source>Artist</source>
       <translation>Artiste</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="123" />
-      <location filename="../puddleobjects.py" line="97" />
+      <location filename="../puddleobjects.py" line="124" />
+      <location filename="../puddleobjects.py" line="98" />
       <source>A</source>
       <translation>A</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="124" />
-      <location filename="../puddleobjects.py" line="98" />
+      <location filename="../puddleobjects.py" line="125" />
+      <location filename="../puddleobjects.py" line="99" />
       <source>Conductor</source>
       <translation>Chef d'orchestre</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="124" />
-      <location filename="../puddleobjects.py" line="98" />
+      <location filename="../puddleobjects.py" line="125" />
+      <location filename="../puddleobjects.py" line="99" />
       <source>C</source>
       <translation>CO</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="125" />
-      <location filename="../puddleobjects.py" line="99" />
+      <location filename="../puddleobjects.py" line="126" />
+      <location filename="../puddleobjects.py" line="100" />
       <source>Band</source>
       <translation>Groupe</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="125" />
-      <location filename="../puddleobjects.py" line="99" />
+      <location filename="../puddleobjects.py" line="126" />
+      <location filename="../puddleobjects.py" line="100" />
       <source>B</source>
       <translation>G</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="126" />
-      <location filename="../puddleobjects.py" line="100" />
+      <location filename="../puddleobjects.py" line="127" />
+      <location filename="../puddleobjects.py" line="101" />
       <source>Composer</source>
       <translation>Compositeur</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="126" />
-      <location filename="../puddleobjects.py" line="100" />
+      <location filename="../puddleobjects.py" line="127" />
+      <location filename="../puddleobjects.py" line="101" />
       <source>CP</source>
       <translation />
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="127" />
-      <location filename="../puddleobjects.py" line="101" />
+      <location filename="../puddleobjects.py" line="128" />
+      <location filename="../puddleobjects.py" line="102" />
       <source>Lyricist</source>
       <translation>Parolier</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="127" />
-      <location filename="../puddleobjects.py" line="101" />
+      <location filename="../puddleobjects.py" line="128" />
+      <location filename="../puddleobjects.py" line="102" />
       <source>L</source>
       <translation>P</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="128" />
-      <location filename="../puddleobjects.py" line="102" />
+      <location filename="../puddleobjects.py" line="129" />
+      <location filename="../puddleobjects.py" line="103" />
       <source>Recording Location</source>
       <translation>Emplacement de l'enregistrement</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="128" />
-      <location filename="../puddleobjects.py" line="102" />
+      <location filename="../puddleobjects.py" line="129" />
+      <location filename="../puddleobjects.py" line="103" />
       <source>RL</source>
       <translation>EE</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="129" />
-      <location filename="../puddleobjects.py" line="103" />
+      <location filename="../puddleobjects.py" line="130" />
+      <location filename="../puddleobjects.py" line="104" />
       <source>During recording</source>
       <translation>Séance d'enregistrement</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="129" />
-      <location filename="../puddleobjects.py" line="103" />
+      <location filename="../puddleobjects.py" line="130" />
+      <location filename="../puddleobjects.py" line="104" />
       <source>DR</source>
       <translation>SE</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="130" />
-      <location filename="../puddleobjects.py" line="104" />
+      <location filename="../puddleobjects.py" line="131" />
+      <location filename="../puddleobjects.py" line="105" />
       <source>During performance</source>
       <translation>Pendant la représentation</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="130" />
-      <location filename="../puddleobjects.py" line="104" />
+      <location filename="../puddleobjects.py" line="131" />
+      <location filename="../puddleobjects.py" line="105" />
       <source>DP</source>
       <translation>PR</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="131" />
-      <location filename="../puddleobjects.py" line="105" />
+      <location filename="../puddleobjects.py" line="132" />
+      <location filename="../puddleobjects.py" line="106" />
       <source>Movie/video screen capture</source>
       <translation>Capture d'écran film/vidéo</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="131" />
-      <location filename="../puddleobjects.py" line="105" />
+      <location filename="../puddleobjects.py" line="132" />
+      <location filename="../puddleobjects.py" line="106" />
       <source>MC</source>
       <translation>CE</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="132" />
-      <location filename="../puddleobjects.py" line="106" />
+      <location filename="../puddleobjects.py" line="133" />
+      <location filename="../puddleobjects.py" line="107" />
       <source>A bright coloured fish</source>
       <translation>Un poisson aux couleurs vives</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="132" />
-      <location filename="../puddleobjects.py" line="106" />
+      <location filename="../puddleobjects.py" line="133" />
+      <location filename="../puddleobjects.py" line="107" />
       <source>F</source>
       <translation>F</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="133" />
-      <location filename="../puddleobjects.py" line="107" />
+      <location filename="../puddleobjects.py" line="134" />
+      <location filename="../puddleobjects.py" line="108" />
       <source>Illustration</source>
       <translation>Illustration</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="133" />
-      <location filename="../puddleobjects.py" line="107" />
+      <location filename="../puddleobjects.py" line="134" />
+      <location filename="../puddleobjects.py" line="108" />
       <source>P</source>
       <translation>Ill</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="134" />
-      <location filename="../puddleobjects.py" line="108" />
+      <location filename="../puddleobjects.py" line="135" />
+      <location filename="../puddleobjects.py" line="109" />
       <source>Band/artist logotype</source>
       <translation>Logo du groupe/de l'artiste</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="134" />
-      <location filename="../puddleobjects.py" line="108" />
+      <location filename="../puddleobjects.py" line="135" />
+      <location filename="../puddleobjects.py" line="109" />
       <source>BL</source>
       <translation>LGA</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="135" />
-      <location filename="../puddleobjects.py" line="109" />
+      <location filename="../puddleobjects.py" line="136" />
+      <location filename="../puddleobjects.py" line="110" />
       <source>Publisher/Studio logotype</source>
       <translation>Logo de la Maison d'édition/du Studio</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="135" />
-      <location filename="../puddleobjects.py" line="109" />
+      <location filename="../puddleobjects.py" line="136" />
+      <location filename="../puddleobjects.py" line="110" />
       <source>PL</source>
       <translation>LME</translation>
     </message>
@@ -746,64 +760,7 @@ Double cliquer pour changer la couleur&lt;/p&gt;</translation>
   <context>
     <name>Defaults</name>
     <message>
-      <location filename="../mainwin/tagsources.py" line="154" />
-      <location filename="../actiondlg.py" line="213" />
-      <source>&amp;Fields</source>
-      <translation>&amp;Champs</translation>
-    </message>
-    <message>
-      <location filename="../tagmodel.py" line="1896" />
-      <source>Reading Directory: {}</source>
-      <translation>Lecture du dossier: {}</translation>
-    </message>
-    <message>
-      <location filename="../tagmodel.py" line="1898" />
-      <source>Reading Directory: {} + others</source>
-      <translation>Lecture du dossier: {} + autres</translation>
-    </message>
-    <message>
-      <location filename="../tagmodel.py" line="1900" />
-      <source>Reading Dir</source>
-      <translation>Lecture du dossier</translation>
-    </message>
-    <message>
-      <location filename="../tagmodel.py" line="1926" />
-      <location filename="../tagmodel.py" line="1923" />
-      <source>Loading </source>
-      <translation>Chargement </translation>
-    </message>
-    <message>
-      <location filename="../musiclib.py" line="215" />
-      <location filename="../puddleobjects.py" line="2000" />
-      <location filename="../puddleobjects.py" line="497" />
-      <location filename="../puddletag.py" line="659" />
-      <location filename="../puddletag.py" line="656" />
-      <location filename="../puddletag.py" line="649" />
-      <location filename="../tagmodel.py" line="2058" />
-      <location filename="../tagmodel.py" line="2052" />
-      <source>Error</source>
-      <translation>Erreur</translation>
-    </message>
-    <message>
-      <location filename="../puddleobjects.py" line="1406" />
-      <location filename="../helperwin.py" line="1135" />
-      <source>OK</source>
-      <translation>OK</translation>
-    </message>
-    <message>
-      <location filename="../helperwin.py" line="1137" />
-      <source>Never show this message again.</source>
-      <translation>Ne pas montrer ce message à nouveau.</translation>
-    </message>
-    <message>
-      <location filename="../puddletag.py" line="941" />
-      <location filename="../puddletag.py" line="930" />
-      <location filename="../puddletag.py" line="914" />
-      <source>Writing </source>
-      <translation>Ecriture de </translation>
-    </message>
-    <message>
-      <location filename="../findfunc.py" line="310" />
+      <location filename="../findfunc.py" line="321" />
       <source>function does not exist.</source>
       <translation>la fonction n'existe pas.</translation>
     </message>
@@ -814,7 +771,7 @@ Double cliquer pour changer la couleur&lt;/p&gt;</translation>
       <translation>Oui</translation>
     </message>
     <message>
-      <location filename="../mainwin/funcs.py" line="168" />
+      <location filename="../mainwin/funcs.py" line="167" />
       <location filename="../constants.py" line="33" />
       <location filename="../constants.py" line="11" />
       <source>No</source>
@@ -861,21 +818,60 @@ Double cliquer pour changer la couleur&lt;/p&gt;</translation>
       <translation>Artistes divers</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="498" />
+      <location filename="../puddletag.py" line="682" />
+      <location filename="../puddletag.py" line="679" />
+      <location filename="../puddletag.py" line="672" />
+      <location filename="../musiclib.py" line="216" />
+      <location filename="../tagmodel.py" line="2135" />
+      <location filename="../tagmodel.py" line="2129" />
+      <location filename="../puddleobjects.py" line="2049" />
+      <location filename="../puddleobjects.py" line="507" />
+      <source>Error</source>
+      <translation>Erreur</translation>
+    </message>
+    <message>
+      <location filename="../puddleobjects.py" line="508" />
       <source>&lt;br /&gt; Do you want to continue?</source>
       <translation>&lt;br /&gt; Voulez-vous continuer ?</translation>
     </message>
     <message>
-      <location filename="../mainwin/tagpanel.py" line="439" />
-      <location filename="../puddleobjects.py" line="972" />
+      <location filename="../mainwin/tagpanel.py" line="430" />
+      <location filename="../puddleobjects.py" line="999" />
       <source>Field</source>
       <translation>Champ</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="2183" />
-      <location filename="../puddleobjects.py" line="1407" />
+      <location filename="../helperwin.py" line="1203" />
+      <location filename="../puddleobjects.py" line="1433" />
+      <source>OK</source>
+      <translation>OK</translation>
+    </message>
+    <message>
+      <location filename="../puddleobjects.py" line="2232" />
+      <location filename="../puddleobjects.py" line="1434" />
       <source>Cancel</source>
       <translation>Annuler</translation>
+    </message>
+    <message>
+      <location filename="../tagmodel.py" line="1973" />
+      <source>Reading Directory: {}</source>
+      <translation>Lecture du dossier: {}</translation>
+    </message>
+    <message>
+      <location filename="../tagmodel.py" line="1975" />
+      <source>Reading Directory: {} + others</source>
+      <translation>Lecture du dossier: {} + autres</translation>
+    </message>
+    <message>
+      <location filename="../tagmodel.py" line="1977" />
+      <source>Reading Dir</source>
+      <translation>Lecture du dossier</translation>
+    </message>
+    <message>
+      <location filename="../tagmodel.py" line="2003" />
+      <location filename="../tagmodel.py" line="2000" />
+      <source>Loading </source>
+      <translation>Chargement </translation>
     </message>
     <message>
       <location filename="../util.py" line="29" />
@@ -898,29 +894,33 @@ Double cliquer pour changer la couleur&lt;/p&gt;</translation>
       <translation>&lt;p&gt;Une erreur s'est produite pendant l'écriture de &lt;b&gt;{}&lt;/b&gt;.&lt;/p&gt;&lt;p&gt;Raison: &lt;b&gt;{}&lt;/b&gt; (&lt;i&gt;Voir {} pour les détails.&lt;/i&gt;)&lt;/p&gt;</translation>
     </message>
     <message>
-      <location filename="../util.py" line="171" />
+      <location filename="../util.py" line="180" />
       <source>{} images</source>
       <translation>{} images</translation>
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="398" />
-      <source>Fields: </source>
-      <translation>Champs:</translation>
+      <location filename="../helperwin.py" line="1205" />
+      <source>Never show this message again.</source>
+      <translation>Ne pas montrer ce message à nouveau.</translation>
     </message>
     <message>
-      <location filename="../mainwin/funcs.py" line="166" />
-      <source>&amp;Yes</source>
-      <translation>&amp;Oui</translation>
+      <location filename="../mainwin/tagsources.py" line="146" />
+      <location filename="../actiondlg.py" line="217" />
+      <source>&amp;Fields</source>
+      <translation>&amp;Champs</translation>
     </message>
     <message>
-      <location filename="../mainwin/tagsources.py" line="369" />
-      <source>&amp;Edit</source>
-      <translation type="unfinished">&amp;Edition</translation>
+      <location filename="../puddletag.py" line="972" />
+      <location filename="../puddletag.py" line="961" />
+      <location filename="../puddletag.py" line="945" />
+      <source>Writing </source>
+      <translation>Ecriture de </translation>
     </message>
     <message>
-      <location filename="../mainwin/tagpanel.py" line="438" />
-      <source>Title</source>
-      <translation>Titre</translation>
+      <location filename="../mainwin/action_dialogs.py" line="83" />
+      <location filename="../mainwin/action_dialogs.py" line="23" />
+      <source>Appl&amp;y</source>
+      <translation>&amp;Appliquer</translation>
     </message>
     <message>
       <location filename="../mainwin/filterwin.py" line="47" />
@@ -933,15 +933,34 @@ Double cliquer pour changer la couleur&lt;/p&gt;</translation>
       <translation>Go</translation>
     </message>
     <message>
-      <location filename="../mainwin/action_dialogs.py" line="83" />
-      <location filename="../mainwin/action_dialogs.py" line="23" />
-      <source>Appl&amp;y</source>
-      <translation>&amp;Appliquer</translation>
+      <location filename="../mainwin/tagpanel.py" line="429" />
+      <source>Title</source>
+      <translation>Titre</translation>
     </message>
     <message>
-      <location filename="../mainwin/tagtools.py" line="58" />
+      <location filename="../mainwin/tagsources.py" line="361" />
+      <source>&amp;Edit</source>
+      <translation type="unfinished">&amp;Edition</translation>
+    </message>
+    <message>
+      <location filename="../mainwin/tagtools.py" line="70" />
       <source>An error occured while writing to &lt;b&gt;{}&lt;/b&gt;. ({})</source>
       <translation>Une erreur s'est produite lors de l'écriture de &lt;b&gt;{}&lt;/b&gt;. ({})</translation>
+    </message>
+    <message>
+      <location filename="../mainwin/funcs.py" line="165" />
+      <source>&amp;Yes</source>
+      <translation>&amp;Oui</translation>
+    </message>
+    <message>
+      <location filename="../masstag/dialogs.py" line="399" />
+      <source>Fields: </source>
+      <translation>Champs:</translation>
+    </message>
+    <message>
+      <location filename="../plugins/modified_time/__init__.py" line="47" />
+      <source>An error occured while setting the modification time of &lt;b&gt;{}&lt;/b&gt;. ({})</source>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../plugins/id3_tools/__init__.py" line="36" />
@@ -951,11 +970,6 @@ Double cliquer pour changer la couleur&lt;/p&gt;</translation>
     <message>
       <location filename="../plugins/id3_tools/__init__.py" line="67" />
       <source>An error occured while updating &lt;b&gt;{}&lt;/b&gt;. ({})</source>
-      <translation type="unfinished" />
-    </message>
-    <message>
-      <location filename="../plugins/modified_time/__init__.py" line="47" />
-      <source>An error occured while setting the modification time of &lt;b&gt;{}&lt;/b&gt;. ({})</source>
       <translation type="unfinished" />
     </message>
     <message>
@@ -969,7 +983,8 @@ Double cliquer pour changer la couleur&lt;/p&gt;</translation>
       <translation type="unfinished">&amp;Trier</translation>
     </message>
     <message>
-      <location filename="../tagsources/__init__.py" line="200" />
+      <location filename="../tagsources/__init__.py" line="132" />
+      <location filename="../tagsources/__init__.py" line="129" />
       <source>Connection Error: {}</source>
       <translation>Erreur de connection: {}</translation>
     </message>
@@ -977,57 +992,57 @@ Double cliquer pour changer la couleur&lt;/p&gt;</translation>
   <context>
     <name>Dialogs</name>
     <message>
-      <location filename="../translations.py" line="220" />
+      <location filename="../translations.py" line="222" />
       <source>Tag Panel</source>
       <translation>Tags</translation>
     </message>
     <message>
-      <location filename="../translations.py" line="221" />
+      <location filename="../translations.py" line="223" />
       <source>Artwork</source>
       <translation>Images</translation>
     </message>
     <message>
-      <location filename="../translations.py" line="222" />
+      <location filename="../translations.py" line="224" />
       <source>Filesystem</source>
       <translation>Fichiers</translation>
     </message>
     <message>
-      <location filename="../translations.py" line="223" />
+      <location filename="../translations.py" line="225" />
       <source>Filter</source>
       <translation>Filtre</translation>
     </message>
     <message>
-      <location filename="../translations.py" line="224" />
+      <location filename="../translations.py" line="226" />
       <source>Tag Sources</source>
       <translation>Sources de tags</translation>
     </message>
     <message>
-      <location filename="../translations.py" line="225" />
+      <location filename="../translations.py" line="227" />
       <source>Stored Tags</source>
       <translation>Tags enregistrés</translation>
     </message>
     <message>
-      <location filename="../translations.py" line="226" />
+      <location filename="../translations.py" line="228" />
       <source>Logs</source>
       <translation>Journaux</translation>
     </message>
     <message>
-      <location filename="../translations.py" line="227" />
+      <location filename="../translations.py" line="229" />
       <source>Mass Tagging</source>
       <translation>Tag par lots</translation>
     </message>
     <message>
-      <location filename="../translations.py" line="228" />
+      <location filename="../translations.py" line="230" />
       <source>Functions</source>
       <translation>Fonctions</translation>
     </message>
     <message>
-      <location filename="../translations.py" line="229" />
+      <location filename="../translations.py" line="231" />
       <source>Actions</source>
       <translation>Actions</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="2125" />
+      <location filename="../puddleobjects.py" line="2174" />
       <source>Album Art</source>
       <translation>Pochettes</translation>
     </message>
@@ -1035,22 +1050,22 @@ Double cliquer pour changer la couleur&lt;/p&gt;</translation>
   <context>
     <name>Dir Renaming</name>
     <message>
-      <location filename="../puddletag.py" line="1021" />
+      <location filename="../puddletag.py" line="1054" />
       <source>An error occured while renaming &lt;b&gt;{}&lt;/b&gt; to &lt;b&gt;{}&lt;/b&gt;. ({})</source>
       <translation>Une erreur s'est produit en renommant &lt;b&gt;{}&lt;/b&gt; en &lt;b&gt;{}&lt;/b&gt;. ({})</translation>
     </message>
     <message>
-      <location filename="../puddletag.py" line="1029" />
+      <location filename="../puddletag.py" line="1062" />
       <source>Renaming </source>
       <translation>Renomme </translation>
     </message>
     <message>
-      <location filename="../puddletag.py" line="1045" />
+      <location filename="../puddletag.py" line="1078" />
       <source>I couldn't rename: &lt;i&gt;{}&lt;/i&gt; to &lt;b&gt;{}&lt;/b&gt; ({})</source>
       <translation>Je n'ai pas pu renommer: &lt;i&gt;{}&lt;/i&gt; en &lt;b&gt;{}&lt;/b&gt; ({})</translation>
     </message>
     <message>
-      <location filename="../mainwin/funcs.py" line="574" />
+      <location filename="../mainwin/funcs.py" line="594" />
       <source>Rename: &lt;b&gt;{}&lt;/b&gt; to: &lt;i&gt;{}&lt;/i&gt;</source>
       <translation>Renomme: &lt;b&gt;{}&lt;/b&gt; en: &lt;i&gt;{}&lt;/i&gt;</translation>
     </message>
@@ -1058,27 +1073,27 @@ Double cliquer pour changer la couleur&lt;/p&gt;</translation>
   <context>
     <name>Dirview</name>
     <message>
-      <location filename="../mainwin/dirview.py" line="104" />
+      <location filename="../mainwin/dirview.py" line="183" />
       <source>Refresh Directory</source>
       <translation>Recharger le dossier</translation>
     </message>
     <message>
-      <location filename="../mainwin/dirview.py" line="112" />
+      <location filename="../mainwin/dirview.py" line="191" />
       <source>Show Header</source>
       <translation>Afficher l'en-tête</translation>
     </message>
     <message>
-      <location filename="../mainwin/dirview.py" line="116" />
+      <location filename="../mainwin/dirview.py" line="195" />
       <source>Hide Header</source>
       <translation>Masquer l'en-tête</translation>
     </message>
     <message>
-      <location filename="../mainwin/dirview.py" line="120" />
+      <location filename="../mainwin/dirview.py" line="199" />
       <source>Open in File Manager</source>
       <translation>Ouvrir dans le gestionnaire de fichiers</translation>
     </message>
     <message>
-      <location filename="../mainwin/dirview.py" line="338" />
+      <location filename="../mainwin/dirview.py" line="422" />
       <source>Subfolders</source>
       <translation>Sous-dossiers</translation>
     </message>
@@ -1086,121 +1101,79 @@ Double cliquer pour changer la couleur&lt;/p&gt;</translation>
   <context>
     <name>Discogs</name>
     <message>
-      <location filename="../tagsources/TagSource.py" line="28" />
-      <source>A Text Option</source>
-      <translation type="unfinished" />
-    </message>
-    <message>
-      <location filename="../tagsources/TagSource.py" line="29" />
-      <source>A Checkbox Option</source>
-      <translation type="unfinished" />
-    </message>
-    <message>
-      <location filename="../tagsources/TagSource.py" line="30" />
-      <source>A Spinbox Integer</source>
-      <translation type="unfinished" />
-    </message>
-    <message>
-      <location filename="../tagsources/TagSource.py" line="31" />
-      <source>A Tag List</source>
-      <translation type="unfinished" />
-    </message>
-    <message>
-      <location filename="../tagsources/TagSource.py" line="32" />
-      <source>A Combobox Option</source>
-      <translation type="unfinished" />
-    </message>
-    <message>
-      <location filename="../tagsources/TagSource.py" line="33" />
-      <source>Option 1</source>
-      <translation type="unfinished" />
-    </message>
-    <message>
-      <location filename="../tagsources/TagSource.py" line="33" />
-      <source>Option 2</source>
-      <translation type="unfinished" />
-    </message>
-    <message>
-      <location filename="../tagsources/discogs.py" line="191" />
-      <location filename="../tagsources/discogs.py" line="185" />
+      <location filename="../tagsources/discogs.py" line="225" />
+      <location filename="../tagsources/discogs.py" line="219" />
       <source>Retrieving using Release ID: {}</source>
       <translation>Récupération via Release ID : {}</translation>
     </message>
     <message>
-      <location filename="../tagsources/discogs.py" line="198" />
+      <location filename="../tagsources/discogs.py" line="232" />
       <source>Retrieving album {}</source>
       <translation>Récupération de l'album {}</translation>
     </message>
     <message>
-      <location filename="../tagsources/discogs.py" line="224" />
-      <location filename="../tagsources/discogs.py" line="216" />
+      <location filename="../tagsources/discogs.py" line="254" />
       <source>Retrieving cover: {}</source>
       <translation>Récupération de la pochette: {}</translation>
     </message>
     <message>
-      <location filename="../tagsources/discogs.py" line="228" />
-      <location filename="../tagsources/discogs.py" line="220" />
+      <location filename="../tagsources/discogs.py" line="258" />
       <source>Error retrieving image:</source>
       <translation>Erreur en récupérant l'image:</translation>
     </message>
     <message>
-      <location filename="../tagsources/discogs.py" line="234" />
-      <source>{} at Discogs.com</source>
-      <translation>{} sur Discogs.com</translation>
-    </message>
-    <message>
-      <location filename="../tagsources/discogs.py" line="278" />
+      <location filename="../tagsources/discogs.py" line="289" />
       <source>&lt;p&gt;&lt;b&gt;Discogs only supports searching by release id&lt;/b&gt;&lt;/p&gt;
         &lt;p&gt;Enter the release id Eg. "1257896" to search.&lt;/p&gt;</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../tagsources/discogs.py" line="287" />
+      <location filename="../tagsources/discogs.py" line="298" />
       <source>Retrieve Cover</source>
       <translation>Récupérer la Pochette</translation>
     </message>
     <message>
-      <location filename="../tagsources/discogs.py" line="288" />
+      <location filename="../tagsources/discogs.py" line="299" />
       <source>Cover size to retrieve</source>
       <translation>Taille de la pochette à récupérer</translation>
     </message>
     <message>
-      <location filename="../tagsources/discogs.py" line="289" />
+      <location filename="../tagsources/discogs.py" line="300" />
       <source>Small</source>
       <translation>Petite</translation>
     </message>
     <message>
-      <location filename="../tagsources/discogs.py" line="290" />
+      <location filename="../tagsources/discogs.py" line="301" />
       <source>Large</source>
       <translation>Grande</translation>
     </message>
     <message>
-      <location filename="../tagsources/discogs.py" line="291" />
+      <location filename="../tagsources/discogs.py" line="302" />
       <source>Field to use for discogs_id</source>
       <translation>Champ à utiliser pour l'ID Discogs</translation>
     </message>
     <message>
-      <location filename="../tagsources/discogs.py" line="292" />
-      <source>API Key (Stored as plain-text.Leave empty to use default.)</source>
-      <translation>Clé API (Stockée en texte claire, laissez vide pour utiliser la valeur par défaut)</translation>
+      <location filename="../tagsources/discogs.py" line="303" />
+      <source>API Key (Stored as plain text. Leave empty to send none.)</source>
+      <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../tagsources/discogs.py" line="301" />
+      <location filename="../tagsources/discogs.py" line="316" />
       <source>Discogs release id should be an integer.</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../tagsources/discogs.py" line="318" />
+      <location filename="../tagsources/discogs.py" line="328" />
       <source>Checking tracks for Discogs Album ID.</source>
       <translation>Recherche d'Album ID dans les pistes.</translation>
     </message>
     <message>
-      <location filename="../tagsources/discogs.py" line="324" />
+      <location filename="../tagsources/discogs.py" line="334" />
       <source>No Discogs ID found in tracks.</source>
       <translation>Aucun ID trouvé dans les pistes.</translation>
     </message>
     <message>
-      <location filename="../tagsources/discogs.py" line="327" />
+      <location filename="../tagsources/discogs.py" line="337" />
       <source>Found Discogs ID: {}</source>
       <translation>Discogs ID trouvé: {}</translation>
     </message>
@@ -1208,27 +1181,27 @@ Double cliquer pour changer la couleur&lt;/p&gt;</translation>
   <context>
     <name>Edit Field</name>
     <message>
-      <location filename="../helperwin.py" line="387" />
+      <location filename="../helperwin.py" line="426" />
       <source>Edit Field</source>
       <translation>Modifier le champ</translation>
     </message>
     <message>
-      <location filename="../helperwin.py" line="392" />
+      <location filename="../helperwin.py" line="431" />
       <source>&amp;Field</source>
       <translation>&amp;Champ</translation>
     </message>
     <message>
-      <location filename="../helperwin.py" line="404" />
+      <location filename="../helperwin.py" line="443" />
       <source>&amp;Value</source>
       <translation>&amp;Valeur</translation>
     </message>
     <message>
-      <location filename="../helperwin.py" line="410" />
+      <location filename="../helperwin.py" line="449" />
       <source>A&amp;dd</source>
       <translation>&amp;Ajouter</translation>
     </message>
     <message>
-      <location filename="../helperwin.py" line="421" />
+      <location filename="../helperwin.py" line="460" />
       <source>E&amp;dit</source>
       <translation>Mo&amp;difier</translation>
     </message>
@@ -1236,12 +1209,7 @@ Double cliquer pour changer la couleur&lt;/p&gt;</translation>
   <context>
     <name>Errors</name>
     <message>
-      <location filename="../puddletag.py" line="773" />
-      <source>Your filesystem encoding was detected as &lt;b&gt;ASCII&lt;/b&gt;. &lt;br /&gt;You won't be able to rename files using accented, &lt;br /&gt; cyrillic or any characters outside the ASCII alphabet.</source>
-      <translation>Votre système de fichier est détecté comme étant &lt;b&gt;ASCII&lt;/b&gt;. &lt;br /&gt;Vous ne pourrez pas renommer les fichiers avec caractères accentués, &lt;br /&gt; cyrillique ou autre non-ASCII.</translation>
-    </message>
-    <message>
-      <location filename="../findfunc.py" line="387" />
+      <location filename="../findfunc.py" line="398" />
       <source>No closing bracket found.</source>
       <translation>Parenthèse fermante introuvable.</translation>
     </message>
@@ -1255,26 +1223,31 @@ Double cliquer pour changer la couleur&lt;/p&gt;</translation>
       <source>Cannot move directory to a subdirectory within itself.</source>
       <translation>Impossible de déplacer un dossier dans lui-même.</translation>
     </message>
+    <message>
+      <location filename="../puddletag.py" line="782" />
+      <source>Your filesystem encoding was detected as &lt;b&gt;ASCII&lt;/b&gt;. &lt;br /&gt;You won't be able to rename files using accented, &lt;br /&gt; cyrillic or any characters outside the ASCII alphabet.</source>
+      <translation>Votre système de fichier est détecté comme étant &lt;b&gt;ASCII&lt;/b&gt;. &lt;br /&gt;Vous ne pourrez pas renommer les fichiers avec caractères accentués, &lt;br /&gt; cyrillique ou autre non-ASCII.</translation>
+    </message>
   </context>
   <context>
     <name>Extended Tags</name>
     <message>
-      <location filename="../helperwin.py" line="624" />
+      <location filename="../helperwin.py" line="668" />
       <source>Field</source>
       <translation>Champ</translation>
     </message>
     <message>
-      <location filename="../helperwin.py" line="625" />
+      <location filename="../helperwin.py" line="669" />
       <source>Value</source>
       <translation>Valeur</translation>
     </message>
     <message>
-      <location filename="../helperwin.py" line="657" />
+      <location filename="../helperwin.py" line="701" />
       <source>Resets the selected fields to their original value.</source>
       <translation>Restaurer l'état initial des fichiers sélectionnés.</translation>
     </message>
     <message>
-      <location filename="../helperwin.py" line="888" />
+      <location filename="../helperwin.py" line="954" />
       <source>Different files.</source>
       <translation>Plusieurs fichiers.</translation>
     </message>
@@ -1282,57 +1255,57 @@ Double cliquer pour changer la couleur&lt;/p&gt;</translation>
   <context>
     <name>Fields</name>
     <message>
-      <location filename="../tagmodel.py" line="75" />
+      <location filename="../tagmodel.py" line="76" />
       <source>Filename</source>
       <translation>Nom de fichier</translation>
     </message>
     <message>
-      <location filename="../tagmodel.py" line="75" />
+      <location filename="../tagmodel.py" line="76" />
       <source>Artist</source>
       <translation>Artiste</translation>
     </message>
     <message>
-      <location filename="../tagmodel.py" line="76" />
+      <location filename="../tagmodel.py" line="77" />
       <source>Title</source>
       <translation>Titre</translation>
     </message>
     <message>
-      <location filename="../tagmodel.py" line="76" />
+      <location filename="../tagmodel.py" line="77" />
       <source>Album</source>
       <translation>Album</translation>
     </message>
     <message>
-      <location filename="../tagmodel.py" line="77" />
+      <location filename="../tagmodel.py" line="78" />
       <source>Track</source>
       <translation>Piste</translation>
     </message>
     <message>
-      <location filename="../tagmodel.py" line="77" />
+      <location filename="../tagmodel.py" line="78" />
       <source>Length</source>
       <translation>Durée</translation>
     </message>
     <message>
-      <location filename="../tagmodel.py" line="78" />
+      <location filename="../tagmodel.py" line="79" />
       <source>Year</source>
       <translation>Année</translation>
     </message>
     <message>
-      <location filename="../tagmodel.py" line="78" />
+      <location filename="../tagmodel.py" line="79" />
       <source>Bitrate</source>
       <translation>Débit</translation>
     </message>
     <message>
-      <location filename="../tagmodel.py" line="79" />
+      <location filename="../tagmodel.py" line="80" />
       <source>Genre</source>
       <translation>Genre</translation>
     </message>
     <message>
-      <location filename="../tagmodel.py" line="79" />
+      <location filename="../tagmodel.py" line="80" />
       <source>Comment</source>
       <translation>Commentaire</translation>
     </message>
     <message>
-      <location filename="../tagmodel.py" line="80" />
+      <location filename="../tagmodel.py" line="81" />
       <source>Dirpath</source>
       <translation>Chemin</translation>
     </message>
@@ -1340,7 +1313,18 @@ Double cliquer pour changer la couleur&lt;/p&gt;</translation>
   <context>
     <name>FreeDB</name>
     <message>
-      <location filename="../tagsources/freedb.py" line="178" />
+      <location filename="../tagsources/freedb.py" line="106" />
+      <source>Couldn't read {} {}: the server answered {}.</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../tagsources/freedb.py" line="177" />
+      <location filename="../tagsources/freedb.py" line="145" />
+      <source>The server's reply isn't a CDDB reply.</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../tagsources/freedb.py" line="215" />
       <source>&lt;b&gt;FreeDB does not support text-based searches.&lt;/b&gt;</source>
       <translation>&lt;b&gt;FreeDB ne supporte pas les recherches sur du texte.&lt;/b&gt;</translation>
     </message>
@@ -1348,538 +1332,543 @@ Double cliquer pour changer la couleur&lt;/p&gt;</translation>
   <context>
     <name>Functions</name>
     <message>
-      <location filename="../translations.py" line="105" />
-      <source>Artwork: Filenames='$1', Description='$2', Case Sensitive=$3</source>
-      <translation>Image: Fichier='$1', Description='$2', Sensible à la casse=$3</translation>
-    </message>
-    <message>
-      <location filename="../translations.py" line="106" />
-      <source>Load Artwork</source>
-      <translation>Charger une image</translation>
-    </message>
-    <message>
-      <location filename="../translations.py" line="107" />
-      <source>&amp;Filenames to check (;-separated, shell wildcards [eg. *] allowed)</source>
-      <translation>Noms de &amp;fichiers à vérifier (séparés par ;, jokers (?,*) autorisés)</translation>
-    </message>
-    <message>
-      <location filename="../translations.py" line="108" />
-      <source>&amp;Default description (can be pattern):</source>
-      <translation>&amp;Description par défaut (peut être un motif):</translation>
-    </message>
-    <message>
-      <location filename="../translations.py" line="109" />
-      <source>Match filename's &amp;case:</source>
-      <translation>Nom de fichier sensible à la &amp;casse:</translation>
-    </message>
-    <message>
-      <location filename="../translations.py" line="110" />
-      <source>Autonumbering: $0, Start: $1, Restart for dir: $2, Padding: $3</source>
-      <translation>Numérotation auto: $0, Début: $1, Recommencer à chaque dossier: $2, Longueur: $3</translation>
-    </message>
-    <message>
-      <location filename="../translations.py" line="111" />
-      <source>Autonumbering</source>
-      <translation>Numérotation auto</translation>
-    </message>
-    <message>
-      <location filename="../translations.py" line="112" />
-      <source>oi</source>
-      <translation />
-    </message>
-    <message>
-      <location filename="../translations.py" line="117" />
-      <location filename="../translations.py" line="113" />
-      <source>1</source>
-      <translation>1</translation>
-    </message>
-    <message>
-      <location filename="../translations.py" line="114" />
-      <source>aoeu</source>
-      <translation />
-    </message>
-    <message>
-      <location filename="../translations.py" line="115" />
-      <source>False</source>
-      <translation />
-    </message>
-    <message>
-      <location filename="../translations.py" line="116" />
-      <source>au</source>
-      <translation />
-    </message>
-    <message>
-      <location filename="../translations.py" line="118" />
-      <source>Convert to encoding: $0, Encoding: $1</source>
-      <translation>Convertir l'encodage: $0, Encodage: $1</translation>
-    </message>
-    <message>
-      <location filename="../translations.py" line="119" />
-      <source>Convert from non-standard encoding</source>
-      <translation>Convertir depuis un encodage non standard</translation>
-    </message>
-    <message>
-      <location filename="../translations.py" line="120" />
-      <source>&amp;Encoding</source>
-      <translation>&amp;Encodage</translation>
-    </message>
-    <message>
-      <location filename="../translations.py" line="121" />
-      <source>cp1250</source>
-      <translation />
-    </message>
-    <message>
-      <location filename="../translations.py" line="122" />
-      <source>cp1251</source>
-      <translation />
-    </message>
-    <message>
-      <location filename="../translations.py" line="123" />
-      <source>cp1252</source>
-      <translation />
-    </message>
-    <message>
-      <location filename="../translations.py" line="124" />
-      <source>cp1253</source>
-      <translation />
-    </message>
-    <message>
-      <location filename="../translations.py" line="125" />
-      <source>cp1254</source>
-      <translation />
-    </message>
-    <message>
-      <location filename="../translations.py" line="126" />
-      <source>cp1255</source>
-      <translation />
-    </message>
-    <message>
-      <location filename="../translations.py" line="127" />
-      <source>cp1256</source>
-      <translation />
-    </message>
-    <message>
-      <location filename="../translations.py" line="128" />
-      <source>cp1257</source>
-      <translation />
-    </message>
-    <message>
-      <location filename="../translations.py" line="129" />
-      <source>cp1258</source>
-      <translation />
-    </message>
-    <message>
-      <location filename="../translations.py" line="130" />
-      <source>euc_jp</source>
-      <translation type="unfinished" />
-    </message>
-    <message>
-      <location filename="../translations.py" line="131" />
-      <source>cp932</source>
-      <translation type="unfinished" />
-    </message>
-    <message>
-      <location filename="../translations.py" line="132" />
-      <source>euc_jis_2004</source>
-      <translation type="unfinished" />
-    </message>
-    <message>
-      <location filename="../translations.py" line="133" />
-      <source>shift_jis</source>
-      <translation type="unfinished" />
-    </message>
-    <message>
-      <location filename="../translations.py" line="134" />
-      <source>johab</source>
-      <translation type="unfinished" />
-    </message>
-    <message>
-      <location filename="../translations.py" line="135" />
-      <source>big5</source>
-      <translation type="unfinished" />
-    </message>
-    <message>
-      <location filename="../translations.py" line="136" />
-      <source>big5hkscs</source>
-      <translation type="unfinished" />
-    </message>
-    <message>
-      <location filename="../translations.py" line="137" />
-      <source>gb2312</source>
-      <translation type="unfinished" />
-    </message>
-    <message>
-      <location filename="../translations.py" line="138" />
-      <source>gb18030</source>
-      <translation type="unfinished" />
-    </message>
-    <message>
-      <location filename="../translations.py" line="139" />
-      <source>gbk</source>
-      <translation type="unfinished" />
-    </message>
-    <message>
-      <location filename="../translations.py" line="140" />
-      <source>hz</source>
-      <translation type="unfinished" />
-    </message>
-    <message>
-      <location filename="../translations.py" line="141" />
-      <source>File-&gt;Tag '$1'</source>
-      <translation>Fichier-&gt;Tag '$1'</translation>
-    </message>
-    <message>
-      <location filename="../translations.py" line="142" />
-      <source>Filename to Tag</source>
-      <translation>Nom de fichier vers Tag</translation>
-    </message>
-    <message>
-      <location filename="../translations.py" line="199" />
-      <location filename="../translations.py" line="157" />
-      <location filename="../translations.py" line="143" />
-      <source>&amp;Pattern</source>
-      <translation>&amp;Motif</translation>
-    </message>
-    <message>
-      <location filename="../translations.py" line="144" />
-      <source>Format $0 using $1</source>
-      <translation>Formatter $0 selon $1</translation>
-    </message>
-    <message>
-      <location filename="../translations.py" line="145" />
-      <source>Format value</source>
-      <translation>Formatter la valeur</translation>
-    </message>
-    <message>
-      <location filename="../translations.py" line="146" />
-      <source>&amp;Format string</source>
-      <translation>Chaine de &amp;formattage</translation>
-    </message>
-    <message>
-      <location filename="../translations.py" line="147" />
-      <source>Text File: $0, '$1'</source>
-      <translation>Fichier texte: $0, '$1'</translation>
-    </message>
-    <message>
-      <location filename="../translations.py" line="148" />
-      <source>Import text file</source>
-      <translation>Importer un fichier texte</translation>
-    </message>
-    <message>
-      <location filename="../translations.py" line="194" />
-      <location filename="../translations.py" line="149" />
-      <source>&amp;Pattern (can be relative path)</source>
-      <translation>&amp;Motif (peut être un chemin relatif)</translation>
-    </message>
-    <message>
-      <location filename="../translations.py" line="150" />
-      <source>lyrics.txt</source>
-      <translation />
-    </message>
-    <message>
-      <location filename="../translations.py" line="151" />
-      <source>Merge field: $0, sep='$1'</source>
-      <translation>Fusionner le champ: $0, sep='$1'</translation>
-    </message>
-    <message>
-      <location filename="../translations.py" line="152" />
-      <source>Merge field</source>
-      <translation>Fusionner un champ</translation>
-    </message>
-    <message>
-      <location filename="../translations.py" line="188" />
-      <location filename="../translations.py" line="153" />
-      <source>&amp;Separator</source>
-      <translation>&amp;Séparateur</translation>
-    </message>
-    <message>
-      <location filename="../translations.py" line="189" />
-      <location filename="../translations.py" line="154" />
-      <source>;</source>
-      <translation>;</translation>
-    </message>
-    <message>
-      <location filename="../translations.py" line="155" />
-      <source>Tag-&gt;File: $1</source>
-      <translation>Tag-&gt;Fichier: $1</translation>
-    </message>
-    <message>
-      <location filename="../translations.py" line="156" />
-      <source>Tag to filename</source>
-      <translation>Tag vers nom de fichier</translation>
-    </message>
-    <message>
-      <location filename="../translations.py" line="158" />
-      <source>Remove Dupes: $0, Match Case $1</source>
-      <translation>Supprimer les doublons: $0, Sensible à la casse $1</translation>
-    </message>
-    <message>
-      <location filename="../translations.py" line="159" />
-      <source>Remove duplicate values</source>
-      <translation>Supprimer les valeurs en double</translation>
-    </message>
-    <message>
-      <location filename="../translations.py" line="185" />
-      <location filename="../translations.py" line="175" />
-      <location filename="../translations.py" line="160" />
-      <source>Match &amp;Case</source>
-      <translation>Sensible à la &amp;casse</translation>
-    </message>
-    <message>
-      <location filename="../translations.py" line="161" />
-      <source>Remove fields except: $1</source>
-      <translation>Supprimer les champs excepté: $1</translation>
-    </message>
-    <message>
-      <location filename="../translations.py" line="162" />
-      <source>Remove all fields except</source>
-      <translation>Supprimer tous les champs sauf</translation>
-    </message>
-    <message>
-      <location filename="../translations.py" line="213" />
-      <location filename="../translations.py" line="163" />
-      <source>&amp;Field list (; separated):</source>
-      <translation>&amp;Liste de champs (séparés par ;):</translation>
-    </message>
-    <message>
-      <location filename="../translations.py" line="165" />
-      <source>Replace $0: '$1' -&gt; '$2', Match Case: $3, Words Only: $4</source>
-      <translation>Remplacer $0: '$1' -&gt; '$2', Sensible à la casse: $3, Mot entiers: $4</translation>
-    </message>
-    <message>
-      <location filename="../translations.py" line="166" />
-      <source>Replace</source>
-      <translation>Remplacer</translation>
-    </message>
-    <message>
-      <location filename="../translations.py" line="167" />
-      <source>&amp;Replace</source>
-      <translation>&amp;Remplacer</translation>
-    </message>
-    <message>
-      <location filename="../translations.py" line="168" />
-      <source>w&amp;ith:</source>
-      <translation>&amp;par:</translation>
-    </message>
-    <message>
-      <location filename="../translations.py" line="169" />
-      <source>Match c&amp;ase:</source>
-      <translation>Sensible à la c&amp;asse:</translation>
-    </message>
-    <message>
-      <location filename="../translations.py" line="170" />
-      <source>only as &amp;whole word</source>
-      <translation>seulement en mot &amp;entier</translation>
-    </message>
-    <message>
-      <location filename="../translations.py" line="171" />
-      <source>RegReplace $0: RegExp '$1' with '$2', Match Case: $3</source>
-      <translation>ExprRemplace $0: ExprRat '$1' avec '$2', Sensible à la casse: $3</translation>
-    </message>
-    <message>
-      <location filename="../translations.py" line="172" />
-      <source>Replace with RegExp</source>
-      <translation>Remplacer avec une Expression rationelle</translation>
-    </message>
-    <message>
-      <location filename="../translations.py" line="173" />
-      <source>&amp;Regular Expression</source>
-      <translation>Expression &amp;Rationelle</translation>
-    </message>
-    <message>
-      <location filename="../translations.py" line="174" />
-      <source>Replace &amp;matches with:</source>
-      <translation>Re&amp;mplace les correspondances par:</translation>
-    </message>
-    <message>
-      <location filename="../translations.py" line="176" />
-      <source>Export Art: pattern='$1'</source>
-      <translation>Exporter image: motif='$1'</translation>
-    </message>
-    <message>
-      <location filename="../translations.py" line="177" />
-      <source>Export artwork to file</source>
-      <translation>Exporter l'image vers un fichier</translation>
-    </message>
-    <message>
-      <location filename="../translations.py" line="178" />
-      <source>&amp;Pattern (extension not required)</source>
-      <translation>&amp;Motif (extension optionelle)</translation>
-    </message>
-    <message>
-      <location filename="../translations.py" line="179" />
-      <source>folder_%img_counter%</source>
-      <translation />
-    </message>
-    <message>
-      <location filename="../translations.py" line="180" />
-      <source>Sort $0, order='$1', Match Case='$2'</source>
-      <translation>Trier $0, ordre='$1', Sensible à la casse='$2'</translation>
-    </message>
-    <message>
-      <location filename="../translations.py" line="181" />
-      <source>Sort values</source>
-      <translation>Trier les valeurs</translation>
-    </message>
-    <message>
-      <location filename="../translations.py" line="182" />
-      <source>&amp;Order</source>
-      <translation>&amp;Ordre</translation>
-    </message>
-    <message>
-      <location filename="../translations.py" line="183" />
-      <source>Ascending</source>
-      <translation>Ascendant</translation>
-    </message>
-    <message>
-      <location filename="../translations.py" line="184" />
-      <source>Descending</source>
-      <translation>Descendant</translation>
-    </message>
-    <message>
-      <location filename="../translations.py" line="186" />
-      <source>Split using separator $0: sep='$1'</source>
-      <translation>Éclater en utilisant le séparateur $0: sep='$1'</translation>
-    </message>
-    <message>
-      <location filename="../translations.py" line="187" />
-      <source>Split fields using separator</source>
-      <translation>Éclater en utilisant un séparateur</translation>
-    </message>
-    <message>
-      <location filename="../translations.py" line="190" />
-      <source>Trim $0</source>
-      <translation>Tronquer $0</translation>
-    </message>
-    <message>
-      <location filename="../translations.py" line="191" />
-      <source>Trim whitespace</source>
-      <translation>Tronquer les espaces</translation>
-    </message>
-    <message>
-      <location filename="../translations.py" line="192" />
-      <source>Tag-&gt;Dir: $1</source>
-      <translation>Tag-&gt;Dossier: $1</translation>
-    </message>
-    <message>
-      <location filename="../translations.py" line="193" />
-      <source>Tag to Dir</source>
-      <translation>Tag vers Dossier</translation>
-    </message>
-    <message>
-      <location filename="../translations.py" line="195" />
-      <source>%artist% - %album%</source>
-      <translation />
-    </message>
-    <message>
-      <location filename="../translations.py" line="196" />
-      <source>Text to Tag: $0 -&gt; $1, $2</source>
-      <translation>Texte vers Tag: $0 -&gt; $1, $2</translation>
-    </message>
-    <message>
-      <location filename="../translations.py" line="197" />
-      <source>Text to Tag</source>
-      <translation>Texte vers Tag</translation>
-    </message>
-    <message>
-      <location filename="../translations.py" line="198" />
-      <source>&amp;Text</source>
-      <translation>&amp;Texte</translation>
-    </message>
-    <message>
-      <location filename="../translations.py" line="200" />
-      <source>&amp;Output</source>
-      <translation>&amp;Output</translation>
-    </message>
-    <message>
-      <location filename="../translations.py" line="201" />
-      <source>Convert Case: $0: $1</source>
-      <translation>Convertir la casse: $0: $1</translation>
-    </message>
-    <message>
-      <location filename="../translations.py" line="202" />
-      <source>Case conversion</source>
-      <translation>Convertir la casse</translation>
-    </message>
-    <message>
-      <location filename="../translations.py" line="203" />
-      <source>&amp;Type</source>
-      <translation>&amp;Type</translation>
-    </message>
-    <message>
-      <location filename="../translations.py" line="204" />
-      <source>Mixed Case</source>
-      <translation>Casse Mixte</translation>
-    </message>
-    <message>
-      <location filename="../translations.py" line="205" />
-      <source>UPPER CASE</source>
-      <translation>MAJUSCULES</translation>
-    </message>
-    <message>
-      <location filename="../translations.py" line="206" />
-      <source>lower case</source>
-      <translation>minuscules</translation>
-    </message>
-    <message>
-      <location filename="../translations.py" line="207" />
-      <source>For &amp;Mixed Case, after any of:</source>
-      <translation>Pour la casse &amp;mixte, après chaque:</translation>
-    </message>
-    <message>
-      <location filename="../translations.py" line="208" />
-      <source>., !</source>
-      <translation>., !</translation>
-    </message>
-    <message>
-      <location filename="../translations.py" line="209" />
-      <source>&lt;blank&gt; $0</source>
-      <translation>&lt;vide&gt; $0</translation>
-    </message>
-    <message>
-      <location filename="../translations.py" line="210" />
-      <source>Remove Fields</source>
-      <translation>Supprimer les champs</translation>
-    </message>
-    <message>
-      <location filename="../translations.py" line="211" />
-      <source>Update from $2, Fields: $1</source>
-      <translation>Mis à jour depuis $2, Champs: $1</translation>
-    </message>
-    <message>
-      <location filename="../translations.py" line="212" />
-      <source>Update from tag</source>
-      <translation>Mettre à jour depuis le tag</translation>
-    </message>
-    <message>
-      <location filename="../translations.py" line="214" />
-      <source>&amp;Tag</source>
-      <translation />
-    </message>
-    <message>
-      <location filename="../translations.py" line="215" />
-      <source>APEv2</source>
-      <translation>APEv2</translation>
-    </message>
-    <message>
-      <location filename="../translations.py" line="216" />
-      <source>ID3</source>
-      <translation />
-    </message>
-    <message>
-      <location filename="../translations.py" line="217" />
-      <source>Converts all unicode chars to ASCII.</source>
-      <translation type="unfinished" />
-    </message>
-    <message>
-      <location filename="../findfunc.py" line="57" />
+      <location filename="../findfunc.py" line="60" />
       <source>At most {} arguments expected. {} given.</source>
       <translation>Au plus {} paramètres attendus. {} trouvés.</translation>
     </message>
     <message>
-      <location filename="../findfunc.py" line="63" />
+      <location filename="../findfunc.py" line="66" />
       <source>At least {} arguments expected. {} given.</source>
       <translation>Au moins {} paramètres attendus. {} trouvés.</translation>
+    </message>
+    <message>
+      <location filename="../translations.py" line="106" />
+      <source>Artwork: Filenames='$1', Description='$2', Case Sensitive=$3</source>
+      <translation>Image: Fichier='$1', Description='$2', Sensible à la casse=$3</translation>
+    </message>
+    <message>
+      <location filename="../translations.py" line="107" />
+      <source>Load Artwork</source>
+      <translation>Charger une image</translation>
+    </message>
+    <message>
+      <location filename="../translations.py" line="108" />
+      <source>&amp;Filenames to check (;-separated, shell wildcards [eg. *] allowed)</source>
+      <translation>Noms de &amp;fichiers à vérifier (séparés par ;, jokers (?,*) autorisés)</translation>
+    </message>
+    <message>
+      <location filename="../translations.py" line="109" />
+      <source>&amp;Default description (can be pattern):</source>
+      <translation>&amp;Description par défaut (peut être un motif):</translation>
+    </message>
+    <message>
+      <location filename="../translations.py" line="110" />
+      <source>Match filename's &amp;case:</source>
+      <translation>Nom de fichier sensible à la &amp;casse:</translation>
+    </message>
+    <message>
+      <location filename="../translations.py" line="111" />
+      <source>Autonumbering: $0, Start: $1, Restart for dir: $2, Padding: $3</source>
+      <translation>Numérotation auto: $0, Début: $1, Recommencer à chaque dossier: $2, Longueur: $3</translation>
+    </message>
+    <message>
+      <location filename="../translations.py" line="112" />
+      <source>Autonumbering</source>
+      <translation>Numérotation auto</translation>
+    </message>
+    <message>
+      <location filename="../translations.py" line="113" />
+      <source>oi</source>
+      <translation />
+    </message>
+    <message>
+      <location filename="../translations.py" line="118" />
+      <location filename="../translations.py" line="114" />
+      <source>1</source>
+      <translation>1</translation>
+    </message>
+    <message>
+      <location filename="../translations.py" line="115" />
+      <source>aoeu</source>
+      <translation />
+    </message>
+    <message>
+      <location filename="../translations.py" line="116" />
+      <source>False</source>
+      <translation />
+    </message>
+    <message>
+      <location filename="../translations.py" line="117" />
+      <source>au</source>
+      <translation />
+    </message>
+    <message>
+      <location filename="../translations.py" line="119" />
+      <source>Convert to encoding: $0, Encoding: $1</source>
+      <translation>Convertir l'encodage: $0, Encodage: $1</translation>
+    </message>
+    <message>
+      <location filename="../translations.py" line="120" />
+      <source>Convert from non-standard encoding</source>
+      <translation>Convertir depuis un encodage non standard</translation>
+    </message>
+    <message>
+      <location filename="../translations.py" line="121" />
+      <source>&amp;Encoding</source>
+      <translation>&amp;Encodage</translation>
+    </message>
+    <message>
+      <location filename="../translations.py" line="122" />
+      <source>cp1250</source>
+      <translation />
+    </message>
+    <message>
+      <location filename="../translations.py" line="123" />
+      <source>cp1251</source>
+      <translation />
+    </message>
+    <message>
+      <location filename="../translations.py" line="124" />
+      <source>cp1252</source>
+      <translation />
+    </message>
+    <message>
+      <location filename="../translations.py" line="125" />
+      <source>cp1253</source>
+      <translation />
+    </message>
+    <message>
+      <location filename="../translations.py" line="126" />
+      <source>cp1254</source>
+      <translation />
+    </message>
+    <message>
+      <location filename="../translations.py" line="127" />
+      <source>cp1255</source>
+      <translation />
+    </message>
+    <message>
+      <location filename="../translations.py" line="128" />
+      <source>cp1256</source>
+      <translation />
+    </message>
+    <message>
+      <location filename="../translations.py" line="129" />
+      <source>cp1257</source>
+      <translation />
+    </message>
+    <message>
+      <location filename="../translations.py" line="130" />
+      <source>cp1258</source>
+      <translation />
+    </message>
+    <message>
+      <location filename="../translations.py" line="131" />
+      <source>euc_jp</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../translations.py" line="132" />
+      <source>cp932</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../translations.py" line="133" />
+      <source>euc_jis_2004</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../translations.py" line="134" />
+      <source>shift_jis</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../translations.py" line="135" />
+      <source>johab</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../translations.py" line="136" />
+      <source>big5</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../translations.py" line="137" />
+      <source>big5hkscs</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../translations.py" line="138" />
+      <source>gb2312</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../translations.py" line="139" />
+      <source>gb18030</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../translations.py" line="140" />
+      <source>gbk</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../translations.py" line="141" />
+      <source>hz</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../translations.py" line="142" />
+      <source>File-&gt;Tag '$1'</source>
+      <translation>Fichier-&gt;Tag '$1'</translation>
+    </message>
+    <message>
+      <location filename="../translations.py" line="143" />
+      <source>Filename to Tag</source>
+      <translation>Nom de fichier vers Tag</translation>
+    </message>
+    <message>
+      <location filename="../translations.py" line="200" />
+      <location filename="../translations.py" line="158" />
+      <location filename="../translations.py" line="144" />
+      <source>&amp;Pattern</source>
+      <translation>&amp;Motif</translation>
+    </message>
+    <message>
+      <location filename="../translations.py" line="145" />
+      <source>Format $0 using $1</source>
+      <translation>Formatter $0 selon $1</translation>
+    </message>
+    <message>
+      <location filename="../translations.py" line="146" />
+      <source>Format value</source>
+      <translation>Formatter la valeur</translation>
+    </message>
+    <message>
+      <location filename="../translations.py" line="147" />
+      <source>&amp;Format string</source>
+      <translation>Chaine de &amp;formattage</translation>
+    </message>
+    <message>
+      <location filename="../translations.py" line="148" />
+      <source>Text File: $0, '$1'</source>
+      <translation>Fichier texte: $0, '$1'</translation>
+    </message>
+    <message>
+      <location filename="../translations.py" line="149" />
+      <source>Import text file</source>
+      <translation>Importer un fichier texte</translation>
+    </message>
+    <message>
+      <location filename="../translations.py" line="195" />
+      <location filename="../translations.py" line="150" />
+      <source>&amp;Pattern (can be relative path)</source>
+      <translation>&amp;Motif (peut être un chemin relatif)</translation>
+    </message>
+    <message>
+      <location filename="../translations.py" line="151" />
+      <source>lyrics.txt</source>
+      <translation />
+    </message>
+    <message>
+      <location filename="../translations.py" line="152" />
+      <source>Merge field: $0, sep='$1'</source>
+      <translation>Fusionner le champ: $0, sep='$1'</translation>
+    </message>
+    <message>
+      <location filename="../translations.py" line="153" />
+      <source>Merge field</source>
+      <translation>Fusionner un champ</translation>
+    </message>
+    <message>
+      <location filename="../translations.py" line="189" />
+      <location filename="../translations.py" line="154" />
+      <source>&amp;Separator</source>
+      <translation>&amp;Séparateur</translation>
+    </message>
+    <message>
+      <location filename="../translations.py" line="190" />
+      <location filename="../translations.py" line="155" />
+      <source>;</source>
+      <translation>;</translation>
+    </message>
+    <message>
+      <location filename="../translations.py" line="156" />
+      <source>Tag-&gt;File: $1</source>
+      <translation>Tag-&gt;Fichier: $1</translation>
+    </message>
+    <message>
+      <location filename="../translations.py" line="157" />
+      <source>Tag to filename</source>
+      <translation>Tag vers nom de fichier</translation>
+    </message>
+    <message>
+      <location filename="../translations.py" line="159" />
+      <source>Remove Dupes: $0, Match Case $1</source>
+      <translation>Supprimer les doublons: $0, Sensible à la casse $1</translation>
+    </message>
+    <message>
+      <location filename="../translations.py" line="160" />
+      <source>Remove duplicate values</source>
+      <translation>Supprimer les valeurs en double</translation>
+    </message>
+    <message>
+      <location filename="../translations.py" line="186" />
+      <location filename="../translations.py" line="176" />
+      <location filename="../translations.py" line="161" />
+      <source>Match &amp;Case</source>
+      <translation>Sensible à la &amp;casse</translation>
+    </message>
+    <message>
+      <location filename="../translations.py" line="162" />
+      <source>Remove fields except: $1</source>
+      <translation>Supprimer les champs excepté: $1</translation>
+    </message>
+    <message>
+      <location filename="../translations.py" line="163" />
+      <source>Remove all fields except</source>
+      <translation>Supprimer tous les champs sauf</translation>
+    </message>
+    <message>
+      <location filename="../translations.py" line="214" />
+      <location filename="../translations.py" line="164" />
+      <source>&amp;Field list (; separated):</source>
+      <translation>&amp;Liste de champs (séparés par ;):</translation>
+    </message>
+    <message>
+      <location filename="../translations.py" line="166" />
+      <source>Replace $0: '$1' -&gt; '$2', Match Case: $3, Words Only: $4</source>
+      <translation>Remplacer $0: '$1' -&gt; '$2', Sensible à la casse: $3, Mot entiers: $4</translation>
+    </message>
+    <message>
+      <location filename="../translations.py" line="167" />
+      <source>Replace</source>
+      <translation>Remplacer</translation>
+    </message>
+    <message>
+      <location filename="../translations.py" line="168" />
+      <source>&amp;Replace</source>
+      <translation>&amp;Remplacer</translation>
+    </message>
+    <message>
+      <location filename="../translations.py" line="169" />
+      <source>w&amp;ith:</source>
+      <translation>&amp;par:</translation>
+    </message>
+    <message>
+      <location filename="../translations.py" line="170" />
+      <source>Match c&amp;ase:</source>
+      <translation>Sensible à la c&amp;asse:</translation>
+    </message>
+    <message>
+      <location filename="../translations.py" line="171" />
+      <source>only as &amp;whole word</source>
+      <translation>seulement en mot &amp;entier</translation>
+    </message>
+    <message>
+      <location filename="../translations.py" line="172" />
+      <source>RegReplace $0: RegExp '$1' with '$2', Match Case: $3</source>
+      <translation>ExprRemplace $0: ExprRat '$1' avec '$2', Sensible à la casse: $3</translation>
+    </message>
+    <message>
+      <location filename="../translations.py" line="173" />
+      <source>Replace with RegExp</source>
+      <translation>Remplacer avec une Expression rationelle</translation>
+    </message>
+    <message>
+      <location filename="../translations.py" line="174" />
+      <source>&amp;Regular Expression</source>
+      <translation>Expression &amp;Rationelle</translation>
+    </message>
+    <message>
+      <location filename="../translations.py" line="175" />
+      <source>Replace &amp;matches with:</source>
+      <translation>Re&amp;mplace les correspondances par:</translation>
+    </message>
+    <message>
+      <location filename="../translations.py" line="177" />
+      <source>Export Art: pattern='$1'</source>
+      <translation>Exporter image: motif='$1'</translation>
+    </message>
+    <message>
+      <location filename="../translations.py" line="178" />
+      <source>Export artwork to file</source>
+      <translation>Exporter l'image vers un fichier</translation>
+    </message>
+    <message>
+      <location filename="../translations.py" line="179" />
+      <source>&amp;Pattern (extension not required)</source>
+      <translation>&amp;Motif (extension optionelle)</translation>
+    </message>
+    <message>
+      <location filename="../translations.py" line="180" />
+      <source>folder_%img_counter%</source>
+      <translation />
+    </message>
+    <message>
+      <location filename="../translations.py" line="181" />
+      <source>Sort $0, order='$1', Match Case='$2'</source>
+      <translation>Trier $0, ordre='$1', Sensible à la casse='$2'</translation>
+    </message>
+    <message>
+      <location filename="../translations.py" line="182" />
+      <source>Sort values</source>
+      <translation>Trier les valeurs</translation>
+    </message>
+    <message>
+      <location filename="../translations.py" line="183" />
+      <source>&amp;Order</source>
+      <translation>&amp;Ordre</translation>
+    </message>
+    <message>
+      <location filename="../translations.py" line="184" />
+      <source>Ascending</source>
+      <translation>Ascendant</translation>
+    </message>
+    <message>
+      <location filename="../translations.py" line="185" />
+      <source>Descending</source>
+      <translation>Descendant</translation>
+    </message>
+    <message>
+      <location filename="../translations.py" line="187" />
+      <source>Split using separator $0: sep='$1'</source>
+      <translation>Éclater en utilisant le séparateur $0: sep='$1'</translation>
+    </message>
+    <message>
+      <location filename="../translations.py" line="188" />
+      <source>Split fields using separator</source>
+      <translation>Éclater en utilisant un séparateur</translation>
+    </message>
+    <message>
+      <location filename="../translations.py" line="191" />
+      <source>Trim $0</source>
+      <translation>Tronquer $0</translation>
+    </message>
+    <message>
+      <location filename="../translations.py" line="192" />
+      <source>Trim whitespace</source>
+      <translation>Tronquer les espaces</translation>
+    </message>
+    <message>
+      <location filename="../translations.py" line="193" />
+      <source>Tag-&gt;Dir: $1</source>
+      <translation>Tag-&gt;Dossier: $1</translation>
+    </message>
+    <message>
+      <location filename="../translations.py" line="194" />
+      <source>Tag to Dir</source>
+      <translation>Tag vers Dossier</translation>
+    </message>
+    <message>
+      <location filename="../translations.py" line="196" />
+      <source>%artist% - %album%</source>
+      <translation />
+    </message>
+    <message>
+      <location filename="../translations.py" line="197" />
+      <source>Text to Tag: $0 -&gt; $1, $2</source>
+      <translation>Texte vers Tag: $0 -&gt; $1, $2</translation>
+    </message>
+    <message>
+      <location filename="../translations.py" line="198" />
+      <source>Text to Tag</source>
+      <translation>Texte vers Tag</translation>
+    </message>
+    <message>
+      <location filename="../translations.py" line="199" />
+      <source>&amp;Text</source>
+      <translation>&amp;Texte</translation>
+    </message>
+    <message>
+      <location filename="../translations.py" line="201" />
+      <source>&amp;Output</source>
+      <translation>&amp;Output</translation>
+    </message>
+    <message>
+      <location filename="../translations.py" line="202" />
+      <source>Convert Case: $0: $1</source>
+      <translation>Convertir la casse: $0: $1</translation>
+    </message>
+    <message>
+      <location filename="../translations.py" line="203" />
+      <source>Case conversion</source>
+      <translation>Convertir la casse</translation>
+    </message>
+    <message>
+      <location filename="../translations.py" line="204" />
+      <source>&amp;Type</source>
+      <translation>&amp;Type</translation>
+    </message>
+    <message>
+      <location filename="../translations.py" line="205" />
+      <source>Mixed Case</source>
+      <translation>Casse Mixte</translation>
+    </message>
+    <message>
+      <location filename="../translations.py" line="206" />
+      <source>UPPER CASE</source>
+      <translation>MAJUSCULES</translation>
+    </message>
+    <message>
+      <location filename="../translations.py" line="207" />
+      <source>lower case</source>
+      <translation>minuscules</translation>
+    </message>
+    <message>
+      <location filename="../translations.py" line="208" />
+      <source>For &amp;Mixed Case, after any of:</source>
+      <translation>Pour la casse &amp;mixte, après chaque:</translation>
+    </message>
+    <message>
+      <location filename="../translations.py" line="209" />
+      <source>., !</source>
+      <translation>., !</translation>
+    </message>
+    <message>
+      <location filename="../translations.py" line="210" />
+      <source>&lt;blank&gt; $0</source>
+      <translation>&lt;vide&gt; $0</translation>
+    </message>
+    <message>
+      <location filename="../translations.py" line="211" />
+      <source>Remove Fields</source>
+      <translation>Supprimer les champs</translation>
+    </message>
+    <message>
+      <location filename="../translations.py" line="212" />
+      <source>Update from $2, Fields: $1</source>
+      <translation>Mis à jour depuis $2, Champs: $1</translation>
+    </message>
+    <message>
+      <location filename="../translations.py" line="213" />
+      <source>Update from tag</source>
+      <translation>Mettre à jour depuis le tag</translation>
+    </message>
+    <message>
+      <location filename="../translations.py" line="215" />
+      <source>&amp;Tag</source>
+      <translation />
+    </message>
+    <message>
+      <location filename="../translations.py" line="216" />
+      <source>APEv2</source>
+      <translation>APEv2</translation>
+    </message>
+    <message>
+      <location filename="../translations.py" line="217" />
+      <source>ID3</source>
+      <translation />
+    </message>
+    <message>
+      <location filename="../translations.py" line="218" />
+      <source>Convert $0 to ASCII</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../translations.py" line="219" />
+      <source>Convert to ASCII</source>
+      <translation type="unfinished" />
     </message>
   </context>
   <context>
@@ -1909,43 +1898,23 @@ Double cliquer pour changer la couleur&lt;/p&gt;</translation>
       <translation>&lt;b&gt;Aucun changement .&lt;/b&gt;</translation>
     </message>
     <message>
-      <location filename="../actiondlg.py" line="355" />
+      <location filename="../actiondlg.py" line="364" />
       <source>No preview for is shown for this function.</source>
       <translation>Pas de prévisualisation pour cette fonction.</translation>
     </message>
     <message>
-      <location filename="../actiondlg.py" line="370" />
+      <location filename="../actiondlg.py" line="379" />
       <source>&lt;b&gt;No change&lt;/b&gt;</source>
       <translation>&lt;b&gt;Aucun changement &lt;/b&gt;</translation>
     </message>
     <message>
-      <location filename="../actiondlg.py" line="428" />
+      <location filename="../actiondlg.py" line="440" />
       <source>Functions</source>
       <translation>Fonctions</translation>
     </message>
   </context>
   <context>
     <name>GenSettings</name>
-    <message>
-      <location filename="../puddlesettings.py" line="130" />
-      <source>&amp;Edit sort options</source>
-      <translation>Préférences de &amp;tri</translation>
-    </message>
-    <message>
-      <location filename="../puddlesettings.py" line="133" />
-      <source>&lt;Autodetect&gt;</source>
-      <translation>&lt;Autodétecter&gt;</translation>
-    </message>
-    <message>
-      <location filename="../puddlesettings.py" line="134" />
-      <source>Default</source>
-      <translation>Défaut</translation>
-    </message>
-    <message>
-      <location filename="../puddlesettings.py" line="155" />
-      <source>Language (Requires a restart)</source>
-      <translation>Langue (Redémarrage requis)</translation>
-    </message>
     <message>
       <location filename="../translations.py" line="10" />
       <source>Su&amp;bfolders</source>
@@ -1986,13 +1955,25 @@ Double cliquer pour changer la couleur&lt;/p&gt;</translation>
       <source>&amp;Load last folder at startup</source>
       <translation>&amp;Recharger le dossier précédent au démarrage</translation>
     </message>
-  </context>
-  <context>
-    <name>Group</name>
     <message>
-      <location filename="../tagsources/TagSource.py" line="23" />
-      <source>HTML Tooltip Content</source>
-      <translation type="unfinished" />
+      <location filename="../puddlesettings.py" line="130" />
+      <source>&amp;Edit sort options</source>
+      <translation>Préférences de &amp;tri</translation>
+    </message>
+    <message>
+      <location filename="../puddlesettings.py" line="133" />
+      <source>&lt;Autodetect&gt;</source>
+      <translation>&lt;Autodétecter&gt;</translation>
+    </message>
+    <message>
+      <location filename="../puddlesettings.py" line="134" />
+      <source>Default</source>
+      <translation>Défaut</translation>
+    </message>
+    <message>
+      <location filename="../puddlesettings.py" line="155" />
+      <source>Language (Requires a restart)</source>
+      <translation>Langue (Redémarrage requis)</translation>
     </message>
   </context>
   <context>
@@ -2011,52 +1992,52 @@ Double cliquer pour changer la couleur&lt;/p&gt;</translation>
   <context>
     <name>List Buttons</name>
     <message>
-      <location filename="../puddleobjects.py" line="1246" />
+      <location filename="../puddleobjects.py" line="1273" />
       <source>Add</source>
       <translation>Ajouter</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1249" />
+      <location filename="../puddleobjects.py" line="1276" />
       <source>Remove</source>
       <translation>Enlever</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1253" />
+      <location filename="../puddleobjects.py" line="1280" />
       <source>Move Up</source>
       <translation>Monter</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1256" />
+      <location filename="../puddleobjects.py" line="1283" />
       <source>Move Down</source>
       <translation>Descendre</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1259" />
+      <location filename="../puddleobjects.py" line="1286" />
       <source>Edit</source>
       <translation>Modifier</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1262" />
+      <location filename="../puddleobjects.py" line="1289" />
       <source>Duplicate</source>
       <translation>Dupliquer</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1264" />
+      <location filename="../puddleobjects.py" line="1291" />
       <source>Copy to clipboard</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1266" />
+      <location filename="../puddleobjects.py" line="1293" />
       <source>Paste from clipboard</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1327" />
+      <location filename="../puddleobjects.py" line="1354" />
       <source>&amp;&gt;&gt;</source>
       <translation />
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1328" />
+      <location filename="../puddleobjects.py" line="1355" />
       <source>&amp;&lt;&lt;</source>
       <translation />
     </message>
@@ -2077,17 +2058,17 @@ Double cliquer pour changer la couleur&lt;/p&gt;</translation>
   <context>
     <name>Main Window</name>
     <message>
-      <location filename="../puddletag.py" line="551" />
+      <location filename="../puddletag.py" line="574" />
       <source>puddletag: {} + others</source>
       <translation>puddletag: {} + autres</translation>
     </message>
     <message>
-      <location filename="../puddletag.py" line="553" />
+      <location filename="../puddletag.py" line="576" />
       <source>puddletag: {}</source>
       <translation />
     </message>
     <message>
-      <location filename="../puddletag.py" line="563" />
+      <location filename="../puddletag.py" line="586" />
       <source>Import directory...</source>
       <translation>Importer le dossier...</translation>
     </message>
@@ -2192,203 +2173,178 @@ Double cliquer pour changer la couleur&lt;/p&gt;</translation>
     </message>
     <message>
       <location filename="../masstag/__init__.py" line="61" />
+      <source>Tag source &lt;b&gt;{}&lt;/b&gt; not found: skipped.</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../masstag/__init__.py" line="62" />
       <source>Retrieving matching album. &lt;b&gt;{} - {}&lt;/b&gt;</source>
       <translation>Récupération de l'album. &lt;b&gt;{} - {}&lt;/b&gt;</translation>
     </message>
     <message>
-      <location filename="../masstag/__init__.py" line="63" />
+      <location filename="../masstag/__init__.py" line="64" />
       <source>Retrieving matching album. Artist=&lt;b&gt;{}&lt;/b&gt;</source>
       <translation>Récupération de l'album. Artist=&lt;b&gt;{}&lt;/b&gt;</translation>
     </message>
     <message>
-      <location filename="../masstag/__init__.py" line="65" />
+      <location filename="../masstag/__init__.py" line="66" />
       <source>Retrieving matching album. Album=&lt;b&gt;{}&lt;/b&gt;</source>
       <translation>Récupération de l'album. Album=&lt;b&gt;{}&lt;/b&gt;</translation>
     </message>
     <message>
-      <location filename="../masstag/__init__.py" line="67" />
+      <location filename="../masstag/__init__.py" line="68" />
       <source>Retrieving matching album.</source>
       <translation>Récupération de l'album.</translation>
     </message>
     <message>
-      <location filename="../masstag/__init__.py" line="69" />
+      <location filename="../masstag/__init__.py" line="70" />
       <source>Starting search for: &lt;br /&gt;artist=&lt;b&gt;{}&lt;/b&gt; &lt;br /&gt;album=&lt;b&gt;{}&lt;/b&gt;&lt;br /&gt;</source>
       <translation>Démarrage de la recherche: &lt;br /&gt;Artiste=&lt;b&gt;{}&lt;/b&gt; &lt;br /&gt;Album=&lt;b&gt;{}&lt;/b&gt;&lt;br /&gt;</translation>
     </message>
     <message>
-      <location filename="../masstag/__init__.py" line="72" />
+      <location filename="../masstag/__init__.py" line="73" />
       <source>Starting search for: &lt;br /&gt;artist=&lt;b&gt;{}&lt;/b&gt;&lt;br /&gt;album=No album name found.</source>
       <translation>Démarrage de la recherche: &lt;br /&gt;Artiste=&lt;b&gt;{}&lt;/b&gt; &lt;br /&gt;Album=Pas de nom d'album trouvé.</translation>
     </message>
     <message>
-      <location filename="../masstag/__init__.py" line="75" />
+      <location filename="../masstag/__init__.py" line="76" />
       <source>Starting search for: &lt;br /&gt;album=&lt;b&gt;{}&lt;/b&gt;&lt;br /&gt;artist=No artist found.</source>
       <translation>Démarrage de la recherche: &lt;br /&gt;Album=&lt;b&gt;{}&lt;/b&gt; &lt;br /&gt;Artiste=Pas d'artiste trouvé.</translation>
     </message>
     <message>
-      <location filename="../masstag/__init__.py" line="78" />
+      <location filename="../masstag/__init__.py" line="79" />
       <source>No artist or album info found in files. Starting search.</source>
       <translation>Pas d'info artiste ou album trouvé dans les fichiers. Démarrage de la recherche.</translation>
     </message>
     <message>
-      <location filename="../masstag/__init__.py" line="81" />
+      <location filename="../masstag/__init__.py" line="82" />
       <source>&lt;b&gt;{}&lt;/b&gt; results found.</source>
       <translation>&lt;b&gt;{}&lt;/b&gt; résultats trouvés.</translation>
     </message>
     <message>
-      <location filename="../masstag/__init__.py" line="82" />
+      <location filename="../masstag/__init__.py" line="83" />
       <source>&lt;b&gt;No results were found.&lt;/b&gt;</source>
       <translation>&lt;b&gt;Aucun résultat trouvé.&lt;/b&gt;</translation>
     </message>
     <message>
-      <location filename="../masstag/__init__.py" line="83" />
+      <location filename="../masstag/__init__.py" line="84" />
       <source>&lt;b&gt;One&lt;/b&gt; result found.</source>
       <translation>&lt;b&gt;Un&lt;/b&gt; résultat trouvé.</translation>
     </message>
     <message>
-      <location filename="../masstag/__init__.py" line="85" />
+      <location filename="../masstag/__init__.py" line="86" />
       <source>&lt;b&gt;{}&lt;/b&gt; possibly matching albums found.</source>
       <translation>&lt;b&gt;{}&lt;/b&gt; correspondances possibles trouvées.</translation>
     </message>
     <message>
-      <location filename="../masstag/__init__.py" line="87" />
+      <location filename="../masstag/__init__.py" line="88" />
       <source>&lt;b&gt;One&lt;/b&gt; possibly matching album found.</source>
       <translation>&lt;b&gt;Une&lt;/b&gt; correspondance possible trouvée.</translation>
     </message>
     <message>
-      <location filename="../masstag/__init__.py" line="89" />
+      <location filename="../masstag/__init__.py" line="90" />
       <source>No matches found for tag source &lt;b&gt;{}&lt;/b&gt;</source>
       <translation>Aucune correspondance trouvée pour la source &lt;b&gt;{}&lt;/b&gt;</translation>
     </message>
     <message>
-      <location filename="../masstag/__init__.py" line="92" />
+      <location filename="../masstag/__init__.py" line="93" />
       <source>Previously retrieved result does not match. Retrieving next matching album.</source>
       <translation>Les résultats précédents ne correspondent pas. Récupération de l'album suivant.</translation>
     </message>
     <message>
-      <location filename="../masstag/__init__.py" line="96" />
+      <location filename="../masstag/__init__.py" line="97" />
       <source>&lt;br /&gt;Rechecking with results from &lt;b&gt;{}&lt;/b&gt;.&lt;br /&gt;</source>
       <translation>&lt;br /&gt;Revérification avec les résultats de &lt;b&gt;{}&lt;/b&gt;.&lt;br./&gt;</translation>
     </message>
     <message>
-      <location filename="../masstag/__init__.py" line="99" />
+      <location filename="../masstag/__init__.py" line="100" />
       <source>&lt;br /&gt;Valid matches were found for the album.</source>
       <translation>&lt;br /&gt;Des correspondances ont été trouvées pour l'album.</translation>
     </message>
     <message>
-      <location filename="../masstag/__init__.py" line="102" />
+      <location filename="../masstag/__init__.py" line="103" />
       <source>&lt;b&gt;No valid matches were found for the album.&lt;/b&gt;</source>
       <translation>&lt;b&gt;Aucune correspondances trouvée pour l'album.&lt;/b&gt;</translation>
     </message>
     <message>
-      <location filename="../masstag/__init__.py" line="475" />
+      <location filename="../masstag/__init__.py" line="478" />
       <source>Rechecking</source>
       <translation>Revérification</translation>
     </message>
     <message>
-      <location filename="../masstag/__init__.py" line="596" />
+      <location filename="../masstag/__init__.py" line="603" />
       <source>Retrying search with album name: &lt;b&gt;{}&lt;/b&gt;</source>
       <translation>Nouvel essai de recherche avec le nom d'album: &lt;b&gt;{}&lt;/b&gt;</translation>
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="634" />
-      <location filename="../masstag/dialogs.py" line="40" />
+      <location filename="../masstag/dialogs.py" line="635" />
+      <location filename="../masstag/dialogs.py" line="41" />
       <source>An error occurred during the search: &lt;b&gt;{}&lt;/b&gt;</source>
       <translation>Une erreur s'est produite lors de la recherche:  &lt;b&gt;{}&lt;/b&gt;</translation>
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="637" />
-      <location filename="../masstag/dialogs.py" line="45" />
+      <location filename="../masstag/dialogs.py" line="638" />
+      <location filename="../masstag/dialogs.py" line="46" />
       <source>An error occurred during album retrieval: &lt;b&gt;{}&lt;/b&gt;</source>
       <translation>Une erreur s'est produite lors de la récupération de l'album:  &lt;b&gt;{}&lt;/b&gt;</translation>
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="508" />
+      <location filename="../masstag/dialogs.py" line="509" />
       <source>Mass Tagging</source>
       <translation>Traitement par lots</translation>
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="669" />
-      <location filename="../masstag/dialogs.py" line="628" />
-      <location filename="../masstag/dialogs.py" line="592" />
-      <location filename="../masstag/dialogs.py" line="510" />
+      <location filename="../masstag/dialogs.py" line="677" />
+      <location filename="../masstag/dialogs.py" line="629" />
+      <location filename="../masstag/dialogs.py" line="593" />
+      <location filename="../masstag/dialogs.py" line="511" />
       <source>&amp;Search</source>
       <translation>&amp;Chercher</translation>
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="511" />
+      <location filename="../masstag/dialogs.py" line="512" />
       <source>&amp;Configure Profiles</source>
       <translation>&amp;Configurer les profils</translation>
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="512" />
+      <location filename="../masstag/dialogs.py" line="513" />
       <source>&amp;Write Previews</source>
       <translation>&amp;Ecrire les changements</translation>
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="513" />
+      <location filename="../masstag/dialogs.py" line="514" />
       <source>Clear &amp;Preview</source>
       <translation>&amp;Oublier les modifications</translation>
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="537" />
+      <location filename="../masstag/dialogs.py" line="538" />
       <source>&amp;Profile:</source>
       <translation>&amp;Profil:</translation>
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="589" />
-      <location filename="../masstag/dialogs.py" line="586" />
+      <location filename="../masstag/dialogs.py" line="590" />
+      <location filename="../masstag/dialogs.py" line="587" />
       <source>&amp;Stop</source>
       <translation />
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="626" />
+      <location filename="../masstag/dialogs.py" line="627" />
       <source>&lt;b&gt;Please choose a tagging profile.&lt;/b&gt;</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="667" />
+      <location filename="../masstag/dialogs.py" line="641" />
+      <source>An error occurred: &lt;b&gt;{}&lt;/b&gt;</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../masstag/dialogs.py" line="675" />
       <source>&lt;b&gt;Lookups completed.&lt;/b&gt;</source>
       <translation>&lt;b&gt;Recheche terminée.&lt;/b&gt;</translation>
     </message>
   </context>
   <context>
     <name>Menus</name>
-    <message>
-      <location filename="../puddletag.py" line="300" />
-      <source>Help</source>
-      <translation>Aide</translation>
-    </message>
-    <message>
-      <location filename="../puddletag.py" line="305" />
-      <source>Online &amp;Documentation</source>
-      <translation>&amp;Documentation en ligne</translation>
-    </message>
-    <message>
-      <location filename="../puddletag.py" line="309" />
-      <source>&amp;GitHub project</source>
-      <translation type="unfinished" />
-    </message>
-    <message>
-      <location filename="../puddletag.py" line="313" />
-      <source>&amp;Report a problem</source>
-      <translation type="unfinished" />
-    </message>
-    <message>
-      <location filename="../puddletag.py" line="318" />
-      <source>About puddletag</source>
-      <translation>A propos de puddletag</translation>
-    </message>
-    <message>
-      <location filename="../puddletag.py" line="321" />
-      <source>About Qt</source>
-      <translation>A propos de Qt</translation>
-    </message>
-    <message>
-      <location filename="../puddletag.py" line="451" />
-      <source>Toolbar</source>
-      <translation>Barre d'outils</translation>
-    </message>
     <message>
       <location filename="../mainwin/previews.py" line="19" />
       <location filename="../translations.py" line="24" />
@@ -2492,7 +2448,7 @@ Double cliquer pour changer la couleur&lt;/p&gt;</translation>
       <translation type="unfinished">Pré&amp;férences</translation>
     </message>
     <message>
-      <location filename="../translations.py" line="98" />
+      <location filename="../translations.py" line="99" />
       <location filename="../translations.py" line="47" />
       <source>&amp;Actions</source>
       <translation type="unfinished">&amp;Actions</translation>
@@ -2529,243 +2485,283 @@ Double cliquer pour changer la couleur&lt;/p&gt;</translation>
     </message>
     <message>
       <location filename="../translations.py" line="54" />
-      <source>&amp;Delete</source>
-      <translation type="unfinished">Su&amp;pprimer</translation>
+      <source>Move to &amp;Trash</source>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../translations.py" line="55" />
+      <source>Remove from &amp;List</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../translations.py" line="56" />
       <source>Paste &amp;Onto Selection</source>
       <translation type="unfinished">Coller su&amp;r la sélection</translation>
     </message>
     <message>
-      <location filename="../translations.py" line="56" />
+      <location filename="../translations.py" line="57" />
       <source>&amp;Undo</source>
       <translation type="unfinished">A&amp;nnuler</translation>
     </message>
     <message>
-      <location filename="../translations.py" line="57" />
+      <location filename="../translations.py" line="58" />
       <source>&amp;File-&gt;Tag</source>
       <translation type="unfinished">&amp;Fichier-&gt;Tag</translation>
     </message>
     <message>
-      <location filename="../translations.py" line="58" />
+      <location filename="../translations.py" line="59" />
       <source>Update the selected files from their filename using the pattern.</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../translations.py" line="59" />
+      <location filename="../translations.py" line="60" />
       <source>Load &amp;playlist</source>
       <translation type="unfinished">Charger une &amp;liste de lecture</translation>
     </message>
     <message>
-      <location filename="../translations.py" line="60" />
+      <location filename="../translations.py" line="61" />
       <source>Import an m3u playlist into puddletag.</source>
       <translation type="unfinished">Importer une liste de lecture m3u dans puddletag.</translation>
     </message>
     <message>
-      <location filename="../translations.py" line="61" />
+      <location filename="../translations.py" line="62" />
       <source>&amp;Add Folder</source>
       <translation type="unfinished">&amp;Ajouter un dossier</translation>
     </message>
     <message>
-      <location filename="../translations.py" line="62" />
+      <location filename="../translations.py" line="63" />
       <source>Append a directory to current file-view.</source>
       <translation type="unfinished">Ajoute un dossier à la liste actuelle.</translation>
     </message>
     <message>
-      <location filename="../translations.py" line="63" />
+      <location filename="../translations.py" line="64" />
       <source>&amp;Open Folder</source>
       <translation type="unfinished">&amp;Ouvrir un dossier</translation>
     </message>
     <message>
-      <location filename="../translations.py" line="64" />
+      <location filename="../translations.py" line="65" />
       <source>Select a directory to import into puddletag.</source>
       <translation type="unfinished">Sélectionner un dossier à importer dans puddletag.</translation>
     </message>
     <message>
-      <location filename="../translations.py" line="65" />
+      <location filename="../translations.py" line="66" />
       <source>&amp;Play</source>
       <translation type="unfinished">&amp;Jouer</translation>
     </message>
     <message>
-      <location filename="../translations.py" line="66" />
+      <location filename="../translations.py" line="67" />
       <source>Plays the selected files in the predefined music player.</source>
       <translation type="unfinished">Joue les fichiers sélectionnés dans le lecteur prédéfini.</translation>
     </message>
     <message>
-      <location filename="../translations.py" line="67" />
+      <location filename="../translations.py" line="68" />
       <source>&amp;Save</source>
       <translation type="unfinished">&amp;Sauver</translation>
     </message>
     <message>
-      <location filename="../translations.py" line="68" />
+      <location filename="../translations.py" line="69" />
       <source>&amp;Refresh</source>
       <translation type="unfinished">&amp;Recharger</translation>
     </message>
     <message>
-      <location filename="../translations.py" line="69" />
+      <location filename="../translations.py" line="70" />
       <source>Refresh current file-view.</source>
       <translation type="unfinished">Recharger la liste des fichiers.</translation>
     </message>
     <message>
-      <location filename="../translations.py" line="70" />
+      <location filename="../translations.py" line="71" />
       <source>Sa&amp;ve playlist</source>
       <translation type="unfinished">Sau&amp;ver la liste de lecture</translation>
     </message>
     <message>
-      <location filename="../translations.py" line="71" />
-      <source>Save all files to m3u playlist.</source>
-      <translation type="unfinished">Enregistrer tous les fichiers dans un liste de lecture m3u.</translation>
+      <location filename="../translations.py" line="72" />
+      <source>Save the selected files, or every file when none is selected, to an m3u playlist.</source>
+      <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../translations.py" line="72" />
+      <location filename="../translations.py" line="73" />
       <source>E&amp;xtended Tags</source>
       <translation type="unfinished">Ta&amp;gs étendus</translation>
     </message>
     <message>
-      <location filename="../translations.py" line="73" />
+      <location filename="../translations.py" line="74" />
       <source>Move Selected Do&amp;wn</source>
       <translation type="unfinished">&amp;Descendre la sélection</translation>
     </message>
     <message>
-      <location filename="../translations.py" line="74" />
+      <location filename="../translations.py" line="75" />
       <source>Select &amp;Previous Directory</source>
       <translation type="unfinished">Sélectionner le dossier &amp;précédent</translation>
     </message>
     <message>
-      <location filename="../translations.py" line="75" />
+      <location filename="../translations.py" line="76" />
       <source>Select all files belonging to the directories of those selected. Otherwise (if only a single directory is selected) selects all the files in the previous directory.</source>
       <translation type="unfinished">Sélectionner tous les fichiers dans les mêmes dossiers. Ou (si un seul dossier sélectionné) sélectionne tous les fichiers du dossier précédent.</translation>
     </message>
     <message>
-      <location filename="../translations.py" line="76" />
+      <location filename="../translations.py" line="77" />
       <source>&amp;Remove Tag</source>
       <translation type="unfinished">Supprim&amp;er le tag</translation>
     </message>
     <message>
-      <location filename="../translations.py" line="77" />
+      <location filename="../translations.py" line="78" />
       <source>Copy All &amp;Fields</source>
       <translation type="unfinished">Copier &amp;tous les champs</translation>
     </message>
     <message>
-      <location filename="../translations.py" line="78" />
+      <location filename="../translations.py" line="79" />
       <source>In &amp;Library</source>
       <translation type="unfinished">Dans la &amp;libraire</translation>
     </message>
     <message>
-      <location filename="../translations.py" line="79" />
+      <location filename="../translations.py" line="80" />
       <source>Replace...</source>
       <translation type="unfinished">&amp;Remplacer...</translation>
     </message>
     <message>
-      <location filename="../translations.py" line="80" />
+      <location filename="../translations.py" line="81" />
       <source>Remove &amp;APEv2 Tag</source>
       <translation type="unfinished">Supprimer le tag &amp;APEv2</translation>
     </message>
     <message>
-      <location filename="../translations.py" line="81" />
+      <location filename="../translations.py" line="82" />
       <source>Remove All &amp;ID3 Tags</source>
       <translation type="unfinished">Supprimer tous les tags &amp;ID3</translation>
     </message>
     <message>
-      <location filename="../translations.py" line="82" />
+      <location filename="../translations.py" line="83" />
       <source>Move Selected &amp;Up</source>
       <translation type="unfinished">&amp;Monter la sélection</translation>
     </message>
     <message>
-      <location filename="../translations.py" line="83" />
+      <location filename="../translations.py" line="84" />
       <source>&amp;Select Column</source>
       <translation type="unfinished">Sélectionner la c&amp;olonne</translation>
     </message>
     <message>
-      <location filename="../translations.py" line="84" />
+      <location filename="../translations.py" line="85" />
       <source>&amp;Cut</source>
       <translation type="unfinished">Co&amp;uper</translation>
     </message>
     <message>
-      <location filename="../translations.py" line="85" />
+      <location filename="../translations.py" line="86" />
       <source>&amp;Increase Font</source>
       <translation type="unfinished">&amp;Augmenter la taille du texte</translation>
     </message>
     <message>
-      <location filename="../translations.py" line="86" />
+      <location filename="../translations.py" line="87" />
       <source>&amp;Exit</source>
       <translation type="unfinished">&amp;Quitter</translation>
     </message>
     <message>
-      <location filename="../translations.py" line="87" />
+      <location filename="../translations.py" line="88" />
       <source>&amp;Tag-&gt;File</source>
       <translation type="unfinished">&amp;Tag-&gt;Fichier</translation>
     </message>
     <message>
-      <location filename="../translations.py" line="88" />
+      <location filename="../translations.py" line="89" />
       <source>Rename the selected files using the pattern.</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../translations.py" line="89" />
+      <location filename="../translations.py" line="90" />
       <source>Select &amp;All</source>
       <translation type="unfinished">&amp;Tout sélectionner</translation>
     </message>
     <message>
-      <location filename="../translations.py" line="90" />
+      <location filename="../translations.py" line="91" />
       <source>&amp;Invert Selection</source>
       <translation type="unfinished">&amp;Inverser la sélection</translation>
     </message>
     <message>
-      <location filename="../translations.py" line="91" />
+      <location filename="../translations.py" line="92" />
       <source>&amp;Decrease Font</source>
       <translation type="unfinished">&amp;Diminuer la taille du texte</translation>
     </message>
     <message>
-      <location filename="../translations.py" line="92" />
+      <location filename="../translations.py" line="93" />
       <source>&amp;Clipboard-&gt;Tag</source>
       <translation type="unfinished">&amp;Presse-papier-&gt;Tag</translation>
     </message>
     <message>
-      <location filename="../translations.py" line="93" />
+      <location filename="../translations.py" line="94" />
       <source>&amp;Go to parent folder</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../translations.py" line="94" />
+      <location filename="../translations.py" line="95" />
       <source>Focuses the current file's parent folder in the Filesystem view</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../translations.py" line="95" />
+      <location filename="../translations.py" line="96" />
       <source>&amp;File</source>
       <translation type="unfinished">&amp;Fichier</translation>
     </message>
     <message>
-      <location filename="../translations.py" line="96" />
+      <location filename="../translations.py" line="97" />
       <source>&amp;Edit</source>
       <translation type="unfinished">&amp;Edition</translation>
     </message>
     <message>
-      <location filename="../translations.py" line="97" />
+      <location filename="../translations.py" line="98" />
       <source>&amp;Convert</source>
       <translation type="unfinished">&amp;Convertir</translation>
     </message>
     <message>
-      <location filename="../translations.py" line="99" />
+      <location filename="../translations.py" line="100" />
       <source>&amp;Tools</source>
       <translation type="unfinished">Ou&amp;tils</translation>
     </message>
     <message>
-      <location filename="../translations.py" line="100" />
+      <location filename="../translations.py" line="101" />
       <source>&amp;Preview Mode</source>
       <translation type="unfinished">Mode a&amp;perçu</translation>
     </message>
     <message>
-      <location filename="../translations.py" line="101" />
+      <location filename="../translations.py" line="102" />
       <source>Ta&amp;g Tools</source>
       <translation type="unfinished">Ta&amp;gs</translation>
     </message>
     <message>
-      <location filename="../translations.py" line="102" />
+      <location filename="../translations.py" line="103" />
       <source>&amp;Windows</source>
       <translation type="unfinished">&amp;Fenêtres</translation>
+    </message>
+    <message>
+      <location filename="../puddletag.py" line="325" />
+      <source>Help</source>
+      <translation>Aide</translation>
+    </message>
+    <message>
+      <location filename="../puddletag.py" line="330" />
+      <source>Online &amp;Documentation</source>
+      <translation>&amp;Documentation en ligne</translation>
+    </message>
+    <message>
+      <location filename="../puddletag.py" line="334" />
+      <source>&amp;GitHub project</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../puddletag.py" line="338" />
+      <source>&amp;Report a problem</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../puddletag.py" line="343" />
+      <source>About puddletag</source>
+      <translation>A propos de puddletag</translation>
+    </message>
+    <message>
+      <location filename="../puddletag.py" line="346" />
+      <source>About Qt</source>
+      <translation>A propos de Qt</translation>
+    </message>
+    <message>
+      <location filename="../puddletag.py" line="472" />
+      <source>Toolbar</source>
+      <translation>Barre d'outils</translation>
     </message>
     <message>
       <location filename="../mainwin/previews.py" line="20" />
@@ -2776,7 +2772,7 @@ Double cliquer pour changer la couleur&lt;/p&gt;</translation>
   <context>
     <name>Messages</name>
     <message>
-      <location filename="../mainwin/funcs.py" line="160" />
+      <location filename="../mainwin/funcs.py" line="159" />
       <source>That's a large amount of data to copy.
 It may cause your system to lock up.
 
@@ -2787,7 +2783,7 @@ Cela risque de bloquer votre système.
 Continuer ?</translation>
     </message>
     <message>
-      <location filename="../mainwin/funcs.py" line="172" />
+      <location filename="../mainwin/funcs.py" line="171" />
       <source>Copy without images.</source>
       <translation>Copier sans les images.</translation>
     </message>
@@ -2795,142 +2791,194 @@ Continuer ?</translation>
   <context>
     <name>Mp3tag</name>
     <message>
-      <location filename="../tagsources/mp3tag/__init__.py" line="358" />
-      <source>Retrieving search page: {}</source>
+      <location filename="../tagsources/mp3tag/__init__.py" line="89" />
+      <source>no [Name] line</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../tagsources/mp3tag/__init__.py" line="359" />
-      <source>Retrieving search page...</source>
+      <location filename="../tagsources/mp3tag/__init__.py" line="91" />
+      <source>no [ParserScriptAlbum] section</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../tagsources/mp3tag/__init__.py" line="365" />
-      <source>Parsing search page.</source>
+      <location filename="../tagsources/mp3tag/__init__.py" line="94" />
+      <source>no [IndexUrl] line, which [ParserScriptIndex] needs</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../tagsources/mp3tag/__init__.py" line="366" />
-      <source>Parsing search page...</source>
+      <location filename="../tagsources/mp3tag/__init__.py" line="96" />
+      <source>no [IndexFormat] line, which [ParserScriptIndex] needs</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../tagsources/mp3tag/__init__.py" line="386" />
-      <source>Retrieving album page: {}</source>
+      <location filename="../tagsources/mp3tag/__init__.py" line="108" />
+      <source>line {} is not a [Key]=value line: {}</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../tagsources/mp3tag/__init__.py" line="387" />
-      <source>Retrieving album page...</source>
+      <location filename="../tagsources/mp3tag/__init__.py" line="117" />
+      <source>[Include] is not supported ({})</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../tagsources/mp3tag/__init__.py" line="160" />
+      <source>not UTF-8 text</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../tagsources/mp3tag/__init__.py" line="374" />
+      <source>&lt;p&gt;Enter search keywords here. If empty, the selected files are used.&lt;br /&gt;&lt;br /&gt;Searches are done by &lt;b&gt;{}&lt;/b&gt;&lt;/p&gt;</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../tagsources/mp3tag/__init__.py" line="389" />
+      <source>This script has no [SearchBy] line. Type the search in the Search box.</source>
       <translation type="unfinished" />
     </message>
     <message>
       <location filename="../tagsources/mp3tag/__init__.py" line="392" />
+      <source>[SearchBy] with several search fields (||) isn't supported. Type the search in the Search box.</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../tagsources/mp3tag/__init__.py" line="404" />
+      <source>[SearchBy] uses a function puddletag doesn't have ({}). Type the search in the Search box.</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../tagsources/mp3tag/__init__.py" line="422" />
+      <source>Retrieving search page: {}</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../tagsources/mp3tag/__init__.py" line="423" />
+      <source>Retrieving search page...</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../tagsources/mp3tag/__init__.py" line="426" />
+      <source>Parsing search page.</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../tagsources/mp3tag/__init__.py" line="427" />
+      <source>Parsing search page...</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../tagsources/mp3tag/__init__.py" line="446" />
+      <source>Retrieving album page: {}</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../tagsources/mp3tag/__init__.py" line="447" />
+      <source>Retrieving album page...</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../tagsources/mp3tag/__init__.py" line="450" />
       <source>Parsing album page.</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../tagsources/mp3tag/__init__.py" line="393" />
+      <location filename="../tagsources/mp3tag/__init__.py" line="451" />
       <source>Parsing album page...</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../tagsources/mp3tag/__init__.py" line="463" />
+      <source>Couldn't retrieve the cover: {}</source>
       <translation type="unfinished" />
     </message>
   </context>
   <context>
     <name>MusicBrainz</name>
     <message>
-      <location filename="../tagsources/musicbrainz.py" line="376" />
+      <location filename="../tagsources/musicbrainz.py" line="393" />
       <source>Retrieving cover: {}</source>
       <translation type="unfinished">Récupération de la pochette: {}</translation>
     </message>
     <message>
-      <location filename="../tagsources/musicbrainz.py" line="381" />
+      <location filename="../tagsources/musicbrainz.py" line="398" />
       <source>No images exist for this album.</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../tagsources/musicbrainz.py" line="391" />
-      <source>Invalid UUID</source>
-      <translation type="unfinished" />
-    </message>
-    <message>
-      <location filename="../tagsources/musicbrainz.py" line="393" />
-      <source>Invalid query sent.</source>
-      <translation type="unfinished" />
-    </message>
-    <message>
-      <location filename="../tagsources/musicbrainz.py" line="395" />
-      <source>You have exceeded your rate limit.</source>
-      <translation type="unfinished" />
-    </message>
-    <message>
-      <location filename="../tagsources/musicbrainz.py" line="398" />
-      <source>Image does not exist.</source>
-      <translation type="unfinished" />
-    </message>
-    <message>
-      <location filename="../tagsources/musicbrainz.py" line="418" />
+      <location filename="../tagsources/musicbrainz.py" line="424" />
       <source>Retrieving image {}</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../tagsources/musicbrainz.py" line="509" />
+      <location filename="../tagsources/musicbrainz.py" line="608" />
+      <location filename="../tagsources/musicbrainz.py" line="428" />
+      <source>Error retrieving image: {}</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../tagsources/musicbrainz.py" line="492" />
+      <source>&lt;p&gt;Enter search parameters here. If empty, the selected files are used.&lt;/p&gt;
+        &lt;ul&gt;&lt;li&gt;&lt;b&gt;artist;album&lt;/b&gt; searches for a specific artist/album pair.&lt;/li&gt;
+        &lt;li&gt;To list the albums of an artist leave off the album part, but keep the semicolon (eg. &lt;b&gt;Ratatat;&lt;/b&gt;).&lt;/li&gt;
+        &lt;li&gt;For an album only leave off the artist part, as in &lt;b&gt;;Resurrection&lt;/b&gt;.&lt;/li&gt;
+        &lt;li&gt;&lt;b&gt;:a &amp;lt;MusicBrainz Artist ID&amp;gt;&lt;/b&gt; lists the albums of the artist with that MusicBrainz Artist ID.&lt;/li&gt;
+        &lt;li&gt;&lt;b&gt;:b &amp;lt;MusicBrainz Album ID&amp;gt;&lt;/b&gt; retrieves the album with that MusicBrainz Album ID.&lt;/li&gt;
+        &lt;li&gt;Anything else is searched as an album title.&lt;/li&gt;&lt;/ul&gt;</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../tagsources/musicbrainz.py" line="507" />
       <source>Retrieve Cover</source>
       <translation type="unfinished">Récupérer la Pochette</translation>
     </message>
     <message>
-      <location filename="../tagsources/musicbrainz.py" line="510" />
+      <location filename="../tagsources/musicbrainz.py" line="508" />
       <source>Cover size to retrieve:</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../tagsources/musicbrainz.py" line="511" />
+      <location filename="../tagsources/musicbrainz.py" line="509" />
       <source>Small</source>
       <translation>Petite</translation>
     </message>
     <message>
-      <location filename="../tagsources/musicbrainz.py" line="512" />
+      <location filename="../tagsources/musicbrainz.py" line="510" />
       <source>Large</source>
       <translation>Grande</translation>
     </message>
     <message>
-      <location filename="../tagsources/musicbrainz.py" line="513" />
+      <location filename="../tagsources/musicbrainz.py" line="511" />
       <source>Original Size</source>
       <translation>Taille originale</translation>
     </message>
     <message>
-      <location filename="../tagsources/musicbrainz.py" line="514" />
+      <location filename="../tagsources/musicbrainz.py" line="512" />
       <source>Amount of images to retrieve:</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../tagsources/musicbrainz.py" line="515" />
+      <location filename="../tagsources/musicbrainz.py" line="513" />
       <source>Just the front cover</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../tagsources/musicbrainz.py" line="516" />
+      <location filename="../tagsources/musicbrainz.py" line="514" />
       <source>All (can take a while)</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../tagsources/musicbrainz.py" line="527" />
+      <location filename="../tagsources/musicbrainz.py" line="524" />
       <source>&lt;b&gt;Error:&lt;/b&gt; While retrieving {}: {}</source>
       <translation>&lt;b&gt;Erreur:&lt;/b&gt;Récupération de {}: {}</translation>
     </message>
     <message>
-      <location filename="../tagsources/musicbrainz.py" line="582" />
-      <location filename="../tagsources/musicbrainz.py" line="537" />
+      <location filename="../tagsources/musicbrainz.py" line="576" />
+      <location filename="../tagsources/musicbrainz.py" line="534" />
       <source>&lt;b&gt;Error:&lt;/b&gt; While retrieving Album ID {} ({})</source>
       <translation>&lt;b&gt;Erreur:&lt;/b&gt;Récupération de l'ID Album {} ({})</translation>
     </message>
     <message>
-      <location filename="../tagsources/musicbrainz.py" line="578" />
+      <location filename="../tagsources/musicbrainz.py" line="572" />
       <source>Found album id {} in tracks. Retrieving</source>
-      <translation type="unfinished" />
-    </message>
-    <message>
-      <location filename="../tagsources/musicbrainz.py" line="623" />
-      <source>Error retrieving image: {}</source>
       <translation type="unfinished" />
     </message>
   </context>
@@ -2968,50 +3016,50 @@ Continuer ?</translation>
       <translation>Auteur anonyme.</translation>
     </message>
     <message>
-      <location filename="../musiclib.py" line="200" />
+      <location filename="../musiclib.py" line="201" />
       <source>Loading music library...</source>
       <translation>Chargement de la discothèqe...</translation>
     </message>
     <message>
-      <location filename="../musiclib.py" line="211" />
+      <location filename="../musiclib.py" line="212" />
       <source>An error occured while loading the {} library: &lt;b&gt;{}&lt;/b&gt;</source>
       <translation>Une erreur s'est produite au chargement de la discothèque {}:&lt;b&gt;{}&lt;/b&gt;</translation>
     </message>
     <message>
-      <location filename="../musiclib.py" line="473" />
-      <location filename="../musiclib.py" line="471" />
-      <location filename="../musiclib.py" line="219" />
+      <location filename="../musiclib.py" line="474" />
+      <location filename="../musiclib.py" line="472" />
+      <location filename="../musiclib.py" line="220" />
       <source>Music Library</source>
       <translation>Discothèque</translation>
     </message>
     <message>
-      <location filename="../musiclib.py" line="241" />
+      <location filename="../musiclib.py" line="242" />
       <source>&amp;Search</source>
       <translation>&amp;Chercher</translation>
     </message>
     <message>
-      <location filename="../musiclib.py" line="271" />
+      <location filename="../musiclib.py" line="272" />
       <source>Saving music library...</source>
       <translation>Enregistrement de la discothèque...</translation>
     </message>
     <message>
-      <location filename="../musiclib.py" line="294" />
+      <location filename="../musiclib.py" line="295" />
       <source>Library Artists</source>
       <translation>Artistes de la discothèque</translation>
     </message>
     <message>
-      <location filename="../mainwin/funcs.py" line="262" />
-      <location filename="../mainwin/funcs.py" line="236" />
+      <location filename="../mainwin/funcs.py" line="281" />
+      <location filename="../mainwin/funcs.py" line="255" />
       <source>No libraries found</source>
       <translation>Pas de discothèque trouvée</translation>
     </message>
     <message>
-      <location filename="../mainwin/funcs.py" line="237" />
+      <location filename="../mainwin/funcs.py" line="256" />
       <source>Load a lib first.</source>
       <translation>Chargez d'abord une discothèque.</translation>
     </message>
     <message>
-      <location filename="../mainwin/funcs.py" line="263" />
+      <location filename="../mainwin/funcs.py" line="282" />
       <source>No supported music libraries were found. Most likely the required dependencies aren't installed. Visit the puddletag website, &lt;a href='http://puddletag.sourceforge.net'&gt;puddletag.sourceforge.net&lt;/a&gt; for more details.</source>
       <translation>Aucune discothèque exploitable n'a été trouvée. Il est possible que les bibliothèques nécéssaires ne soient pas installées. Voyez le site web puddletag, &lt;a href='http://puddletag.sourceforge.net'&gt;puddletag.sourceforge.net&lt;/a&gt; pour plus d'informations.</translation>
     </message>
@@ -3019,13 +3067,13 @@ Continuer ?</translation>
   <context>
     <name>Pattern Settings</name>
     <message>
-      <location filename="../mainwin/patterncombo.py" line="90" />
+      <location filename="../mainwin/patterncombo.py" line="96" />
       <source>&amp;Sort</source>
       <translation>&amp;Trier</translation>
     </message>
     <message>
-      <location filename="../mainwin/patterncombo.py" line="141" />
-      <location filename="../mainwin/patterncombo.py" line="126" />
+      <location filename="../mainwin/patterncombo.py" line="147" />
+      <location filename="../mainwin/patterncombo.py" line="132" />
       <source>Enter a pattern</source>
       <translation>Entrez un motif</translation>
     </message>
@@ -3033,23 +3081,23 @@ Continuer ?</translation>
   <context>
     <name>Playlist</name>
     <message>
-      <location filename="../puddletag.py" line="640" />
+      <location filename="../puddletag.py" line="663" />
       <source>Select m3u file...</source>
       <translation>Sélectionner un fichier m3u...</translation>
     </message>
     <message>
-      <location filename="../puddletag.py" line="660" />
-      <location filename="../puddletag.py" line="650" />
+      <location filename="../puddletag.py" line="683" />
+      <location filename="../puddletag.py" line="673" />
       <source>An error occured while reading &lt;b&gt;{}&lt;/b&gt; ({})</source>
       <translation>Une erreur s'est produite lors de la lecture de &lt;b&gt;{}&lt;/b&gt;. ({})</translation>
     </message>
     <message>
-      <location filename="../puddletag.py" line="657" />
+      <location filename="../puddletag.py" line="680" />
       <source>The playlist is not encoded in UTF-8</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../puddletag.py" line="805" />
+      <location filename="../puddletag.py" line="822" />
       <source>Save Playlist...</source>
       <translation>Sauver la liste de lecture...</translation>
     </message>
@@ -3080,27 +3128,27 @@ Continuer ?</translation>
   <context>
     <name>Plugin Settings</name>
     <message>
-      <location filename="../pluginloader.py" line="102" />
+      <location filename="../pluginloader.py" line="107" />
       <source>Name</source>
       <translation>Nom</translation>
     </message>
     <message>
-      <location filename="../pluginloader.py" line="103" />
+      <location filename="../pluginloader.py" line="108" />
       <source>Author</source>
       <translation>Auteur</translation>
     </message>
     <message>
-      <location filename="../pluginloader.py" line="104" />
+      <location filename="../pluginloader.py" line="109" />
       <source>Description</source>
       <translation>Description</translation>
     </message>
     <message>
-      <location filename="../pluginloader.py" line="105" />
+      <location filename="../pluginloader.py" line="110" />
       <source>Version</source>
       <translation>Version</translation>
     </message>
     <message>
-      <location filename="../pluginloader.py" line="127" />
+      <location filename="../pluginloader.py" line="132" />
       <source>&lt;b&gt;Loading/unloading plugins requires a restart.&lt;/b&gt;</source>
       <translation>&lt;b&gt;Un redémarrage est requis pour charger/décharger des plugins&lt;/b&gt;</translation>
     </message>
@@ -3108,50 +3156,57 @@ Continuer ?</translation>
   <context>
     <name>Previews</name>
     <message>
-      <location filename="../tagmodel.py" line="125" />
+      <location filename="../tagmodel.py" line="126" />
       <source>Do you want to exit Preview Mode? Unsaved changes will be discarded</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../tagmodel.py" line="2115" />
+      <location filename="../tagmodel.py" line="1597" />
+      <source>Some files have uncommited previews. Changes will be lost once you unload them. &lt;br /&gt;Do you still want to unload everything?&lt;br /&gt;</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../tagmodel.py" line="2191" />
+      <location filename="../tagmodel.py" line="2165" />
       <source>There are unsaved changes pending. Do you want to discard and reload?</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../puddletag.py" line="581" />
+      <location filename="../puddletag.py" line="604" />
       <source>Some files have uncommited previews. These changes will be lost once you exit puddletag. &lt;br /&gt;Do you want to exit without writing those changes?&lt;br /&gt;</source>
       <translation>Certains fichiers ont des modifications non enregistrées. Ces changements seront perdus si vous quittez puddletag. &lt;br /&gt;Voulez-vous quitter sans enregistrer ces changements ?&lt;br /&gt;</translation>
     </message>
     <message>
-      <location filename="../puddletag.py" line="624" />
-      <location filename="../puddletag.py" line="615" />
+      <location filename="../puddletag.py" line="647" />
+      <location filename="../puddletag.py" line="638" />
       <source>Preview Mode: Off</source>
       <translation>Mode Aperçu: Désactivé</translation>
     </message>
     <message>
-      <location filename="../puddletag.py" line="622" />
+      <location filename="../puddletag.py" line="645" />
       <source>&lt;b&gt;Preview Mode: On&lt;/b&gt;</source>
       <translation>&lt;b&gt;Mode Aperçu: Activé&lt;/b&gt;</translation>
     </message>
     <message>
-      <location filename="../mainwin/dirview.py" line="78" />
+      <location filename="../mainwin/dirview.py" line="156" />
+      <location filename="../puddletag.py" line="711" />
       <source>Some files have uncommited previews. Changes will be lost once you load a directory. &lt;br /&gt;Do you still want to load a new directory?&lt;br /&gt;</source>
       <translation>Certains fichiers ont des modifications non enregistrées. Ces changements seront perdus si vous charger un dossier. &lt;br /&gt;Voulez-vous charger un nouveau dossier ?&lt;br /&gt;</translation>
     </message>
     <message>
-      <location filename="../mainwin/tagsources.py" line="664" />
+      <location filename="../mainwin/tagsources.py" line="666" />
       <source>Clea&amp;r preview</source>
       <translation type="unfinished">&amp;Oublier les modifications</translation>
     </message>
     <message>
-      <location filename="../mainwin/tagtools.py" line="45" />
+      <location filename="../mainwin/tagtools.py" line="56" />
       <source>Disable Preview Mode first to enable tag deletion.</source>
       <translation>Désactivez le mode Aperçu avant de pouvoir supprimer des tags. </translation>
     </message>
     <message>
-      <location filename="../plugins/modified_time/__init__.py" line="31" />
       <location filename="../plugins/id3_tools/__init__.py" line="52" />
       <location filename="../plugins/id3_tools/__init__.py" line="21" />
+      <location filename="../plugins/modified_time/__init__.py" line="31" />
       <source>You need to disable preview mode first.</source>
       <translation type="unfinished" />
     </message>
@@ -3159,12 +3214,12 @@ Continuer ?</translation>
   <context>
     <name>Profile Config</name>
     <message>
-      <location filename="../masstag/dialogs.py" line="55" />
+      <location filename="../masstag/dialogs.py" line="56" />
       <source>Configure Mass Tagging Profiles</source>
       <translation>Configurer les profils de traitement par lots</translation>
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="85" />
+      <location filename="../masstag/dialogs.py" line="86" />
       <source>Masstagging Profiles</source>
       <translation>Profils de traitement par lots</translation>
     </message>
@@ -3172,85 +3227,105 @@ Continuer ?</translation>
   <context>
     <name>Profile Editor</name>
     <message>
-      <location filename="../masstag/dialogs.py" line="198" />
-      <source>Edit Masstagging Profile</source>
-      <translation>Modification du profil de traitement par lot</translation>
-    </message>
-    <message>
-      <location filename="../masstag/dialogs.py" line="204" />
-      <source>Masstagging Profile</source>
-      <translation>Profil de traitement par lots</translation>
-    </message>
-    <message>
-      <location filename="../masstag/dialogs.py" line="217" />
-      <source>&lt;p&gt;If no tag information is found in a file, the tags retrieved using this pattern will be used instead.&lt;/p&gt;</source>
-      <translation>&lt;p&gt;Si aucun tag n'est trouvé dans le fichier, les informations devinées grâce à ce motif seront utilisées&lt;/p&gt;</translation>
-    </message>
-    <message>
-      <location filename="../mainwin/tagsources.py" line="394" />
-      <location filename="../masstag/dialogs.py" line="224" />
-      <source>&lt;p&gt;The artist and album fields will be used in determining whether an album matches the retrieved one. Each field will be compared using a fuzzy matching algorithm. If the resulting average match percentage is greater or equal than what you specify here it'll be considered to match.&lt;/p&gt;</source>
-      <translation>&lt;p&gt;Les champs Artiste et Album seront utilisés pour vérifier qu'un album correspond à celui récupéré. Chaque champ sera comparé avec un algorithme approximatif. Si la taux d'exctitude est supérieur ou égal à ce que vous entrez ici alors le test sera considéré positif.&lt;/p&gt;</translation>
-    </message>
-    <message>
-      <location filename="../masstag/dialogs.py" line="233" />
-      <source>&lt;p&gt;The fields listed here will be used in determining whether a file matches a retrieved track. Each field will be compared using a fuzzy matching algorithm. If the resulting average match percentage is greater than the "Minimum Percentage" it'll be considered to match.&lt;/p&gt;</source>
-      <translation>&lt;p&gt;Les champs listés ici seront utilisé pour vérifer qu'un fichier correspond à une piste téléchargée. Chaque champ sera comparé avec un alogrithme approximatif. Si le taux d'exactitude est supérieur au "Pourcentage minimum" le test sera considéré positif.&lt;/p&gt;</translation>
-    </message>
-    <message>
-      <location filename="../mainwin/tagsources.py" line="376" />
-      <location filename="../masstag/dialogs.py" line="245" />
+      <location filename="../masstag/dialogs.py" line="246" />
+      <location filename="../mainwin/tagsources.py" line="368" />
       <source>Brute force unmatched files.</source>
       <translation>Forcer les fichiers non trouvés.</translation>
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="247" />
-      <source>&lt;p&gt;Check to enable brute forcing matches.  If a proper match isn't found for a file, the files will get sorted by filename, the retrieved tag sources by filename and corresponding (unmatched) tracks will matched.&lt;/p&gt;</source>
-      <translation>&lt;p&gt;Cochez pour forcer la correspondace. Si au moins un fichier n'est pas trouvé, la correspondance sera tentée avec les noms des fichiers non trouvés.&lt;/p&gt;</translation>
+      <location filename="../mainwin/tagsources.py" line="370" />
+      <source>&lt;p&gt;If a proper match isn't found for a file, the files will get sorted by filename, the retrieved tag sources by filename and corresponding (unmatched) tracks will matched.&lt;/p&gt;</source>
+      <translation type="unfinished">&lt;p&gt;Si au moins un fichier n'est pas trouvé, la correspondance sera tentée avec les noms des fichiers non trouvés.&lt;/p&gt;</translation>
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="254" />
-      <source>Update empty fields only.</source>
-      <translation>Ne mettre à jour que les champs vides.</translation>
+      <location filename="../mainwin/tagsources.py" line="377" />
+      <source>&lt;p&gt;The fields listed here will be used in determining whether a track matches the retrieved track. Each field will be compared using a fuzzy matching algorithm. If the resulting average match percentage is greater than the "Minimum Percentage" it'll be considered to match.&lt;/p&gt;</source>
+      <translation type="unfinished">&lt;p&gt;Les champs listés ici seront utilisé pour vérifer qu'une piste correspond à celle téléchargée. Chaque champ sera comparé avec un alogrithme approximatif. Si le taux d'exactitude est supérieur au "Pourcentage minimum" le test sera considéré positif.&lt;/p&gt;</translation>
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="261" />
-      <source>&amp;Name:</source>
-      <translation>&amp;Nom:</translation>
+      <location filename="../masstag/dialogs.py" line="225" />
+      <location filename="../mainwin/tagsources.py" line="386" />
+      <source>&lt;p&gt;The artist and album fields will be used in determining whether an album matches the retrieved one. Each field will be compared using a fuzzy matching algorithm. If the resulting average match percentage is greater or equal than what you specify here it'll be considered to match.&lt;/p&gt;</source>
+      <translation>&lt;p&gt;Les champs Artiste et Album seront utilisés pour vérifier qu'un album correspond à celui récupéré. Chaque champ sera comparé avec un algorithme approximatif. Si la taux d'exctitude est supérieur ou égal à ce que vous entrez ici alors le test sera considéré positif.&lt;/p&gt;</translation>
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="263" />
-      <source>&amp;Description</source>
-      <translation>&amp;Description</translation>
+      <location filename="../mainwin/tagsources.py" line="423" />
+      <source>Minimum &amp;percentage required for album matches.</source>
+      <translation type="unfinished">&amp;Pourcentage minimum requis pour la correspondance d'album.</translation>
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="267" />
-      <source>Pattern to match filenames against.</source>
-      <translation>Motif de lecture des fichiers.</translation>
+      <location filename="../mainwin/tagsources.py" line="426" />
+      <source>Match tracks using &amp;fields: </source>
+      <translation type="unfinished">Correpondance avec les &amp;champs: </translation>
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="270" />
-      <source>Minimum percentage required for album matches.</source>
-      <translation>Pourcentage minimum requis pour la correspondance d'album.</translation>
-    </message>
-    <message>
-      <location filename="../masstag/dialogs.py" line="273" />
-      <source>Match tracks using fields: </source>
-      <translation>Correpondance avec les champs: </translation>
-    </message>
-    <message>
-      <location filename="../mainwin/tagsources.py" line="436" />
-      <location filename="../masstag/dialogs.py" line="276" />
+      <location filename="../masstag/dialogs.py" line="277" />
+      <location filename="../mainwin/tagsources.py" line="428" />
       <source>Minimum percentage required for track match.</source>
       <translation>Pourcentage minimum requis pour la correspondance de pistes.</translation>
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="388" />
+      <location filename="../masstag/dialogs.py" line="199" />
+      <source>Edit Masstagging Profile</source>
+      <translation>Modification du profil de traitement par lot</translation>
+    </message>
+    <message>
+      <location filename="../masstag/dialogs.py" line="205" />
+      <source>Masstagging Profile</source>
+      <translation>Profil de traitement par lots</translation>
+    </message>
+    <message>
+      <location filename="../masstag/dialogs.py" line="218" />
+      <source>&lt;p&gt;If no tag information is found in a file, the tags retrieved using this pattern will be used instead.&lt;/p&gt;</source>
+      <translation>&lt;p&gt;Si aucun tag n'est trouvé dans le fichier, les informations devinées grâce à ce motif seront utilisées&lt;/p&gt;</translation>
+    </message>
+    <message>
+      <location filename="../masstag/dialogs.py" line="234" />
+      <source>&lt;p&gt;The fields listed here will be used in determining whether a file matches a retrieved track. Each field will be compared using a fuzzy matching algorithm. If the resulting average match percentage is greater than the "Minimum Percentage" it'll be considered to match.&lt;/p&gt;</source>
+      <translation>&lt;p&gt;Les champs listés ici seront utilisé pour vérifer qu'un fichier correspond à une piste téléchargée. Chaque champ sera comparé avec un alogrithme approximatif. Si le taux d'exactitude est supérieur au "Pourcentage minimum" le test sera considéré positif.&lt;/p&gt;</translation>
+    </message>
+    <message>
+      <location filename="../masstag/dialogs.py" line="248" />
+      <source>&lt;p&gt;Check to enable brute forcing matches.  If a proper match isn't found for a file, the files will get sorted by filename, the retrieved tag sources by filename and corresponding (unmatched) tracks will matched.&lt;/p&gt;</source>
+      <translation>&lt;p&gt;Cochez pour forcer la correspondace. Si au moins un fichier n'est pas trouvé, la correspondance sera tentée avec les noms des fichiers non trouvés.&lt;/p&gt;</translation>
+    </message>
+    <message>
+      <location filename="../masstag/dialogs.py" line="255" />
+      <source>Update empty fields only.</source>
+      <translation>Ne mettre à jour que les champs vides.</translation>
+    </message>
+    <message>
+      <location filename="../masstag/dialogs.py" line="262" />
+      <source>&amp;Name:</source>
+      <translation>&amp;Nom:</translation>
+    </message>
+    <message>
+      <location filename="../masstag/dialogs.py" line="264" />
+      <source>&amp;Description</source>
+      <translation>&amp;Description</translation>
+    </message>
+    <message>
+      <location filename="../masstag/dialogs.py" line="268" />
+      <source>Pattern to match filenames against.</source>
+      <translation>Motif de lecture des fichiers.</translation>
+    </message>
+    <message>
+      <location filename="../masstag/dialogs.py" line="271" />
+      <source>Minimum percentage required for album matches.</source>
+      <translation>Pourcentage minimum requis pour la correspondance d'album.</translation>
+    </message>
+    <message>
+      <location filename="../masstag/dialogs.py" line="274" />
+      <source>Match tracks using fields: </source>
+      <translation>Correpondance avec les champs: </translation>
+    </message>
+    <message>
+      <location filename="../masstag/dialogs.py" line="389" />
       <source>Edit Tag Source Config</source>
       <translation>Modifier la config de la source</translation>
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="399" />
+      <location filename="../masstag/dialogs.py" line="400" />
       <source>&lt;p&gt;Enter a comma-separated list of fields to retrieve. Leave empty to retrieve all available fields/values. &lt;br /&gt;&lt;br /&gt;Eg. &lt;b&gt;artist, album, title&lt;/b&gt; will only retrieve the artist, album and title fields of from the Tag Source. &lt;br /&gt;&lt;br /&gt;Start the list with the tilde (~) character to write all retrieved fields , but the ones listed. Eg the field list &lt;b&gt;~composer,__image&lt;/b&gt; will write all fields but the composer and __image (aka cover art) fields.&lt;/p&gt;&lt;p&gt;If a field has been retrieved in a previous Tag Source the values will be combined if they differ. Eg. If genre=&lt;b&gt;Rock&lt;/b&gt; for the first tag source polled and genre=&lt;b&gt;Alternative&lt;/b&gt; for the tag source polled second then the resulting field will have multiple-values ie. genre=&lt;b&gt;Rock\\Rap&lt;/b&gt;</source>
       <translation>&lt;p&gt;Entrez une liste de champs à récupérer, séparés par des virgules. Laissez vide pour récupérer tous les champs disponibles.
 &lt;br./&gt;&lt;br /&gt;
@@ -3260,12 +3335,12 @@ Commencez par un tidle (~) pour récupérer tous les champs, sauf ceux listés. 
 &lt;p&gt;Si un champ a été récupéré via une autre Source, les valeurs seront combinées si elles différent. Par ex si genre=&lt;b&gt;Rock&lt;/b&gt; d'abord et genre=&lt;b&gt;Alternative&lt;/b&gt; ensuite alors le champ aura au final plusieurs valeurs, &lt;b&gt;Rock\\Rap&lt;/b&gt; dans notre exemple.</translation>
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="421" />
+      <location filename="../masstag/dialogs.py" line="422" />
       <source>Fields to replace: </source>
       <translation>Champs à remplacer: </translation>
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="423" />
+      <location filename="../masstag/dialogs.py" line="424" />
       <source>Enter a comma-separated lists of fields that'll replace any retrieved from previously polled tag sources. &lt;br /&gt;Start the list with the tilde (~) character to replace all but the fields you list. &lt;br /&gt;&lt;b&gt;NB: Fields listed here must also be listed in the list of fields to retrieve.&lt;/b&gt;&lt;br /&gt;&lt;br /&gt;Eg. Assume you have two Tag Sources. The first retrieves &lt;b&gt;artist=Freshlyground, album=Nomvula, genre=Afro Pop&lt;/b&gt;. The second source gets &lt;b&gt;artist=Freshly Ground, album=Nomvula, genre=Pop&lt;/b&gt;. For the second Tag Source, setting just &lt;b&gt;artist&lt;/b&gt; as the list of fields to replace will overwrite the artist field retrieved from the first tag source. The resulting retrieved fields/values as shown in puddletag will then be &lt;b&gt;artist=Freshly Ground, album=Nomvula, genre=Afro Pop\\Pop&lt;/b&gt;.</source>
       <translation>&lt;p&gt;Entrez une liste de champs, séparés par des virgules, qui remplaceront toute valeur précédente. &lt;br /&gt;
 Commencez par un tidle (~) pour remplacer tous les champs, sauf ceux listés. &lt;br./&gt;
@@ -3274,51 +3349,31 @@ Commencez par un tidle (~) pour remplacer tous les champs, sauf ceux listés. &l
 Par exemple, mettons que vous avez deux Sources. La première renvoie &lt;b&gt;artist=Freshlyground, album=Nomvula, genre=Afro Pop&lt;/b&gt;. La seconde source renvoie &lt;b&gt;artist=Freshly Ground, album=Nomvula, genre=Pop&lt;/b&gt;. Pour la seconde source, en mettant juste &lt;b&gt;artiste&lt;/b&gt; dans la liste des champs à remplacer va remplacer l'info Artiste récupérée par la première source. Dans notre exemple, le résultat sera &lt;b&gt;artist=Freshly Ground, album=Nomvula, genre=Afro Pop\\Pop&lt;/b&gt;.</translation>
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="447" />
+      <location filename="../masstag/dialogs.py" line="448" />
       <source>&amp;Source</source>
       <translation>&amp;Source</translation>
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="451" />
+      <location filename="../masstag/dialogs.py" line="452" />
       <source>&amp;If no results found: </source>
       <translation>Si &amp;aucun résultat n'est trouvé: </translation>
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="453" />
+      <location filename="../masstag/dialogs.py" line="454" />
       <source>&lt;p&gt;&lt;b&gt;Continue&lt;/b&gt;: The lookup for the current album will continue by checking the other tag sources if no matching results were found for this tag source.&lt;/p&gt;&lt;p&gt;&lt;b&gt;Stop:&lt;/b&gt; The lookup for the current album will stop and any previously retrieved results will be used.&lt;/p&gt;</source>
       <translation>&lt;p&gt;&lt;b&gt;Continuer&lt;/b&gt;: La recherche pour l'album en cours continue avec les autres sources si aucun résultat n'est trouvé pour cette source.&lt;/p&gt;
 &lt;p&gt;&lt;b&gt;Stopper&lt;/b&gt;: La recherche de l'album en cours s'arrêtera et tous les résultats précédents seront utilisés.&lt;/p&gt;</translation>
-    </message>
-    <message>
-      <location filename="../mainwin/tagsources.py" line="378" />
-      <source>&lt;p&gt;If a proper match isn't found for a file, the files will get sorted by filename, the retrieved tag sources by filename and corresponding (unmatched) tracks will matched.&lt;/p&gt;</source>
-      <translation type="unfinished">&lt;p&gt;Si au moins un fichier n'est pas trouvé, la correspondance sera tentée avec les noms des fichiers non trouvés.&lt;/p&gt;</translation>
-    </message>
-    <message>
-      <location filename="../mainwin/tagsources.py" line="385" />
-      <source>&lt;p&gt;The fields listed here will be used in determining whether a track matches the retrieved track. Each field will be compared using a fuzzy matching algorithm. If the resulting average match percentage is greater than the "Minimum Percentage" it'll be considered to match.&lt;/p&gt;</source>
-      <translation type="unfinished">&lt;p&gt;Les champs listés ici seront utilisé pour vérifer qu'une piste correspond à celle téléchargée. Chaque champ sera comparé avec un alogrithme approximatif. Si le taux d'exactitude est supérieur au "Pourcentage minimum" le test sera considéré positif.&lt;/p&gt;</translation>
-    </message>
-    <message>
-      <location filename="../mainwin/tagsources.py" line="431" />
-      <source>Minimum &amp;percentage required for album matches.</source>
-      <translation type="unfinished">&amp;Pourcentage minimum requis pour la correspondance d'album.</translation>
-    </message>
-    <message>
-      <location filename="../mainwin/tagsources.py" line="434" />
-      <source>Match tracks using &amp;fields: </source>
-      <translation type="unfinished">Correpondance avec les &amp;champs: </translation>
     </message>
   </context>
   <context>
     <name>Progress Dialog</name>
     <message>
-      <location filename="../puddleobjects.py" line="2163" />
+      <location filename="../puddleobjects.py" line="2212" />
       <source>Please Wait...</source>
       <translation>Veuillez patienter...</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="2164" />
+      <location filename="../puddleobjects.py" line="2213" />
       <source>{}{} of {}...</source>
       <translation>{}{} sur {}...</translation>
     </message>
@@ -3361,11 +3416,6 @@ Par exemple, mettons que vous avez deux Sources. La première renvoie &lt;b&gt;a
   </context>
   <context>
     <name>Settings</name>
-    <message>
-      <location filename="../puddletag.py" line="463" />
-      <source>&amp;Windows</source>
-      <translation>&amp;Fenêtres</translation>
-    </message>
     <message>
       <location filename="../puddlesettings.py" line="619" />
       <source>General</source>
@@ -3417,17 +3467,22 @@ Par exemple, mettons que vous avez deux Sources. La première renvoie &lt;b&gt;a
       <translation>Une erreur s'est produite à l'enregistrement de &lt;/b&gt;{}&lt;/b&gt;: {}</translation>
     </message>
     <message>
-      <location filename="../mainwin/tagsources.py" line="353" />
-      <source>Tag Sources</source>
-      <translation type="unfinished">Sources des tags</translation>
+      <location filename="../puddletag.py" line="484" />
+      <source>&amp;Windows</source>
+      <translation>&amp;Fenêtres</translation>
     </message>
     <message>
-      <location filename="../mainwin/tagpanel.py" line="447" />
+      <location filename="../mainwin/tagpanel.py" line="438" />
       <source>Tag Panel</source>
       <translation>Panneau des Tags</translation>
     </message>
     <message>
-      <location filename="../mainwin/patterncombo.py" line="77" />
+      <location filename="../mainwin/tagsources.py" line="345" />
+      <source>Tag Sources</source>
+      <translation type="unfinished">Sources des tags</translation>
+    </message>
+    <message>
+      <location filename="../mainwin/patterncombo.py" line="83" />
       <source>Patterns</source>
       <translation>Motifs</translation>
     </message>
@@ -3448,11 +3503,6 @@ Par exemple, mettons que vous avez deux Sources. La première renvoie &lt;b&gt;a
   <context>
     <name>Shortcut Settings</name>
     <message>
-      <location filename="../tagmodel.py" line="372" />
-      <source>File Properties</source>
-      <translation>Propriétés du fichier</translation>
-    </message>
-    <message>
       <location filename="../shortcutsettings.py" line="192" />
       <source>&lt;b&gt;Double click a cell in the Shortcut Column to &lt;br /&gt;modify the key sequence.&lt;/b&gt;</source>
       <translation>&lt;b&gt;Double cliquez une cellule dans la colonne Raccourci pour modifier la séquence de touches.&lt;/b&gt;</translation>
@@ -3472,21 +3522,26 @@ Par exemple, mettons que vous avez deux Sources. La première renvoie &lt;b&gt;a
       <source>Edit Shortcuts</source>
       <translation>Modifier les raccourcis</translation>
     </message>
+    <message>
+      <location filename="../tagmodel.py" line="351" />
+      <source>File Properties</source>
+      <translation>Propriétés du fichier</translation>
+    </message>
   </context>
   <context>
     <name>Shortcuts</name>
     <message>
-      <location filename="../action_shortcuts.py" line="153" />
+      <location filename="../action_shortcuts.py" line="159" />
       <source>&amp;Clear</source>
       <translation>Effa&amp;çer</translation>
     </message>
     <message>
-      <location filename="../action_shortcuts.py" line="178" />
+      <location filename="../action_shortcuts.py" line="184" />
       <source>Invalid shortcut sequence.</source>
       <translation>Séquence de raccourci invalide.</translation>
     </message>
     <message>
-      <location filename="../action_shortcuts.py" line="245" />
+      <location filename="../action_shortcuts.py" line="251" />
       <source>(Deleted)</source>
       <translation>(Supprimé)</translation>
     </message>
@@ -3494,12 +3549,12 @@ Par exemple, mettons que vous avez deux Sources. La première renvoie &lt;b&gt;a
   <context>
     <name>Status Bar</name>
     <message>
-      <location filename="../mainwin/funcs.py" line="556" />
+      <location filename="../mainwin/funcs.py" line="576" />
       <source>&lt;b&gt;{}&lt;/b&gt;</source>
       <translation />
     </message>
     <message>
-      <location filename="../mainwin/funcs.py" line="562" />
+      <location filename="../mainwin/funcs.py" line="582" />
       <source>New Filename: &lt;b&gt;{}&lt;/b&gt;</source>
       <translation>Nouveau nom: &lt;b&gt;{}&lt;/b&gt;</translation>
     </message>
@@ -3507,49 +3562,54 @@ Par exemple, mettons que vous avez deux Sources. La première renvoie &lt;b&gt;a
   <context>
     <name>Table</name>
     <message>
-      <location filename="../tagmodel.py" line="729" />
+      <location filename="../tagmodel.py" line="722" />
       <source>Preview: {}
 Real: {}</source>
       <translation>Aperçu: {}
 Réel: {}</translation>
     </message>
     <message>
-      <location filename="../tagmodel.py" line="1601" />
+      <location filename="../tagmodel.py" line="1647" />
       <source>Disable Preview Mode first to enable tag deletion.</source>
       <translation>Désactivez le mode Aperçu avant de pouvoir supprimer des tags.</translation>
     </message>
     <message>
-      <location filename="../tagmodel.py" line="1611" />
+      <location filename="../tagmodel.py" line="1657" />
       <source>An error occurred while deleting the tag of {}: &lt;b&gt;{}&lt;/b&gt;</source>
       <translation>Une erreur s'est produite à la suppression du tag de {}:&lt;b&gt;{}&lt;/b&gt;</translation>
     </message>
     <message>
-      <location filename="../tagmodel.py" line="1620" />
+      <location filename="../tagmodel.py" line="1666" />
       <source>There was an error deleting the tag of {}: &lt;b&gt;Tag deletion isn't supported for {} files.&lt;/b&gt;</source>
       <translation>Une erreur s'est produite à la suppression du tag de {}:&lt;b&gt;La suppression du tag n'est pas possible pour les fichiers {}.&lt;/b&gt;</translation>
     </message>
     <message>
-      <location filename="../tagmodel.py" line="1628" />
+      <location filename="../tagmodel.py" line="1674" />
       <source>Deleting tag... </source>
       <translation>Supprime le tag... </translation>
     </message>
     <message>
-      <location filename="../tagmodel.py" line="1658" />
-      <source>Are you sure you want to delete the selected files?</source>
-      <translation>Êtes-vous sûr de vouloir supprimer les fichiers sélectionnés ?</translation>
+      <location filename="../tagmodel.py" line="1716" />
+      <source>Are you sure you want to move the selected files to the trash?</source>
+      <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../tagmodel.py" line="1701" />
-      <source>Deleting </source>
-      <translation>Suppression </translation>
+      <location filename="../tagmodel.py" line="1745" />
+      <source>I couldn't move &lt;b&gt;{}&lt;/b&gt; to the trash ({})</source>
+      <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../tagmodel.py" line="2053" />
+      <location filename="../tagmodel.py" line="1764" />
+      <source>Moving to the trash </source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../tagmodel.py" line="2130" />
       <source>An error occurred while trying to play the selected files: &lt;b&gt;{}&lt;/b&gt;&lt;br /&gt;Does the music player you defined (&lt;b&gt;{}&lt;/b&gt;) exist?</source>
       <translation>Une erreur s'est produite en tentant de lire les fichiers sélectionnés:&lt;b&gt;{}&lt;/b&gt;&lt;br /&gt;Est-ce que le lecteur défini (&lt;b&gt;{}&lt;/b&gt;) existe ?</translation>
     </message>
     <message>
-      <location filename="../tagmodel.py" line="2059" />
+      <location filename="../tagmodel.py" line="2136" />
       <source>It wasn't possible to play the selected files, because the music player you defined (&lt;b&gt;{}&lt;/b&gt;) does not exist.</source>
       <translation>Il n'a pas été possible de lire les fichiers sélectionéns car le lecteur défini (&lt;b&gt;{}&lt;/b&gt;) n'existe pas.</translation>
     </message>
@@ -3557,12 +3617,12 @@ Réel: {}</translation>
   <context>
     <name>Tag Panel Settings</name>
     <message>
-      <location filename="../mainwin/tagpanel.py" line="440" />
+      <location filename="../mainwin/tagpanel.py" line="431" />
       <source>Row</source>
       <translation>Ligne</translation>
     </message>
     <message>
-      <location filename="../mainwin/tagpanel.py" line="497" />
+      <location filename="../mainwin/tagpanel.py" line="488" />
       <source>All row numbers must be integers.</source>
       <translation>Tous les numéros de ligne doivent être entiers.</translation>
     </message>
@@ -3618,46 +3678,54 @@ Réel: {}</translation>
   <context>
     <name>Tag Sources</name>
     <message>
-      <location filename="../mainwin/releasewidget.py" line="21" />
+      <location filename="../mainwin/releasewidget.py" line="20" />
       <source>Retrieved Albums (sorted by {})</source>
       <translation type="unfinished">Récupération des Albums (triés par {})</translation>
     </message>
     <message>
-      <location filename="../mainwin/releasewidget.py" line="86" />
+      <location filename="../mainwin/releasewidget.py" line="79" />
       <source>&lt;b&gt;Error in pattern&lt;/b&gt;</source>
       <translation type="unfinished">&lt;b&gt;Erreur dans le motif&lt;/b&gt;</translation>
     </message>
     <message>
-      <location filename="../mainwin/releasewidget.py" line="266" />
+      <location filename="../mainwin/releasewidget.py" line="259" />
       <source>Retrieved Albums</source>
       <translation type="unfinished">Albums récupérés</translation>
     </message>
     <message>
-      <location filename="../mainwin/tagsources.py" line="917" />
-      <location filename="../mainwin/tagsources.py" line="892" />
-      <location filename="../mainwin/releasewidget.py" line="472" />
-      <location filename="../mainwin/releasewidget.py" line="376" />
+      <location filename="../mainwin/tagsources.py" line="911" />
+      <location filename="../mainwin/tagsources.py" line="886" />
+      <location filename="../mainwin/releasewidget.py" line="466" />
+      <location filename="../mainwin/releasewidget.py" line="369" />
       <source>An error occurred: {}</source>
       <translation type="unfinished">Une erreur s'est produite: {}</translation>
     </message>
     <message>
-      <location filename="../mainwin/releasewidget.py" line="386" />
+      <location filename="../mainwin/tagsources.py" line="915" />
+      <location filename="../mainwin/tagsources.py" line="890" />
+      <location filename="../mainwin/releasewidget.py" line="471" />
+      <location filename="../mainwin/releasewidget.py" line="374" />
+      <source>An unhandled error occurred: {}</source>
+      <translation type="unfinished">Une erreur non gérée s'est produite: {}</translation>
+    </message>
+    <message>
+      <location filename="../mainwin/releasewidget.py" line="379" />
       <source>Retrieving album tracks...</source>
       <translation type="unfinished">Récupération des pistes de l'album...</translation>
     </message>
     <message>
-      <location filename="../mainwin/releasewidget.py" line="487" />
-      <location filename="../mainwin/releasewidget.py" line="394" />
+      <location filename="../mainwin/releasewidget.py" line="482" />
+      <location filename="../mainwin/releasewidget.py" line="387" />
       <source>Retrieval complete.</source>
       <translation type="unfinished">Récupération terminée.</translation>
     </message>
     <message>
-      <location filename="../mainwin/releasewidget.py" line="493" />
+      <location filename="../mainwin/releasewidget.py" line="488" />
       <source>Retrieving tracks...</source>
       <translation type="unfinished">Récupération des pistes...</translation>
     </message>
     <message>
-      <location filename="../mainwin/tagsources.py" line="32" />
+      <location filename="../mainwin/tagsources.py" line="30" />
       <source>Enter search parameters here. If empty, the selected files are used. &lt;ul&gt;&lt;li&gt;&lt;b&gt;artist;album&lt;/b&gt; searches for a specific album/artist combination.&lt;/li&gt;&lt;li&gt;To list the albums by an artist leave off the album part, but keep the semicolon (eg. &lt;b&gt;Ratatat;&lt;/b&gt;). For an album only leave the artist part as in &lt;b&gt;;Resurrection&lt;/b&gt;.&lt;/li&gt;&lt;/ul&gt;</source>
       <translation type="unfinished">Entrez les paramètres de recherche ici. Si vous laissez vide alors les fichiers sélectionnés seront utilisés.
 &lt;ul&gt;&lt;li&gt;&lt;b&gt;artist;album&lt;/b&gt;recherche une combinaison Artiste/Album spécifique.&lt;/li&gt;
@@ -3665,199 +3733,184 @@ Réel: {}</translation>
 &lt;/ul&gt;</translation>
     </message>
     <message>
-      <location filename="../mainwin/tagsources.py" line="41" />
+      <location filename="../mainwin/tagsources.py" line="39" />
       <source>Enter a comma-separated list of fields to write. &lt;br /&gt;&lt;br /&gt;Eg. &lt;b&gt;artist, album, title&lt;/b&gt; will only write the artist, album and title fields of the retrieved tags. &lt;br /&gt;&lt;br /&gt;If you want to exclude some fields, but write all others start the list the tilde (~) character. Eg &lt;b&gt;~composer, __image&lt;/b&gt; will write all fields but the composer and __image fields.</source>
       <translation type="unfinished">Entrez une liste, séparée par des virgules, des champs à écrire. &lt;br /&gt;&lt;br /&gt;
 Par ex &lt;b&gt;artist, album, title&lt;/b&gt; ne va écrire que les champs Artiste, Album et Titre des tags. &lt;br /&gt;&lt;br /&gt;
 Si vous voulez exclure certains champs, et écrire les autres alors commencez par un tidle (~). Par ex &lt;b&gt;~composer,__image&lt;/b&gt; va écrire tous les champs sauf Compositeur et Image.</translation>
     </message>
     <message>
-      <location filename="../mainwin/tagsources.py" line="80" />
-      <source>&lt;b&gt;Nothing to display.&lt;/b&gt;</source>
-      <translation type="unfinished">&lt;b&gt;RIen à afficher.&lt;/b&gt;</translation>
-    </message>
-    <message>
-      <location filename="../mainwin/tagsources.py" line="97" />
+      <location filename="../mainwin/tagsources.py" line="88" />
+      <location filename="../mainwin/tagsources.py" line="84" />
       <source>Couldn't load Mp3tag Tag Source {}</source>
       <translation type="unfinished">N'a pu charger la source Mp3tag {}</translation>
     </message>
     <message>
-      <location filename="../mainwin/tagsources.py" line="223" />
+      <location filename="../mainwin/tagsources.py" line="215" />
       <source>Configure: {}</source>
       <translation type="unfinished">Configurer: {}</translation>
     </message>
     <message>
-      <location filename="../mainwin/tagsources.py" line="313" />
+      <location filename="../mainwin/tagsources.py" line="305" />
       <source>Add sort option</source>
       <translation type="unfinished">Ajouter une option de tri</translation>
     </message>
     <message>
-      <location filename="../mainwin/tagsources.py" line="333" />
-      <location filename="../mainwin/tagsources.py" line="315" />
+      <location filename="../mainwin/tagsources.py" line="325" />
+      <location filename="../mainwin/tagsources.py" line="307" />
       <source>Enter a sorting option (a comma-separated list of fields. Eg. "artist, title")</source>
       <translation type="unfinished">Entrez les options de tri (une liste de champs séparés par des virgules. Par ex "artist, title")</translation>
     </message>
     <message>
-      <location filename="../mainwin/tagsources.py" line="332" />
+      <location filename="../mainwin/tagsources.py" line="324" />
       <source>Edit sort option</source>
       <translation type="unfinished">Modifier les options de tri</translation>
     </message>
     <message>
-      <location filename="../mainwin/tagsources.py" line="355" />
+      <location filename="../mainwin/tagsources.py" line="347" />
       <source>&amp;Display format for individual tracks.</source>
       <translation type="unfinished">Format d'affichage pour les pistes &amp;individuelles.</translation>
     </message>
     <message>
-      <location filename="../mainwin/tagsources.py" line="360" />
+      <location filename="../mainwin/tagsources.py" line="352" />
       <source>Display format for &amp;retrieved albums</source>
       <translation type="unfinished">Format d'affichage pour les &amp;albums récupérés</translation>
     </message>
     <message>
-      <location filename="../mainwin/tagsources.py" line="365" />
+      <location filename="../mainwin/tagsources.py" line="357" />
       <source>Sort retrieved albums using order:</source>
       <translation type="unfinished">Trier les albums récupérés avec cet ordre:</translation>
     </message>
     <message>
-      <location filename="../mainwin/tagsources.py" line="372" />
+      <location filename="../mainwin/tagsources.py" line="364" />
       <source>User-Agent to send when accessing web sites.</source>
       <translation type="unfinished">Agent utilisateur utilisé pour se connecter aux sites web.</translation>
     </message>
     <message>
-      <location filename="../mainwin/tagsources.py" line="564" />
+      <location filename="../mainwin/tagsources.py" line="559" />
       <source>Retrying search with {}</source>
       <translation type="unfinished">Nouvel essai de recherche avec {}</translation>
     </message>
     <message>
-      <location filename="../mainwin/tagsources.py" line="618" />
+      <location filename="../mainwin/tagsources.py" line="614" />
       <source>Sour&amp;ce: </source>
       <translation type="unfinished">Sour&amp;ce: </translation>
     </message>
     <message>
-      <location filename="../mainwin/tagsources.py" line="624" />
+      <location filename="../mainwin/tagsources.py" line="620" />
       <source>Configure</source>
       <translation type="unfinished">Configurer</translation>
     </message>
     <message>
-      <location filename="../mainwin/tagsources.py" line="634" />
+      <location filename="../mainwin/tagsources.py" line="630" />
       <source>&amp;Search</source>
       <translation type="unfinished">&amp;Chercher</translation>
     </message>
     <message>
-      <location filename="../mainwin/tagsources.py" line="640" />
+      <location filename="../mainwin/tagsources.py" line="636" />
       <source>Select files and click on Search to retrieve metadata.</source>
       <translation type="unfinished">Sélectionnez les fichiers et cliquer sur Chercher pour récupérer les données.</translation>
     </message>
     <message>
-      <location filename="../mainwin/tagsources.py" line="655" />
+      <location filename="../mainwin/tagsources.py" line="640" />
+      <source>Couldn't load Mp3tag script {}: {}</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../mainwin/tagsources.py" line="657" />
       <source>S&amp;ubmit Tags</source>
       <translation type="unfinished">So&amp;umettre les Tags</translation>
     </message>
     <message>
-      <location filename="../mainwin/tagsources.py" line="660" />
+      <location filename="../mainwin/tagsources.py" line="662" />
       <source>&amp;Write</source>
       <translation type="unfinished">&amp;Écrire</translation>
     </message>
     <message>
-      <location filename="../mainwin/tagsources.py" line="674" />
+      <location filename="../mainwin/tagsources.py" line="676" />
       <source>Update empty fields only.</source>
       <translation type="unfinished">Ne mettre à jour que les champs vides.</translation>
     </message>
     <message>
-      <location filename="../mainwin/tagsources.py" line="681" />
+      <location filename="../mainwin/tagsources.py" line="683" />
       <source>Automatically retrieve matches.</source>
       <translation type="unfinished">Récupérer automatiquement les correspondances.</translation>
     </message>
     <message>
-      <location filename="../mainwin/tagsources.py" line="858" />
+      <location filename="../mainwin/tagsources.py" line="851" />
       <source>Searching complete.</source>
       <translation type="unfinished">Recherche terminée.</translation>
     </message>
     <message>
-      <location filename="../mainwin/tagsources.py" line="861" />
+      <location filename="../mainwin/tagsources.py" line="854" />
       <source>No matching albums were found.</source>
       <translation type="unfinished">Album non trouvé.</translation>
     </message>
     <message>
-      <location filename="../mainwin/tagsources.py" line="875" />
+      <location filename="../mainwin/tagsources.py" line="869" />
       <source>Searching...</source>
       <translation type="unfinished">Recherche...</translation>
     </message>
     <message>
-      <location filename="../mainwin/tagsources.py" line="880" />
+      <location filename="../mainwin/tagsources.py" line="874" />
       <source>&lt;b&gt;Select some files or enter search parameters.&lt;/b&gt;</source>
       <translation type="unfinished">&lt;b&gt;Sélectionnez quelques fichiers ou entrez des options de recherche.&lt;/b&gt;</translation>
     </message>
     <message>
-      <location filename="../mainwin/tagsources.py" line="921" />
-      <location filename="../mainwin/tagsources.py" line="896" />
-      <source>An unhandled error occurred: {}</source>
-      <translation type="unfinished">Une erreur non gérée s'est produite: {}</translation>
-    </message>
-    <message>
-      <location filename="../mainwin/tagsources.py" line="924" />
+      <location filename="../mainwin/tagsources.py" line="918" />
       <source>Submission completed.</source>
       <translation type="unfinished">Soumission terminée.</translation>
     </message>
     <message>
-      <location filename="../mainwin/tagsources.py" line="950" />
+      <location filename="../mainwin/tagsources.py" line="951" />
       <source>&lt;b&gt;Tags were written.&lt;/b&gt;</source>
       <translation type="unfinished">&lt;b&gt;Les tags ont été écrits.&lt;/b&gt;</translation>
     </message>
     <message>
-      <location filename="../tagsources/__init__.py" line="102" />
+      <location filename="../tagsources/__init__.py" line="91" />
       <source>&lt;b&gt;Error parsing artist/album combinations.&lt;/b&gt;</source>
       <translation>&lt;b&gt;Erreur de lecture des combinaisons artiste/album.&lt;/b&gt;</translation>
     </message>
     <message>
-      <location filename="../tagsources/__init__.py" line="107" />
+      <location filename="../tagsources/__init__.py" line="96" />
       <source>Retrieving cover: {}</source>
       <translation>Récupération de la pochette: {}</translation>
-    </message>
-    <message>
-      <location filename="../tagsources/__init__.py" line="181" />
-      <source>HTTPError 403: Forbidden</source>
-      <translation>Erreur HTTP 403: Accès refusé</translation>
-    </message>
-    <message>
-      <location filename="../tagsources/__init__.py" line="184" />
-      <source>Page doesn't exist</source>
-      <translation>La page n'existe pas</translation>
     </message>
   </context>
   <context>
     <name>Text File -&gt; Tag</name>
     <message>
-      <location filename="../helperwin.py" line="219" />
+      <location filename="../helperwin.py" line="257" />
       <source>Import tags from text file</source>
       <translation>Importer les tags depuis un fichier texte</translation>
     </message>
     <message>
-      <location filename="../helperwin.py" line="224" />
+      <location filename="../helperwin.py" line="262" />
       <source>Text</source>
       <translation>Texte</translation>
     </message>
     <message>
-      <location filename="../helperwin.py" line="227" />
+      <location filename="../helperwin.py" line="265" />
       <source>Tag preview</source>
       <translation>Aperçu du tag</translation>
     </message>
     <message>
-      <location filename="../helperwin.py" line="248" />
+      <location filename="../helperwin.py" line="286" />
       <source>&amp;Select File</source>
       <translation>&amp;Sélectionner le fichier</translation>
     </message>
     <message>
-      <location filename="../helperwin.py" line="250" />
+      <location filename="../helperwin.py" line="288" />
       <source>&amp;Paste Clipboard</source>
       <translation>Coller le &amp;presse-papier</translation>
     </message>
     <message>
-      <location filename="../helperwin.py" line="314" />
+      <location filename="../helperwin.py" line="353" />
       <source>The file &lt;b&gt;{}&lt;/b&gt; couldn't be loaded.&lt;br /&gt; Do you want to choose another?</source>
       <translation>Le fichier &lt;b&gt;{}&lt;/b&gt; n'a pu être chargé.&lt;br /&gt; Voulez-vous en choisir un autre ?</translation>
     </message>
     <message>
-      <location filename="../helperwin.py" line="320" />
+      <location filename="../helperwin.py" line="359" />
       <source>Error</source>
       <translation>Erreur</translation>
     </message>
@@ -3884,22 +3937,22 @@ Si vous voulez exclure certains champs, et écrire les autres alors commencez pa
   <context>
     <name>WebDB</name>
     <message>
-      <location filename="../mainwin/releasewidget.py" line="721" />
+      <location filename="../mainwin/releasewidget.py" line="717" />
       <source>No matching albums were found.</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../mainwin/releasewidget.py" line="724" />
+      <location filename="../mainwin/releasewidget.py" line="720" />
       <source>More than one album matches. None will be retrieved.</source>
       <translation type="unfinished">Plus d'un album correspond. Aucun ne sera récupéré.</translation>
     </message>
     <message>
-      <location filename="../mainwin/releasewidget.py" line="727" />
+      <location filename="../mainwin/releasewidget.py" line="723" />
       <source>Retrieving album.</source>
       <translation type="unfinished">Récupération de l'album.</translation>
     </message>
     <message>
-      <location filename="../mainwin/tagsources.py" line="425" />
+      <location filename="../mainwin/tagsources.py" line="417" />
       <source>Automatic retrieval options</source>
       <translation type="unfinished">Options de récupération automatique</translation>
     </message>
