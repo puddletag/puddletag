@@ -176,8 +176,6 @@ def test_master_fields(source, web_server):
 NOTICE = 'Data provided by Discogs.'
 
 
-@pytest.mark.xfail(strict=True, reason="the link goes to /releases/<id> and "
-                   "doesn't say 'Data provided by Discogs.'")
 def test_release_notice_links_to_its_page(source):
     """Discogs' API terms of use: "You must display the following notice
     directly next to any data You use from the Discogs API: “Data provided by
@@ -189,8 +187,6 @@ def test_release_notice_links_to_its_page(source):
                                   '1257896-Fiuzz-Existence-Dance-Festival')
 
 
-@pytest.mark.xfail(strict=True, reason="the link goes to /releases/<id> and "
-                   "doesn't say 'Data provided by Discogs.'")
 def test_release_notice_without_address(source, web_server):
     """Discogs' API terms of use: "You must display the following notice
     directly next to any data You use from the Discogs API: “Data provided by
@@ -205,8 +201,6 @@ def test_release_notice_without_address(source, web_server):
     assert info['#extrainfo'] == (NOTICE, 'https://www.discogs.com/release/1257896')
 
 
-@pytest.mark.xfail(strict=True, reason="the link goes to /master/<id> and "
-                   "doesn't say 'Data provided by Discogs.'")
 def test_master_notice_links_to_its_page(source):
     """Discogs' API terms of use: "You must display the following notice
     directly next to any data You use from the Discogs API: “Data provided by
@@ -218,8 +212,6 @@ def test_master_notice_links_to_its_page(source):
                                   '96559-Rick-Astley-Never-Gonna-Give-You-Up')
 
 
-@pytest.mark.xfail(strict=True, reason="the link goes to /master/<id> and "
-                   "doesn't say 'Data provided by Discogs.'")
 def test_master_notice_without_address(source, web_server):
     """Discogs' API terms of use: "You must display the following notice
     directly next to any data You use from the Discogs API: “Data provided by

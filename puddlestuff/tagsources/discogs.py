@@ -20,7 +20,7 @@ MASTER = 'master'
 RELEASE = 'release'
 
 SITE_MASTER_URL = 'https://www.discogs.com/master/'
-SITE_RELEASE_URL = 'https://www.discogs.com/releases/'
+SITE_RELEASE_URL = 'https://www.discogs.com/release/'
 
 BASE_URL = 'https://api.discogs.com/%s'
 RELEASE_URL = BASE_URL % 'releases/%s'
@@ -260,11 +260,9 @@ def retrieve_album(info, image=LARGEIMAGE, rls_type=None):
         if data:
             info.update({'__image': data})
 
-    try:
-        info['#extrainfo'] = translate(
-            'Discogs', "{} at Discogs.com").format(info['album']), site_url
-    except KeyError:
-        pass
+    # Discogs' terms: this exact notice, linked to the page with the data.
+    info['#extrainfo'] = (
+        'Data provided by Discogs.', info.get('discogs_uri') or site_url)
     return info, ret[1]
 
 

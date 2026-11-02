@@ -67,6 +67,8 @@ With the search box empty, each album among the selected files is retrieved by t
 
 If you have a Discogs account, you can paste a personal access token from its developer settings into the tag source's **API Key** preference: puddletag sends it with each request to Discogs' API. It is stored as plain text in puddletag's configuration.
 
+“This application uses Discogs’ API but is not affiliated with, sponsored or endorsed by Discogs. ‘Discogs’ is a trademark of Zink Media, LLC.”
+
 Fields returned this tag source are:
 
 +    **__image**: Cover art. Usually more than one image.
