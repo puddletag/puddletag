@@ -15,6 +15,7 @@ How it works
 #. A :ref:`File->Tag <filename_to_tag>` operation will be applied to each file. Any fields that aren't present in the file will be filled using those results.
 #. For each group of files, the Tag Sources will be polled in the order listed in the current **Masstagging Profile**.
     #. Each Tag Source listed will be polled and checked for a matching album within the bounds specified.
+        #. If the album name has a part in brackets (round, square or curly), as in *Album (Deluxe)*, each Tag Source is searched a second time with the album name without it. The albums both searches find are compared with the files.
     #. If a match wasn't found for one Tag Source, but for another the Tag Source will be polled again using the data retrieved from the matching source.
     #. Fields/Values from each tag source will be combined using your preferences.
     #. When done and if matches were found, the metadata will be applied to the files and puddletag will be in :ref:`Preview Mode <preview_mode>`
@@ -82,6 +83,8 @@ Inputs required are:
     An album will be considered a match if its **album name** and its **artist** both match the files' by at least the percentage specified here.
 
     A search result that already has as many tracks as the files you selected is also considered a match, whatever its album name and artist.
+
+    A matching album, once retrieved, is used only if it has as many tracks as the files you selected or as their highest track number. Otherwise the next matching album is retrieved, and when none is left the tag source counts as having found no match (see **If no results found:**).
 
 .. describe:: Match tracks using fields:
 
@@ -163,4 +166,4 @@ Clicking on the **Add Tag Source ("+") button** should bring up this dialog:
 
 .. describe:: If no results found:
 
-    If no matching album was found for this tag source, you can choose to either **Continue** with the other tag sources in the list or **Stop** the lookup and use any previously retrieved results.
+    If no matching album was found for this tag source, you can choose to either **Continue** with the other tag sources in the list or **Stop** the lookup and use any previously retrieved results. After a **Stop**, no tag source is polled again.
