@@ -22,7 +22,7 @@ from ..tagsources import (DEFAULT_USERAGENT, tagsources, status_obj, set_userage
 from ..util import (isempty, pprint_tag,
                    split_by_field, to_string, translate)
 
-from .releasewidget import ReleaseWidget
+from .releasewidget import ReleaseWidget, default_albumpattern
 
 pyqtRemoveInputHook()
 
@@ -505,8 +505,7 @@ class SettingsDialog(QWidget):
         if 0 <= lastsort < len(sortoptions):
             self._sortoptions.setCurrentIndex(lastsort)
 
-        albumformat = cparser.get('tagsources', 'albumpattern',
-                                  '%artist% - %album% $if(%__numtracks%, [%__numtracks%], "")')
+        albumformat = cparser.get('tagsources', 'albumpattern', default_albumpattern)
         self._albumdisp.setText(albumformat)
 
         self._ua.setText(cparser.get('tagsources',
@@ -832,8 +831,7 @@ class MainWin(QWidget):
         df = get('trackpattern', '%track% - %title%')
         self.listbox.trackPattern = df
 
-        albumformat = get('albumpattern',
-                          '%artist% - %album%$if(%__numtracks%, [%__numtracks%], "")')
+        albumformat = get('albumpattern', default_albumpattern)
         self.listbox.albumPattern = albumformat
 
         sort_options = get('sortoptions',

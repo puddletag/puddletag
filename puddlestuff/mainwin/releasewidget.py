@@ -20,8 +20,7 @@ NORMALFLAG = Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsSelectable
 
 RETRIEVED_ALBUMS = translate("Tag Sources", "Retrieved Albums (sorted by {})")
 
-default_albumpattern = '%artist% - %album% $if(%__numtracks%, ' \
-                       '[%__numtracks%], "")'
+default_albumpattern = '%artist% - %album%$if(%__numtracks%, " "[%__numtracks%], "")'
 
 no_disp_fields = ['__numtracks', '__image']
 

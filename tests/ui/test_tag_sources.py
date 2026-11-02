@@ -437,7 +437,6 @@ def test_clear_preview_exits_preview_mode(mainwin, make_audio, tmp_path, qtbot, 
     assert [in_file(path)['title'] for path in paths] == [[f'Old {n}'] for n in (1, 2, 3)]
 
 
-@pytest.mark.xfail(strict=True, reason="the album shows its track count without a space before the bracket")
 def test_album_tracks_are_retrieved_once(mainwin, make_audio, tmp_path, qtbot, user):
     # tagsources.txt: "Lists the retrieved albums. Click on an album to
     # retrieve metadata." The docs don't say what a second click does; this
@@ -767,7 +766,6 @@ def test_header_right_click_sorts_by_another_option(mainwin, make_audio, tmp_pat
     assert header_text(window) == 'Retrieved Albums (sorted by album / artist)'
 
 
-@pytest.mark.xfail(strict=True, reason="after OK in Preferences an album without tracks ends in a space")
 def test_sort_option_from_preferences_is_kept_after_a_restart(mainwin, make_audio, tmp_path, qtbot, user,
                                                                restart):
     # preferences.txt: "Sort retrieved albums using order: Will sort the
@@ -802,7 +800,6 @@ def test_sort_option_from_preferences_is_kept_after_a_restart(mainwin, make_audi
     assert albums(window) == ['Moe - A', 'Zed - B', 'Abe - C']
 
 
-@pytest.mark.xfail(strict=True, reason="after OK in Preferences an album without tracks ends in a space")
 def test_preferences_ok_keeps_the_header_sort(mainwin, make_audio, tmp_path, qtbot, user):
     # preferences.txt: "You can change the order dynamically by right
     # clicking on the header of the Tag Sources dialog's album list and
@@ -1160,7 +1157,6 @@ def search_until(user, qtbot, window, label):
     qtbot.waitUntil(lambda: window.searchButton.isEnabled() and window.label.text() == label)
 
 
-@pytest.mark.xfail(strict=True, reason="the album shows its track count without a space before the bracket")
 def test_freedb_search_and_write(gnudb, mainwin, make_audio, tmp_path, qtbot, user):
     # tagsources.txt: "So all you need to do in order to do a FreeDB lookup
     # is select all the files belonging to specific album and click on
@@ -1217,7 +1213,6 @@ def not_found(disc_id):
     return gnudb_reply(f'401 data {disc_id} No such CD entry in database.')
 
 
-@pytest.mark.xfail(strict=True, reason="the album shows its track count without a space before the bracket")
 def test_freedb_exact_match_is_listed(gnudb, mainwin, make_audio, tmp_path, qtbot, user):
     # tagsources.txt: "The DiscID is then referenced to the FreeDB database
     # and any matching albums are returned."
@@ -1626,7 +1621,6 @@ def combo_items(combo):
     return [combo.itemText(row) for row in range(combo.count())]
 
 
-@pytest.mark.xfail(strict=True, reason="after OK in Preferences an album without tracks ends in a space")
 def test_sort_option_editor_adds_an_option(mainwin, make_audio, tmp_path, qtbot, user, dialogs):
     # preferences.txt: "Will sort the retrieved album by the order listed.
     # Use the dialog brought up by clicking 'Edit' to bring up an editor for
@@ -1948,8 +1942,6 @@ def test_discogs_search_box_tooltip(mainwin, make_audio, tmp_path, qtbot, user):
     assert tip.startswith('<p><b>Discogs only supports searching by release id</b></p>')
 
 
-@pytest.mark.xfail(strict=True, reason="the window shows the track count without a space before the bracket, "
-                                       "and the Preferences page's pattern leaves a trailing space")
 def test_album_shows_its_track_count_after_a_space(mainwin, make_audio, tmp_path, qtbot, user):
     # preferences.txt, Display format for retrieved albums: "As above but for
     # the album. You can use the field **%__numtracks%** to get the number of
