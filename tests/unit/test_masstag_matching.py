@@ -1,5 +1,6 @@
-"""Mass Tagging's matching (tut5.txt, from "Minimum percentage required for
-album matches" to "Fields to replace"): which search results match the
+"""Mass Tagging's lookup and matching (tut5.txt, "How it works" and from
+"Minimum percentage required for album matches" to "If no results found"):
+the order the tag sources are polled in, which search results match the
 selected files' album, which retrieved track goes to which file, and how
 several tag sources' tracks are combined. The functions are called the way
 the Mass Tagging window's Search button calls them, on synthetic file tags
@@ -7,8 +8,9 @@ and synthetic albums shaped as a tag source returns them.
 """
 import pytest
 
-from puddlestuff.masstag import (DEFAULT_PATTERN, Result, TagSourceProfile, find_best,
-                                 match_files, merge_tsp_tracks, split_files)
+from puddlestuff.masstag import (CONTINUE, DEFAULT_PATTERN, STOP, MassTagFlag, MassTagProfile,
+                                 Result, TagSourceProfile, find_best, masstag, match_files,
+                                 merge_tsp_tracks, split_files)
 from puddlestuff.puddleobjects import ratio
 
 
@@ -515,3 +517,438 @@ def test_combined_tracks_reach_the_files():
     file = file_tags('Felakai.mp3', artist=['TKZee'], title=['Felakai'])
     matched = match_files(searched([file]), merged, 0.8, None)
     assert {f: t['genre'] for f, t in matched.items()} == {file: ['Kwaito', 'Rap', 'Dance']}
+
+
+# The lookup (tut5.txt, "How it works"): masstag() polls the profile's tag
+# sources in order for one group of files, as Search does before it matches
+# the files to the retrieved tracks. Synthetic files and albums.
+
+ALBUM = {'album': 'Album', 'artist': 'Artist'}
+
+
+class FakeSource:
+    """A tag source written as tagsources.txt's example plugin writes one: a
+    name, group_by, search() and retrieve(). It answers a search for an
+    album and artist from the albums a test gives it, never from the web,
+    and records what it was asked. Synthetic albums."""
+    group_by = ['album', 'artist']
+
+    def __init__(self, name, answers=None, on_retrieve=None, on_search=None):
+        self.answers = {} if answers is None else answers  # (album, artist): [(info, tracks), ...]
+        self.name = name
+        self.on_retrieve = on_retrieve  # called during each retrieve()
+        self.on_search = on_search  # called during each search()
+        self.retrieved = []  # the album infos retrieve() was given, in order
+        self.searches = []  # (album, sorted artists) pairs, in order
+
+    def search(self, album, artists):
+        self.searches.append((album, sorted(artists)))
+        if self.on_search:
+            self.on_search()
+        return [(dict(info), []) for artist in sorted(artists)
+                for info, tracks in self.answers.get((album, artist), [])]
+
+    def retrieve(self, info):
+        self.retrieved.append(dict(info))
+        if self.on_retrieve:
+            self.on_retrieve()
+        tracks = next(tracks for answer in self.answers.values()
+                      for album, tracks in answer if album == info)
+        return info, [dict(t) for t in tracks]
+
+
+def knows(*albums):
+    """A source's answers: each (info, tracks) album is found by a search
+    for its own album and artist."""
+    answers = {}
+    for info, tracks in albums:
+        answers.setdefault((info['album'], info['artist']), []).append((info, tracks))
+    return answers
+
+
+def songs(count=2, **fields):
+    """Synthetic tracks titled 'Song 1', 'Song 2', ... numbered 1, 2, ...,
+    each with these fields (lists of strings)."""
+    return [dict(fields, title=[f'Song {n}'], track=[str(n)]) for n in range(1, count + 1)]
+
+
+def album_files(count=2, **tags):
+    """count synthetic files of ALBUM, titled and numbered as songs() titles
+    and numbers its tracks, with these tags, as Search hands them over."""
+    tags = {'album': [ALBUM['album']], 'artist': [ALBUM['artist']], **tags}
+    return searched([file_tags(f'0{n}.mp3', title=[f'Song {n}'], track=[str(n)], **tags)
+                     for n in range(1, count + 1)])
+
+
+def press_stop(flag):
+    """What the Mass Tagging window's Stop button does to a running lookup."""
+    def press():
+        flag.stop = True
+    return press
+
+
+def lookup(*sources, album_bound=0.7, files=None, flag=None, stop=()):
+    """Runs the lookup for the files (album_files() unless given) with a
+    profile that polls these sources in order: those in stop set to Stop if
+    no results are found, the others to Continue. 0.7 is the profile
+    editor's album percentage. Returns the profile and what the lookup
+    returned."""
+    files = album_files() if files is None else files
+    profiles = [TagSourceProfile(tag_source=source,
+                                 if_no_result=STOP if source in stop else CONTINUE)
+                for source in sources]
+    mtp = MassTagProfile(album_bound=album_bound, files=files, profiles=profiles)
+    return mtp, masstag(mtp, files, flag)
+
+
+def names(results):
+    """The names of the sources whose albums the lookup returned, in order."""
+    return [result.tag_source.name for result in results]
+
+
+@pytest.fixture(autouse=True)
+def log(monkeypatch):
+    """The lines the lookup writes to the Mass Tagging window's log, in
+    order."""
+    lines = []
+    monkeypatch.setattr('puddlestuff.masstag.set_status', lines.append)
+    return lines
+
+
+def test_sources_are_polled_in_the_order_listed(log):
+    """tut5.txt, How it works: "For each group of files, the Tag Sources will
+    be polled in the order listed in the current Masstagging Profile." Synthetic
+    files and albums."""
+    a, b, c = (FakeSource(name, knows((ALBUM, songs()))) for name in ('A', 'B', 'C'))
+    mtp, results = lookup(a, b, c)
+    assert [line for line in log if 'Polling' in line] == [
+        '<b>Polling: A</b>', '<b>Polling: B</b>', '<b>Polling: C</b>']
+    assert names(results) == ['A', 'B', 'C']
+    assert a.searches == b.searches == c.searches == [('Album', ['Artist'])]
+
+
+def test_continue_polls_the_next_source():
+    """tut5.txt, If no results found: "If no matching album was found for
+    this tag source, you can choose to either Continue with the other tag
+    sources in the list or Stop the lookup and use any previously retrieved
+    results." Synthetic files and albums."""
+    a, b = FakeSource('A'), FakeSource('B', knows((ALBUM, songs())))
+    mtp, results = lookup(a, b)
+    assert b.retrieved == [ALBUM]
+    assert names(results) == ['B']
+
+
+def test_stop_ends_the_lookup_when_a_source_finds_nothing():
+    """tut5.txt, If no results found: "If no matching album was found for
+    this tag source, you can choose to either Continue with the other tag
+    sources in the list or Stop the lookup and use any previously retrieved
+    results." Synthetic files and albums."""
+    a, b = FakeSource('A'), FakeSource('B', knows((ALBUM, songs())))
+    mtp, results = lookup(a, b, stop={a})
+    assert b.searches == []
+    assert results == []
+
+
+def test_stop_keeps_the_albums_already_retrieved():
+    """tut5.txt, If no results found: "If no matching album was found for
+    this tag source, you can choose to either Continue with the other tag
+    sources in the list or Stop the lookup and use any previously retrieved
+    results." Synthetic files and albums."""
+    a = FakeSource('A', knows((ALBUM, songs(genre=['One']))))
+    b = FakeSource('B')
+    c = FakeSource('C', knows((ALBUM, songs(genre=['Three']))))
+    mtp, results = lookup(a, b, c, stop={b})
+    assert c.searches == []
+    assert names(results) == ['A']
+    assert [t['genre'] for t in merge_tsp_tracks(mtp.profiles)] == [['One'], ['One']]
+
+
+def test_an_album_below_the_album_percentage_moves_on_to_the_next_source():
+    """tut5.txt, How it works: "Each Tag Source listed will be polled and
+    checked for a matching album within the bounds specified." and Minimum
+    percentage required for album matches: "An album will be considered a
+    match if its album name and its artist both match the files' by at least
+    the percentage specified here." Synthetic files and albums."""
+    other = {'album': 'Other', 'artist': 'Other'}
+    a = FakeSource('A', {('Album', 'Artist'): [(other, songs(3))]})
+    b = FakeSource('B', knows((ALBUM, songs())))
+    mtp, results = lookup(a, b)
+    assert a.retrieved == []
+    assert b.retrieved == [ALBUM]
+    assert names(results) == ['B']
+
+
+def test_an_album_whose_track_count_does_not_fit_is_skipped_for_the_next_match(log):
+    """tut5.txt, Minimum percentage required for album matches: "A matching
+    album, once retrieved, is used only if it has as many tracks as the files
+    you selected or as their highest track number. Otherwise the next matching
+    album is retrieved". The log lines of that step are not in the docs.
+    Synthetic files and albums."""
+    first, second = (dict(ALBUM, year=year) for year in ('2001', '2002'))
+    a = FakeSource('A', knows((first, songs(5)), (second, songs(2))))
+    mtp, results = lookup(a)
+    assert a.retrieved == [first, second]
+    assert names(results) == ['A']
+    assert [t['year'] for t in merge_tsp_tracks(mtp.profiles)] == [['2002'], ['2002']]
+    assert log[2:7] == [
+        '<b>2</b> results found.',
+        '<b>2</b> possibly matching albums found.',
+        'Retrieving matching album. <b>Artist - Album</b>',
+        'Previously retrieved result does not match. Retrieving next matching album.',
+        'Retrieving matching album. <b>Artist - Album</b>']
+
+
+def test_a_source_whose_albums_do_not_fit_moves_on_to_the_next_source(log):
+    """tut5.txt, How it works: "Each Tag Source listed will be polled and
+    checked for a matching album within the bounds specified." and Minimum
+    percentage required for album matches: "when none is left the tag source
+    counts as having found no match". The log line is not in the docs.
+    Synthetic files and albums."""
+    a = FakeSource('A', knows((ALBUM, songs(5))))
+    b = FakeSource('B', knows((ALBUM, songs())))
+    mtp, results = lookup(a, b)
+    assert b.retrieved == [ALBUM]
+    assert names(results) == ['B']
+    assert 'No matches found for tag source <b>A</b>' in log
+
+
+def test_an_album_with_as_many_tracks_as_the_highest_track_number_fits():
+    """tut5.txt, Minimum percentage required for album matches: "A matching
+    album, once retrieved, is used only if it has as many tracks as the files
+    you selected or as their highest track number." Files numbered 1 and 3
+    match an album of 3 tracks. Synthetic files and albums."""
+    files = searched([file_tags(f'0{n}.mp3', artist=['Artist'], title=[f'Song {n}'], track=[str(n)])
+                      for n in (1, 3)])
+    a = FakeSource('A', knows((ALBUM, songs(3))))
+    mtp, results = lookup(a, files=files)
+    assert a.retrieved == [ALBUM]
+    assert names(results) == ['A']
+
+
+def test_stop_follows_a_source_whose_albums_do_not_fit():
+    """tut5.txt, If no results found: "If no matching album was found for
+    this tag source, you can choose to either Continue with the other tag
+    sources in the list or Stop the lookup and use any previously retrieved
+    results." and Minimum percentage required for album matches: "when none
+    is left the tag source counts as having found no match (see If no results
+    found:)". Synthetic files and albums."""
+    a = FakeSource('A', knows((ALBUM, songs(5))))
+    b = FakeSource('B', knows((ALBUM, songs())))
+    mtp, results = lookup(a, b, stop={a})
+    assert b.searches == []
+    assert results == []
+
+
+def test_the_log_follows_a_source_that_finds_the_album(log):
+    """The docs don't describe the log; it pins the lines the Mass Tagging
+    window shows while a source finds and retrieves the album. Synthetic
+    files and albums."""
+    lookup(FakeSource('A', knows((ALBUM, songs()))))
+    assert log[:5] == [
+        ':insertStarting search for: <br />artist=<b>Artist</b> <br />album=<b>Album</b><br />',
+        '<b>Polling: A</b>',
+        '<b>One</b> result found.',
+        '<b>One</b> possibly matching album found.',
+        'Retrieving matching album. <b>Artist - Album</b>']
+
+
+def test_the_log_says_when_a_source_finds_nothing(log):
+    """The docs don't describe the log; it pins the lines the Mass Tagging
+    window shows while a source finds no results. Synthetic files and
+    albums."""
+    lookup(FakeSource('A'))
+    assert log[:3] == [
+        ':insertStarting search for: <br />artist=<b>Artist</b> <br />album=<b>Album</b><br />',
+        '<b>Polling: A</b>',
+        '<b>No results were found.</b>']
+
+
+def test_a_lookup_stopped_before_it_starts_polls_nothing():
+    """The docs don't describe this; it pins what the program does when Stop
+    was pressed during the previous group of files: the next group polls no
+    source. Synthetic files and albums."""
+    flag = MassTagFlag()
+    flag.stop = True
+    a = FakeSource('A', knows((ALBUM, songs())))
+    mtp, results = lookup(a, flag=flag)
+    assert a.searches == []
+    assert results == []
+
+
+def test_a_source_that_found_nothing_is_polled_again_with_the_found_data(log):
+    """tut5.txt, How it works: "If a match wasn't found for one Tag Source,
+    but for another the Tag Source will be polled again using the data
+    retrieved from the matching source." Synthetic files and albums."""
+    alpha = {'album': 'Album', 'artist': 'Artist Alpha'}
+    a = FakeSource('A', knows((alpha, songs(genre=['One']))))
+    b = FakeSource('B', knows((ALBUM, songs(artist=['Artist Alpha']))))
+    mtp, results = lookup(a, b)
+
+    assert a.searches == [('Album', ['Artist']), ('Album', ['Artist Alpha'])]
+    assert a.retrieved == [alpha]
+    assert names(results) == ['B', 'A']
+    assert '<br />Rechecking with results from <b>B</b>.<br />' in log
+    assert [(t['artist'], t['genre']) for t in merge_tsp_tracks(mtp.profiles)] == [
+        (['Artist Alpha'], ['One'])] * 2
+
+
+def test_a_source_that_still_finds_nothing_leaves_the_album_found():
+    """tut5.txt, How it works: "If a match wasn't found for one Tag Source,
+    but for another the Tag Source will be polled again using the data
+    retrieved from the matching source." The docs don't describe a source
+    that finds nothing the second time either; the album stays found through
+    the other source. Synthetic files and albums."""
+    a, b = FakeSource('A'), FakeSource('B', knows((ALBUM, songs())))
+    mtp, results = lookup(a, b)
+
+    assert a.searches == [('Album', ['Artist'])] * 2
+    assert names(results) == ['B']
+
+
+def test_no_source_is_polled_again_when_each_found_the_album(log):
+    """tut5.txt, How it works: "If a match wasn't found for one Tag Source,
+    but for another the Tag Source will be polled again using the data
+    retrieved from the matching source." Nothing is polled again when every
+    source found the album. Synthetic files and albums."""
+    a, b = (FakeSource(name, knows((ALBUM, songs()))) for name in ('A', 'B'))
+    lookup(a, b)
+
+    assert a.searches == b.searches == [('Album', ['Artist'])]
+    assert not any('Rechecking' in line for line in log)
+
+
+@pytest.mark.xfail(strict=True, reason='a source set to Stop is searched again when the other '
+                                       'sources are polled again')
+def test_a_source_set_to_stop_is_not_polled_again(log):
+    """tut5.txt, If no results found: "If no matching album was found for
+    this tag source, you can choose to either Continue with the other tag
+    sources in the list or Stop the lookup and use any previously retrieved
+    results. After a Stop, no tag source is polled again." Synthetic files
+    and albums."""
+    a = FakeSource('A', knows((ALBUM, songs())))
+    b = FakeSource('B')
+    c = FakeSource('C', knows((ALBUM, songs())))
+    mtp, results = lookup(a, b, c, stop={b})
+
+    assert b.searches == [('Album', ['Artist'])]
+    assert c.searches == []
+    assert not any('Rechecking' in line for line in log)
+    assert names(results) == ['A']
+
+
+@pytest.mark.xfail(strict=True, reason='the sources that found nothing are searched again after '
+                                       'a source set to Stop ended the lookup')
+def test_no_source_is_polled_again_after_a_stop():
+    """tut5.txt, If no results found: "If no matching album was found for
+    this tag source, you can choose to either Continue with the other tag
+    sources in the list or Stop the lookup and use any previously retrieved
+    results. After a Stop, no tag source is polled again." Synthetic files
+    and albums."""
+    a = FakeSource('A')
+    b = FakeSource('B', knows((ALBUM, songs())))
+    c = FakeSource('C')
+    mtp, results = lookup(a, b, c, stop={c})
+
+    assert a.searches == [('Album', ['Artist'])]
+
+
+def test_an_album_with_a_bracketed_part_is_searched_again_without_it():
+    """tut5.txt, How it works: "If the album name has a part in brackets
+    (round, square or curly), as in Album (Deluxe), each Tag Source is
+    searched a second time with the album name without it." Synthetic files
+    and albums."""
+    files = album_files(album=['Album (Deluxe)'])
+    a = FakeSource('A', knows((ALBUM, songs())))
+    mtp, results = lookup(a, album_bound=ratio('Album (Deluxe)', 'Album'), files=files)
+
+    assert a.searches == [('Album (Deluxe)', ['Artist']), ('Album', ['Artist'])]
+    assert a.retrieved == [ALBUM]
+    assert names(results) == ['A']
+
+
+def test_albums_found_with_and_without_the_bracketed_part_are_pooled(log):
+    """tut5.txt, How it works: "The albums both searches find are compared
+    with the files." The best match for the files' full album name is
+    retrieved. Synthetic files and albums."""
+    deluxe = dict(ALBUM, album='Album (Deluxe)')
+    a = FakeSource('A', knows((deluxe, songs()), (ALBUM, songs())))
+    mtp, results = lookup(a, files=album_files(album=['Album (Deluxe)']))
+
+    assert a.retrieved == [deluxe]
+    assert '<b>2</b> results found.' in log
+
+
+@pytest.mark.xfail(strict=True, reason="the album name in the retry's log line keeps the space "
+                                       'before the removed bracketed part')
+def test_the_retry_logs_the_album_it_searches(log):
+    """tut5.txt, How it works: "each Tag Source is searched a second time
+    with the album name without it." The docs don't describe the log line,
+    which says which album name the second search uses, without a stray
+    space. Synthetic files and albums."""
+    lookup(FakeSource('A'), files=album_files(album=['Album (Deluxe)']))
+
+    assert 'Retrying search with album name: <b>Album</b>' in log
+
+
+@pytest.mark.xfail(strict=True, reason="no line says that a source's albums were all below the "
+                                       'album percentage')
+def test_a_source_whose_albums_are_below_the_album_percentage_says_so(log):
+    """The docs are silent on the log when every album a source found is
+    below the album percentage: the log says the source has no matches, as
+    it does when a retrieved album has the wrong track count. Synthetic
+    files and albums."""
+    other = {'album': 'Other', 'artist': 'Other'}
+    lookup(FakeSource('A', {('Album', 'Artist'): [(other, songs(3))]}))
+
+    assert 'No matches found for tag source <b>A</b>' in log
+
+
+# The Stop button: the docs don't describe it; tut5.txt's "use any previously
+# retrieved results" is the nearest rule. Synthetic albums.
+
+@pytest.mark.xfail(strict=True, raises=AttributeError,
+                   reason='Stop pressed during a search leaves that source matched but '
+                          'never retrieved, and combining the sources\' tracks fails on it')
+def test_stop_during_a_search_keeps_the_albums_already_retrieved():
+    """tut5.txt, If no results found: "use any previously retrieved
+    results"; applied here to a lookup stopped while the second source is
+    searched."""
+    flag = MassTagFlag()
+    a = FakeSource('A', knows((ALBUM, songs(genre=['One']))))
+    b = FakeSource('B', knows((ALBUM, songs(genre=['Two']))), on_search=press_stop(flag))
+    c = FakeSource('C', knows((ALBUM, songs())))
+    mtp, results = lookup(a, b, c, flag=flag)
+    assert c.searches == []
+    assert names(results) == ['A']
+    assert [t['genre'] for t in merge_tsp_tracks(mtp.profiles)] == [['One'], ['One']]
+
+
+@pytest.mark.xfail(strict=True,
+                   reason='Stop pressed while an album is retrieved still searches the '
+                          'next tag source')
+def test_stop_during_a_retrieval_searches_no_other_source():
+    """Synthetic: the Stop button pressed while the first source's album is
+    retrieved; the docs don't describe it."""
+    flag = MassTagFlag()
+    a = FakeSource('A', knows((ALBUM, songs())), on_retrieve=press_stop(flag))
+    b = FakeSource('B', knows((ALBUM, songs())))
+    mtp, results = lookup(a, b, flag=flag)
+    assert b.searches == []
+    assert names(results) == ['A']
+
+
+@pytest.mark.xfail(strict=True,
+                   reason='Stop pressed while an album is retrieved still says the sources '
+                          'are polled again')
+def test_stop_during_a_retrieval_polls_no_source_again(log):
+    """Synthetic: the Stop button pressed while the second source's album is
+    retrieved, after the first found nothing; the docs don't describe it."""
+    flag = MassTagFlag()
+    a = FakeSource('A')
+    b = FakeSource('B', knows((ALBUM, songs())), on_retrieve=press_stop(flag))
+    c = FakeSource('C', knows((ALBUM, songs())))
+    mtp, results = lookup(a, b, c, flag=flag)
+    assert a.searches == [('Album', ['Artist'])]
+    assert c.searches == []
+    assert not any('Rechecking' in line for line in log)
+    assert names(results) == ['B']

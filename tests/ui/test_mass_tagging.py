@@ -843,3 +843,37 @@ def test_profile_skips_a_tag_source_that_is_gone(mainwin, make_audio, user, qtbo
         qtbot.waitUntil(lambda: not new._table.model().previewMode)
     finally:
         tagsources.tagsources.append(SecondSource)
+
+
+# The docs don't describe the log's closing line. Synthetic files and albums.
+
+@pytest.mark.xfail(strict=True, reason='"Valid matches were found for the album." is logged '
+                                       'when no file got a track')
+def test_no_valid_match_is_logged_when_no_file_gets_a_track(
+        mainwin, make_audio, tmp_path, qtbot, user):
+    SyntheticSource.albums = [(ALBUM_A, [dict(t, title=f'Other {t["track"]}')
+                                         for t in tracks(genre='Synth')])]
+    window, files = run_album(user, qtbot, mainwin, make_audio, tmp_path)
+    log = search(user, qtbot, mainwin, window)
+    no_previews(mainwin)
+    assert 'Valid matches were found for the album.' not in log
+    assert 'No valid matches were found for the album.' in log
+
+
+@pytest.mark.xfail(strict=True, reason='no closing line is logged when a source polled again '
+                                       'found the album')
+def test_valid_matches_are_logged_when_the_recheck_found_the_album(
+        mainwin, user, make_audio, tmp_path, qtbot):
+    album_files(make_audio, tmp_path / 'music' / 'AA - Album A',
+                artist='AA', album='Album A')
+    load(mainwin, qtbot, tmp_path / 'music', 3)
+    SyntheticSource.albums = [({'album': 'Album A', 'artist': 'Artist Alpha'},
+                               tracks(genre='One'))]
+    SecondSource.albums = [({'album': 'Album A', 'artist': 'AA'},
+                            tracks(artist='Artist Alpha'))]
+    window = open_mass_tagging(user, mainwin, qtbot)
+    create_profile(user, qtbot, window, 'Synthetic',
+                   [{'source': 'Synthetic Source'}, {'source': 'Second Source'}], match='title')
+    pick(user, qtbot, window.profileCombo, 'Synthetic')
+    log = search(user, qtbot, mainwin, window)
+    assert 'Valid matches were found for the album.' in log
