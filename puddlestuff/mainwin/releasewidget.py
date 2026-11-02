@@ -677,6 +677,8 @@ class ReleaseWidget(QTreeView):
                     self.infoChanged.emit(
                         '<a href="%s">%s</a>' % (url, desc))
                     break
+            else:
+                self.infoChanged.emit('')
         self.emitTracks(tracks)
         self.itemSelectionChanged.emit()
 

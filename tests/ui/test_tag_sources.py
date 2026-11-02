@@ -1842,7 +1842,6 @@ def test_album_link_is_shown_and_opens_in_the_browser(browser, mainwin, make_aud
     qtbot.waitUntil(lambda: browser.urls == ['https://example.org/alpha?id=1&v=2'])
 
 
-@pytest.mark.xfail(strict=True, reason="the link of the album picked before stays shown")
 def test_album_link_goes_when_an_album_without_one_is_picked(mainwin, make_audio, tmp_path, qtbot, user):
     # The docs don't say; this is what a user would expect: the link
     # belongs to the picked album, so another album must not show it.
