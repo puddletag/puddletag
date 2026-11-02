@@ -1141,7 +1141,7 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
     </message>
     <message>
       <location filename="../tagsources/discogs.py" line="278" />
-      <source>&lt;p&gt;&lt;b&gt;Discogs only support searching by release id&lt;/b&gt;&lt;/p&gt;
+      <source>&lt;p&gt;&lt;b&gt;Discogs only supports searching by release id&lt;/b&gt;&lt;/p&gt;
         &lt;p&gt;Enter the release id Eg. "1257896" to search.&lt;/p&gt;</source>
       <translation type="unfinished" />
     </message>
@@ -2284,13 +2284,13 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
     <message>
       <location filename="../masstag/dialogs.py" line="634" />
       <location filename="../masstag/dialogs.py" line="40" />
-      <source>An error occured during the search: &lt;b&gt;{}&lt;/b&gt;</source>
+      <source>An error occurred during the search: &lt;b&gt;{}&lt;/b&gt;</source>
       <translation>Er is een fout opgetreden tijdens het zoeken: &lt;b&gt;{}&lt;/b&gt;</translation>
     </message>
     <message>
       <location filename="../masstag/dialogs.py" line="637" />
       <location filename="../masstag/dialogs.py" line="45" />
-      <source>An error occured during album retrieval: &lt;b&gt;{}&lt;/b&gt;</source>
+      <source>An error occurred during album retrieval: &lt;b&gt;{}&lt;/b&gt;</source>
       <translation>Er is een fout opgetreden tijdens het ontvangen van de albuminformatie:&lt;b&gt;{}&lt;/b&gt;</translation>
     </message>
     <message>
@@ -3240,7 +3240,7 @@ Do you want to go ahead?</source>
     </message>
     <message>
       <location filename="../masstag/dialogs.py" line="399" />
-      <source>&lt;p&gt;Enter a comma-seperated list of fields to retrieve. Leave empty to retrieve all available fields/values. &lt;br /&gt;&lt;br /&gt;Eg. &lt;b&gt;artist, album, title&lt;/b&gt; will only retrieve the artist, album and title fields of from the Tag Source. &lt;br /&gt;&lt;br /&gt;Start the list with the tilde (~) character to write all retrieved fields , but the ones listed. Eg the field list &lt;b&gt;~composer,__image&lt;/b&gt; will write all fields but the composer and __image (aka cover art) fields.&lt;/p&gt;&lt;p&gt;If a field has been retrieved in a previous Tag Source the values will be combined if they differ. Eg. If genre=&lt;b&gt;Rock&lt;/b&gt; for the first tag source polled and genre=&lt;b&gt;Alternative&lt;/b&gt; for the tag source polled second then the resulting field will have multiple-values ie. genre=&lt;b&gt;Rock\\Rap&lt;/b&gt;</source>
+      <source>&lt;p&gt;Enter a comma-separated list of fields to retrieve. Leave empty to retrieve all available fields/values. &lt;br /&gt;&lt;br /&gt;Eg. &lt;b&gt;artist, album, title&lt;/b&gt; will only retrieve the artist, album and title fields of from the Tag Source. &lt;br /&gt;&lt;br /&gt;Start the list with the tilde (~) character to write all retrieved fields , but the ones listed. Eg the field list &lt;b&gt;~composer,__image&lt;/b&gt; will write all fields but the composer and __image (aka cover art) fields.&lt;/p&gt;&lt;p&gt;If a field has been retrieved in a previous Tag Source the values will be combined if they differ. Eg. If genre=&lt;b&gt;Rock&lt;/b&gt; for the first tag source polled and genre=&lt;b&gt;Alternative&lt;/b&gt; for the tag source polled second then the resulting field will have multiple-values ie. genre=&lt;b&gt;Rock\\Rap&lt;/b&gt;</source>
       <translation>&lt;p&gt;Voer een door komma's gescheiden lijst met velden in om op te halen. Laat leeg om allen beschikbare velden/waarden op te halen. &lt;br /&gt;&lt;br /&gt; Voorbeeld: &lt;b&gt;artiest, album, titel&lt;/b&gt; haalt alleen de artiest, het album en de titel velden op van de Tagbron. &lt;br /&gt;&lt;br /&gt;Begin de lijst met het tilde (~) teken om alle opgehaalde velden in te voeren, behalve onderstaande. Voorbeeld: &lt;b&gt;~componist, _afbeelding&lt;/b&gt; zal alle velden behalve de componist en _afbeelding (cover) velden overschrijven.&lt;/p&gt;&lt;p&gt;Als een veld al ontvangen in in een vorige tagbron, zullen de waardes worden vergelijkt, als deze verschillen. Bijvoorbeeld Als genre=&lt;b&gt;Rock&lt;/b&gt; bij de eerste tagbron en genre=&lt;b&gt;Alternative&lt;/b&gt; dan zal het resulterende velt meerdere waardes krijgen bijvoorbeeld: genre=&lt;b&gt;Rock\\Rap&lt;/b&gt;</translation>
     </message>
     <message>
@@ -3616,14 +3616,8 @@ Echt: {}</translation>
       <location filename="../mainwin/tagsources.py" line="892" />
       <location filename="../mainwin/releasewidget.py" line="472" />
       <location filename="../mainwin/releasewidget.py" line="376" />
-      <source>An error occured: {}</source>
+      <source>An error occurred: {}</source>
       <translation type="unfinished">Er is een fout opgetreden: {}</translation>
-    </message>
-    <message>
-      <location filename="../mainwin/releasewidget.py" line="477" />
-      <location filename="../mainwin/releasewidget.py" line="381" />
-      <source>An unhandled error occured: {}</source>
-      <translation type="unfinished">Een onafgehandelde fout is opgetreden: {}</translation>
     </message>
     <message>
       <location filename="../mainwin/releasewidget.py" line="386" />
@@ -3643,12 +3637,12 @@ Echt: {}</translation>
     </message>
     <message>
       <location filename="../mainwin/tagsources.py" line="32" />
-      <source>Enter search parameters here. If empty, the selected files are used. &lt;ul&gt;&lt;li&gt;&lt;b&gt;artist;album&lt;/b&gt; searches for a specific album/artist combination.&lt;/li&gt;&lt;li&gt;To list the albums by an artist leave off the album part, but keep the semicolon (eg. &lt;b&gt;Ratatat;&lt;/b&gt;). For a album only leave the artist part as in &lt;b&gt;;Resurrection.&lt;/li&gt;&lt;/ul&gt;</source>
+      <source>Enter search parameters here. If empty, the selected files are used. &lt;ul&gt;&lt;li&gt;&lt;b&gt;artist;album&lt;/b&gt; searches for a specific album/artist combination.&lt;/li&gt;&lt;li&gt;To list the albums by an artist leave off the album part, but keep the semicolon (eg. &lt;b&gt;Ratatat;&lt;/b&gt;). For an album only leave the artist part as in &lt;b&gt;;Resurrection&lt;/b&gt;.&lt;/li&gt;&lt;/ul&gt;</source>
       <translation type="unfinished">Voer hier de zoek parameters in. Als er niks is ingoevoerd, zullen de geselecteerde bestanden gebruikt worden. &lt;ul&gt;&lt;li&gt;&lt;b&gt;artiest;album&lt;/b&gt;zoekt voor een specifieke album/artiest combinatie.&lt;/li&gt;&lt;li&gt;Om de albums te sorteren op artiest dient het album deel leeg gelaten te worden, maar behoud de puntkomma (bijv. &lt;b&gt;Ratatat;&lt;/b&gt;). Voor een album dient alleen het artiest deel ingevoerd te worden. Voorbeeld:&lt;b&gt;;Resurrection.&lt;/li&gt;&lt;/ul&gt;</translation>
     </message>
     <message>
       <location filename="../mainwin/tagsources.py" line="41" />
-      <source>Enter a comma seperated list of fields to write. &lt;br /&gt;&lt;br /&gt;Eg. &lt;b&gt;artist, album, title&lt;/b&gt; will only write the artist, album and title fields of the retrieved tags. &lt;br /&gt;&lt;br /&gt;If you want to exclude some fields, but write all others start the list the tilde (~) character. Eg &lt;b&gt;~composer, __image&lt;/b&gt; will write all fields but the composer and __image fields.</source>
+      <source>Enter a comma-separated list of fields to write. &lt;br /&gt;&lt;br /&gt;Eg. &lt;b&gt;artist, album, title&lt;/b&gt; will only write the artist, album and title fields of the retrieved tags. &lt;br /&gt;&lt;br /&gt;If you want to exclude some fields, but write all others start the list the tilde (~) character. Eg &lt;b&gt;~composer, __image&lt;/b&gt; will write all fields but the composer and __image fields.</source>
       <translation type="unfinished">Vul een door komma's gescheiden veld in om wijzigingen door te voeren.&lt;br /&gt;&lt;br /&gt;Voorbeeld &lt;b&gt;artiest, album, titel&lt;/b&gt; zal alleen de artiest, het album en de titelvelden vervangen door de opgehaalde tags. &lt;br /&gt;&lt;br /&gt;Als u een paar velden wil negeren, maar alle andere wel wijzigen, begint u de lijst met het tilde (~) karakter. Voorbeeld: &lt;b&gt;~componist, __image&lt;/b&gt; zal alle velden invullen behalve de componist en de __image velden.</translation>
     </message>
     <message>
@@ -3699,7 +3693,7 @@ Echt: {}</translation>
     </message>
     <message>
       <location filename="../mainwin/tagsources.py" line="372" />
-      <source>User-Agent to when accessing web sites.</source>
+      <source>User-Agent to send when accessing web sites.</source>
       <translation type="unfinished">User Agent voor het bezoeken van websites.</translation>
     </message>
     <message>
@@ -3764,7 +3758,7 @@ Echt: {}</translation>
     </message>
     <message>
       <location filename="../mainwin/tagsources.py" line="880" />
-      <source>&lt;b&gt;Select some files or enter search paramaters.&lt;/b&gt;</source>
+      <source>&lt;b&gt;Select some files or enter search parameters.&lt;/b&gt;</source>
       <translation type="unfinished">&lt;b&gt;Selecteer enkele bestanden of begin een zoekopdracht.&lt;/b&gt;</translation>
     </message>
     <message>

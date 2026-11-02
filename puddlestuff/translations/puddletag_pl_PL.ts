@@ -1164,7 +1164,7 @@ Zespół &lt;b&gt;Oxygen&lt;/b&gt; za ikony Oxygen.
     </message>
     <message>
       <location filename="../tagsources/discogs.py" line="278" />
-      <source>&lt;p&gt;&lt;b&gt;Discogs only support searching by release id&lt;/b&gt;&lt;/p&gt;
+      <source>&lt;p&gt;&lt;b&gt;Discogs only supports searching by release id&lt;/b&gt;&lt;/p&gt;
         &lt;p&gt;Enter the release id Eg. "1257896" to search.&lt;/p&gt;</source>
       <translation>&lt;p&gt;&lt;b&gt;Discogs obsługuje wyszukiwanie tylko według identyfikatora wydania&lt;/b&gt;&lt;/p&gt;
         &lt;p&gt;Wprowadź identyfikator wydania, np. „1257896”, aby wyszukać.&lt;/p&gt;</translation>
@@ -2333,13 +2333,13 @@ Zespół &lt;b&gt;Oxygen&lt;/b&gt; za ikony Oxygen.
     <message>
       <location filename="../masstag/dialogs.py" line="634" />
       <location filename="../masstag/dialogs.py" line="40" />
-      <source>An error occured during the search: &lt;b&gt;{}&lt;/b&gt;</source>
+      <source>An error occurred during the search: &lt;b&gt;{}&lt;/b&gt;</source>
       <translation>Wystąpił błąd podczas wyszukiwania: &lt;b&gt;{}&lt;/b&gt;</translation>
     </message>
     <message>
       <location filename="../masstag/dialogs.py" line="637" />
       <location filename="../masstag/dialogs.py" line="45" />
-      <source>An error occured during album retrieval: &lt;b&gt;{}&lt;/b&gt;</source>
+      <source>An error occurred during album retrieval: &lt;b&gt;{}&lt;/b&gt;</source>
       <translation>Wystąpił błąd podczas pobierania albumu: &lt;b&gt;{}&lt;/b&gt;</translation>
     </message>
     <message>
@@ -3293,7 +3293,7 @@ Czy chcesz kontynuować?</translation>
     </message>
     <message>
       <location filename="../masstag/dialogs.py" line="399" />
-      <source>&lt;p&gt;Enter a comma-seperated list of fields to retrieve. Leave empty to retrieve all available fields/values. &lt;br /&gt;&lt;br /&gt;Eg. &lt;b&gt;artist, album, title&lt;/b&gt; will only retrieve the artist, album and title fields of from the Tag Source. &lt;br /&gt;&lt;br /&gt;Start the list with the tilde (~) character to write all retrieved fields , but the ones listed. Eg the field list &lt;b&gt;~composer,__image&lt;/b&gt; will write all fields but the composer and __image (aka cover art) fields.&lt;/p&gt;&lt;p&gt;If a field has been retrieved in a previous Tag Source the values will be combined if they differ. Eg. If genre=&lt;b&gt;Rock&lt;/b&gt; for the first tag source polled and genre=&lt;b&gt;Alternative&lt;/b&gt; for the tag source polled second then the resulting field will have multiple-values ie. genre=&lt;b&gt;Rock\\Rap&lt;/b&gt;</source>
+      <source>&lt;p&gt;Enter a comma-separated list of fields to retrieve. Leave empty to retrieve all available fields/values. &lt;br /&gt;&lt;br /&gt;Eg. &lt;b&gt;artist, album, title&lt;/b&gt; will only retrieve the artist, album and title fields of from the Tag Source. &lt;br /&gt;&lt;br /&gt;Start the list with the tilde (~) character to write all retrieved fields , but the ones listed. Eg the field list &lt;b&gt;~composer,__image&lt;/b&gt; will write all fields but the composer and __image (aka cover art) fields.&lt;/p&gt;&lt;p&gt;If a field has been retrieved in a previous Tag Source the values will be combined if they differ. Eg. If genre=&lt;b&gt;Rock&lt;/b&gt; for the first tag source polled and genre=&lt;b&gt;Alternative&lt;/b&gt; for the tag source polled second then the resulting field will have multiple-values ie. genre=&lt;b&gt;Rock\\Rap&lt;/b&gt;</source>
       <translation>&lt;p&gt;Wprowadź listę pól do pobrania, rozdzielonych przecinkami. Nie wprowadzaj nic, aby pobrać wszystkie dostępne pola/wartości. &lt;br /&gt;&lt;br /&gt;Np., podając &lt;b&gt;artist, album, title&lt;/b&gt; zostaną pobrane tylko pola "Wykonawca", "Album" i "Tytuł" ze źródła tagu.&lt;br /&gt;&lt;br /&gt;Rozpocznij listę od tyldy (~), aby zapisać wszystkie pobrane pola z wyjątkiem tych, które są na liście. Np., lista pól &lt;b&gt;~composer,__image&lt;/b&gt; obejmie wszystkie pola, z wyjątkiem pól "Kompozytor" i "_Obraz (Okładka)".&lt;/p&gt;&lt;p&gt;Jeśli pole zostało pobrane z poprzedniego źródła tagu, wartości zostaną teraz połaczone, jeśli się różnią. Np., jeśli genre=&lt;b&gt;Rock&lt;/b&gt; dla pierwszego źródła tagu, a genre=&lt;b&gt;Alternative&lt;/b&gt; dla drugiego źródła tagu, wówczas wynikowe pole tagu będzie miało wiele wartości, np., genre=&lt;b&gt;Rock\\Rap&lt;/b&gt;&lt;/p&gt;</translation>
     </message>
     <message>
@@ -3669,14 +3669,8 @@ Rzeczywiste: {}</translation>
       <location filename="../mainwin/tagsources.py" line="892" />
       <location filename="../mainwin/releasewidget.py" line="472" />
       <location filename="../mainwin/releasewidget.py" line="376" />
-      <source>An error occured: {}</source>
+      <source>An error occurred: {}</source>
       <translation>Wystąpił błąd: {}</translation>
-    </message>
-    <message>
-      <location filename="../mainwin/releasewidget.py" line="477" />
-      <location filename="../mainwin/releasewidget.py" line="381" />
-      <source>An unhandled error occured: {}</source>
-      <translation>Wystąpił nieobsługiwany błąd: {}</translation>
     </message>
     <message>
       <location filename="../mainwin/releasewidget.py" line="386" />
@@ -3696,12 +3690,12 @@ Rzeczywiste: {}</translation>
     </message>
     <message>
       <location filename="../mainwin/tagsources.py" line="32" />
-      <source>Enter search parameters here. If empty, the selected files are used. &lt;ul&gt;&lt;li&gt;&lt;b&gt;artist;album&lt;/b&gt; searches for a specific album/artist combination.&lt;/li&gt;&lt;li&gt;To list the albums by an artist leave off the album part, but keep the semicolon (eg. &lt;b&gt;Ratatat;&lt;/b&gt;). For a album only leave the artist part as in &lt;b&gt;;Resurrection.&lt;/li&gt;&lt;/ul&gt;</source>
+      <source>Enter search parameters here. If empty, the selected files are used. &lt;ul&gt;&lt;li&gt;&lt;b&gt;artist;album&lt;/b&gt; searches for a specific album/artist combination.&lt;/li&gt;&lt;li&gt;To list the albums by an artist leave off the album part, but keep the semicolon (eg. &lt;b&gt;Ratatat;&lt;/b&gt;). For an album only leave the artist part as in &lt;b&gt;;Resurrection&lt;/b&gt;.&lt;/li&gt;&lt;/ul&gt;</source>
       <translation>Wprowadź tutaj parametry wyszukiwania.  Jeśli nic nie wprowadzisz, zostaną użyte wybrane pliki. &lt;ul&gt;&lt;li&gt;Wprowadzenie &lt;b&gt;artist;album&lt;/b&gt; wyszuka określoną kombinację album/artysta.&lt;/li&gt;&lt;li&gt;Aby wyświetlić albumy danego artysty, pomiń część dotyczącą albumu, ale zachowaj średnik (np. &lt;b&gt;Ratatat;&lt;/b&gt;). W przypadku wyszukiwania albumu, pozostaw tylko część dotyczącą artysty, jak w &lt;b&gt;;Resurrection.&lt;/li&gt;&lt;/ul&gt;</translation>
     </message>
     <message>
       <location filename="../mainwin/tagsources.py" line="41" />
-      <source>Enter a comma seperated list of fields to write. &lt;br /&gt;&lt;br /&gt;Eg. &lt;b&gt;artist, album, title&lt;/b&gt; will only write the artist, album and title fields of the retrieved tags. &lt;br /&gt;&lt;br /&gt;If you want to exclude some fields, but write all others start the list the tilde (~) character. Eg &lt;b&gt;~composer, __image&lt;/b&gt; will write all fields but the composer and __image fields.</source>
+      <source>Enter a comma-separated list of fields to write. &lt;br /&gt;&lt;br /&gt;Eg. &lt;b&gt;artist, album, title&lt;/b&gt; will only write the artist, album and title fields of the retrieved tags. &lt;br /&gt;&lt;br /&gt;If you want to exclude some fields, but write all others start the list the tilde (~) character. Eg &lt;b&gt;~composer, __image&lt;/b&gt; will write all fields but the composer and __image fields.</source>
       <translation>Wprowadź listę pól do zapisu, oddzielonych przecinkami. &lt;br /&gt;&lt;br /&gt;Np. podanie &lt;b&gt;artist, album, title&lt;/b&gt; spowoduje zapisanie tylko pól „Artysta”, „Album” i „Tytuł” ​​z pobranych tagów. &lt;br /&gt;&lt;br /&gt;Jeśli chcesz pominąć niektóre pola, ale zapisać wszystkie inne, rozpocznij listę znakiem tyldy (~). Np. &lt;b&gt;~composer, __image&lt;/b&gt; spowoduje zapisanie wszystkich pól, oprócz pól „Kompozytor” i "__Obraz (Okładka)".</translation>
     </message>
     <message>
@@ -3752,7 +3746,7 @@ Rzeczywiste: {}</translation>
     </message>
     <message>
       <location filename="../mainwin/tagsources.py" line="372" />
-      <source>User-Agent to when accessing web sites.</source>
+      <source>User-Agent to send when accessing web sites.</source>
       <translation>User-Agent używany podczas uzyskiwania dostępu do stron internetowych.</translation>
     </message>
     <message>
@@ -3817,7 +3811,7 @@ Rzeczywiste: {}</translation>
     </message>
     <message>
       <location filename="../mainwin/tagsources.py" line="880" />
-      <source>&lt;b&gt;Select some files or enter search paramaters.&lt;/b&gt;</source>
+      <source>&lt;b&gt;Select some files or enter search parameters.&lt;/b&gt;</source>
       <translation>&lt;b&gt;Wybierz pliki lub wprowadź parametry wyszukiwania.&lt;/b&gt;</translation>
     </message>
     <message>

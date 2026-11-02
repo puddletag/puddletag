@@ -329,7 +329,6 @@ def test_search_box_text_is_searched_instead_of_the_files(mainwin, make_audio, t
     assert source.searches == []
 
 
-@pytest.mark.xfail(strict=True, reason="the message misspells 'parameters'")
 def test_search_with_nothing_selected_asks_for_files(mainwin, make_audio, tmp_path, qtbot, user):
     # The docs don't say; this is what puddletag does. (synthetic files)
     window, _ = load(mainwin, make_audio, tmp_path, qtbot, user, select=False)
@@ -631,7 +630,6 @@ def fail_to_retrieve(user, qtbot, window, error, label):
     qtbot.waitUntil(lambda: window.label.text() == label)
 
 
-@pytest.mark.xfail(strict=True, reason="the message misspells 'occurred'")
 def test_search_error_is_shown_in_the_window(mainwin, make_audio, tmp_path, qtbot, user, dialogs):
     # The docs don't say what the window does when a search fails; this is what
     # puddletag does. tagsources.txt's example plugin: "Raise
@@ -656,7 +654,6 @@ def test_unhandled_search_error_is_shown_in_the_window(mainwin, make_audio, tmp_
     assert dialogs.calls == []
 
 
-@pytest.mark.xfail(strict=True, reason="the message misspells 'occurred'")
 def test_retrieval_error_is_shown_and_the_album_can_be_retried(mainwin, make_audio, tmp_path, qtbot, user):
     # The docs don't say what a failed retrieval does; this is what puddletag
     # does. tagsources.txt's example plugin: "Raise
@@ -680,7 +677,6 @@ def test_retrieval_error_is_shown_and_the_album_can_be_retried(mainwin, make_aud
     assert window.label.text() == 'Retrieval complete.'
 
 
-@pytest.mark.xfail(strict=True, reason="the message misspells 'occurred'")
 def test_unhandled_retrieval_error_is_shown_in_the_window(mainwin, make_audio, tmp_path, qtbot, user):
     # The docs don't say; this is what puddletag does (the traceback on stderr
     # is expected). Synthetic source and error.
@@ -690,7 +686,6 @@ def test_unhandled_retrieval_error_is_shown_in_the_window(mainwin, make_audio, t
     assert previews(mainwin) == [{}, {}, {}]
 
 
-@pytest.mark.xfail(strict=True, reason="the message misspells 'occurred'")
 def test_failed_retrieval_keeps_the_album_expandable(mainwin, make_audio, tmp_path, qtbot, user):
     # The docs are silent; an album with tracks to fetch has an expand arrow
     # before the click, and a failed click shouldn't take it away. Synthetic
@@ -1227,7 +1222,6 @@ def test_freedb_exact_match_is_listed(gnudb, mainwin, make_audio, tmp_path, qtbo
     assert albums(window) == ['Synth Artist - Synth Album [3]']
 
 
-@pytest.mark.xfail(strict=True, reason="the message misspells 'occurred'")
 def test_freedb_failed_read_during_search_shows_the_servers_answer(gnudb, mainwin, make_audio, tmp_path, qtbot, user):
     # CDDBPROTO: "401 Specified CDDB entry not found." The window reports
     # the answer instead of crashing.
@@ -1240,7 +1234,6 @@ def test_freedb_failed_read_during_search_shows_the_servers_answer(gnudb, mainwi
     assert albums(window) == []
 
 
-@pytest.mark.xfail(strict=True, reason="the message misspells 'occurred'")
 def test_freedb_failed_read_of_a_picked_album_shows_the_servers_answer(gnudb, mainwin, make_audio, tmp_path, qtbot,
                                                                        user):
     answer_freedb(gnudb, TWO_HITS, [('0a0b0c03', SYNTH_ALBUM), ('0a0b0c99', not_found('0a0b0c99'))])
@@ -1253,7 +1246,6 @@ def test_freedb_failed_read_of_a_picked_album_shows_the_servers_answer(gnudb, ma
     assert window.label.text() == "An error occurred: Couldn't read data 0a0b0c99: the server answered 401."
 
 
-@pytest.mark.xfail(strict=True, reason="the message misspells 'occurred'")
 def test_freedb_http_error(gnudb, mainwin, make_audio, tmp_path, qtbot, user):
     gnudb.add(CGI, '', status=500, content_type='text/plain')
     window, _ = load_freedb(mainwin, make_audio, tmp_path, qtbot, user)
@@ -1263,7 +1255,6 @@ def test_freedb_http_error(gnudb, mainwin, make_audio, tmp_path, qtbot, user):
     assert window.label.text() == 'An error occurred: HTTP Error 500: Internal Server Error'
 
 
-@pytest.mark.xfail(strict=True, reason="the message misspells 'occurred'")
 def test_freedb_unreadable_reply(gnudb, mainwin, make_audio, tmp_path, qtbot, user):
     answer_freedb(gnudb, '')
     window, _ = load_freedb(mainwin, make_audio, tmp_path, qtbot, user)
@@ -1857,7 +1848,6 @@ def test_album_link_goes_when_an_album_without_one_is_picked(mainwin, make_audio
 
 # Strings.
 
-@pytest.mark.xfail(strict=True, reason="the message misspells 'occurred'")
 def test_submit_error_is_shown_in_the_window(more_sources, mainwin, make_audio, tmp_path, qtbot, user):
     # The docs don't say what the window does when a submit fails; this is what
     # puddletag does. Synthetic source and error.
@@ -1873,7 +1863,6 @@ def test_submit_error_is_shown_in_the_window(more_sources, mainwin, make_audio, 
     assert instance(Submitter).submitted == [[str(p) for p in paths]]
 
 
-@pytest.mark.xfail(strict=True, reason="the tooltip misspells 'comma-separated'")
 def test_fields_box_tooltip_says_comma_separated(mainwin, make_audio, tmp_path, qtbot, user):
     # tagsources.txt: "Enter a list of comma-separated fields to write here,
     # eg. **artist, album**, will update only the artist and album fields when
@@ -1884,7 +1873,6 @@ def test_fields_box_tooltip_says_comma_separated(mainwin, make_audio, tmp_path, 
     assert label.buddy().toolTip().startswith('Enter a comma-separated list of fields to write.')
 
 
-@pytest.mark.xfail(strict=True, reason="the search box tooltip leaves '<b>;Resurrection.' unclosed")
 def test_search_box_tooltip_closes_its_bold_text(mainwin, make_audio, tmp_path, qtbot, user):
     # tagsources.txt: "See the Search Box's tooltip (or read the rest of this
     # document) for details on how each tag source does textual searches."
@@ -1896,8 +1884,6 @@ def test_search_box_tooltip_closes_its_bold_text(mainwin, make_audio, tmp_path, 
     assert tip.count('<b>') == tip.count('</b>')
 
 
-@pytest.mark.xfail(strict=True, reason="MusicBrainz has no tooltip of its own, so the search box shows the "
-                                       "default one, which doesn't list ':a' and ':b'")
 def test_musicbrainz_search_box_tooltip_lists_its_searches(mainwin, make_audio, tmp_path, qtbot, user):
     # tagsources.txt, Using MusicBrainz: "To search for a specific artist, album
     # pair enter the search string as **artist;album** ... Searching for the
@@ -1917,7 +1903,6 @@ def test_musicbrainz_search_box_tooltip_lists_its_searches(mainwin, make_audio, 
     assert tip.count('<b>') == tip.count('</b>')
 
 
-@pytest.mark.xfail(strict=True, reason="the label lacks 'send': 'User-Agent to when accessing web sites.'")
 def test_user_agent_label(mainwin, qtbot, user):
     # preferences.txt, User-Agent: "The User-Agent puddletag sends to the web
     # sites its tag sources read".
@@ -1929,7 +1914,6 @@ def test_user_agent_label(mainwin, qtbot, user):
     close_preferences(user, qtbot, dialog)
 
 
-@pytest.mark.xfail(strict=True, reason="the tooltip says 'Discogs only support searching by release id'")
 def test_discogs_search_box_tooltip(mainwin, make_audio, tmp_path, qtbot, user):
     # tagsources.txt, Using Discogs: "To retrieve a release, type its Discogs
     # release id ... in the search box ... puddletag doesn't search Discogs by

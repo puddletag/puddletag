@@ -35,11 +35,11 @@ DEFAULT_SEARCH_TIP = translate("Tag Sources",
                                "for a specific album/artist combination.</li><li>To "
                                "list the albums by an artist leave off the album "
                                "part, but keep the semicolon (eg. <b>Ratatat;</b>). "
-                               "For a album only leave the artist part as in "
-                               "<b>;Resurrection.</li></ul>")
+                               "For an album only leave the artist part as in "
+                               "<b>;Resurrection</b>.</li></ul>")
 
 FIELDLIST_TIP = translate("Tag Sources",
-                          'Enter a comma seperated list of fields to write. '
+                          'Enter a comma-separated list of fields to write. '
                           '<br /><br />Eg. <b>artist, album, title</b> will only '
                           'write the artist, album and title fields of the '
                           'retrieved tags. <br /><br />If you want to '
@@ -378,7 +378,7 @@ class SettingsDialog(QWidget):
         editoptions.clicked.connect(self._editOptions)
 
         ua_label = QLabel(translate("Tag Sources",
-                                    'User-Agent to when accessing web sites.'))
+                                    'User-Agent to send when accessing web sites.'))
         self._ua = QTextEdit()
 
         self.jfdi = QCheckBox(translate('Profile Editor',
@@ -891,7 +891,7 @@ class MainWin(QWidget):
             text = str(self.searchEdit.text())
         elif not files:
             self.label.setText(translate("Tag Sources",
-                                         '<b>Select some files or enter search paramaters.</b>'))
+                                         '<b>Select some files or enter search parameters.</b>'))
             return
 
         def search():
@@ -903,7 +903,7 @@ class MainWin(QWidget):
                     return tag_source_search(self.curSource, group, files)
             except RetrievalError as e:
                 return translate("Tag Sources",
-                                 "An error occured: {}").format(str(e))
+                                 "An error occurred: {}").format(str(e))
             except Exception as e:
                 traceback.print_exc()
                 return translate("Tag Sources",
@@ -928,7 +928,7 @@ class MainWin(QWidget):
             except SubmissionError as e:
                 traceback.print_exc()
                 return translate("Tag Sources",
-                                 "An error occured: {}").format(str(e))
+                                 "An error occurred: {}").format(str(e))
             except Exception as e:
                 traceback.print_exc()
                 return translate("Tag Sources",

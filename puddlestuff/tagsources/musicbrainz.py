@@ -489,6 +489,13 @@ class MusicBrainz(object):
     name = 'MusicBrainz'
 
     group_by = ['album', 'artist']
+    tooltip = translate('MusicBrainz', """<p>Enter search parameters here. If empty, the selected files are used.</p>
+        <ul><li><b>artist;album</b> searches for a specific artist/album pair.</li>
+        <li>To list the albums of an artist leave off the album part, but keep the semicolon (eg. <b>Ratatat;</b>).</li>
+        <li>For an album only leave off the artist part, as in <b>;Resurrection</b>.</li>
+        <li><b>:a &lt;MusicBrainz Artist ID&gt;</b> lists the albums of the artist with that MusicBrainz Artist ID.</li>
+        <li><b>:b &lt;MusicBrainz Album ID&gt;</b> retrieves the album with that MusicBrainz Album ID.</li>
+        <li>Anything else is searched as an album title.</li></ul>""")
 
     def __init__(self):
         super(MusicBrainz, self).__init__()

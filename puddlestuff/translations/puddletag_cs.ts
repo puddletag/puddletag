@@ -1149,7 +1149,7 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
     </message>
     <message>
       <location filename="../tagsources/discogs.py" line="278" />
-      <source>&lt;p&gt;&lt;b&gt;Discogs only support searching by release id&lt;/b&gt;&lt;/p&gt;
+      <source>&lt;p&gt;&lt;b&gt;Discogs only supports searching by release id&lt;/b&gt;&lt;/p&gt;
         &lt;p&gt;Enter the release id Eg. "1257896" to search.&lt;/p&gt;</source>
       <translation type="unfinished" />
     </message>
@@ -2292,13 +2292,13 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
     <message>
       <location filename="../masstag/dialogs.py" line="634" />
       <location filename="../masstag/dialogs.py" line="40" />
-      <source>An error occured during the search: &lt;b&gt;{}&lt;/b&gt;</source>
+      <source>An error occurred during the search: &lt;b&gt;{}&lt;/b&gt;</source>
       <translation>Při hledání se vyskytla chyba: &lt;b&gt;{}&lt;/b&gt;</translation>
     </message>
     <message>
       <location filename="../masstag/dialogs.py" line="637" />
       <location filename="../masstag/dialogs.py" line="45" />
-      <source>An error occured during album retrieval: &lt;b&gt;{}&lt;/b&gt;</source>
+      <source>An error occurred during album retrieval: &lt;b&gt;{}&lt;/b&gt;</source>
       <translation>Při získávaní dat o albu se vyskytla chyba: &lt;b&gt;{}&lt;/b&gt;</translation>
     </message>
     <message>
@@ -3250,7 +3250,7 @@ Chcete pokračovat?</translation>
     </message>
     <message>
       <location filename="../masstag/dialogs.py" line="399" />
-      <source>&lt;p&gt;Enter a comma-seperated list of fields to retrieve. Leave empty to retrieve all available fields/values. &lt;br /&gt;&lt;br /&gt;Eg. &lt;b&gt;artist, album, title&lt;/b&gt; will only retrieve the artist, album and title fields of from the Tag Source. &lt;br /&gt;&lt;br /&gt;Start the list with the tilde (~) character to write all retrieved fields , but the ones listed. Eg the field list &lt;b&gt;~composer,__image&lt;/b&gt; will write all fields but the composer and __image (aka cover art) fields.&lt;/p&gt;&lt;p&gt;If a field has been retrieved in a previous Tag Source the values will be combined if they differ. Eg. If genre=&lt;b&gt;Rock&lt;/b&gt; for the first tag source polled and genre=&lt;b&gt;Alternative&lt;/b&gt; for the tag source polled second then the resulting field will have multiple-values ie. genre=&lt;b&gt;Rock\\Rap&lt;/b&gt;</source>
+      <source>&lt;p&gt;Enter a comma-separated list of fields to retrieve. Leave empty to retrieve all available fields/values. &lt;br /&gt;&lt;br /&gt;Eg. &lt;b&gt;artist, album, title&lt;/b&gt; will only retrieve the artist, album and title fields of from the Tag Source. &lt;br /&gt;&lt;br /&gt;Start the list with the tilde (~) character to write all retrieved fields , but the ones listed. Eg the field list &lt;b&gt;~composer,__image&lt;/b&gt; will write all fields but the composer and __image (aka cover art) fields.&lt;/p&gt;&lt;p&gt;If a field has been retrieved in a previous Tag Source the values will be combined if they differ. Eg. If genre=&lt;b&gt;Rock&lt;/b&gt; for the first tag source polled and genre=&lt;b&gt;Alternative&lt;/b&gt; for the tag source polled second then the resulting field will have multiple-values ie. genre=&lt;b&gt;Rock\\Rap&lt;/b&gt;</source>
       <translation>&lt;p&gt;Zadejte čárkou oddělený výčet polí k získání. Ponechejte prázdné pro získání všech dostupných polí/hodnot. &lt;br /&gt;&lt;br /&gt;Např. &lt;b&gt;artist, album, title&lt;/b&gt; pro získání polí umělce, alba a názvu ze zdroje značek. &lt;br /&gt;&lt;br /&gt;Zadávání začněte vlnovkou (~), aby se získala všechna pole vyjma uvedených. Např. seznam polí &lt;b&gt;~composer,__image&lt;/b&gt; zapíše všechna pole až na pole skladatel a obrázek (obal).&lt;/p&gt;&lt;p&gt;Pokud bylo pole získáno v předchozím zdroji značek, hodnoty budou, pokud se liší, spojeny.Např. pokud nejprve genre=&lt;b&gt;Rock&lt;/b&gt; pro první zdroj značky, a pak genre=&lt;b&gt;Alternative&lt;/b&gt; pro druhý zdroj značky, potom bude výsledné pole obsahovat více hodnot, tj. genre=&lt;b&gt;Rock\\Rap&lt;/b&gt;</translation>
     </message>
     <message>
@@ -3626,14 +3626,8 @@ Skutečný: {}</translation>
       <location filename="../mainwin/tagsources.py" line="892" />
       <location filename="../mainwin/releasewidget.py" line="472" />
       <location filename="../mainwin/releasewidget.py" line="376" />
-      <source>An error occured: {}</source>
+      <source>An error occurred: {}</source>
       <translation type="unfinished">Vyskytla se chyba: {}</translation>
-    </message>
-    <message>
-      <location filename="../mainwin/releasewidget.py" line="477" />
-      <location filename="../mainwin/releasewidget.py" line="381" />
-      <source>An unhandled error occured: {}</source>
-      <translation type="unfinished">Vyskytla se neznámá chyba: {}</translation>
     </message>
     <message>
       <location filename="../mainwin/releasewidget.py" line="386" />
@@ -3653,12 +3647,12 @@ Skutečný: {}</translation>
     </message>
     <message>
       <location filename="../mainwin/tagsources.py" line="32" />
-      <source>Enter search parameters here. If empty, the selected files are used. &lt;ul&gt;&lt;li&gt;&lt;b&gt;artist;album&lt;/b&gt; searches for a specific album/artist combination.&lt;/li&gt;&lt;li&gt;To list the albums by an artist leave off the album part, but keep the semicolon (eg. &lt;b&gt;Ratatat;&lt;/b&gt;). For a album only leave the artist part as in &lt;b&gt;;Resurrection.&lt;/li&gt;&lt;/ul&gt;</source>
+      <source>Enter search parameters here. If empty, the selected files are used. &lt;ul&gt;&lt;li&gt;&lt;b&gt;artist;album&lt;/b&gt; searches for a specific album/artist combination.&lt;/li&gt;&lt;li&gt;To list the albums by an artist leave off the album part, but keep the semicolon (eg. &lt;b&gt;Ratatat;&lt;/b&gt;). For an album only leave the artist part as in &lt;b&gt;;Resurrection&lt;/b&gt;.&lt;/li&gt;&lt;/ul&gt;</source>
       <translation type="unfinished">Zde zadejte hledané pojmy. Pokud jsou tato pole ponechána prázdná, použijí se jako hledané pojmy názvy souborů. &lt;ul&gt;&lt;li&gt;&lt;b&gt;artist;album&lt;/b&gt; hledá určitou kombinaci album/umělec.&lt;/li&gt;&lt;li&gt;Pro ukázání alb jednoho umělce, nezadávejte žádné album (ponechejte část s albem prázdnou), ponechejte však středník. (např. &lt;b&gt;Ratatat;&lt;/b&gt;). Hledáte-li pouze album, nezadávejte umělce, např. &lt;b&gt;;Resurrection.&lt;/li&gt;&lt;/ul&gt;</translation>
     </message>
     <message>
       <location filename="../mainwin/tagsources.py" line="41" />
-      <source>Enter a comma seperated list of fields to write. &lt;br /&gt;&lt;br /&gt;Eg. &lt;b&gt;artist, album, title&lt;/b&gt; will only write the artist, album and title fields of the retrieved tags. &lt;br /&gt;&lt;br /&gt;If you want to exclude some fields, but write all others start the list the tilde (~) character. Eg &lt;b&gt;~composer, __image&lt;/b&gt; will write all fields but the composer and __image fields.</source>
+      <source>Enter a comma-separated list of fields to write. &lt;br /&gt;&lt;br /&gt;Eg. &lt;b&gt;artist, album, title&lt;/b&gt; will only write the artist, album and title fields of the retrieved tags. &lt;br /&gt;&lt;br /&gt;If you want to exclude some fields, but write all others start the list the tilde (~) character. Eg &lt;b&gt;~composer, __image&lt;/b&gt; will write all fields but the composer and __image fields.</source>
       <translation type="unfinished">Zadejte čárkou oddělený výčet polí, do kterých se má zapisovat. &lt;br /&gt;&lt;br /&gt;Např. &lt;b&gt;artist, album, title&lt;/b&gt; zapíše získané výsledky hledání jen do polí Umělec, Album a Název. &lt;br /&gt;&lt;br /&gt;Když chcete určitá pole vyloučit, ale do všech ostatních polí chcete zapisovat, začněte výčet vlnovkou (~). Např. &lt;b&gt;~composer, __image&lt;/b&gt; provede zápis do všech polí vyjma pole pro skladatele a obal.</translation>
     </message>
     <message>
@@ -3709,7 +3703,7 @@ Skutečný: {}</translation>
     </message>
     <message>
       <location filename="../mainwin/tagsources.py" line="372" />
-      <source>User-Agent to when accessing web sites.</source>
+      <source>User-Agent to send when accessing web sites.</source>
       <translation type="unfinished">Rozpoznání uživatele používané pro připojení se k internetovým stránkám.</translation>
     </message>
     <message>
@@ -3774,7 +3768,7 @@ Skutečný: {}</translation>
     </message>
     <message>
       <location filename="../mainwin/tagsources.py" line="880" />
-      <source>&lt;b&gt;Select some files or enter search paramaters.&lt;/b&gt;</source>
+      <source>&lt;b&gt;Select some files or enter search parameters.&lt;/b&gt;</source>
       <translation type="unfinished">&lt;b&gt;Vyberte soubory nebo zadejte hledané pojmy.&lt;/b&gt;</translation>
     </message>
     <message>

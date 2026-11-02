@@ -288,7 +288,7 @@ def urlopen(url, token=''):
 class Discogs(object):
     name = 'Discogs.com'
     group_by = ['album', 'artist']
-    tooltip = translate("Discogs", """<p><b>Discogs only support searching by release id</b></p>
+    tooltip = translate("Discogs", """<p><b>Discogs only supports searching by release id</b></p>
         <p>Enter the release id Eg. "1257896" to search.</p>""")
 
     def __init__(self):

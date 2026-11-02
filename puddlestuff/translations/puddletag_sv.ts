@@ -1148,7 +1148,7 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
     </message>
     <message>
       <location filename="../tagsources/discogs.py" line="278" />
-      <source>&lt;p&gt;&lt;b&gt;Discogs only support searching by release id&lt;/b&gt;&lt;/p&gt;
+      <source>&lt;p&gt;&lt;b&gt;Discogs only supports searching by release id&lt;/b&gt;&lt;/p&gt;
         &lt;p&gt;Enter the release id Eg. "1257896" to search.&lt;/p&gt;</source>
       <translation type="unfinished" />
     </message>
@@ -2291,13 +2291,13 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
     <message>
       <location filename="../masstag/dialogs.py" line="634" />
       <location filename="../masstag/dialogs.py" line="40" />
-      <source>An error occured during the search: &lt;b&gt;{}&lt;/b&gt;</source>
+      <source>An error occurred during the search: &lt;b&gt;{}&lt;/b&gt;</source>
       <translation>Ett fel inträffade under sökning: &lt;b&gt;{}&lt;/b&gt;</translation>
     </message>
     <message>
       <location filename="../masstag/dialogs.py" line="637" />
       <location filename="../masstag/dialogs.py" line="45" />
-      <source>An error occured during album retrieval: &lt;b&gt;{}&lt;/b&gt;</source>
+      <source>An error occurred during album retrieval: &lt;b&gt;{}&lt;/b&gt;</source>
       <translation>Ett fel inträffade under albumhämtning: &lt;b&gt;{}&lt;/b&gt;</translation>
     </message>
     <message>
@@ -3249,7 +3249,7 @@ Vill du fortsätta?</translation>
     </message>
     <message>
       <location filename="../masstag/dialogs.py" line="399" />
-      <source>&lt;p&gt;Enter a comma-seperated list of fields to retrieve. Leave empty to retrieve all available fields/values. &lt;br /&gt;&lt;br /&gt;Eg. &lt;b&gt;artist, album, title&lt;/b&gt; will only retrieve the artist, album and title fields of from the Tag Source. &lt;br /&gt;&lt;br /&gt;Start the list with the tilde (~) character to write all retrieved fields , but the ones listed. Eg the field list &lt;b&gt;~composer,__image&lt;/b&gt; will write all fields but the composer and __image (aka cover art) fields.&lt;/p&gt;&lt;p&gt;If a field has been retrieved in a previous Tag Source the values will be combined if they differ. Eg. If genre=&lt;b&gt;Rock&lt;/b&gt; for the first tag source polled and genre=&lt;b&gt;Alternative&lt;/b&gt; for the tag source polled second then the resulting field will have multiple-values ie. genre=&lt;b&gt;Rock\\Rap&lt;/b&gt;</source>
+      <source>&lt;p&gt;Enter a comma-separated list of fields to retrieve. Leave empty to retrieve all available fields/values. &lt;br /&gt;&lt;br /&gt;Eg. &lt;b&gt;artist, album, title&lt;/b&gt; will only retrieve the artist, album and title fields of from the Tag Source. &lt;br /&gt;&lt;br /&gt;Start the list with the tilde (~) character to write all retrieved fields , but the ones listed. Eg the field list &lt;b&gt;~composer,__image&lt;/b&gt; will write all fields but the composer and __image (aka cover art) fields.&lt;/p&gt;&lt;p&gt;If a field has been retrieved in a previous Tag Source the values will be combined if they differ. Eg. If genre=&lt;b&gt;Rock&lt;/b&gt; for the first tag source polled and genre=&lt;b&gt;Alternative&lt;/b&gt; for the tag source polled second then the resulting field will have multiple-values ie. genre=&lt;b&gt;Rock\\Rap&lt;/b&gt;</source>
       <translation>&lt;p&gt;Ange en kommaseparerad lista över fält som skall hämtas. Lämnas tom för att hämta alla tillgängliga fält/värden. &lt;br /&gt;&lt;br /&gt;Exempel: &lt;b&gt;artist, album, titel&lt;/b&gt; hämtar endast artist-, album- och titelfälten från taggkällan. &lt;br /&gt;&lt;br /&gt;Starta listan med tilde (~), för att skriva alla hämtade fält, utom de listade. Exempel: De listade fälten &lt;b&gt;~kompositör,__bild&lt;/b&gt; skriver alla fält utom just kompositör och __bild (albumbild).&lt;/p&gt;&lt;p&gt;Om ett fält har hämtats från en tidigare taggkälla, kombineras värdena om de skiljer sig åt. Exempel: Om genre=&lt;b&gt;Rock&lt;/b&gt; från första taggkällan och genre=&lt;b&gt;Rap&lt;/b&gt; från andra taggkällan, kommer genrefältet att få flera värden. Exempelvis, genre=&lt;b&gt;Rock\\Rap&lt;/b&gt;.</translation>
     </message>
     <message>
@@ -3625,14 +3625,8 @@ Aktuell: {}</translation>
       <location filename="../mainwin/tagsources.py" line="892" />
       <location filename="../mainwin/releasewidget.py" line="472" />
       <location filename="../mainwin/releasewidget.py" line="376" />
-      <source>An error occured: {}</source>
+      <source>An error occurred: {}</source>
       <translation type="unfinished">Ett fel inträffade: {}</translation>
-    </message>
-    <message>
-      <location filename="../mainwin/releasewidget.py" line="477" />
-      <location filename="../mainwin/releasewidget.py" line="381" />
-      <source>An unhandled error occured: {}</source>
-      <translation type="unfinished">Ett obearbetat fel inträffade: {}</translation>
     </message>
     <message>
       <location filename="../mainwin/releasewidget.py" line="386" />
@@ -3652,12 +3646,12 @@ Aktuell: {}</translation>
     </message>
     <message>
       <location filename="../mainwin/tagsources.py" line="32" />
-      <source>Enter search parameters here. If empty, the selected files are used. &lt;ul&gt;&lt;li&gt;&lt;b&gt;artist;album&lt;/b&gt; searches for a specific album/artist combination.&lt;/li&gt;&lt;li&gt;To list the albums by an artist leave off the album part, but keep the semicolon (eg. &lt;b&gt;Ratatat;&lt;/b&gt;). For a album only leave the artist part as in &lt;b&gt;;Resurrection.&lt;/li&gt;&lt;/ul&gt;</source>
+      <source>Enter search parameters here. If empty, the selected files are used. &lt;ul&gt;&lt;li&gt;&lt;b&gt;artist;album&lt;/b&gt; searches for a specific album/artist combination.&lt;/li&gt;&lt;li&gt;To list the albums by an artist leave off the album part, but keep the semicolon (eg. &lt;b&gt;Ratatat;&lt;/b&gt;). For an album only leave the artist part as in &lt;b&gt;;Resurrection&lt;/b&gt;.&lt;/li&gt;&lt;/ul&gt;</source>
       <translation type="unfinished">Ange sökparametrar här. De valda filerna används om fältet lämnas tomt. &lt;ul&gt;&lt;li&gt;&lt;b&gt;artist;album&lt;/b&gt; söker specifikt efter album-/artistkombination.&lt;/li&gt;&lt;li&gt;Utelämna albumdelen, men lämna kvar semikolon, för att lista album av en artist (exempel: &lt;b&gt;Ratatat;&lt;/b&gt;). För endast ett album, lämna kvar artistdelen, som i &lt;b&gt;;Resurrection.&lt;/li&gt;&lt;/ul&gt;</translation>
     </message>
     <message>
       <location filename="../mainwin/tagsources.py" line="41" />
-      <source>Enter a comma seperated list of fields to write. &lt;br /&gt;&lt;br /&gt;Eg. &lt;b&gt;artist, album, title&lt;/b&gt; will only write the artist, album and title fields of the retrieved tags. &lt;br /&gt;&lt;br /&gt;If you want to exclude some fields, but write all others start the list the tilde (~) character. Eg &lt;b&gt;~composer, __image&lt;/b&gt; will write all fields but the composer and __image fields.</source>
+      <source>Enter a comma-separated list of fields to write. &lt;br /&gt;&lt;br /&gt;Eg. &lt;b&gt;artist, album, title&lt;/b&gt; will only write the artist, album and title fields of the retrieved tags. &lt;br /&gt;&lt;br /&gt;If you want to exclude some fields, but write all others start the list the tilde (~) character. Eg &lt;b&gt;~composer, __image&lt;/b&gt; will write all fields but the composer and __image fields.</source>
       <translation type="unfinished">Ange en kommaseparerad lista över fält att skriva &lt;br /&gt;&lt;br /&gt;Exempel: &lt;b&gt;artist, album, title&lt;/b&gt; skriver endast artist-, album och titelfälten från de hämtade taggarna. &lt;br /&gt;&lt;br /&gt;Om du vill utesluta några fält, men skriva alla andra, startar du listan med tilde (~). Exempel: &lt;b&gt;~composer, __image&lt;/b&gt; skriver alla fält, men utelämnar kompositörs- och bildfältet.</translation>
     </message>
     <message>
@@ -3708,7 +3702,7 @@ Aktuell: {}</translation>
     </message>
     <message>
       <location filename="../mainwin/tagsources.py" line="372" />
-      <source>User-Agent to when accessing web sites.</source>
+      <source>User-Agent to send when accessing web sites.</source>
       <translation type="unfinished">User-Agent för att besöka webbsidor.</translation>
     </message>
     <message>
@@ -3773,7 +3767,7 @@ Aktuell: {}</translation>
     </message>
     <message>
       <location filename="../mainwin/tagsources.py" line="880" />
-      <source>&lt;b&gt;Select some files or enter search paramaters.&lt;/b&gt;</source>
+      <source>&lt;b&gt;Select some files or enter search parameters.&lt;/b&gt;</source>
       <translation type="unfinished">&lt;b&gt;Markera några filer, eller ange sökparametrar.&lt;/b&gt;</translation>
     </message>
     <message>

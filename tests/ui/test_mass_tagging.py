@@ -589,7 +589,6 @@ def test_source_without_a_match_is_polled_again_with_the_found_data(
         assert previews(mainwin)[str(f)]['genre'] == ['One']
 
 
-@pytest.mark.xfail(strict=True, reason="the message misspells 'occurred'")
 def test_retrieval_error_while_searching_is_logged(mainwin, make_audio, tmp_path, qtbot, user):
     # tagsources.txt's example plugin: "Raise puddlestuff.tagsources.RetrievalError
     # if an error occurs." Synthetic files and album.
@@ -608,7 +607,6 @@ def test_retrieval_error_while_searching_is_logged(mainwin, make_audio, tmp_path
     no_previews(mainwin)
 
 
-@pytest.mark.xfail(strict=True, reason="the message misspells 'occurred'")
 def test_retrieval_error_while_retrieving_is_logged(mainwin, make_audio, tmp_path, qtbot, user):
     # tagsources.txt's example plugin: "Raise puddlestuff.tagsources.RetrievalError
     # if an error occurs." Synthetic files and album.
@@ -733,7 +731,6 @@ def test_profile_editor_defaults(mainwin, user, qtbot):
     user.click(button(profiles, 'Cancel'))
 
 
-@pytest.mark.xfail(strict=True, reason="the tooltip misspells 'comma-separated'")
 def test_profile_source_fields_tooltip_says_comma_separated(mainwin, user, qtbot):
     # tut5.txt, Fields: "The list of fields to retrieve from the tag source."
     # tagsources.txt: "Enter a list of comma-separated fields to write here".

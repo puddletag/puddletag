@@ -39,12 +39,12 @@ mutex = QMutex()
 
 def search_error(error, profile):
     set_status(translate('Masstagging',
-                         "An error occured during the search: <b>{}</b>").format(str(error)))
+                         "An error occurred during the search: <b>{}</b>").format(str(error)))
 
 
 def retrieval_error(error, profile):
     set_status(translate('Masstagging',
-                         "An error occured during album retrieval: <b>{}</b>").format(str(error)))
+                         "An error occurred during album retrieval: <b>{}</b>").format(str(error)))
 
 
 class MassTagEdit(QDialog):
@@ -398,7 +398,7 @@ class TSProfileEdit(QDialog):
         layout.addLayout(
             create_buddy(translate('Defaults', 'Fields: '), self.fields))
         self.fields.setToolTip(translate('Profile Editor',
-                                         '<p>Enter a comma-seperated list of fields to retrieve. '
+                                         '<p>Enter a comma-separated list of fields to retrieve. '
                                          'Leave empty to retrieve all available fields/values. '
 
                                          '<br /><br />Eg. <b>artist, album, title</b> will '
@@ -633,10 +633,10 @@ class MassTagWindow(QWidget):
                                  mtp.file_pattern)
 
         search_msg = translate('Masstagging',
-                               "An error occured during the search: <b>{}</b>")
+                               "An error occurred during the search: <b>{}</b>")
 
         retrieve_msg = translate('Masstagging',
-                                 "An error occured during album retrieval: <b>{}</b>")
+                                 "An error occurred during album retrieval: <b>{}</b>")
 
         error_msg = translate('Masstagging', "An error occurred: <b>{}</b>")
 

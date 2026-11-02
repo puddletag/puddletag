@@ -450,7 +450,7 @@ def test_itunes_answer_without_results_finds_nothing(folder, server):
     (500, 'HTTP Error 500: Internal Server Error'),
 ])
 def test_search_page_error_is_reported(folder, server, status, message):
-    # The window shows it as "An error occured: <message>". Synthetic error
+    # The window shows it as "An error occurred: <message>". Synthetic error
     # pages.
     server.add('/search', 'Synthetic error page', status=status)
     source = load_one(folder, script(local_header(server), index=INDEX_PARSER))
