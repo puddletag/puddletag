@@ -902,9 +902,6 @@ def test_a_source_whose_albums_are_below_the_album_percentage_says_so(log):
 # The Stop button: the docs don't describe it; tut5.txt's "use any previously
 # retrieved results" is the nearest rule. Synthetic albums.
 
-@pytest.mark.xfail(strict=True, raises=AttributeError,
-                   reason='Stop pressed during a search leaves that source matched but '
-                          'never retrieved, and combining the sources\' tracks fails on it')
 def test_stop_during_a_search_keeps_the_albums_already_retrieved():
     """tut5.txt, If no results found: "use any previously retrieved
     results"; applied here to a lookup stopped while the second source is
@@ -919,9 +916,6 @@ def test_stop_during_a_search_keeps_the_albums_already_retrieved():
     assert [t['genre'] for t in merge_tsp_tracks(mtp.profiles)] == [['One'], ['One']]
 
 
-@pytest.mark.xfail(strict=True,
-                   reason='Stop pressed while an album is retrieved still searches the '
-                          'next tag source')
 def test_stop_during_a_retrieval_searches_no_other_source():
     """Synthetic: the Stop button pressed while the first source's album is
     retrieved; the docs don't describe it."""
@@ -933,9 +927,6 @@ def test_stop_during_a_retrieval_searches_no_other_source():
     assert names(results) == ['A']
 
 
-@pytest.mark.xfail(strict=True,
-                   reason='Stop pressed while an album is retrieved still says the sources '
-                          'are polled again')
 def test_stop_during_a_retrieval_polls_no_source_again(log):
     """Synthetic: the Stop button pressed while the second source's album is
     retrieved, after the first found nothing; the docs don't describe it."""

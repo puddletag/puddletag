@@ -373,7 +373,7 @@ def merge_tsp_tracks(profiles, files=None):
     ret = []
     to_repl = []
     for tsp in profiles:
-        if not tsp.matched:
+        if not tsp.matched or tsp.result is None:
             continue
 
         if tsp.result.tracks is None and files is not None:
@@ -427,7 +427,7 @@ def masstag(mtp, files=None, flag=None, mtp_error_func=None,
 
     stopped = False
 
-    for matches, results, tsp in mtp.search(files, errors=mtp_error_func):
+    for matches, results, tsp in mtp.search(files, errors=mtp_error_func, flag=flag):
         if flag.stop:
             break
         if len(results) > 1:
@@ -473,7 +473,7 @@ def masstag(mtp, files=None, flag=None, mtp_error_func=None,
 
     ret = []
 
-    if not_found and found and not stopped:
+    if not_found and found and not stopped and not flag.stop:
         set_status(RECHECKING.format(found[0].tag_source.name))
         audios_copy = []
         for t, m in zip(list(map(deepcopy, files)), found[0].result.merged):
@@ -583,7 +583,7 @@ class MassTagProfile(object):
         for profile in self.profiles:
             profile.clear_results()
 
-    def search(self, files=None, profiles=None, regexps=None, errors=None):
+    def search(self, files=None, profiles=None, regexps=None, errors=None, flag=None):
         files = self.files if files is None else files
         profiles = self.profiles if profiles is None else profiles
         regexps = self.regexps if regexps is None else regexps
@@ -600,6 +600,8 @@ class MassTagProfile(object):
             changed_files = [z[1] for z in changed_files]
 
         for profile in profiles:
+            if flag is not None and flag.stop:
+                return
             profile.clear_results()
             if profile.tag_source is None:
                 set_status(SOURCE_NOT_FOUND.format(profile.missing_source))
