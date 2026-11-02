@@ -102,8 +102,6 @@ def test_an_album_with_as_many_tracks_as_files_matches_whatever_its_names():
     assert find_best([too_few], files) == []
 
 
-@pytest.mark.xfail(strict=True, reason='only one of several albums with as many '
-                                      'tracks as the files is kept')
 def test_every_album_with_as_many_tracks_as_files_matches():
     """tut5.txt, Minimum percentage required for album matches: "A search
     result that already has as many tracks as the files you selected is also
@@ -116,7 +114,6 @@ def test_every_album_with_as_many_tracks_as_files_matches():
     assert find_best([x, y, z], files) == [x, y, z]
 
 
-@pytest.mark.xfail(strict=True, reason='albums with the same names overwrite each other')
 def test_albums_with_the_same_names_all_match():
     """tut5.txt, Minimum percentage required for album matches: "An album
     will be considered a match if its **album name** and its **artist** both
@@ -129,8 +126,6 @@ def test_albums_with_the_same_names_all_match():
     assert find_best([a, b, c], files) == [a, b, c]
 
 
-@pytest.mark.xfail(strict=True, reason='an album kept for its track count ranks above '
-                                      'a name match at the minimum')
 def test_a_name_match_ranks_before_a_track_count_match():
     """Synthetic: an album named nothing like the files' but with as many
     tracks, given first by the source, and one with the files' names, or
@@ -145,8 +140,6 @@ def test_a_name_match_ranks_before_a_track_count_match():
     assert find_best([count_only, at_minimum], files, minimum) == [at_minimum, count_only]
 
 
-@pytest.mark.xfail(strict=True, reason='the Various Artists name is read before '
-                                      'the translations load')
 def test_several_artists_are_compared_as_various_artists(_translated_strings):
     """Synthetic: two files by different artists on the album 'Hits', and a
     result by 'Various Artists', the name the app has once its translations

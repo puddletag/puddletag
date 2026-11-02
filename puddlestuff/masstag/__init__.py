@@ -2,8 +2,8 @@ from collections import defaultdict
 from copy import deepcopy
 from operator import itemgetter
 
+from .. import constants
 from ..audioinfo import FILENAME
-from ..constants import VARIOUS
 from ..findfunc import filenametotag
 from ..puddleobjects import natural_sort_key, ratio
 from ..tagsources import RetrievalError
@@ -188,9 +188,10 @@ def find_best(matches, files, minimum=0.7):
     if len(artists) == 1:
         artist = artists[0]
     else:
-        artist = VARIOUS
+        artist = constants.VARIOUS
     d = {'artist': artist, 'album': album}
-    scores = {}
+    scored = []
+    by_count = []
 
     for match in matches:
         if hasattr(match, 'info'):
@@ -200,19 +201,15 @@ def find_best(matches, files, minimum=0.7):
 
         score = min([ratio_compare(d, info, key) for key in d])
 
-        if score in scores:
-            score = score + 0.01  # For albums that have same name.
-        scores[score] = match
         tracks = match.tracks if hasattr(match, 'tracks') else match[1]
-        if tracks and score < minimum:
-            if len(tracks) == len(files):
-                scores[minimum + 0.01] = match
+        if score >= minimum:
+            scored.append((score, match))
+        elif tracks and len(tracks) == len(files):
+            by_count.append(match)
 
-    if scores:
-        return [scores[z] for z in
-                sorted(scores, reverse=True) if z >= minimum]
-    else:
-        return []
+    # sorted is stable, so equal scores keep the source's order.
+    return [match for score, match in
+            sorted(scored, key=itemgetter(0), reverse=True)] + by_count
 
 
 def get_artist_album(files):
@@ -220,7 +217,7 @@ def get_artist_album(files):
     album = list(tags.keys())[0]
     artists = tags[album]
     if len(artists) > 1:
-        return VARIOUS, album
+        return constants.VARIOUS, album
     else:
         return list(artists)[0], album
 
