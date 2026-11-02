@@ -223,21 +223,21 @@ class MTProfileEdit(QDialog):
         self.albumBound.setRange(0, 100)
         self.albumBound.setValue(70)
         self.albumBound.setToolTip(translate('Profile Editor',
-                                             "<p>The artist and album fields will be used in "
-                                             "determining whether an album matches the retrieved one. "
-                                             "Each field will be compared using a fuzzy matching algorithm. "
-                                             "If the resulting average match percentage is greater "
-                                             "or equal than what you specify here it'll be "
-                                             "considered to match.</p>"))
+                                             "<p>The album's artist and album name are each compared "
+                                             "with the files' by fuzzy matching. The album matches "
+                                             "when both are at least this percentage alike. "
+                                             "A search result with as many tracks as the selected "
+                                             "files also matches, whatever its names.</p>"))
 
         self.matchFields = QLineEdit('artist, title')
         self.matchFields.setToolTip(translate('Profile Editor',
-                                              '<p>The fields listed here will be used in '
-                                              'determining whether a file matches a retrieved track. '
-                                              'Each field will be compared using a fuzzy matching '
-                                              'algorithm. If the resulting average match '
-                                              'percentage is greater than the "Minimum Percentage" '
-                                              'it\'ll be considered to match.</p>'))
+                                              '<p>The fields listed here are compared between each file '
+                                              'and each retrieved track by fuzzy matching; a track '
+                                              'lacking one of them is skipped. The field with the '
+                                              'lowest match percentage decides, and the track matches '
+                                              'when that is at least the "Minimum percentage required '
+                                              'for track match". An empty box means artist and title; '
+                                              'track is ignored beside other fields.</p>'))
 
         self.trackBound = QSpinBox()
         self.trackBound.setRange(0, 100)
@@ -248,9 +248,10 @@ class MTProfileEdit(QDialog):
         self.jfdi.setToolTip(translate('Profile Editor',
                                        "<p>Check to enable brute forcing matches. "
                                        " If a proper match isn't found for a file, "
-                                       'the files will get sorted by filename, '
-                                       'the retrieved tag sources by filename and '
-                                       'corresponding (unmatched) tracks will matched.</p>'))
+                                       'the unmatched files are sorted by discnumber, then '
+                                       'track (or by filename without them), the retrieved '
+                                       'tracks by discnumber, then track, and paired in '
+                                       'order.</p>'))
 
         self.existing = QCheckBox(translate('Profile Editor',
                                             'Update empty fields only.'))

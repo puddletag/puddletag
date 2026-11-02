@@ -65,13 +65,13 @@ Inputs required are:
 
 .. describe:: Pattern to match filenames against.
 
-    A :ref:`File->Tag <filename_to_tag>` operation will be performed on each file using the pattern defined here. Any fields found from this operation not aren't already present in the file will be replaced.
+    A :ref:`File->Tag <filename_to_tag>` operation will be performed on each file using the pattern defined here. Any fields found from this operation that aren't already present in the file will be replaced.
 
-    Eg. For a with with path */music/Bongo Maffin - Bongolution/02 - Way Kungakhona*, that has the tag, **artist=Bongo Maffin, album=Bonglut, genre=Kwaito**.
+    Eg. For a file with path */music/Bongo Maffin - Bongolution/02 - Way Kungakhona*, that has the tag, **artist=Bongo Maffin, album=Bonglut, genre=Kwaito**.
 
-    Using the pattern **%artist - %album%/%track% - %title%** will retrieve the following tag **artist=Bongo Maffin, album=Bongolution, track=02, title=Way Kungakhona**. The file doesn't contain the *track* and *title* fields, so it'll be updated with these fields.
+    Using the pattern **%artist% - %album%/%track% - %title%** will retrieve the following tag **artist=Bongo Maffin, album=Bongolution, track=02, title=Way Kungakhona**. The file doesn't contain the *track* and *title* fields, so it'll be updated with these fields.
 
-    The tag used to poll Tag Sources will then be **artist=Bongo Maffin, album=Bonglut, genre=Kwaito, track=02, title=Way Kungokhona**.
+    The tag used to poll Tag Sources will then be **artist=Bongo Maffin, album=Bonglut, genre=Kwaito, track=02, title=Way Kungakhona**.
 
     .. note:: All these changes are kept in memory and nothing is written to the file.
 
@@ -79,7 +79,7 @@ Inputs required are:
 
 .. describe:: Minimum percentage required for album matches.
 
-    An album will be considered a match if the percentage by which the  **album name** and **artist** differ for the album is less than what's specified here.
+    An album will be considered a match if its **album name** and its **artist** both match the files' by at least the percentage specified here.
 
     A search result that already has as many tracks as the files you selected is also considered a match, whatever its album name and artist.
 
@@ -90,7 +90,11 @@ Inputs required are:
     * Check if all the fields listed are present in the retrieved track.
     * If so, each field will be compared in the file vs each track and the field with the **lowest** match percentage will be used to assess the track match the file.
 
+    If no fields are listed, **artist** and **title** are used. **track** is used only when it's the only field listed: beside other fields, it's ignored.
+
     puddletag will compare all retrieved tracks against the files and choose the one with the highest **Matching Percentage** as a match if and only if the **Match Percentage** is at least the **Minimum percentage required for track match**.
+
+    If **track** is the only field listed, the album has several discs and there are as many files as retrieved tracks, files numbered straight through the album are renumbered disc by disc before they're compared: with two discs of two tracks each, file 3 is compared with disc 2's track 1.
 
 .. describe:: Minimum percentage required for track match.
 
@@ -100,7 +104,7 @@ Inputs required are:
 
     Check to enable brute force matching.
 
-    If no matches were found for some files, then the files will be sorted by **track** (if it's not present, **__filename**). The retrieved data will also be sorted using **track**. Each retrieved track will then be paired with a file (in order) provided that file hasn't been matched previously.
+    If no matches were found for some files, then the files will be sorted by **discnumber**, then **track** (if they're not present, **__filename**), as found in the tag used to poll Tag Sources. The retrieved data will also be sorted using **discnumber**, then **track**. Each retrieved track will then be paired with a file (in order) provided that file hasn't been matched previously.
 
 .. describe:: Update empty fields only.
 
