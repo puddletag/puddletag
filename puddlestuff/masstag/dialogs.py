@@ -10,8 +10,8 @@ from PyQt6.QtWidgets import QApplication, QCheckBox, QComboBox, QDialog, QGridLa
 
 from .. import masstag as masstag_module
 from ..constants import RIGHTDOCK
-from ..masstag import (NO_MATCH_OPTIONS, fields_from_text, match_files, masstag, merge_tsp_tracks,
-                       split_files, MassTagFlag, MassTagProfile, TagSourceProfile)
+from ..masstag import (NO_MATCH_OPTIONS, NO_VALID_FOUND, VALID_FOUND, fields_from_text, match_files, masstag,
+                       merge_tsp_tracks, split_files, MassTagFlag, MassTagProfile, TagSourceProfile)
 from ..masstag.config import (PROFILEDIR, convert_mtps,
                               load_all_mtps, save_mtp)
 from ..puddleobjects import (create_buddy, winsettings, ListButtons, ListBox, OKCancel, PuddleConfig, PuddleThread)
@@ -661,6 +661,7 @@ class MassTagWindow(QWidget):
                                       mtp.track_bound, mtp.fields,
                                       mtp.jfdi, mtp.leave_existing, True)[0]
 
+                    set_status(VALID_FOUND if ret else NO_VALID_FOUND)
                     if ret:
                         thread.enable_preview_mode.emit()
                         thread.setpreview.emit(ret)

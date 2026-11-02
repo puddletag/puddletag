@@ -488,12 +488,8 @@ def masstag(mtp, files=None, flag=None, mtp_error_func=None,
                       mtp_error_func, tsp_error_func, False)
 
     if found:
-        if not ret and print_status:
-            set_status(VALID_FOUND)
         return [tsp.result for tsp in found] + ret
     else:
-        if print_status:
-            set_status(NO_VALID_FOUND)
         return []
 
 

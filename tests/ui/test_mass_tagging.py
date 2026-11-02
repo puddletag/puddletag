@@ -847,8 +847,6 @@ def test_profile_skips_a_tag_source_that_is_gone(mainwin, make_audio, user, qtbo
 
 # The docs don't describe the log's closing line. Synthetic files and albums.
 
-@pytest.mark.xfail(strict=True, reason='"Valid matches were found for the album." is logged '
-                                       'when no file got a track')
 def test_no_valid_match_is_logged_when_no_file_gets_a_track(
         mainwin, make_audio, tmp_path, qtbot, user):
     SyntheticSource.albums = [(ALBUM_A, [dict(t, title=f'Other {t["track"]}')
@@ -860,8 +858,6 @@ def test_no_valid_match_is_logged_when_no_file_gets_a_track(
     assert 'No valid matches were found for the album.' in log
 
 
-@pytest.mark.xfail(strict=True, reason='no closing line is logged when a source polled again '
-                                       'found the album')
 def test_valid_matches_are_logged_when_the_recheck_found_the_album(
         mainwin, user, make_audio, tmp_path, qtbot):
     album_files(make_audio, tmp_path / 'music' / 'AA - Album A',
