@@ -1,4 +1,3 @@
-import sys
 import traceback
 from copy import deepcopy
 from functools import partial
@@ -42,11 +41,6 @@ def fillItem(item, info, tracks, trackpattern):
         item.itemData['__numtracks'] = '0'
         item.hasTracks = False
     item.dispPattern = item.dispPattern
-
-
-def get_tagsources():
-    from ..tagsources import exampletagsource, musicbrainz
-    return exampletagsource.info[0](), musicbrainz.info[0]()
 
 
 def strip(audio, taglist, reverse=False, mapping=None):
@@ -749,15 +743,3 @@ class ReleaseWidget(QTreeView):
     def setMapping(self, mapping):
         self.model().mapping = mapping
         self.mapping = mapping
-
-
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    model = TreeModel()
-    model.setupModelData(data)
-
-    view = ReleaseWidget(1, get_tagsources()[0])
-    view.setModel(model)
-    view.setWindowTitle("Simple Tree Model")
-    view.show()
-    sys.exit(app.exec())

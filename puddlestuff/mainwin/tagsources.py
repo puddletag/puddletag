@@ -1,12 +1,11 @@
 import glob
 import logging
 import os
-import sys
 import traceback
 from copy import deepcopy
 
 from PyQt6.QtCore import Qt, pyqtRemoveInputHook, pyqtSignal
-from PyQt6.QtWidgets import QAbstractItemView, QApplication, QCheckBox, QComboBox, QDialog, QGroupBox, QHBoxLayout, \
+from PyQt6.QtWidgets import QAbstractItemView, QCheckBox, QComboBox, QDialog, QGroupBox, QHBoxLayout, \
     QInputDialog, QLabel, QLineEdit, QPushButton, QSpinBox, QTextEdit, QToolButton, QVBoxLayout, \
     QWidget
 
@@ -19,8 +18,7 @@ from ..puddleobjects import (create_buddy, get_icon, winsettings,
                             ListBox, ListButtons, OKCancel, PuddleConfig, PuddleThread)
 from ..tagsources import (DEFAULT_USERAGENT, tagsources, status_obj, set_useragent,
                          write_log, RetrievalError, mp3tag, SubmissionError)
-from ..util import (isempty, pprint_tag,
-                   split_by_field, to_string, translate)
+from ..util import (split_by_field, to_string, translate)
 
 from .releasewidget import ReleaseWidget, default_albumpattern
 
@@ -69,20 +67,6 @@ def apply_regexps(audio, regexps=None):
         except FuncError:
             continue
     return changed, audio
-
-
-def display_tag(tag):
-    """Used to display tags in in a human parseable format."""
-    tag = dict((k, v) for k, v in tag.items() if
-               not k.startswith('#') and not isempty(v))
-
-    if not tag:
-        return translate("Tag Sources", "<b>Nothing to display.</b>")
-    fmt = "<b>%s</b>: %s<br />"
-    text = pprint_tag(tag, fmt, True)
-    if text.endswith('<br />'):
-        text = text[:-len('<br />')]
-    return text
 
 
 def load_mp3tag_sources(dirpath=MTAG_SOURCE_DIR, failures=None):
@@ -608,7 +592,7 @@ class MainWin(QWidget):
         self.__sources.extend(load_mp3tag_sources(failures=failures))
 
         for ts in self.__sources:
-            if hasattr(ts, 'preferences') and not isinstance(ts, QWidget):
+            if hasattr(ts, 'preferences'):
                 try:
                     ts.applyPrefs(load_source_prefs(ts.name, ts.preferences))
                 except:
@@ -768,22 +752,19 @@ class MainWin(QWidget):
         if config is None:
             return
 
-        if isinstance(config, QWidget):
-            win = config(parent=self)
-        else:
-            defaults = load_source_prefs(self.curSource.name, config)
-            prefs = deepcopy(config)
-            for pref, value in zip(prefs, defaults):
-                if pref[1] == SPINBOX:
-                    try:
-                        pref[2][2] = int(value)
-                    except ValueError:
-                        pass
-                elif pref[1] == COMBO:
-                    pref[2][1] = value
-                else:
-                    pref[2] = value
-            win = SimpleDialog(self.curSource.name, prefs, self)
+        defaults = load_source_prefs(self.curSource.name, config)
+        prefs = deepcopy(config)
+        for pref, value in zip(prefs, defaults):
+            if pref[1] == SPINBOX:
+                try:
+                    pref[2][2] = int(value)
+                except ValueError:
+                    pass
+            elif pref[1] == COMBO:
+                pref[2][1] = value
+            else:
+                pref[2] = value
+        win = SimpleDialog(self.curSource.name, prefs, self)
         win.setModal(True)
         win.editingFinished.connect(self._applyPrefs)
         win.show()
@@ -971,11 +952,3 @@ class MainWin(QWidget):
 
 
 control = ('Tag Sources', MainWin, RIGHTDOCK, False)
-
-if __name__ == '__main__':
-    app = QApplication(sys.argv)
-    status = {}
-    status['selectedfiles'] = exampletags.tags
-    win = MainWin(status)
-    win.show()
-    app.exec()
