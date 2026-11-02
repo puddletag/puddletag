@@ -885,6 +885,7 @@ class MainWin(QWidget):
         if not self.searchButton.isEnabled():
             return
         files = self._status['selectedfiles']
+        group = None
         if self.curSource.group_by:
             group = split_by_field(files, *self.curSource.group_by)
         self.label.setText(translate("Tag Sources", 'Searching...'))

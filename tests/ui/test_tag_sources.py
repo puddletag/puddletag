@@ -1595,7 +1595,6 @@ def test_search_box_is_off_for_a_source_without_text_search(more_sources, mainwi
     assert window.searchEdit.toolTip().startswith('Enter search parameters here.')
 
 
-@pytest.mark.xfail(strict=True, reason="a source without group_by can't search the selected files")
 def test_source_without_grouping_searches_the_selected_files(more_sources, mainwin, make_audio, tmp_path, qtbot, user):
     # The docs don't say; this is what puddletag should do. The interface it
     # describes for sources: "if self.group_by is Falsey, a list of selected
