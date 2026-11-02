@@ -817,8 +817,6 @@ def test_no_source_is_polled_again_when_each_found_the_album(log):
     assert not any('Rechecking' in line for line in log)
 
 
-@pytest.mark.xfail(strict=True, reason='a source set to Stop is searched again when the other '
-                                       'sources are polled again')
 def test_a_source_set_to_stop_is_not_polled_again(log):
     """tut5.txt, If no results found: "If no matching album was found for
     this tag source, you can choose to either Continue with the other tag
@@ -836,8 +834,6 @@ def test_a_source_set_to_stop_is_not_polled_again(log):
     assert names(results) == ['A']
 
 
-@pytest.mark.xfail(strict=True, reason='the sources that found nothing are searched again after '
-                                       'a source set to Stop ended the lookup')
 def test_no_source_is_polled_again_after_a_stop():
     """tut5.txt, If no results found: "If no matching album was found for
     this tag source, you can choose to either Continue with the other tag

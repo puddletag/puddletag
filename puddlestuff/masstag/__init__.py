@@ -425,6 +425,8 @@ def masstag(mtp, files=None, flag=None, mtp_error_func=None,
 
     mtp.regexps = DEFAULT_REGEXP if not mtp.regexps else mtp.regexps
 
+    stopped = False
+
     for matches, results, tsp in mtp.search(files, errors=mtp_error_func):
         if flag.stop:
             break
@@ -438,6 +440,7 @@ def masstag(mtp, files=None, flag=None, mtp_error_func=None,
         if not matches:
             not_found.append(tsp)
             if tsp.if_no_result == STOP:
+                stopped = True
                 break
             continue
 
@@ -463,13 +466,14 @@ def masstag(mtp, files=None, flag=None, mtp_error_func=None,
             set_status(NO_MATCHES.format(tsp.tag_source.name))
             not_found.append(tsp)
             if tsp.if_no_result == STOP:
+                stopped = True
                 break
         else:
             found.append(tsp)
 
     ret = []
 
-    if not_found and found:
+    if not_found and found and not stopped:
         set_status(RECHECKING.format(found[0].tag_source.name))
         audios_copy = []
         for t, m in zip(list(map(deepcopy, files)), found[0].result.merged):
