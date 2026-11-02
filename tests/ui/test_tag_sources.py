@@ -1704,7 +1704,6 @@ def test_sort_option_editor_double_click_edits_the_option(mainwin, make_audio, t
     assert page._sortoptions.currentText() == 'genre, album'
 
 
-@pytest.mark.xfail(strict=True, reason="the sort options editor's Cancel applies the edits")
 def test_sort_option_editor_cancel_keeps_the_options(mainwin, make_audio, tmp_path, qtbot, user, dialogs):
     # The docs don't say; this is what puddletag should do: Cancel in a
     # dialog throws the edits away. Synthetic option.
