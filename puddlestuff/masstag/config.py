@@ -67,22 +67,24 @@ def convert_mtp(filename):
 def load_all_mtps(dirpath=PROFILEDIR, tag_sources=None):
     if tag_sources is None:
         tag_sources = {}
-    mtps = [mtp_from_file(fn, tag_sources) for fn
-            in glob.glob(dirpath + '/*.mtp')]
+    # Same.mtp, Same_0.mtp, ..., Same_10.mtp is the order Configure Profiles
+    # saved profiles with one name in.
+    filenames = sorted(glob.glob(dirpath + '/*.mtp'), key=lambda fn: (len(fn), fn))
+    mtps = [mtp_from_file(fn, tag_sources) for fn in filenames]
     try:
         order = open(os.path.join(dirpath, 'order'), 'r').read().split('\n')
     except EnvironmentError:
         return mtps
 
-    order = [z.strip() for z in order]
-    first = []
-    last = []
+    ordered = []
+    for name in (z.strip() for z in order):
+        for mtp in mtps:
+            if mtp.name == name:
+                ordered.append(mtp)
+                mtps.remove(mtp)
+                break
 
-    names = dict([(mtp.name, mtp) for mtp in mtps])
-    mtps = [names[name] for name in order if name in names]
-    mtps.extend([names[name] for name in names if name not in order])
-
-    return mtps
+    return ordered + mtps
 
 
 def mtp_from_file(filename=CONFIG, tag_sources=None):

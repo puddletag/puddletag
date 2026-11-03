@@ -175,8 +175,6 @@ def test_a_tag_source_puddletag_lacks_is_kept_by_name(tmp_path):
     assert loaded.profiles[1].tag_source is SOURCES[0]
 
 
-@pytest.mark.xfail(strict=True, reason='two profiles with one name: the order file names it '
-                   'twice and only one of them loads, listed twice')
 def test_profiles_with_one_name_all_load_in_their_order(tmp_path):
     """Synthetic expectation (tut5.txt says nothing on how profiles are
     kept): profiles that share a name, as Duplicate then OK saves them, all
@@ -191,8 +189,6 @@ def test_profiles_with_one_name_all_load_in_their_order(tmp_path):
                                 ('Same', 'second'), ('Same', 'third')]
 
 
-@pytest.mark.xfail(strict=True, reason='two profiles with one name: the order file names it '
-                   'twice and only one of them loads, listed twice')
 def test_twelve_profiles_with_one_name_keep_their_order(tmp_path):
     """Synthetic expectation (tut5.txt says nothing on how profiles are
     kept): profiles that share a name load in the order the profile list
