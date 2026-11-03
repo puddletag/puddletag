@@ -30,6 +30,8 @@ How to use it
 * Make modifications.
 * Write changes.
 
+A profile whose file puddletag can't read isn't listed: the **Masstagging** window's log names the file instead.
+
 
 Configuring Profiles
 --------------------
@@ -61,6 +63,8 @@ Inputs required are:
 .. describe:: Tag Sources
 
     Each tag source will be polled in the order listed here.
+
+    A tag source puddletag doesn't have (one removed in an update, say) is listed with **(not found)** after its name. It's kept when the profile is saved, and searches skip it.
 
     See :ref:`masstag_tagsources`.
 
