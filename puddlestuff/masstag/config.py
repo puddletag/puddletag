@@ -5,7 +5,6 @@ from ..constants import CONFIGDIR
 from ..masstag import (fields_from_text, MassTagProfile,
                        TagSourceProfile)
 from ..puddleobjects import PuddleConfig
-from ..audioinfo import encode_fn
 
 PROFILEDIR = os.path.join(CONFIGDIR, 'masstagging')
 CONFIG = os.path.join(CONFIGDIR, 'masstagging.conf')
@@ -19,49 +18,6 @@ NAME = 'name'
 DESC = 'desc'
 EXISTING_ONLY = 'leave_existing'
 REPLACE_FIELDS = 'replace_fields'
-
-
-class DummyTS(object):
-    group_by = []
-
-
-def convert_mtps(dirpath=PROFILEDIR):
-    for fn in glob.glob(PROFILEDIR + '/*.conf'):
-        mtp = convert_mtp(fn)
-        os.rename(fn, os.path.splitext(fn)[0] + '.old')
-        save_mtp(mtp, os.path.join(dirpath, encode_fn(mtp.name)) + '.mtp')
-
-
-def convert_mtp(filename):
-    cparser = PuddleConfig(filename)
-    info_section = 'info'
-    name = cparser.get(info_section, NAME, '')
-    numsources = cparser.get(info_section, 'numsources', 0)
-    album_bound = cparser.get(info_section, ALBUM_BOUND, 70) / 100.0
-    track_bound = cparser.get(info_section, TRACK_BOUND, 80) / 100.0
-    match_fields = cparser.get(info_section, FIELDS, ['artist', 'title'])
-    pattern = cparser.get(info_section, PATTERN,
-                          '%artist% - %album%/%track% - %title%')
-    jfdi = cparser.get(info_section, JFDI, True)
-    desc = cparser.get(info_section, DESC, '')
-    existing = cparser.get(info_section, EXISTING_ONLY, False)
-
-    ts_profiles = []
-    for num in range(numsources):
-        section = 'config%s' % num
-        get = lambda key, default: cparser.get(section, key, default)
-
-        source = DummyTS()
-        source.name = get('source', '')
-        fields = fields_from_text(get('fields', ''))
-        no_result = get('no_match', 0)
-
-        ts_profiles.append(TagSourceProfile(None, source, fields,
-                                            no_result))
-
-    return MassTagProfile(name, desc, match_fields, None,
-                          pattern, ts_profiles, album_bound, track_bound, jfdi, existing,
-                          '')
 
 
 def load_all_mtps(dirpath=PROFILEDIR, tag_sources=None, errors=None):
@@ -165,8 +121,3 @@ def save_mtp(mtp, filename=CONFIG):
         cparser.set(section, 'if_no_result', tsp.if_no_result)
         cparser.set(section, 'fields', ','.join(tsp.fields))
         cparser.set(section, 'replace_fields', ','.join(tsp.replace_fields))
-
-
-if __name__ == '__main__':
-    fns = glob.glob(PROFILEDIR + '/Local.conf')
-    convert_mtps(PROFILEDIR)

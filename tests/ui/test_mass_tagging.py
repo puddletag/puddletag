@@ -924,8 +924,6 @@ def test_a_profile_is_kept_whatever_its_name(mainwin, user, qtbot, restart, name
     assert [combo.itemText(i) for i in range(combo.count())] == [name]
 
 
-@pytest.mark.xfail(strict=True, reason='every start renames a .conf file in the Mass Tagging '
-                                       'profiles folder to .old and writes a nameless hidden profile')
 def test_start_leaves_an_old_ini_profile_alone(mainwin, qtbot, restart):
     # Synthetic INI profile, as puddletag wrote them before 1.0; puddletag no
     # longer reads INI configuration, so a start must not touch the file.

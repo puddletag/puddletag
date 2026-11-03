@@ -12,8 +12,7 @@ from .. import masstag as masstag_module
 from ..constants import RIGHTDOCK
 from ..masstag import (NO_MATCH_OPTIONS, NO_VALID_FOUND, VALID_FOUND, fields_from_text, match_files, masstag,
                        merge_tsp_tracks, split_files, MassTagFlag, MassTagProfile, TagSourceProfile)
-from ..masstag.config import (PROFILEDIR, convert_mtps,
-                              load_all_mtps, save_mtp)
+from ..masstag.config import (PROFILEDIR, load_all_mtps, save_mtp)
 from ..puddleobjects import (create_buddy, winsettings, ListButtons, ListBox, OKCancel, PuddleConfig, PuddleThread)
 from ..translations import translate
 
@@ -598,7 +597,6 @@ class MassTagWindow(QWidget):
             self.__flag.stop = True
 
     def loadSettings(self):
-        convert_mtps(PROFILEDIR)
         if not os.path.exists(PROFILEDIR):
             os.mkdir(PROFILEDIR)
         errors = []
