@@ -1,18 +1,22 @@
-import io
-import os
-import mutagen.apev2
-import mutagen.id3
+"""The tags tag_versions.tags_in_file finds in a file: ID3v1 and APEv2 at
+its end, ID3v2 at its start or the ID3v2 version puddletag already read.
+__tag lists them (tags.txt: "Comma-Separated list of tags found in file");
+test_other_tags.py and test_file_info.py test __tag on whole files.
+
+Synthetic files and tags.
+"""
 import pytest
 
-from puddlestuff import audioinfo
 from puddlestuff.audioinfo import tag_versions
 
 
-def test_tags_in_file_small_file():
-    # File smaller than 160 bytes should not raise OSError / IOError
-    bio = io.BytesIO(b"short file")
-    tags = tag_versions.tags_in_file(bio)
-    assert tags == []
+@pytest.mark.parametrize("tail, tags", [(b"", []), (b"TAG" + b"A" * 125, ["ID3v1.1"])],
+                         ids=["no tag", "ID3v1"])
+def test_tags_in_file_small_file(tmp_path, tail, tags):
+    # Shorter than the 160 bytes read from its end: its ID3v1 tag is still found
+    fn = tmp_path / "short.mp3"
+    fn.write_bytes(b"\x00" * 10 + tail)
+    assert tag_versions.tags_in_file(str(fn)) == tags
 
 
 def test_tags_in_file_id3v1_only(tmp_path):
@@ -48,43 +52,3 @@ def test_tags_in_file_known_v2_ignored_if_invalid(tmp_path):
     tags = tag_versions.tags_in_file(fn, known_v2="ID3v1.1")
     assert tags == ["ID3v1.1"]
     assert tags.count("ID3v1.1") == 1
-
-
-def test_tag_reporting_mp3_multiple_tags(make_audio):
-    path = make_audio('test.mp3', title='Title', artist='Artist')
-    apev2 = mutagen.apev2.APEv2()
-    apev2.update({'Title': 'APE title'})
-    apev2.save(str(path))
-    audioinfo.Tag(str(path)).save()  # adds ID3v1
-
-    tag_obj = audioinfo.Tag(str(path))
-    tags = tag_obj['__tag'].split(', ')
-    assert tags[0] == 'ID3v2.4'
-    assert 'ID3v1.1' in tags
-    assert 'APEv2' in tags
-
-
-def test_tag_reporting_flac_secondary_id3(make_audio):
-    path = make_audio('test.flac', title='Flac title')
-    id3_tag = mutagen.id3.ID3()
-    id3_tag.add(mutagen.id3.TIT2(encoding=3, text=['ID3 title']))
-    id3_tag.save(str(path))
-
-    tag_obj = audioinfo.Tag(str(path))
-    tags = tag_obj['__tag'].split(', ')
-    assert tags[0] == 'VorbisComment'
-    assert 'ID3v2.4' in tags
-
-
-def test_tag_reporting_formats(make_audio):
-    flac_path = make_audio('track.flac', title='Flac title')
-    assert audioinfo.Tag(str(flac_path))['__tag'] == 'VorbisComment'
-
-    ogg_path = make_audio('track.ogg', title='Ogg title')
-    assert audioinfo.Tag(str(ogg_path))['__tag'] == 'VorbisComment'
-
-    mp4_path = make_audio('track.m4a', title='MP4 title')
-    assert audioinfo.Tag(str(mp4_path))['__tag'] == 'MP4'
-
-    wma_path = make_audio('track.wma', title='WMA title')
-    assert audioinfo.Tag(str(wma_path))['__tag'] == 'ASF'
