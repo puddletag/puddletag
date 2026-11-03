@@ -986,8 +986,6 @@ def test_editor_shows_the_saved_percentages(mainwin, user, qtbot):
     user.click(button(profiles, 'Cancel'))
 
 
-@pytest.mark.xfail(strict=True, reason="the profile editor drops a tag source puddletag doesn't have, "
-                                       "and OK saves the profile without it")
 def test_editing_a_profile_keeps_a_tag_source_puddletag_lacks(mainwin, user, qtbot, restart):
     # tut5.txt, Tag Sources: "A tag source puddletag doesn't have (one removed
     # in an update, say) is listed with **(not found)** after its name. It's

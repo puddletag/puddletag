@@ -372,8 +372,12 @@ class MTProfileEdit(QDialog):
         self.listbox.takeItem(row)
 
     def setProfile(self, profile):
-        self._tsps = [tsp for tsp in profile.profiles if tsp.tag_source]
-        [self.listbox.addItem(tsp.tag_source.name) for tsp in self._tsps]
+        self._tsps = list(profile.profiles)
+        for tsp in self._tsps:
+            if tsp.tag_source:
+                self.listbox.addItem(tsp.tag_source.name)
+            else:
+                self.listbox.addItem(translate('Profile Editor', '{} (not found)').format(tsp.missing_source))
         self.albumBound.setValue(round(profile.album_bound * 100))
         self.pattern.setText(profile.file_pattern)
         self.matchFields.setText(', '.join(profile.fields))
@@ -486,9 +490,10 @@ class TSProfileEdit(QDialog):
         self.profileChanged.emit(profile)
 
     def setProfile(self, profile):
-        source_index = self.source.findText(profile.tag_source.name)
-        if source_index != -1:
-            self.source.setCurrentIndex(source_index)
+        if profile.tag_source:
+            source_index = self.source.findText(profile.tag_source.name)
+            if source_index != -1:
+                self.source.setCurrentIndex(source_index)
         self.no_match.setCurrentIndex(profile.if_no_result)
         self.fields.setText(', '.join(profile.fields))
         self.replace_fields.setText(', '.join(profile.replace_fields))
