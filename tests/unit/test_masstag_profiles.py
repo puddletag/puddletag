@@ -236,7 +236,6 @@ def test_a_tag_source_puddletag_lacks_keeps_its_name_when_saved_again(tmp_path):
     assert [data['config0']['source'], data['config1']['source']] == ['Gone Source', 'First Source']
 
 
-@pytest.mark.xfail(strict=True, reason='29, 57 and 58 percent are saved one lower')
 def test_every_percentage_survives_a_save_and_a_load(tmp_path):
     """Synthetic expectation (tut5.txt says nothing on how profiles are
     kept): a percentage set in the profile editor comes back as it was,

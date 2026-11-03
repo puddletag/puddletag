@@ -966,7 +966,6 @@ def test_ok_keeps_a_tag_source_puddletag_lacks(mainwin, user, qtbot, restart):
         tagsources.tagsources.append(SecondSource)
 
 
-@pytest.mark.xfail(strict=True, reason='the profile editor shows 29, 57 and 58 percent one lower')
 def test_editor_shows_the_saved_percentages(mainwin, user, qtbot):
     # Synthetic expectation (tut5.txt says nothing on how profiles are kept):
     # a saved profile comes back as it was saved, so the editor shows 57 and 29

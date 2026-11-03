@@ -111,7 +111,7 @@ def save_mtp(mtp, filename=CONFIG):
         cparser.set(info_section, key, getattr(mtp, key))
 
     for key in ['album_bound', 'track_bound']:
-        cparser.set(info_section, key, int(getattr(mtp, key) * 100))
+        cparser.set(info_section, key, round(getattr(mtp, key) * 100))
 
     cparser.set(info_section, 'numsources', len(mtp.profiles))
     for num, tsp in enumerate(mtp.profiles):

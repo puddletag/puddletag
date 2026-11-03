@@ -374,10 +374,10 @@ class MTProfileEdit(QDialog):
     def setProfile(self, profile):
         self._tsps = [tsp for tsp in profile.profiles if tsp.tag_source]
         [self.listbox.addItem(tsp.tag_source.name) for tsp in self._tsps]
-        self.albumBound.setValue(int(profile.album_bound * 100))
+        self.albumBound.setValue(round(profile.album_bound * 100))
         self.pattern.setText(profile.file_pattern)
         self.matchFields.setText(', '.join(profile.fields))
-        self.trackBound.setValue(int(profile.track_bound * 100))
+        self.trackBound.setValue(round(profile.track_bound * 100))
         self.jfdi.setChecked(profile.jfdi)
         self._name.setText(profile.name)
         self._desc.setText(profile.desc)
