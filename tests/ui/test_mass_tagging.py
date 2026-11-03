@@ -941,8 +941,6 @@ def saved_sources(name):
     return [data[f'config{n}']['source'] for n in range(data['info']['numsources'])]
 
 
-@pytest.mark.xfail(strict=True, reason="saving a profile again writes an empty name "
-                                       "for a tag source puddletag doesn't have")
 def test_ok_keeps_a_tag_source_puddletag_lacks(mainwin, user, qtbot, restart):
     # tut5.txt, Tag Sources: "A tag source puddletag doesn't have (one removed
     # in an update, say) is listed with **(not found)** after its name. It's

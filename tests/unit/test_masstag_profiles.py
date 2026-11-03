@@ -221,8 +221,6 @@ def test_a_profile_file_puddletag_cannot_read_is_skipped(tmp_path, text):
     assert listed(tmp_path) == [('Good', '')]
 
 
-@pytest.mark.xfail(strict=True, reason="saving a profile again writes an empty name "
-                                       "for a tag source puddletag doesn't have")
 def test_a_tag_source_puddletag_lacks_keeps_its_name_when_saved_again(tmp_path):
     """tut5.txt, Tag Sources: "A tag source puddletag doesn't have (one
     removed in an update, say) is listed with **(not found)** after its

@@ -116,7 +116,7 @@ def save_mtp(mtp, filename=CONFIG):
     cparser.set(info_section, 'numsources', len(mtp.profiles))
     for num, tsp in enumerate(mtp.profiles):
         section = 'config%s' % num
-        name = tsp.tag_source.name if tsp.tag_source else ''
+        name = tsp.tag_source.name if tsp.tag_source else (tsp.missing_source or '')
         cparser.set(section, 'source', name)
         cparser.set(section, 'if_no_result', tsp.if_no_result)
         cparser.set(section, 'fields', ','.join(tsp.fields))
