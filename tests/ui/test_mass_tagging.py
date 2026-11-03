@@ -876,8 +876,6 @@ def test_valid_matches_are_logged_when_the_recheck_found_the_album(
     assert 'Valid matches were found for the album.' in log
 
 
-@pytest.mark.xfail(strict=True, reason="a profile file puddletag can't read stops puddletag from "
-                   "starting, and the window doesn't say which")
 def test_puddletag_starts_with_a_broken_profile(mainwin, qtbot, restart):
     # tut5.txt, How to use it: "A profile whose file puddletag can't read
     # isn't listed: the **Masstagging** window's log names the file instead."

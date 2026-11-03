@@ -64,13 +64,21 @@ def convert_mtp(filename):
                           '')
 
 
-def load_all_mtps(dirpath=PROFILEDIR, tag_sources=None):
+def load_all_mtps(dirpath=PROFILEDIR, tag_sources=None, errors=None):
+    """Loads the profiles in dirpath. A file that can't be read is left out;
+    if errors is a list, (file path, error) is appended to it for each."""
     if tag_sources is None:
         tag_sources = {}
     # Same.mtp, Same_0.mtp, ..., Same_10.mtp is the order Configure Profiles
     # saved profiles with one name in.
     filenames = sorted(glob.glob(dirpath + '/*.mtp'), key=lambda fn: (len(fn), fn))
-    mtps = [mtp_from_file(fn, tag_sources) for fn in filenames]
+    mtps = []
+    for fn in filenames:
+        try:
+            mtps.append(mtp_from_file(fn, tag_sources))
+        except (AttributeError, TypeError, ValueError) as e:
+            if errors is not None:
+                errors.append((fn, e))
     try:
         order = open(os.path.join(dirpath, 'order'), 'r').read().split('\n')
     except EnvironmentError:
@@ -95,12 +103,16 @@ def mtp_from_file(filename=CONFIG, tag_sources=None):
 
     cparser = PuddleConfig(filename)
     info_section = 'info'
+    if not isinstance(cparser.data.get(info_section), dict):
+        raise ValueError("it has no info section")
 
     name = cparser.get(info_section, NAME, '')
     numsources = cparser.get(info_section, 'numsources', 0)
     album_bound = cparser.get(info_section, ALBUM_BOUND, 70) / 100.0
     track_bound = cparser.get(info_section, TRACK_BOUND, 80) / 100.0
     match_fields = cparser.get(info_section, FIELDS, ['artist', 'title'])
+    if not isinstance(match_fields, list):
+        raise ValueError("the fields to match aren't a list")
     pattern = cparser.get(info_section, 'file_pattern',
                           cparser.get(info_section, PATTERN,
                                       '%artist% - %album%/%track% - %title%'))

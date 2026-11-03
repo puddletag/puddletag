@@ -598,7 +598,12 @@ class MassTagWindow(QWidget):
         convert_mtps(PROFILEDIR)
         if not os.path.exists(PROFILEDIR):
             os.mkdir(PROFILEDIR)
-        self.setProfiles(load_all_mtps(PROFILEDIR, self.tag_sources))
+        errors = []
+        self.setProfiles(load_all_mtps(PROFILEDIR, self.tag_sources, errors))
+        for filename, error in errors:
+            self._appendLog(translate(
+                'Masstagging', "The profile file <b>{}</b> can't be read and was skipped: {}"
+            ).format(filename, error))
         index = PuddleConfig().get('masstagging', 'lastindex', 0)
         if index < self.profileCombo.count():
             self.profileCombo.setCurrentIndex(index)

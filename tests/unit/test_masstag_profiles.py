@@ -201,8 +201,6 @@ def test_twelve_profiles_with_one_name_keep_their_order(tmp_path):
     assert [desc for _, desc in listed(tmp_path)] == [str(n) for n in range(12)]
 
 
-@pytest.mark.xfail(strict=True, reason="a profile file puddletag can't read is listed as a "
-                   'nameless profile, or its error stops the loading')
 @pytest.mark.parametrize('text', [
     '',
     '[1, 2]',
