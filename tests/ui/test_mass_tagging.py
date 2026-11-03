@@ -888,10 +888,6 @@ def test_puddletag_starts_with_a_broken_profile(mainwin, qtbot, restart):
     assert 'Broken.mtp' in window._log.toPlainText()
 
 
-@pytest.mark.xfail(strict=True, reason=(
-    "a profile is saved to a file named after it, so a '/' saves it into a subfolder and an "
-    "empty name or one starting with '.' into a hidden file, and none of them is read at the "
-    "next start"))
 @pytest.mark.parametrize('name', ['', '.hidden', 'AC/DC'])
 def test_a_profile_is_kept_whatever_its_name(mainwin, user, qtbot, restart, name):
     # Synthetic expectation (tut5.txt gives none on a name's characters): a

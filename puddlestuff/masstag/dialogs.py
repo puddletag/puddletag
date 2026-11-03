@@ -164,10 +164,13 @@ class MassTagEdit(QDialog):
         filenames = {}
         order = []
         for profile in profiles:
-            filename = profile.name + '.mtp'
+            stem = profile.name.replace('/', '_').replace(os.sep, '_')
+            if not stem or stem.startswith('.'):
+                stem = '_' + stem
+            filename = stem + '.mtp'
             i = 0
             while filename in filenames:
-                filename = '%s_%d%s' % (profile.name, i, '.mtp')
+                filename = '%s_%d%s' % (stem, i, '.mtp')
                 i += 1
             filenames[filename] = profile
             order.append(profile.name)
