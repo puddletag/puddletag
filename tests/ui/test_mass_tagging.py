@@ -3,6 +3,7 @@ Mass Tagging, a profile made in Configure Profiles, the files selected,
 Search, then Write Previews. Two synthetic tag sources stand in for the
 web ones, so nothing goes to the network. Synthetic files and albums.
 """
+import json
 import os
 
 import pytest
@@ -873,3 +874,157 @@ def test_valid_matches_are_logged_when_the_recheck_found_the_album(
     pick(user, qtbot, window.profileCombo, 'Synthetic')
     log = search(user, qtbot, mainwin, window)
     assert 'Valid matches were found for the album.' in log
+
+
+@pytest.mark.xfail(strict=True, reason="a profile file puddletag can't read stops puddletag from "
+                   "starting, and the window doesn't say which")
+def test_puddletag_starts_with_a_broken_profile(mainwin, qtbot, restart):
+    # tut5.txt, How to use it: "A profile whose file puddletag can't read
+    # isn't listed: the **Masstagging** window's log names the file instead."
+    # Synthetic broken file; puddletag still starts.
+    with open(os.path.join(CONFIGDIR, 'masstagging', 'Broken.mtp'), 'w') as f:
+        f.write('{"info": 5}')
+    new = restart()
+    [window] = new.findChildren(MassTagWindow)
+    assert window.profileCombo.count() == 0
+    assert 'Broken.mtp' in window._log.toPlainText()
+
+
+@pytest.mark.xfail(strict=True, reason=(
+    "a profile is saved to a file named after it, so a '/' saves it into a subfolder and an "
+    "empty name or one starting with '.' into a hidden file, and none of them is read at the "
+    "next start"))
+@pytest.mark.parametrize('name', ['', '.hidden', 'AC/DC'])
+def test_a_profile_is_kept_whatever_its_name(mainwin, user, qtbot, restart, name):
+    # Synthetic expectation (tut5.txt gives none on a name's characters): a
+    # saved profile comes back after a restart whatever its name. tut5.txt,
+    # Name: "The name of the profile."
+    window = open_mass_tagging(user, mainwin, qtbot)
+    # create_profile waits on the name in the combo, which findText doesn't
+    # find for an empty one.
+    user.click(button(window, '&Configure Profiles'))
+    profiles = opened(qtbot, MassTagEdit)
+    user.click(profiles.buttonlist.addButton)
+    editor = opened(qtbot, MTProfileEdit)
+    user.activate(editor)
+    replace_text(user, editor._name, name)
+    if not name:
+        # Typing nothing leaves the default name selected: delete it.
+        user.press(Key.Key_Backspace)
+    assert editor._name.text() == name
+    user.click(editor.buttonlist.addButton)
+    config = opened(qtbot, TSProfileEdit)
+    user.activate(config)
+    pick(user, qtbot, config.source, 'Synthetic Source')
+    user.click(button(config, 'OK'))
+    qtbot.waitUntil(lambda: QApplication.activeModalWidget() is editor)
+    user.activate(editor)
+    user.click(button(editor, 'OK'))
+    qtbot.waitUntil(lambda: profiles.listbox.count() == 1)
+    user.click(button(profiles, 'OK'))
+    qtbot.waitUntil(lambda: window.profileCombo.count() == 1)
+
+    new = restart()
+    [window2] = new.findChildren(MassTagWindow)
+    combo = window2.profileCombo
+    assert [combo.itemText(i) for i in range(combo.count())] == [name]
+
+
+@pytest.mark.xfail(strict=True, reason='every start renames a .conf file in the Mass Tagging '
+                                       'profiles folder to .old and writes a nameless hidden profile')
+def test_start_leaves_an_old_ini_profile_alone(mainwin, qtbot, restart):
+    # Synthetic INI profile, as puddletag wrote them before 1.0; puddletag no
+    # longer reads INI configuration, so a start must not touch the file.
+    folder = os.path.join(CONFIGDIR, 'masstagging')
+    with open(os.path.join(folder, 'Old.conf'), 'w') as f:
+        f.write('[info]\nname = Old\nnumsources = 0\n')
+    restart()
+    assert sorted(os.listdir(folder)) == ['Old.conf']
+
+
+def saved_sources(name):
+    """The tag sources a profile's file on disk names, in its order."""
+    with open(os.path.join(CONFIGDIR, 'masstagging', f'{name}.mtp')) as f:
+        data = json.load(f)
+    return [data[f'config{n}']['source'] for n in range(data['info']['numsources'])]
+
+
+@pytest.mark.xfail(strict=True, reason="saving a profile again writes an empty name "
+                                       "for a tag source puddletag doesn't have")
+def test_ok_keeps_a_tag_source_puddletag_lacks(mainwin, user, qtbot, restart):
+    # tut5.txt, Tag Sources: "A tag source puddletag doesn't have (one removed
+    # in an update, say) is listed with **(not found)** after its name. It's
+    # kept when the profile is saved, and searches skip it." OK in Configure
+    # Profiles saves every profile again, and the source keeps its name, so
+    # it's polled again once puddletag has it.
+    from puddlestuff import tagsources
+    window = open_mass_tagging(user, mainwin, qtbot)
+    create_profile(user, qtbot, window, 'Old',
+                   [{'source': 'Second Source'}, {'source': 'Synthetic Source'}])
+    tagsources.tagsources.remove(SecondSource)
+    try:
+        new = restart()
+        user2 = type(user)(qtbot, new)
+        [window2] = new.findChildren(MassTagWindow)
+        qtbot.waitUntil(window2.isVisible)
+        user2.click(button(window2, '&Configure Profiles'))
+        profiles = opened(qtbot, MassTagEdit)
+        user2.click(button(profiles, 'OK'))
+        qtbot.waitUntil(lambda: QApplication.activeModalWidget() is None)
+        assert saved_sources('Old') == ['Second Source', 'Synthetic Source']
+    finally:
+        tagsources.tagsources.append(SecondSource)
+
+
+@pytest.mark.xfail(strict=True, reason='the profile editor shows 29, 57 and 58 percent one lower')
+def test_editor_shows_the_saved_percentages(mainwin, user, qtbot):
+    # Synthetic expectation (tut5.txt says nothing on how profiles are kept):
+    # a saved profile comes back as it was saved, so the editor shows 57 and 29
+    # as they were set. tut5.txt lists the two percentages, "Minimum percentage
+    # required for album matches." and "Minimum percentage required for track
+    # match."
+    window = open_mass_tagging(user, mainwin, qtbot)
+    create_profile(user, qtbot, window, 'P', [{'source': 'Synthetic Source'}], album=57, track=29)
+    user.click(button(window, '&Configure Profiles'))
+    profiles = opened(qtbot, MassTagEdit)
+    click_item(user, profiles.listbox, 0)
+    user.click(profiles.buttonlist.editButton)
+    editor = opened(qtbot, MTProfileEdit)
+    assert editor.albumBound.value() == 57
+    assert editor.trackBound.value() == 29
+    user.click(button(editor, 'Cancel'))
+    qtbot.waitUntil(lambda: QApplication.activeModalWidget() is profiles)
+    user.click(button(profiles, 'Cancel'))
+
+
+@pytest.mark.xfail(strict=True, reason="the profile editor drops a tag source puddletag doesn't have, "
+                                       "and OK saves the profile without it")
+def test_editing_a_profile_keeps_a_tag_source_puddletag_lacks(mainwin, user, qtbot, restart):
+    # tut5.txt, Tag Sources: "A tag source puddletag doesn't have (one removed
+    # in an update, say) is listed with **(not found)** after its name. It's
+    # kept when the profile is saved, and searches skip it." Edit then OK in
+    # the profile editor keeps it too.
+    from puddlestuff import tagsources
+    window = open_mass_tagging(user, mainwin, qtbot)
+    create_profile(user, qtbot, window, 'Old',
+                   [{'source': 'Second Source'}, {'source': 'Synthetic Source'}])
+    tagsources.tagsources.remove(SecondSource)
+    try:
+        new = restart()
+        user2 = type(user)(qtbot, new)
+        [window2] = new.findChildren(MassTagWindow)
+        qtbot.waitUntil(window2.isVisible)
+        user2.click(button(window2, '&Configure Profiles'))
+        profiles = opened(qtbot, MassTagEdit)
+        click_item(user2, profiles.listbox, 0)
+        user2.click(profiles.buttonlist.editButton)
+        editor = opened(qtbot, MTProfileEdit)
+        rows = [editor.listbox.item(i).text() for i in range(editor.listbox.count())]
+        user2.click(button(editor, 'OK'))
+        qtbot.waitUntil(lambda: QApplication.activeModalWidget() is profiles)
+        user2.click(button(profiles, 'OK'))
+        qtbot.waitUntil(lambda: QApplication.activeModalWidget() is None)
+        assert rows == ['Second Source (not found)', 'Synthetic Source']
+        assert saved_sources('Old') == ['Second Source', 'Synthetic Source']
+    finally:
+        tagsources.tagsources.append(SecondSource)
