@@ -951,7 +951,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
       <translation type="unfinished">&amp;Redigera</translation>
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="400" />
+      <location filename="../masstag/dialogs.py" line="406" />
       <source>Fields: </source>
       <translation>Fält:</translation>
     </message>
@@ -2120,6 +2120,77 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
   <context>
     <name>Masstagging</name>
     <message>
+      <location filename="../masstag/dialogs.py" line="647" />
+      <location filename="../masstag/dialogs.py" line="40" />
+      <source>An error occurred during the search: &lt;b&gt;{}&lt;/b&gt;</source>
+      <translation>Ett fel inträffade under sökning: &lt;b&gt;{}&lt;/b&gt;</translation>
+    </message>
+    <message>
+      <location filename="../masstag/dialogs.py" line="650" />
+      <location filename="../masstag/dialogs.py" line="45" />
+      <source>An error occurred during album retrieval: &lt;b&gt;{}&lt;/b&gt;</source>
+      <translation>Ett fel inträffade under albumhämtning: &lt;b&gt;{}&lt;/b&gt;</translation>
+    </message>
+    <message>
+      <location filename="../masstag/dialogs.py" line="517" />
+      <source>Mass Tagging</source>
+      <translation>Masstaggning</translation>
+    </message>
+    <message>
+      <location filename="../masstag/dialogs.py" line="690" />
+      <location filename="../masstag/dialogs.py" line="641" />
+      <location filename="../masstag/dialogs.py" line="601" />
+      <location filename="../masstag/dialogs.py" line="519" />
+      <source>&amp;Search</source>
+      <translation>&amp;Sök</translation>
+    </message>
+    <message>
+      <location filename="../masstag/dialogs.py" line="520" />
+      <source>&amp;Configure Profiles</source>
+      <translation>&amp;Konfigurera profiler</translation>
+    </message>
+    <message>
+      <location filename="../masstag/dialogs.py" line="521" />
+      <source>&amp;Write Previews</source>
+      <translation>Skriv &amp;förhandsgranskning</translation>
+    </message>
+    <message>
+      <location filename="../masstag/dialogs.py" line="522" />
+      <source>Clear &amp;Preview</source>
+      <translation>&amp;Rensa förhandsgranskning</translation>
+    </message>
+    <message>
+      <location filename="../masstag/dialogs.py" line="546" />
+      <source>&amp;Profile:</source>
+      <translation>&amp;Profil:</translation>
+    </message>
+    <message>
+      <location filename="../masstag/dialogs.py" line="598" />
+      <location filename="../masstag/dialogs.py" line="595" />
+      <source>&amp;Stop</source>
+      <translation>&amp;Stopp</translation>
+    </message>
+    <message>
+      <location filename="../masstag/dialogs.py" line="610" />
+      <source>The profile file &lt;b&gt;{}&lt;/b&gt; can't be read and was skipped: {}</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../masstag/dialogs.py" line="639" />
+      <source>&lt;b&gt;Please choose a tagging profile.&lt;/b&gt;</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../masstag/dialogs.py" line="653" />
+      <source>An error occurred: &lt;b&gt;{}&lt;/b&gt;</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../masstag/dialogs.py" line="688" />
+      <source>&lt;b&gt;Lookups completed.&lt;/b&gt;</source>
+      <translation>&lt;b&gt;Sökning slutförd.&lt;/b&gt;</translation>
+    </message>
+    <message>
       <location filename="../masstag/__init__.py" line="22" />
       <source>Continue</source>
       <translation>Fortsätt</translation>
@@ -2265,80 +2336,14 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
       <translation>&lt;b&gt;Inga giltiga matchningar hittades för albumet..&lt;/b&gt;</translation>
     </message>
     <message>
-      <location filename="../masstag/__init__.py" line="478" />
+      <location filename="../masstag/__init__.py" line="484" />
       <source>Rechecking</source>
       <translation>Återkontroll</translation>
     </message>
     <message>
-      <location filename="../masstag/__init__.py" line="608" />
+      <location filename="../masstag/__init__.py" line="612" />
       <source>Retrying search with album name: &lt;b&gt;{}&lt;/b&gt;</source>
       <translation>Söker igen på albumnamnet &lt;b&gt;{}&lt;/b&gt;</translation>
-    </message>
-    <message>
-      <location filename="../masstag/dialogs.py" line="636" />
-      <location filename="../masstag/dialogs.py" line="41" />
-      <source>An error occurred during the search: &lt;b&gt;{}&lt;/b&gt;</source>
-      <translation>Ett fel inträffade under sökning: &lt;b&gt;{}&lt;/b&gt;</translation>
-    </message>
-    <message>
-      <location filename="../masstag/dialogs.py" line="639" />
-      <location filename="../masstag/dialogs.py" line="46" />
-      <source>An error occurred during album retrieval: &lt;b&gt;{}&lt;/b&gt;</source>
-      <translation>Ett fel inträffade under albumhämtning: &lt;b&gt;{}&lt;/b&gt;</translation>
-    </message>
-    <message>
-      <location filename="../masstag/dialogs.py" line="510" />
-      <source>Mass Tagging</source>
-      <translation>Masstaggning</translation>
-    </message>
-    <message>
-      <location filename="../masstag/dialogs.py" line="678" />
-      <location filename="../masstag/dialogs.py" line="630" />
-      <location filename="../masstag/dialogs.py" line="594" />
-      <location filename="../masstag/dialogs.py" line="512" />
-      <source>&amp;Search</source>
-      <translation>&amp;Sök</translation>
-    </message>
-    <message>
-      <location filename="../masstag/dialogs.py" line="513" />
-      <source>&amp;Configure Profiles</source>
-      <translation>&amp;Konfigurera profiler</translation>
-    </message>
-    <message>
-      <location filename="../masstag/dialogs.py" line="514" />
-      <source>&amp;Write Previews</source>
-      <translation>Skriv &amp;förhandsgranskning</translation>
-    </message>
-    <message>
-      <location filename="../masstag/dialogs.py" line="515" />
-      <source>Clear &amp;Preview</source>
-      <translation>&amp;Rensa förhandsgranskning</translation>
-    </message>
-    <message>
-      <location filename="../masstag/dialogs.py" line="539" />
-      <source>&amp;Profile:</source>
-      <translation>&amp;Profil:</translation>
-    </message>
-    <message>
-      <location filename="../masstag/dialogs.py" line="591" />
-      <location filename="../masstag/dialogs.py" line="588" />
-      <source>&amp;Stop</source>
-      <translation>&amp;Stopp</translation>
-    </message>
-    <message>
-      <location filename="../masstag/dialogs.py" line="628" />
-      <source>&lt;b&gt;Please choose a tagging profile.&lt;/b&gt;</source>
-      <translation type="unfinished" />
-    </message>
-    <message>
-      <location filename="../masstag/dialogs.py" line="642" />
-      <source>An error occurred: &lt;b&gt;{}&lt;/b&gt;</source>
-      <translation type="unfinished" />
-    </message>
-    <message>
-      <location filename="../masstag/dialogs.py" line="676" />
-      <source>&lt;b&gt;Lookups completed.&lt;/b&gt;</source>
-      <translation>&lt;b&gt;Sökning slutförd.&lt;/b&gt;</translation>
     </message>
   </context>
   <context>
@@ -3212,12 +3217,12 @@ Vill du fortsätta?</translation>
   <context>
     <name>Profile Config</name>
     <message>
-      <location filename="../masstag/dialogs.py" line="56" />
+      <location filename="../masstag/dialogs.py" line="55" />
       <source>Configure Mass Tagging Profiles</source>
       <translation>Konfigurera masstaggningsprofiler</translation>
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="86" />
+      <location filename="../masstag/dialogs.py" line="85" />
       <source>Masstagging Profiles</source>
       <translation>Masstaggningsprofiler</translation>
     </message>
@@ -3225,7 +3230,7 @@ Vill du fortsätta?</translation>
   <context>
     <name>Profile Editor</name>
     <message>
-      <location filename="../masstag/dialogs.py" line="246" />
+      <location filename="../masstag/dialogs.py" line="248" />
       <location filename="../mainwin/tagsources.py" line="368" />
       <source>Brute force unmatched files.</source>
       <translation>Använd råstyrka för omatchade filer.</translation>
@@ -3256,103 +3261,108 @@ Vill du fortsätta?</translation>
       <translation type="unfinished">Matcha spår med &amp;fälten: </translation>
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="278" />
+      <location filename="../masstag/dialogs.py" line="280" />
       <location filename="../mainwin/tagsources.py" line="428" />
       <source>Minimum percentage required for track match.</source>
       <translation>Minimivärde i procent, för spårmatchning.</translation>
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="199" />
+      <location filename="../masstag/dialogs.py" line="201" />
       <source>Edit Masstagging Profile</source>
       <translation>Redigera masstaggningsprofil</translation>
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="205" />
+      <location filename="../masstag/dialogs.py" line="207" />
       <source>Masstagging Profile</source>
       <translation>Masstaggningsprofil</translation>
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="218" />
+      <location filename="../masstag/dialogs.py" line="220" />
       <source>&lt;p&gt;If no tag information is found in a file, the tags retrieved using this pattern will be used instead.&lt;/p&gt;</source>
       <translation>&lt;p&gt;Om tagginformation inte hittas i en fil, kommer taggar med detta mönster att användas istället.&lt;/p&gt;</translation>
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="225" />
+      <location filename="../masstag/dialogs.py" line="227" />
       <source>&lt;p&gt;The album's artist and album name are each compared with the files' by fuzzy matching. The album matches when both are at least this percentage alike. A search result with as many tracks as the selected files also matches, whatever its names.&lt;/p&gt;</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="233" />
+      <location filename="../masstag/dialogs.py" line="235" />
       <source>&lt;p&gt;The fields listed here are compared between each file and each retrieved track by fuzzy matching; a track lacking one of them is skipped. The field with the lowest match percentage decides, and the track matches when that is at least the "Minimum percentage required for track match". An empty box means artist and title; track is ignored beside other fields.&lt;/p&gt;</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="248" />
+      <location filename="../masstag/dialogs.py" line="250" />
       <source>&lt;p&gt;Check to enable brute forcing matches.  If a proper match isn't found for a file, the unmatched files are sorted by discnumber, then track (or by filename without them), the retrieved tracks by discnumber, then track, and paired in order.&lt;/p&gt;</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="256" />
+      <location filename="../masstag/dialogs.py" line="258" />
       <source>Update empty fields only.</source>
       <translation>Uppdatera endast tomma fält.</translation>
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="263" />
+      <location filename="../masstag/dialogs.py" line="265" />
       <source>&amp;Name:</source>
       <translation>&amp;Namn:</translation>
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="265" />
+      <location filename="../masstag/dialogs.py" line="267" />
       <source>&amp;Description</source>
       <translation>&amp;Beskrivning</translation>
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="269" />
+      <location filename="../masstag/dialogs.py" line="271" />
       <source>Pattern to match filenames against.</source>
       <translation>Mönster att matcha filnamn emot.</translation>
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="272" />
+      <location filename="../masstag/dialogs.py" line="274" />
       <source>Minimum percentage required for album matches.</source>
       <translation>Minimivärde i procent, för albummatchning.</translation>
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="275" />
+      <location filename="../masstag/dialogs.py" line="277" />
       <source>Match tracks using fields: </source>
       <translation>Matcha spår med dessa fält: </translation>
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="390" />
+      <location filename="../masstag/dialogs.py" line="380" />
+      <source>{} (not found)</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../masstag/dialogs.py" line="396" />
       <source>Edit Tag Source Config</source>
       <translation>Redigera taggkällor</translation>
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="401" />
+      <location filename="../masstag/dialogs.py" line="407" />
       <source>&lt;p&gt;Enter a comma-separated list of fields to retrieve. Leave empty to retrieve all available fields/values. &lt;br /&gt;&lt;br /&gt;Eg. &lt;b&gt;artist, album, title&lt;/b&gt; will only retrieve the artist, album and title fields of from the Tag Source. &lt;br /&gt;&lt;br /&gt;Start the list with the tilde (~) character to write all retrieved fields , but the ones listed. Eg the field list &lt;b&gt;~composer,__image&lt;/b&gt; will write all fields but the composer and __image (aka cover art) fields.&lt;/p&gt;&lt;p&gt;If a field has been retrieved in a previous Tag Source the values will be combined if they differ. Eg. If genre=&lt;b&gt;Rock&lt;/b&gt; for the first tag source polled and genre=&lt;b&gt;Alternative&lt;/b&gt; for the tag source polled second then the resulting field will have multiple-values ie. genre=&lt;b&gt;Rock\\Rap&lt;/b&gt;</source>
       <translation>&lt;p&gt;Ange en kommaseparerad lista över fält som skall hämtas. Lämnas tom för att hämta alla tillgängliga fält/värden. &lt;br /&gt;&lt;br /&gt;Exempel: &lt;b&gt;artist, album, titel&lt;/b&gt; hämtar endast artist-, album- och titelfälten från taggkällan. &lt;br /&gt;&lt;br /&gt;Starta listan med tilde (~), för att skriva alla hämtade fält, utom de listade. Exempel: De listade fälten &lt;b&gt;~kompositör,__bild&lt;/b&gt; skriver alla fält utom just kompositör och __bild (albumbild).&lt;/p&gt;&lt;p&gt;Om ett fält har hämtats från en tidigare taggkälla, kombineras värdena om de skiljer sig åt. Exempel: Om genre=&lt;b&gt;Rock&lt;/b&gt; från första taggkällan och genre=&lt;b&gt;Rap&lt;/b&gt; från andra taggkällan, kommer genrefältet att få flera värden. Exempelvis, genre=&lt;b&gt;Rock\\Rap&lt;/b&gt;.</translation>
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="423" />
+      <location filename="../masstag/dialogs.py" line="429" />
       <source>Fields to replace: </source>
       <translation>Fält att ersätta: </translation>
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="425" />
+      <location filename="../masstag/dialogs.py" line="431" />
       <source>Enter a comma-separated lists of fields that'll replace any retrieved from previously polled tag sources. &lt;br /&gt;Start the list with the tilde (~) character to replace all but the fields you list. &lt;br /&gt;&lt;b&gt;NB: Fields listed here must also be listed in the list of fields to retrieve.&lt;/b&gt;&lt;br /&gt;&lt;br /&gt;Eg. Assume you have two Tag Sources. The first retrieves &lt;b&gt;artist=Freshlyground, album=Nomvula, genre=Afro Pop&lt;/b&gt;. The second source gets &lt;b&gt;artist=Freshly Ground, album=Nomvula, genre=Pop&lt;/b&gt;. For the second Tag Source, setting just &lt;b&gt;artist&lt;/b&gt; as the list of fields to replace will overwrite the artist field retrieved from the first tag source. The resulting retrieved fields/values as shown in puddletag will then be &lt;b&gt;artist=Freshly Ground, album=Nomvula, genre=Afro Pop\\Pop&lt;/b&gt;.</source>
       <translation>Ange en kommaseparerad lista över de fält som skall ersätta motsvarande från tidigare taggkällor. &lt;br /&gt;Starta listan med tilde (~), för att ersätta alla, utom de listade. &lt;br /&gt;&lt;b&gt;Fält som listas här, måste också finnas i listan över fält som skall hämtas.&lt;/b&gt;&lt;br /&gt;&lt;br /&gt;Exempel: Anta att du har två taggkällor. Från den första hämtas &lt;b&gt;artist=Freshlyground, album=Nomvula, genre=Afro Pop&lt;/b&gt;. Från den andra källan hämtas &lt;b&gt;artist=Freshly Ground, album=Nomvula, genre=Pop&lt;/b&gt;. Om du för den andra taggkällan sätter enbart &lt;b&gt;artist&lt;/b&gt; i listan som skall ersätta tidigare taggkällor, kommer endast artistfältet att skrivas över, från den första taggkällan. Det färdiga resultatet som visas i puddletag blir då &lt;b&gt;artist=Freshly Ground, album=Nomvula, genre=Afro Pop\\Pop&lt;/b&gt;.</translation>
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="449" />
+      <location filename="../masstag/dialogs.py" line="455" />
       <source>&amp;Source</source>
       <translation>&amp;Källa</translation>
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="453" />
+      <location filename="../masstag/dialogs.py" line="459" />
       <source>&amp;If no results found: </source>
       <translation>&amp;Om inga träffar hittas: </translation>
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="455" />
+      <location filename="../masstag/dialogs.py" line="461" />
       <source>&lt;p&gt;&lt;b&gt;Continue&lt;/b&gt;: The lookup for the current album will continue by checking the other tag sources if no matching results were found for this tag source.&lt;/p&gt;&lt;p&gt;&lt;b&gt;Stop:&lt;/b&gt; The lookup for the current album will stop and any previously retrieved results will be used.&lt;/p&gt;</source>
       <translation>&lt;p&gt;&lt;b&gt;Fortsätt&lt;/b&gt;: Uppslagning på aktuellt album fortsätter genom att kontrollera de andra källorna, om inga matchande resultat hittades i denna källa.&lt;/p&gt;&lt;p&gt;&lt;b&gt;Stoppa&lt;/b&gt;: Uppslagning på aktuellt album stoppas och alla tidigare hämtade resultat kommer att användas.&lt;/p&gt;</translation>
     </message>
