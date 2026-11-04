@@ -61,6 +61,9 @@ def test_cancel_lists_the_files_read_and_reads_no_more(mainwin, make_audio, tmp_
         qtbot.waitUntil(lambda: len(read) == 3)
         [window] = [w for w in QApplication.topLevelWidgets() if isinstance(w, ProgressWin) and w.isVisible()]
         [cancel] = [b for b in window.findChildren(QPushButton) if b.text() == 'Cancel']
+        # read grows before the loader collects a file, and Cancel lists only
+        # what it has collected. The bar moves after that: it's on the fourth.
+        qtbot.waitUntil(lambda: window.value == 4)
         user.click(cancel)
 
         model = mainwin._table.model()
