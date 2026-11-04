@@ -256,3 +256,13 @@ def test_every_percentage_survives_a_save_and_a_load(tmp_path):
                 or loaded.album_bound != n / 100.0 or loaded.track_bound != n / 100.0):
             changed.append(n)
     assert changed == []
+
+
+@pytest.mark.xfail(strict=True, reason='a profile file without jfdi loads with Brute force on')
+def test_a_profile_file_without_brute_force_loads_with_it_off(tmp_path):
+    """Synthetic profile file, written by hand without the brute force key.
+    tut5.txt, "Brute force unmatched files.": "Check to enable brute force
+    matching." A profile that doesn't say so doesn't check it."""
+    path = tmp_path / 'Old.mtp'
+    path.write_text(json.dumps({'info': {'name': 'Old', 'numsources': 0}}))
+    assert mtp_from_file(str(path), SOURCES).jfdi is False

@@ -5,15 +5,17 @@ web ones, so nothing goes to the network. Synthetic files and albums.
 """
 import json
 import os
+import threading
+from pathlib import Path
 
 import pytest
-from PyQt6.QtCore import QPoint, Qt
+from PyQt6.QtCore import QPoint, QThread, Qt
 from PyQt6.QtWidgets import QApplication, QMessageBox, QPushButton, QTextEdit
 
 from puddlestuff import audioinfo
 from puddlestuff.constants import CONFIGDIR
 from puddlestuff.masstag.dialogs import MassTagEdit, MassTagWindow, MTProfileEdit, TSProfileEdit
-from puddlestuff.tagsources import RetrievalError
+from puddlestuff.tagsources import RetrievalError, discogs
 
 pytestmark = pytest.mark.ui
 
@@ -1015,3 +1017,782 @@ def test_editing_a_profile_keeps_a_tag_source_puddletag_lacks(mainwin, user, qtb
         assert saved_sources('Old') == ['Second Source', 'Synthetic Source']
     finally:
         tagsources.tagsources.append(SecondSource)
+
+
+class Gate:
+    """Holds a tag source inside a call, as a slow web service does, until
+    the test opens it: nothing waits on a clock. arrived lists every (source,
+    album) that reached the call; reached is set once the held one did."""
+
+    def __init__(self):
+        self.arrived = []
+        self.opening = threading.Event()
+        self.reached = threading.Event()
+
+
+@pytest.fixture
+def hold(mainwin, monkeypatch):
+    """hold('search' or 'retrieve', source name, album) returns a Gate that
+    holds that call. The gates open at teardown and the lookup's thread is
+    waited for, as a running QThread can't be destroyed."""
+    gates = []
+
+    def holding(method, source, album):
+        gate = Gate()
+        call = getattr(SyntheticSource, method)
+
+        def held(self, first, *rest):
+            key = (self.name, first if method == 'search' else first['album'])
+            gate.arrived.append(key)
+            if key == (source, album):
+                gate.reached.set()
+                assert gate.opening.wait(10), 'the test never opened the gate'
+            return call(self, first, *rest)
+
+        monkeypatch.setattr(SyntheticSource, method, held)
+        gates.append(gate)
+        return gate
+
+    yield holding
+    for gate in gates:
+        gate.opening.set()
+    for thread in mainwin.findChildren(QThread):
+        thread.wait(10000)
+
+
+def press_search(user, mainwin, window):
+    """Selects every file and clicks Search, without waiting for the run."""
+    user.activate()
+    mainwin._table.setFocus()
+    user.press(Key.Key_A, Ctrl)
+    user.click(button(window, '&Search'))
+
+
+def end_of_run(gate, qtbot, window):
+    """Opens the gate and waits for the log's last line. Returns the log."""
+    gate.opening.set()
+    [log] = window.findChildren(QTextEdit)
+    qtbot.waitUntil(lambda: 'Lookups completed.' in log.toPlainText(), timeout=10000)
+    return log.toPlainText()
+
+
+def stop_during(user, qtbot, mainwin, window, gate):
+    """Searches, clicks Stop once the source holds the call, lets the source
+    go and returns the log."""
+    press_search(user, mainwin, window)
+    qtbot.waitUntil(gate.reached.is_set)
+    user.click(button(window, '&Stop'))
+    return end_of_run(gate, qtbot, window)
+
+
+# Synthetic expectation (tut5.txt never mentions Stop; it says "Click on
+# Search. Wait until it's done.").
+
+def test_stop_ends_the_lookup(mainwin, make_audio, user, qtbot, tmp_path, hold):
+    files = synthetic_album(make_audio, mainwin, qtbot, tmp_path)
+    window = open_mass_tagging(user, mainwin, qtbot)
+    create_profile(user, qtbot, window, 'Synthetic', [{'source': 'Synthetic Source'}])
+    gate = hold('search', 'Synthetic Source', 'Album A')
+    press_search(user, mainwin, window)
+    qtbot.waitUntil(gate.reached.is_set)
+    assert button(window, '&Stop')
+    user.click(button(window, '&Stop'))
+    log = end_of_run(gate, qtbot, window)
+    assert button(window, '&Search')
+    assert 'No valid matches were found for the album.' in log
+    assert SyntheticSource.retrieved == []
+    no_previews(mainwin)
+    for f in files:
+        assert 'genre' not in in_file(f)
+
+
+# tut5.txt: "sequentially process each directory". It says nothing on Stop;
+# synthetic expectation: the albums Stop leaves unreached log nothing.
+
+@pytest.mark.xfail(strict=True, reason='Stop logs a closing line for every album not reached')
+def test_stop_leaves_the_albums_not_reached(mainwin, make_audio, user, qtbot, tmp_path, hold):
+    music = tmp_path / 'music'
+    for name in ('One', 'Three', 'Two'):
+        album_files(make_audio, music / name, artist=f'Artist {name}', album=f'Album {name}')
+    load(mainwin, qtbot, music, 9)
+    SyntheticSource.albums = [
+        ({'album': f'Album {name}', 'artist': f'Artist {name}'},
+         tracks(artist=f'Artist {name}', genre=name))
+        for name in ('One', 'Three', 'Two')]
+    window = open_mass_tagging(user, mainwin, qtbot)
+    create_profile(user, qtbot, window, 'Synthetic', [{'source': 'Synthetic Source'}])
+    gate = hold('search', 'Synthetic Source', 'Album One')
+    log = stop_during(user, qtbot, mainwin, window, gate)
+    assert log.count('No valid matches were found for the album.') == 1
+    assert SyntheticSource.searches == [('Album One', ['Artist One'])]
+
+
+# Synthetic expectation (tut5.txt never mentions Stop): Search works again
+# once a stopped run is over.
+
+def test_search_works_again_after_stop(mainwin, make_audio, user, qtbot, tmp_path, hold):
+    files = synthetic_album(make_audio, mainwin, qtbot, tmp_path)
+    window = open_mass_tagging(user, mainwin, qtbot)
+    create_profile(user, qtbot, window, 'Synthetic', [{'source': 'Synthetic Source'}])
+    gate = hold('search', 'Synthetic Source', 'Album A')
+    stop_during(user, qtbot, mainwin, window, gate)
+    log = search(user, qtbot, mainwin, window)
+    assert 'Valid matches were found for the album.' in log
+    for f in files:
+        assert shown(user, f, 'genre') == ('Synth', 'bold')
+        assert previews(mainwin)[str(f)]['genre'] == ['Synth']
+        assert 'genre' not in in_file(f)
+
+
+# tut5.txt: "When done and if matches were found, the metadata will be applied
+# to the files and puddletag will be in Preview Mode". Stop itself is a
+# synthetic expectation: the albums found before it stay.
+
+def test_stop_keeps_the_albums_already_found(mainwin, make_audio, user, qtbot, tmp_path, hold):
+    music = tmp_path / 'music'
+    one = album_files(make_audio, music / 'One', artist='Artist A', album='Album A')
+    two = album_files(make_audio, music / 'Two', artist='Artist B', album='Album B')
+    load(mainwin, qtbot, music, 6)
+    SyntheticSource.albums = [
+        ({'album': 'Album A', 'artist': 'Artist A'}, tracks(artist='Artist A', genre='GA')),
+        ({'album': 'Album B', 'artist': 'Artist B'}, tracks(artist='Artist B', genre='GB'))]
+    window = open_mass_tagging(user, mainwin, qtbot)
+    create_profile(user, qtbot, window, 'Synthetic', [{'source': 'Synthetic Source'}])
+    gate = hold('search', 'Synthetic Source', 'Album B')
+    log = stop_during(user, qtbot, mainwin, window, gate)
+    assert mainwin._table.model().previewMode
+    for f in one:
+        assert previews(mainwin)[str(f)]['genre'] == ['GA']
+    for f in two:
+        assert previews(mainwin)[str(f)] == {}
+    assert 'Valid matches were found for the album.' in log
+    write_previews(user, window)
+    qtbot.waitUntil(lambda: all(in_file(f).get('genre') == ['GA'] for f in one))
+    for f in two:
+        assert 'genre' not in in_file(f)
+
+
+# tut5.txt, of the other Stop: "Stop the lookup and use any previously
+# retrieved results." Synthetic expectation for this Stop.
+
+def test_stop_uses_the_source_that_already_answered(
+        mainwin, make_audio, user, qtbot, tmp_path, hold):
+    files = synthetic_album(make_audio, mainwin, qtbot, tmp_path)
+    SecondSource.albums = [(ALBUM_A, tracks(genre='Two'))]
+    window = open_mass_tagging(user, mainwin, qtbot)
+    create_profile(user, qtbot, window, 'Synthetic',
+                   [{'source': 'Synthetic Source'}, {'source': 'Second Source'}])
+    gate = hold('search', 'Second Source', 'Album A')
+    log = stop_during(user, qtbot, mainwin, window, gate)
+    assert SyntheticSource.retrieved == ['Album A']
+    assert SecondSource.retrieved == []
+    for f in files:
+        assert previews(mainwin)[str(f)]['genre'] == ['Synth']
+    assert 'Valid matches were found for the album.' in log
+
+
+# Synthetic expectation (tut5.txt never mentions Stop; its other Stop says
+# "use any previously retrieved results"): the album being retrieved when
+# Stop is clicked is used.
+
+def test_stop_during_a_retrieval_keeps_the_album(
+        mainwin, make_audio, user, qtbot, tmp_path, hold):
+    files = synthetic_album(make_audio, mainwin, qtbot, tmp_path)
+    window = open_mass_tagging(user, mainwin, qtbot)
+    create_profile(user, qtbot, window, 'Synthetic', [{'source': 'Synthetic Source'}])
+    gate = hold('retrieve', 'Synthetic Source', 'Album A')
+    log = stop_during(user, qtbot, mainwin, window, gate)
+    for f in files:
+        assert previews(mainwin)[str(f)]['genre'] == ['Synth']
+    assert 'Valid matches were found for the album.' in log
+    assert SyntheticSource.retrieved == ['Album A']
+
+
+def rows(listbox):
+    """Each row's text."""
+    return [listbox.item(n).text() for n in range(listbox.count())]
+
+
+def combo_rows(window):
+    combo = window.profileCombo
+    return [combo.itemText(n) for n in range(combo.count())]
+
+
+def profile_files():
+    """The profile folder's files, and its order file's lines."""
+    folder = os.path.join(CONFIGDIR, 'masstagging')
+    with open(os.path.join(folder, 'order')) as f:
+        return sorted(os.listdir(folder)), f.read().split('\n')
+
+
+def open_profiles(user, qtbot, window):
+    user.click(button(window, '&Configure Profiles'))
+    return opened(qtbot, MassTagEdit)
+
+
+def open_row(user, qtbot, dialog, row, clicked, kind):
+    """Selects this row of Configure Profiles or of the profile editor and
+    clicks its button (editButton or duplicateButton). Returns the dialog of
+    this kind that opens, activated."""
+    click_item(user, dialog.listbox, row)
+    user.click(getattr(dialog.buttonlist, clicked))
+    opening = opened(qtbot, kind)
+    user.activate(opening)
+    return opening
+
+
+def ok(user, qtbot, dialog, below=None):
+    """Clicks OK and waits for the dialog below it, activated, or for no
+    dialog at all."""
+    user.click(button(dialog, 'OK'))
+    qtbot.waitUntil(lambda: QApplication.activeModalWidget() is below)
+    if below:
+        user.activate(below)
+
+
+one = [{'source': 'Synthetic Source'}]
+two = [{'source': 'Second Source'}]
+
+
+def test_duplicate_adds_a_copy_with_the_same_name(mainwin, user, qtbot):
+    # Synthetic expectation (tut5.txt says nothing on Configure Profiles' other
+    # buttons; their tooltips say Duplicate, Edit, Remove, Move Up, Move Down):
+    # Duplicate opens the editor with the profile's name, sources and options,
+    # and OK adds the copy under the same name.
+    window = open_mass_tagging(user, mainwin, qtbot)
+    create_profile(user, qtbot, window, 'Alpha', one, album=60)
+    profiles = open_profiles(user, qtbot, window)
+    editor = open_row(user, qtbot, profiles, 0, 'duplicateButton', MTProfileEdit)
+    assert editor._name.text() == 'Alpha'
+    assert rows(editor.listbox) == ['Synthetic Source']
+    assert editor.albumBound.value() == 60
+    ok(user, qtbot, editor, profiles)
+    assert rows(profiles.listbox) == ['Alpha', 'Alpha']
+    ok(user, qtbot, profiles)
+    assert combo_rows(window) == ['Alpha', 'Alpha']
+    assert profile_files() == (['Alpha.mtp', 'Alpha_0.mtp', 'order'], ['Alpha', 'Alpha'])
+
+
+def test_a_duplicate_can_differ_from_its_original(mainwin, user, qtbot):
+    # Synthetic expectation (tut5.txt says nothing on Configure Profiles' other
+    # buttons; their tooltips say Duplicate, Edit, Remove, Move Up, Move Down):
+    # the copy is edited before it is added, and the original stays as it was.
+    window = open_mass_tagging(user, mainwin, qtbot)
+    create_profile(user, qtbot, window, 'Alpha', one, album=60)
+    profiles = open_profiles(user, qtbot, window)
+    editor = open_row(user, qtbot, profiles, 0, 'duplicateButton', MTProfileEdit)
+    replace_text(user, editor._name, 'Beta')
+    replace_text(user, editor.albumBound, '50')
+    ok(user, qtbot, editor, profiles)
+    editor = open_row(user, qtbot, profiles, 0, 'editButton', MTProfileEdit)
+    assert editor._name.text() == 'Alpha'
+    assert editor.albumBound.value() == 60
+    user.click(button(editor, 'Cancel'))
+    qtbot.waitUntil(lambda: QApplication.activeModalWidget() is profiles)
+    ok(user, qtbot, profiles)
+    assert combo_rows(window) == ['Alpha', 'Beta']
+
+
+def test_same_named_profiles_keep_their_order_after_a_restart(mainwin, user, qtbot, restart):
+    # tut5:57 "The name of the profile." Synthetic expectation (tut5.txt says
+    # nothing on Configure Profiles' other buttons; their tooltips say
+    # Duplicate, Edit, Remove, Move Up, Move Down): profiles that share a name
+    # come back in the order they were saved, each with its own sources.
+    window = open_mass_tagging(user, mainwin, qtbot)
+    create_profile(user, qtbot, window, 'Same', one)
+    create_profile(user, qtbot, window, 'Other', two)
+    create_profile(user, qtbot, window, 'Same', two)
+    profiles = open_profiles(user, qtbot, window)
+    click_item(user, profiles.listbox, 2)
+    user.click(profiles.buttonlist.moveupButton)
+    assert rows(profiles.listbox) == ['Same', 'Same', 'Other']
+    ok(user, qtbot, profiles)
+
+    new = restart()
+    [window2] = new.findChildren(MassTagWindow)
+    assert [(p.name, p.profiles[0].tag_source.name) for p in window2.profiles] == [
+        ('Same', 'Synthetic Source'), ('Same', 'Second Source'), ('Other', 'Second Source')]
+
+
+def test_remove_takes_a_profile_off_the_list(mainwin, user, qtbot):
+    # Synthetic expectation (tut5.txt says nothing on Configure Profiles' other
+    # buttons; their tooltips say Duplicate, Edit, Remove, Move Up, Move Down):
+    # a removed profile is gone from the list, the combo and the disk after OK.
+    window = open_mass_tagging(user, mainwin, qtbot)
+    for name in ('Alpha', 'Beta', 'Gamma'):
+        create_profile(user, qtbot, window, name, one)
+    profiles = open_profiles(user, qtbot, window)
+    click_item(user, profiles.listbox, 1)
+    user.click(profiles.buttonlist.removeButton)
+    assert rows(profiles.listbox) == ['Alpha', 'Gamma']
+    ok(user, qtbot, profiles)
+    assert combo_rows(window) == ['Alpha', 'Gamma']
+    assert profile_files() == (['Alpha.mtp', 'Gamma.mtp', 'order'], ['Alpha', 'Gamma'])
+
+
+def test_move_sets_the_saved_order(mainwin, user, qtbot, restart):
+    # Synthetic expectation (tut5.txt says nothing on Configure Profiles' other
+    # buttons; their tooltips say Duplicate, Edit, Remove, Move Up, Move Down):
+    # Move Up and Move Down reorder the list, the top row can't go up nor the
+    # bottom row down, and OK saves the order.
+    window = open_mass_tagging(user, mainwin, qtbot)
+    for name in ('Alpha', 'Beta', 'Gamma'):
+        create_profile(user, qtbot, window, name, one)
+    profiles = open_profiles(user, qtbot, window)
+    up = profiles.buttonlist.moveupButton
+    down = profiles.buttonlist.movedownButton
+    click_item(user, profiles.listbox, 2)
+    user.click(up)
+    assert rows(profiles.listbox) == ['Alpha', 'Gamma', 'Beta']
+    user.click(up)
+    assert rows(profiles.listbox) == ['Gamma', 'Alpha', 'Beta']
+    user.click(up)
+    assert rows(profiles.listbox) == ['Gamma', 'Alpha', 'Beta']
+    user.click(down)
+    assert rows(profiles.listbox) == ['Alpha', 'Gamma', 'Beta']
+    click_item(user, profiles.listbox, 2)
+    user.click(down)
+    assert rows(profiles.listbox) == ['Alpha', 'Gamma', 'Beta']
+    ok(user, qtbot, profiles)
+    assert combo_rows(window) == ['Alpha', 'Gamma', 'Beta']
+    assert profile_files()[1] == ['Alpha', 'Gamma', 'Beta']
+
+    new = restart()
+    [window2] = new.findChildren(MassTagWindow)
+    assert combo_rows(window2) == ['Alpha', 'Gamma', 'Beta']
+
+
+def test_edit_renames_a_profile_and_its_file(mainwin, user, qtbot):
+    # Synthetic expectation (tut5.txt says nothing on Configure Profiles' other
+    # buttons; their tooltips say Duplicate, Edit, Remove, Move Up, Move Down):
+    # renaming a profile in its editor renames it in the combo and on disk.
+    window = open_mass_tagging(user, mainwin, qtbot)
+    create_profile(user, qtbot, window, 'Old', one)
+    profiles = open_profiles(user, qtbot, window)
+    editor = open_row(user, qtbot, profiles, 0, 'editButton', MTProfileEdit)
+    replace_text(user, editor._name, 'New')
+    ok(user, qtbot, editor, profiles)
+    ok(user, qtbot, profiles)
+    assert combo_rows(window) == ['New']
+    assert window.profileCombo.currentText() == 'New'
+    assert profile_files() == (['New.mtp', 'order'], ['New'])
+
+
+def test_double_click_opens_a_profile(mainwin, user, qtbot):
+    # Synthetic expectation (tut5.txt says nothing on Configure Profiles' other
+    # buttons; their tooltips say Duplicate, Edit, Remove, Move Up, Move Down):
+    # a double-click on a row does what Edit does.
+    window = open_mass_tagging(user, mainwin, qtbot)
+    create_profile(user, qtbot, window, 'Alpha', one)
+    profiles = open_profiles(user, qtbot, window)
+    listbox = profiles.listbox
+    user.double_click(listbox.viewport(), listbox.visualItemRect(listbox.item(0)).center())
+    editor = opened(qtbot, MTProfileEdit)
+    assert editor._name.text() == 'Alpha'
+    user.click(button(editor, 'Cancel'))
+    qtbot.waitUntil(lambda: QApplication.activeModalWidget() is profiles)
+    user.click(button(profiles, 'Cancel'))
+
+
+def test_list_buttons_wait_for_a_row(mainwin, user, qtbot):
+    # Synthetic expectation (tut5.txt says nothing on Configure Profiles' other
+    # buttons; their tooltips say Duplicate, Edit, Remove, Move Up, Move Down):
+    # the buttons that act on a row are off until a row is clicked, and off
+    # again once the last row is removed. Add is always on.
+    window = open_mass_tagging(user, mainwin, qtbot)
+    create_profile(user, qtbot, window, 'Alpha', one)
+    profiles = open_profiles(user, qtbot, window)
+    buttons = profiles.buttonlist
+    on_a_row = [buttons.duplicateButton, buttons.editButton, buttons.movedownButton,
+                buttons.moveupButton, buttons.removeButton]
+    assert buttons.addButton.isEnabled()
+    assert not any(b.isEnabled() for b in on_a_row)
+    click_item(user, profiles.listbox, 0)
+    assert all(b.isEnabled() for b in on_a_row)
+    user.click(buttons.removeButton)
+    assert not any(b.isEnabled() for b in on_a_row)
+    user.click(button(profiles, 'Cancel'))
+
+
+def test_the_chosen_profile_is_kept_after_a_restart(mainwin, user, qtbot, restart):
+    # Synthetic expectation (tut5.txt says nothing on Configure Profiles' other
+    # buttons; their tooltips say Duplicate, Edit, Remove, Move Up, Move Down):
+    # the profile chosen in the combo is the one chosen after a restart.
+    window = open_mass_tagging(user, mainwin, qtbot)
+    create_profile(user, qtbot, window, 'A', one)
+    create_profile(user, qtbot, window, 'B', two)
+    pick(user, qtbot, window.profileCombo, 'B')
+
+    new = restart()
+    [window2] = new.findChildren(MassTagWindow)
+    assert window2.profileCombo.currentText() == 'B'
+    assert window2.profile.name == 'B'
+
+
+def test_ok_goes_on_past_a_file_it_cannot_remove(mainwin, user, qtbot, restart):
+    # Synthetic expectation (tut5.txt says nothing on Configure Profiles' other
+    # buttons; their tooltips say Duplicate, Edit, Remove, Move Up, Move Down):
+    # a folder named like a profile file, which os.remove refuses even as root,
+    # doesn't stop OK, and the next start skips it. tut5:33 "the Masstagging
+    # window's log names the file".
+    window = open_mass_tagging(user, mainwin, qtbot)
+    create_profile(user, qtbot, window, 'A', one)
+    folder = os.path.join(CONFIGDIR, 'masstagging')
+    os.mkdir(os.path.join(folder, 'Stale.mtp'))
+    profiles = open_profiles(user, qtbot, window)
+    ok(user, qtbot, profiles)
+    assert profile_files() == (['A.mtp', 'Stale.mtp', 'order'], ['A'])
+
+    new = restart()
+    [window2] = new.findChildren(MassTagWindow)
+    assert combo_rows(window2) == ['A']
+    assert 'Stale.mtp' in window2._log.toPlainText()
+
+
+def two_sources_editor(user, qtbot, window):
+    """A profile 'A' of two tag sources, open in its editor from Configure
+    Profiles. Returns the editor and the dialog below it."""
+    create_profile(user, qtbot, window, 'A',
+                   [{'source': 'Synthetic Source', 'fields': 'genre'}, {'source': 'Second Source'}])
+    profiles = open_profiles(user, qtbot, window)
+    return open_row(user, qtbot, profiles, 0, 'editButton', MTProfileEdit), profiles
+
+
+def test_duplicate_tag_source_copies_its_options(mainwin, user, qtbot):
+    # Synthetic expectation (tut5.txt says nothing on Configure Profiles' other
+    # buttons; their tooltips say Duplicate, Edit, Remove, Move Up, Move Down):
+    # Duplicate opens the tag source dialog with the row's source and fields,
+    # and OK adds the copy at the end.
+    window = open_mass_tagging(user, mainwin, qtbot)
+    editor, profiles = two_sources_editor(user, qtbot, window)
+    config = open_row(user, qtbot, editor, 0, 'duplicateButton', TSProfileEdit)
+    assert config.source.currentText() == 'Synthetic Source'
+    assert config.fields.text() == 'genre'
+    ok(user, qtbot, config, editor)
+    assert rows(editor.listbox) == ['Synthetic Source', 'Second Source', 'Synthetic Source']
+    ok(user, qtbot, editor, profiles)
+    ok(user, qtbot, profiles)
+    assert saved_sources('A') == ['Synthetic Source', 'Second Source', 'Synthetic Source']
+
+
+def test_moving_a_tag_source_changes_the_polling_order(mainwin, user, album, qtbot):
+    # tut5:65 "Each tag source will be polled in the order listed here."
+    files, window = album
+    SyntheticSource.albums = [(ALBUM_A, tracks(genre='One'))]
+    SecondSource.albums = [(ALBUM_A, tracks(genre='Two'))]
+    editor, profiles = two_sources_editor(user, qtbot, window)
+    click_item(user, editor.listbox, 1)
+    user.click(editor.buttonlist.moveupButton)
+    assert rows(editor.listbox) == ['Second Source', 'Synthetic Source']
+    assert [t.fields for t in editor._tsps] == [[], ['genre']]
+    user.click(editor.buttonlist.movedownButton)
+    assert rows(editor.listbox) == ['Synthetic Source', 'Second Source']
+    assert [t.fields for t in editor._tsps] == [['genre'], []]
+    user.click(editor.buttonlist.moveupButton)
+    assert rows(editor.listbox) == ['Second Source', 'Synthetic Source']
+    assert [t.fields for t in editor._tsps] == [[], ['genre']]
+    ok(user, qtbot, editor, profiles)
+    ok(user, qtbot, profiles)
+    log = search(user, qtbot, mainwin, window)
+    assert saved_sources('A') == ['Second Source', 'Synthetic Source']
+    assert log.index('Polling: Second Source') < log.index('Polling: Synthetic Source')
+
+
+def test_edit_tag_source_replaces_its_row(mainwin, user, qtbot):
+    # Synthetic expectation (tut5.txt says nothing on Configure Profiles' other
+    # buttons; their tooltips say Duplicate, Edit, Remove, Move Up, Move Down):
+    # Edit on a tag source replaces its row with what the dialog is left with.
+    window = open_mass_tagging(user, mainwin, qtbot)
+    editor, profiles = two_sources_editor(user, qtbot, window)
+    config = open_row(user, qtbot, editor, 1, 'editButton', TSProfileEdit)
+    pick(user, qtbot, config.source, 'Synthetic Source')
+    replace_text(user, config.fields, 'year')
+    ok(user, qtbot, config, editor)
+    assert rows(editor.listbox) == ['Synthetic Source', 'Synthetic Source']
+    ok(user, qtbot, editor, profiles)
+    ok(user, qtbot, profiles)
+    assert saved_sources('A') == ['Synthetic Source', 'Synthetic Source']
+    assert window.profile.profiles[1].fields == ['year']
+
+
+def test_remove_tag_source(mainwin, user, qtbot):
+    # Synthetic expectation (tut5.txt says nothing on Configure Profiles' other
+    # buttons; their tooltips say Duplicate, Edit, Remove, Move Up, Move Down):
+    # a removed tag source leaves the list and the saved profile, and the next
+    # row is current.
+    window = open_mass_tagging(user, mainwin, qtbot)
+    editor, profiles = two_sources_editor(user, qtbot, window)
+    click_item(user, editor.listbox, 0)
+    user.click(editor.buttonlist.removeButton)
+    assert rows(editor.listbox) == ['Second Source']
+    assert editor.buttonlist.editButton.isEnabled()
+    ok(user, qtbot, editor, profiles)
+    ok(user, qtbot, profiles)
+    assert saved_sources('A') == ['Second Source']
+
+
+def test_double_click_opens_a_tag_source(mainwin, user, qtbot):
+    # Synthetic expectation (tut5.txt says nothing on Configure Profiles' other
+    # buttons; their tooltips say Duplicate, Edit, Remove, Move Up, Move Down):
+    # a double-click on a tag source does what Edit does.
+    window = open_mass_tagging(user, mainwin, qtbot)
+    editor, profiles = two_sources_editor(user, qtbot, window)
+    listbox = editor.listbox
+    user.double_click(listbox.viewport(), listbox.visualItemRect(listbox.item(0)).center())
+    config = opened(qtbot, TSProfileEdit)
+    assert config.fields.text() == 'genre'
+    user.click(button(config, 'Cancel'))
+    qtbot.waitUntil(lambda: QApplication.activeModalWidget() is editor)
+    user.activate(editor)
+    ok(user, qtbot, editor, profiles)
+    ok(user, qtbot, profiles)
+
+
+MP3TAG_SCRIPT = """[Name]=Synthetic Mp3tag
+[IndexUrl]={url}/search?q=%s
+[AlbumUrl]={url}/album?id=
+[IndexFormat]=%_url%|%album%|%artist%
+[SearchBy]={search_by}
+[ParserScriptIndex]=...
+sayrest
+[ParserScriptAlbum]=...
+outputto "album"
+say "Album A"
+outputto "artist"
+say "Artist A"
+outputto "genre"
+say "Web"
+outputto "tracks"
+say "Song 1|Song 2|Song 3"
+"""
+
+
+def install_mp3tag_script(web_server, monkeypatch, search_by):
+    """A script in the user's mp3tag_sources folder, written before mainwin
+    builds the window, answered by the local web server. Its requests go
+    without Mp3tag scripts' second between them."""
+    monkeypatch.setattr(discogs, '_wait', lambda: None)
+    folder = Path(CONFIGDIR) / 'mp3tag_sources'
+    folder.mkdir(exist_ok=True)
+    (folder / 'Synthetic.src').write_text(
+        MP3TAG_SCRIPT.format(url=web_server.url, search_by=search_by))
+    web_server.add('/search', 'u1|Album A|Artist A')
+    web_server.add('/album', 'Any page: the script says its own text.')
+
+
+@pytest.fixture
+def mp3tag_script(clean_profile, web_server, monkeypatch):
+    install_mp3tag_script(web_server, monkeypatch, '%album%')
+    return web_server
+
+
+@pytest.fixture
+def mp3tag_script_several_fields(clean_profile, web_server, monkeypatch):
+    install_mp3tag_script(web_server, monkeypatch, 'Search for||%album%||%s')
+    return web_server
+
+
+def test_a_profile_can_poll_an_mp3tag_script(mp3tag_script, mainwin, make_audio, user, qtbot,
+                                             tmp_path, restart, dialogs):
+    # tut5.txt: "The tag source to use. See tagsources"; tagsources.txt:
+    # "Selecting files and searching works too, for a tag source whose
+    # [SearchBy] line names plain fields". Synthetic script and album.
+    files = load_album_a(make_audio, mainwin, qtbot, tmp_path)
+    window = open_mass_tagging(user, mainwin, qtbot)
+    create_profile(user, qtbot, window, 'Web', [{'source': 'Synthetic Mp3tag [M]'}])
+    log = search(user, qtbot, mainwin, window)
+    assert saved_sources('Web') == ['Synthetic Mp3tag [M]']
+    assert 'Polling: Synthetic Mp3tag [M]' in log
+    assert [(r.path, r.query) for r in mp3tag_script.requests] == [
+        ('/search', {'q': ['Album A']}), ('/album', {'id': ['u1']})]
+    for n, f in enumerate(files, 1):
+        assert previews(mainwin)[str(f)]['genre'] == ['Web']
+        assert previews(mainwin)[str(f)]['title'] == [f'Song {n}']
+        assert 'genre' not in in_file(f)
+
+    dialogs.answer('QMessageBox.question', Yes)
+    user.click(button(window, 'Clear &Preview'))
+    qtbot.waitUntil(lambda: not mainwin._table.model().previewMode)
+    new = restart()
+    [window2] = new.findChildren(MassTagWindow)
+    assert window2.profile.profiles[0].tag_source.name == 'Synthetic Mp3tag [M]'
+
+
+def test_an_mp3tag_script_it_cannot_search_says_why(mp3tag_script_several_fields, mainwin,
+                                                    make_audio, user, qtbot, tmp_path):
+    # tagsources.txt: "You can search as you do using Mp3tag by using the
+    # Search box. Selecting files and searching works too, for a tag source
+    # whose [SearchBy] line names plain fields". Synthetic script and album.
+    load_album_a(make_audio, mainwin, qtbot, tmp_path)
+    window = open_mass_tagging(user, mainwin, qtbot)
+    create_profile(user, qtbot, window, 'Web', [{'source': 'Synthetic Mp3tag [M]'}])
+    log = search(user, qtbot, mainwin, window)
+    assert ("An error occurred during the search: [SearchBy] with several search fields (||) "
+            "isn't supported.") in log
+    assert mp3tag_script_several_fields.requests == []
+    no_previews(mainwin)
+
+
+# Synthetic expectation (tut5.txt never mentions Stop): Search stays off,
+# still reading Stop, until the stopped run has ended.
+
+@pytest.mark.xfail(strict=True, reason='the button can start a second lookup while the first '
+                                       'one still runs')
+def test_search_stays_off_until_the_stopped_run_ends(
+        mainwin, make_audio, user, qtbot, tmp_path, hold):
+    synthetic_album(make_audio, mainwin, qtbot, tmp_path)
+    window = open_mass_tagging(user, mainwin, qtbot)
+    create_profile(user, qtbot, window, 'Synthetic', [{'source': 'Synthetic Source'}])
+    gate = hold('search', 'Synthetic Source', 'Album A')
+    press_search(user, mainwin, window)
+    qtbot.waitUntil(gate.reached.is_set)
+    user.click(button(window, '&Stop'))
+    start = window._startButton
+    assert not start.isEnabled()
+    assert start.text() == '&Stop'
+    user.click(start)
+    log = end_of_run(gate, qtbot, window)
+    assert gate.arrived == [('Synthetic Source', 'Album A')]
+    assert log.count('Lookups completed.') == 1
+    assert start.isEnabled()
+    assert start.text() == '&Search'
+
+
+# tut5.txt: "each Tag Source is searched a second time with the album name
+# without it". Stop is a synthetic expectation: it ends the retry as well.
+
+@pytest.mark.xfail(strict=True, reason="Stop still searches again without the album's brackets")
+def test_stop_skips_the_retry_without_brackets(
+        mainwin, make_audio, user, qtbot, tmp_path, hold):
+    album_files(make_audio, tmp_path / 'music' / 'One', artist='Artist A',
+                album='Album A (Deluxe)')
+    load(mainwin, qtbot, tmp_path / 'music', 3)
+    window = open_mass_tagging(user, mainwin, qtbot)
+    create_profile(user, qtbot, window, 'Synthetic', [{'source': 'Synthetic Source'}])
+    gate = hold('search', 'Synthetic Source', 'Album A (Deluxe)')
+    log = stop_during(user, qtbot, mainwin, window, gate)
+    assert gate.arrived == [('Synthetic Source', 'Album A (Deluxe)')]
+    assert 'Retrying search' not in log
+
+
+# tut5.txt: "Otherwise the next matching album is retrieved". Stop is a
+# synthetic expectation: it ends that as well.
+
+@pytest.mark.xfail(strict=True, reason='Stop still retrieves the next matching album')
+def test_stop_retrieves_no_further_album(mainwin, make_audio, user, qtbot, tmp_path, hold):
+    load_album_a(make_audio, mainwin, qtbot, tmp_path)
+    SyntheticSource.albums = [
+        (ALBUM_A, tracks(5, genre='Five')),
+        ({'album': 'Album A (2)', 'artist': 'Artist A'}, tracks(5, genre='Two'))]
+    window = open_mass_tagging(user, mainwin, qtbot)
+    create_profile(user, qtbot, window, 'Synthetic', [{'source': 'Synthetic Source'}])
+    gate = hold('retrieve', 'Synthetic Source', 'Album A')
+    log = stop_during(user, qtbot, mainwin, window, gate)
+    assert gate.arrived == [('Synthetic Source', 'Album A')]
+    assert 'Retrieving next matching album' not in log
+    no_previews(mainwin)
+
+
+def describe(user, qtbot, window, row, text):
+    """Types the profile's Description in its editor."""
+    profiles = open_profiles(user, qtbot, window)
+    editor = open_row(user, qtbot, profiles, row, 'editButton', MTProfileEdit)
+    replace_text(user, editor._desc, text)
+    ok(user, qtbot, editor, profiles)
+    ok(user, qtbot, profiles)
+
+
+@pytest.mark.xfail(strict=True, reason="the tooltip stays on the first profile's description")
+def test_tooltip_shows_the_chosen_profiles_description(mainwin, user, qtbot):
+    # tut5:61: "Any description you'd like. Will be shown as a tooltip for the
+    # profile in the Masstagging Window." Synthetic profiles.
+    window = open_mass_tagging(user, mainwin, qtbot)
+    create_profile(user, qtbot, window, 'A', one)
+    create_profile(user, qtbot, window, 'B', two)
+    create_profile(user, qtbot, window, 'C', one)
+    describe(user, qtbot, window, 0, 'desc a')
+    describe(user, qtbot, window, 1, 'desc b')
+    pick(user, qtbot, window.profileCombo, 'B')
+    assert window.profileCombo.toolTip() == 'desc b'
+    pick(user, qtbot, window.profileCombo, 'C')
+    assert window.profileCombo.toolTip() == ''
+    pick(user, qtbot, window.profileCombo, 'A')
+    assert window.profileCombo.toolTip() == 'desc a'
+
+
+@pytest.mark.xfail(strict=True, reason='Cancel keeps what was done in Configure Profiles')
+@pytest.mark.parametrize('change', ['add', 'edit', 'move', 'remove'])
+def test_cancel_discards_the_changes(mainwin, user, qtbot, change):
+    # Synthetic expectation (tut5.txt says nothing on Configure Profiles'
+    # other buttons): Cancel throws away everything done in the dialog.
+    window = open_mass_tagging(user, mainwin, qtbot)
+    create_profile(user, qtbot, window, 'A', one)
+    create_profile(user, qtbot, window, 'B', two)
+    profiles = open_profiles(user, qtbot, window)
+    if change == 'add':
+        user.click(profiles.buttonlist.addButton)
+        editor = opened(qtbot, MTProfileEdit)
+        user.activate(editor)
+        replace_text(user, editor._name, 'C')
+        ok(user, qtbot, editor, profiles)
+    elif change == 'edit':
+        editor = open_row(user, qtbot, profiles, 0, 'editButton', MTProfileEdit)
+        replace_text(user, editor._name, 'Z')
+        ok(user, qtbot, editor, profiles)
+    elif change == 'move':
+        click_item(user, profiles.listbox, 1)
+        user.click(profiles.buttonlist.moveupButton)
+    else:
+        click_item(user, profiles.listbox, 0)
+        user.click(profiles.buttonlist.removeButton)
+    user.click(button(profiles, 'Cancel'))
+    qtbot.waitUntil(lambda: QApplication.activeModalWidget() is None)
+    profiles = open_profiles(user, qtbot, window)
+    assert rows(profiles.listbox) == ['A', 'B']
+    assert combo_rows(window) == ['A', 'B']
+    user.click(button(profiles, 'Cancel'))
+
+
+@pytest.mark.xfail(strict=True, reason='Search still runs the removed profile')
+def test_removing_every_profile_leaves_none_chosen(mainwin, make_audio, user, qtbot, tmp_path):
+    # tut5:26: "Select a profile from the Masstagging Window."; with none
+    # left the window says "Please choose a tagging profile." Synthetic files
+    # and album.
+    synthetic_album(make_audio, mainwin, qtbot, tmp_path)
+    window = open_mass_tagging(user, mainwin, qtbot)
+    create_profile(user, qtbot, window, 'A', one)
+    describe(user, qtbot, window, 0, 'desc a')
+    profiles = open_profiles(user, qtbot, window)
+    click_item(user, profiles.listbox, 0)
+    user.click(profiles.buttonlist.removeButton)
+    ok(user, qtbot, profiles)
+    press_search(user, mainwin, window)
+    [log] = window.findChildren(QTextEdit)
+    # Either line ends the run, so no thread outlives the test.
+    qtbot.waitUntil(lambda: 'Please choose a tagging profile.' in log.toPlainText()
+                    or 'Lookups completed.' in log.toPlainText(), timeout=10000)
+    assert 'Please choose a tagging profile.' in log.toPlainText()
+    assert SyntheticSource.searches == []
+    no_previews(mainwin)
+    assert button(window, '&Search')
+    assert window.profileCombo.toolTip() == ''
+
+
+@pytest.mark.xfail(strict=True,
+                   reason='moving the chosen profile leaves the saved choice on the old row')
+def test_the_chosen_profile_stays_chosen_after_a_move_and_a_restart(mainwin, user, qtbot, restart):
+    # Synthetic expectation (tut5.txt says nothing on Configure Profiles' other
+    # buttons; their tooltips say Move Up, Move Down): the chosen profile is
+    # still the chosen one after it is moved and puddletag restarts.
+    window = open_mass_tagging(user, mainwin, qtbot)
+    create_profile(user, qtbot, window, 'A', one)
+    create_profile(user, qtbot, window, 'B', two)
+    pick(user, qtbot, window.profileCombo, 'B')
+    profiles = open_profiles(user, qtbot, window)
+    click_item(user, profiles.listbox, 1)
+    user.click(profiles.buttonlist.moveupButton)
+    ok(user, qtbot, profiles)
+
+    new = restart()
+    [window2] = new.findChildren(MassTagWindow)
+    assert window2.profileCombo.currentText() == 'B'
