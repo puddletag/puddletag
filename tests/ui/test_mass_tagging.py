@@ -1697,7 +1697,6 @@ def describe(user, qtbot, window, row, text):
     ok(user, qtbot, profiles)
 
 
-@pytest.mark.xfail(strict=True, reason="the tooltip stays on the first profile's description")
 def test_tooltip_shows_the_chosen_profiles_description(mainwin, user, qtbot):
     # tut5:61: "Any description you'd like. Will be shown as a tooltip for the
     # profile in the Masstagging Window." Synthetic profiles.
@@ -1715,7 +1714,6 @@ def test_tooltip_shows_the_chosen_profiles_description(mainwin, user, qtbot):
     assert window.profileCombo.toolTip() == 'desc a'
 
 
-@pytest.mark.xfail(strict=True, reason='Cancel keeps what was done in Configure Profiles')
 @pytest.mark.parametrize('change', ['add', 'edit', 'move', 'remove'])
 def test_cancel_discards_the_changes(mainwin, user, qtbot, change):
     # Synthetic expectation (tut5.txt says nothing on Configure Profiles'
@@ -1748,7 +1746,6 @@ def test_cancel_discards_the_changes(mainwin, user, qtbot, change):
     user.click(button(profiles, 'Cancel'))
 
 
-@pytest.mark.xfail(strict=True, reason='Search still runs the removed profile')
 def test_removing_every_profile_leaves_none_chosen(mainwin, make_audio, user, qtbot, tmp_path):
     # tut5:26: "Select a profile from the Masstagging Window."; with none
     # left the window says "Please choose a tagging profile." Synthetic files
@@ -1773,8 +1770,6 @@ def test_removing_every_profile_leaves_none_chosen(mainwin, make_audio, user, qt
     assert window.profileCombo.toolTip() == ''
 
 
-@pytest.mark.xfail(strict=True,
-                   reason='moving the chosen profile leaves the saved choice on the old row')
 def test_the_chosen_profile_stays_chosen_after_a_move_and_a_restart(mainwin, user, qtbot, restart):
     # Synthetic expectation (tut5.txt says nothing on Configure Profiles' other
     # buttons; their tooltips say Move Up, Move Down): the chosen profile is

@@ -46,6 +46,8 @@ Click **Configure Profiles** on the **Masstagging** window to bring up the Profi
    :alt: Masstagging Profile choosing dialog.
    :align: center
 
+Each profile can be edited, duplicated, removed or moved with the buttons beside the list. Nothing is saved until you click **OK**.
+
 Now add a new profile by clicking on the **Add Profile ("+")** button. You should get this dialog.
 
 .. image:: masstag_images/configure_profile.png

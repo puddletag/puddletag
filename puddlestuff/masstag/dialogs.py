@@ -187,7 +187,7 @@ class MassTagEdit(QDialog):
         f.close()
 
     def setProfiles(self, profiles):
-        self._profiles = profiles
+        self._profiles = list(profiles)
         for profile in self._profiles:
             self.listbox.addItem(profile.name)
 
@@ -578,6 +578,7 @@ class MassTagWindow(QWidget):
             self.profile = self.profiles[index]
         except IndexError:
             return
+        self.profileCombo.setToolTip(self.profile.desc)
         cparser = PuddleConfig()
         cparser.set('masstagging', 'lastindex', index)
 
@@ -605,12 +606,12 @@ class MassTagWindow(QWidget):
         if not os.path.exists(PROFILEDIR):
             os.mkdir(PROFILEDIR)
         errors = []
+        index = PuddleConfig().get('masstagging', 'lastindex', 0)
         self.setProfiles(load_all_mtps(PROFILEDIR, self.tag_sources, errors))
         for filename, error in errors:
             self._appendLog(translate(
                 'Masstagging', "The profile file <b>{}</b> can't be read and was skipped: {}"
             ).format(filename, error))
-        index = PuddleConfig().get('masstagging', 'lastindex', 0)
         if index < self.profileCombo.count():
             self.profileCombo.setCurrentIndex(index)
 
@@ -618,6 +619,8 @@ class MassTagWindow(QWidget):
         self.profiles = profiles
         if not profiles:
             self.profileCombo.clear()
+            self.profile = None
+            self.profileCombo.setToolTip('')
             return
         self.profileCombo.currentIndexChanged.disconnect(self.changeProfile)
         old = self.profileCombo.currentText()
@@ -627,10 +630,7 @@ class MassTagWindow(QWidget):
         if index == -1:
             index = 0
         self.profileCombo.setCurrentIndex(index)
-        self.profile = profiles[index]
-
-        if self.profile.desc:
-            self.profileCombo.setToolTip(self.profile.desc)
+        self.changeProfile(index)
         self.profileCombo.currentIndexChanged.connect(self.changeProfile)
 
     def _start(self):
