@@ -456,6 +456,8 @@ def masstag(mtp, files=None, flag=None, mtp_error_func=None,
 
         while not check_result(result, files):
             del (matches[0])
+            if flag.stop:
+                matches.clear()
             if matches:
                 set_status(RETRIEVING_NEXT)
                 set_status(get_match_str(matches[0].info))
@@ -607,7 +609,7 @@ class MassTagProfile(object):
             set_status(POLLING.format(profile.tag_source.name))
             try:
                 results = profile.search(files)
-                if regexps and rxp_album:
+                if regexps and rxp_album and not (flag is not None and flag.stop):
                     profile.clear_results()
                     set_status(translate('Masstagging',
                                          "Retrying search with album name: <b>{}</b>"

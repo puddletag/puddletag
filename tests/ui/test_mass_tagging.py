@@ -1109,7 +1109,6 @@ def test_stop_ends_the_lookup(mainwin, make_audio, user, qtbot, tmp_path, hold):
 # tut5.txt: "sequentially process each directory". It says nothing on Stop;
 # synthetic expectation: the albums Stop leaves unreached log nothing.
 
-@pytest.mark.xfail(strict=True, reason='Stop logs a closing line for every album not reached')
 def test_stop_leaves_the_albums_not_reached(mainwin, make_audio, user, qtbot, tmp_path, hold):
     music = tmp_path / 'music'
     for name in ('One', 'Three', 'Two'):
@@ -1636,8 +1635,6 @@ def test_an_mp3tag_script_it_cannot_search_says_why(mp3tag_script_several_fields
 # Synthetic expectation (tut5.txt never mentions Stop): Search stays off,
 # still reading Stop, until the stopped run has ended.
 
-@pytest.mark.xfail(strict=True, reason='the button can start a second lookup while the first '
-                                       'one still runs')
 def test_search_stays_off_until_the_stopped_run_ends(
         mainwin, make_audio, user, qtbot, tmp_path, hold):
     synthetic_album(make_audio, mainwin, qtbot, tmp_path)
@@ -1661,7 +1658,6 @@ def test_search_stays_off_until_the_stopped_run_ends(
 # tut5.txt: "each Tag Source is searched a second time with the album name
 # without it". Stop is a synthetic expectation: it ends the retry as well.
 
-@pytest.mark.xfail(strict=True, reason="Stop still searches again without the album's brackets")
 def test_stop_skips_the_retry_without_brackets(
         mainwin, make_audio, user, qtbot, tmp_path, hold):
     album_files(make_audio, tmp_path / 'music' / 'One', artist='Artist A',
@@ -1678,7 +1674,6 @@ def test_stop_skips_the_retry_without_brackets(
 # tut5.txt: "Otherwise the next matching album is retrieved". Stop is a
 # synthetic expectation: it ends that as well.
 
-@pytest.mark.xfail(strict=True, reason='Stop still retrieves the next matching album')
 def test_stop_retrieves_no_further_album(mainwin, make_audio, user, qtbot, tmp_path, hold):
     load_album_a(make_audio, mainwin, qtbot, tmp_path)
     SyntheticSource.albums = [

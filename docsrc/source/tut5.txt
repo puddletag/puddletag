@@ -30,6 +30,8 @@ How to use it
 * Make modifications.
 * Write changes.
 
+To end a lookup, click **Stop**: the albums already found stay as previews, and the rest are skipped. The button stays greyed out until the tag source being polled has answered.
+
 A profile whose file puddletag can't read isn't listed: the **Masstagging** window's log names the file instead.
 
 

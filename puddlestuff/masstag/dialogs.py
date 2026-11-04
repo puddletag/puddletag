@@ -598,7 +598,7 @@ class MassTagWindow(QWidget):
             self._startButton.setText(translate('Masstagging', '&Stop'))
             self._start()
         else:
-            self._startButton.setText(translate('Masstagging', '&Search'))
+            self._startButton.setEnabled(False)
             self.__flag.stop = True
 
     def loadSettings(self):
@@ -661,6 +661,8 @@ class MassTagWindow(QWidget):
         def run_masstag():
             replace_fields = []
             for files in tag_groups:
+                if self.__flag.stop:
+                    break
                 try:
                     mtp.clear()
 
@@ -688,6 +690,7 @@ class MassTagWindow(QWidget):
                 set_status(translate('Masstagging',
                                      '<b>Lookups completed.</b>'))
             self._startButton.setText(translate('Masstagging', '&Search'))
+            self._startButton.setEnabled(True)
             self.__flag.stop = False
 
         thread = PuddleThread(run_masstag, self)
