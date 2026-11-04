@@ -258,7 +258,6 @@ def test_every_percentage_survives_a_save_and_a_load(tmp_path):
     assert changed == []
 
 
-@pytest.mark.xfail(strict=True, reason='a profile file without jfdi loads with Brute force on')
 def test_a_profile_file_without_brute_force_loads_with_it_off(tmp_path):
     """Synthetic profile file, written by hand without the brute force key.
     tut5.txt, "Brute force unmatched files.": "Check to enable brute force

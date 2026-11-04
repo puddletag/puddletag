@@ -72,7 +72,7 @@ def mtp_from_file(filename=CONFIG, tag_sources=None):
     pattern = cparser.get(info_section, 'file_pattern',
                           cparser.get(info_section, PATTERN,
                                       '%artist% - %album%/%track% - %title%'))
-    jfdi = cparser.get(info_section, JFDI, True)
+    jfdi = cparser.get(info_section, JFDI, False)
     desc = cparser.get(info_section, DESC, '')
     leave_existing = cparser.get(info_section, EXISTING_ONLY, False)
     regexps = ''
