@@ -5,7 +5,7 @@ from copy import deepcopy
 from functools import partial
 
 from PyQt6.QtCore import QMutex, QObject, pyqtSignal
-from PyQt6.QtWidgets import QApplication, QCheckBox, QComboBox, QDialog, QGridLayout, QHBoxLayout, QLabel, \
+from PyQt6.QtWidgets import QCheckBox, QComboBox, QDialog, QGridLayout, QHBoxLayout, QLabel, \
     QLineEdit, QPushButton, QSpinBox, QTextEdit, QVBoxLayout, QWidget
 
 from .. import masstag as masstag_module
@@ -27,23 +27,12 @@ status_obj = _SignalObject()
 
 def set_status(msg):
     status_obj.statusChanged.emit(msg)
-    QApplication.processEvents()
 
 
 # monkey-patch the module to use the gui output
 masstag_module.set_status = set_status
 
 mutex = QMutex()
-
-
-def search_error(error, profile):
-    set_status(translate('Masstagging',
-                         "An error occurred during the search: <b>{}</b>").format(str(error)))
-
-
-def retrieval_error(error, profile):
-    set_status(translate('Masstagging',
-                         "An error occurred during album retrieval: <b>{}</b>").format(str(error)))
 
 
 class MassTagEdit(QDialog):
@@ -132,10 +121,6 @@ class MassTagEdit(QDialog):
             [button.setEnabled(False) for button in self.buttonlist.widgets[1:]]
         else:
             [button.setEnabled(True) for button in self.buttonlist.widgets[1:]]
-
-    def loadProfiles(self, dirpath=PROFILEDIR):
-        profiles = load_all_mtps(dirpath, self.tag_sources)
-        self.setProfiles([_f for _f in profiles if _f])
 
     def moveDown(self):
         self.listbox.moveDown(self._profiles)
@@ -706,23 +691,3 @@ class MassTagWindow(QWidget):
 
 
 control = ('Mass Tagging', MassTagWindow, RIGHTDOCK, False)
-
-if __name__ == '__main__':
-    app = QApplication([])
-    from .. import puddletag, tagsources
-
-    puddletag.load_plugins()
-    sources = [z() for z in tagsources.tagsources]
-    tsp = TagSourceProfile(None, sources[-1], ['field1', 'field2'],
-                           1, ['repl1', 'repl2'])
-    # win = TSProfileEdit(sources, tsp)
-    mtp = MassTagProfile('Searching', 'Testing Search',
-                         ['artist', 'title'], None, '%artist% - ktg',
-                         [tsp], 0.70, 0.90, False, True,
-                         {'album': [r'(.*?)\s+\(.*\)', '$1']})
-    # win = MTProfileEdit(sources, mtp)
-
-    win = MassTagEdit(sources)
-    win.loadProfiles()
-    win.show()
-    app.exec()
