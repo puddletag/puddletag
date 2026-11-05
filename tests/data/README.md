@@ -115,3 +115,20 @@ under the Apache License 2.0: `mp3tag/LICENSE` is that repository's license.
 `tests/unit/test_mp3tag_sources.py` installs a copy with its iTunes address
 replaced by the local web server's and serves it synthetic answers in the
 iTunes Search API's layout; nothing from iTunes is recorded.
+
+# AcoustID responses
+
+`acoustid/lookup-canon.json` is what `http://api.acoustid.org/v2/lookup`
+answered to the request puddletag sends (`meta=releases recordings tracks`)
+for the Musopen Canon in F minor above, fingerprinted whole by fpcalc.
+`tests/unit/test_acoustid.py` serves it back from a local web server, and
+every other reply there is synthetic, in its shape. `record_acoustid.py`
+requests it; the tests never run it.
+
+AcoustID's data comes from [acoustid.org](https://acoustid.org) and is licensed
+under the [Creative Commons Attribution-ShareAlike 3.0 Unported
+License](https://creativecommons.org/licenses/by-sa/3.0/), but for the
+MusicBrainz-AcoustID mapping, which is CC0 1.0
+([acoustid.org/license](https://acoustid.org/license)). The file keeps the reply's
+data unchanged, sorted and indented, under that license: anything derived
+from it must carry the same one.

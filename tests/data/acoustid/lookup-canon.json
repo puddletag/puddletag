@@ -1,0 +1,62 @@
+{
+ "results": [
+  {
+   "id": "93a95c37-79d9-435d-978a-2529991aec27",
+   "recordings": [
+    {
+     "artists": [
+      {
+       "id": "1c3f22d8-961c-46d0-bdf0-6c15a463697f",
+       "name": "Aya Higuchi"
+      }
+     ],
+     "duration": 43.0,
+     "id": "ba53f6d0-2686-43ba-a34a-b9af5c19405e",
+     "releases": [
+      {
+       "artists": [
+        {
+         "id": "09ff1fe8-d61c-4b98-bb82-18487c74d7b7",
+         "name": "Fryderyk Chopin"
+        }
+       ],
+       "country": "XW",
+       "id": "ab46c4ff-af73-4ed4-bbfb-665d6358b7ec",
+       "medium_count": 1,
+       "mediums": [
+        {
+         "format": "Digital Media",
+         "position": 1,
+         "track_count": 108,
+         "tracks": [
+          {
+           "artists": [
+            {
+             "id": "09ff1fe8-d61c-4b98-bb82-18487c74d7b7",
+             "name": "Fryderyk Chopin"
+            }
+           ],
+           "id": "8392b0df-36ea-415c-bcfa-10bf35766f24",
+           "position": 106,
+           "title": "Miscellaneous no. 17 - Op. posth. Canon: F minor"
+          }
+         ]
+        }
+       ],
+       "releaseevents": [
+        {
+         "country": "XW"
+        }
+       ],
+       "title": "The Complete Works of Fr\u00e9d\u00e9ric Chopin",
+       "track_count": 108
+      }
+     ],
+     "title": "Miscellaneous no. 17 - Op. posth. Canon: F minor"
+    }
+   ],
+   "score": 0.99827456
+  }
+ ],
+ "status": "ok"
+}

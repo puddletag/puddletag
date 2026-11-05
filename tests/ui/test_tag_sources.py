@@ -4,6 +4,7 @@ A synthetic tag source stands in for the web ones, so nothing goes to
 the network; the real sources' parsing is tested on its own. Synthetic
 files, albums and images.
 """
+import json
 import logging
 from pathlib import Path
 
@@ -1530,7 +1531,7 @@ def submit_and_wait(user, qtbot, window, label):
 
 def test_submit_is_offered_only_by_a_source_that_can_submit(more_sources, mainwin, make_audio, tmp_path, qtbot, user):
     # The docs don't say; this is what puddletag does. AcoustID is the source
-    # that submits, and CI doesn't list it, so a synthetic source stands in.
+    # that submits, so a synthetic source stands in.
     window, paths = load(mainwin, make_audio, tmp_path, qtbot, user)
     assert not window.submitButton.isVisible()
 
@@ -1940,3 +1941,179 @@ def test_album_shows_its_track_count_after_a_space(mainwin, make_audio, tmp_path
     close_preferences(user, qtbot, dialog)
 
     assert albums(window) == ['Band - Alpha [3]', 'Band - Zeta']
+
+
+# AcoustID. fpcalc is a stub, the replies are synthetic, in AcoustID's shape,
+# and the release is the recorded Abbey Road.
+
+ABBEY_ROAD = '6bb3793b-f991-378e-9bff-0bd3117f2298'
+LOOKUP = '/v2/lookup'
+LOOKUP_ERROR = '{"error": {"code": 4, "message": "invalid API key"}, "status": "error"}'
+
+
+def acoustid_reply():
+    """A lookup's answer: Come Together, on Abbey Road."""
+    return json.dumps({'results': [{'id': '11111111-2222-4333-8444-555555555555', 'recordings': [{
+        'artists': [{'id': 'b10bbbfc-cf9e-42e0-be17-e2c3e1d2600d', 'name': 'The Beatles'}],
+        'duration': 259.0, 'id': '485bbe7f-d0f7-4ffe-8adb-0f1093dd2dbf',
+        'releases': [{'id': ABBEY_ROAD, 'medium_count': 1, 'title': 'Abbey Road', 'track_count': 17,
+                      'mediums': [{'position': 1, 'track_count': 17,
+                                   'tracks': [{'position': 1, 'title': 'Come Together'}]}]}],
+        'title': 'Come Together'}], 'score': 0.9}], 'status': 'ok'})
+
+
+@pytest.fixture
+def acoustid_listed(acoust_id, acoustid_service, synthetic):
+    """AcoustID in the window's list, as where fpcalc is installed, on the
+    local server; the synthetic fixture puts the list back. A test lists it
+    before mainwin."""
+    if acoust_id.AcoustID not in tagsources.tagsources:
+        tagsources.tagsources.append(acoust_id.AcoustID)
+    acoustid_service.add(f'/ws/2/release/{ABBEY_ROAD}',
+                         Path(__file__).parent.parent / 'data' / 'musicbrainz' / f'release-{ABBEY_ROAD}.xml',
+                         content_type='application/xml')
+    return acoustid_service
+
+
+def open_acoustid(mainwin, make_audio, tmp_path, qtbot, user, tags=({},)):
+    """Loads a file per dict of tags, none by default, selects them and picks AcoustID."""
+    window, paths = load(mainwin, make_audio, tmp_path, qtbot, user, tags=tags)
+    pick(user, qtbot, window.sourcelist, 'AcoustID')
+    user.activate()
+    return window, paths
+
+
+def test_acoustid_offers_submit_and_no_text_search(acoustid_listed, mainwin, make_audio, tmp_path, qtbot, user):
+    # tut4.txt: "For all Tag Sources, but FreeDB and AcoustID, you can also do
+    # textual searching."
+    window, _ = open_acoustid(mainwin, make_audio, tmp_path, qtbot, user)
+
+    assert not window.searchEdit.isEnabled()
+    assert window.submitButton.isVisible()
+    assert configure_button(window).isVisible()
+
+
+@pytest.mark.xfail(strict=True, reason='acoustid_id holds the MusicBrainz recording id')
+def test_acoustid_finds_a_file_with_no_metadata(acoustid_listed, mainwin, make_audio, tmp_path, qtbot, user):
+    # tagsources.txt: "This allows you to find information for tracks that
+    # have no metadata!" One synthetic MP3 without tags.
+    acoustid_listed.add(LOOKUP, acoustid_reply(), content_type='application/json')
+    window, paths = open_acoustid(mainwin, make_audio, tmp_path, qtbot, user)
+
+    search(user, qtbot, window, 1)
+    qtbot.waitUntil(lambda: previews(mainwin)[0] != {})
+
+    assert albums(window) == ['The Beatles - Abbey Road [17]']
+    assert window.label.text() == 'Searching complete.'
+    preview = previews(mainwin)[0]
+    assert (preview['title'], preview['track'], preview['album']) == ('Come Together', '1', 'Abbey Road')
+
+    write_all(user, qtbot, window, paths, ('Come Together',))
+
+    written = in_file(paths[0])
+    assert written['title'] == ['Come Together']
+    assert written['artist'] == ['The Beatles']
+    assert written['album'] == ['Abbey Road']
+    assert written['track'] == ['1']
+    assert written['mbrainz_album_id'] == [ABBEY_ROAD]
+    assert written['acoustid_id'] == ['11111111-2222-4333-8444-555555555555']
+    assert user.table.model().taginfo[0]['title'] == ['Come Together']
+    assert 'Retrieving MB album data:' in logs_text()
+
+
+@pytest.mark.xfail(strict=True, reason='acoustid_fingerprint comes back as bytes')
+def test_acoustid_fingerprint_is_written_whole(acoustid_listed, fpcalc, mainwin, make_audio, tmp_path, qtbot, user):
+    # tagsources.txt: "The calculated AcoustID fingerprint. Can be a very
+    # large value." One synthetic MP3 without tags.
+    acoustid_listed.add(LOOKUP, acoustid_reply(), content_type='application/json')
+    window, paths = open_acoustid(mainwin, make_audio, tmp_path, qtbot, user)
+
+    search(user, qtbot, window, 1)
+    qtbot.waitUntil(lambda: previews(mainwin)[0] != {})
+    assert previews(mainwin)[0]['acoustid_fingerprint'] == 'AQABsynthetic'
+
+    write_all(user, qtbot, window, paths, ('Come Together',))
+    assert in_file(paths[0])['acoustid_fingerprint'] == ['AQABsynthetic']
+    assert user.table.model().taginfo[0]['acoustid_fingerprint'] == ['AQABsynthetic']
+
+    user.activate()
+    user.click(window.searchButton)
+    qtbot.waitUntil(lambda: len([r for r in acoustid_listed.requests if r.path == LOOKUP]) == 2
+                    and window.searchButton.isEnabled() and window.label.text() != 'Searching...')
+    lookups = [r for r in acoustid_listed.requests if r.path == LOOKUP]
+    assert lookups[-1].form['fingerprint'] == ['AQABsynthetic']
+    assert fpcalc.files == [str(paths[0])]
+
+
+def test_acoustid_no_match_says_so(acoustid_listed, mainwin, make_audio, tmp_path, qtbot, user):
+    # The docs don't say; this is what puddletag does.
+    acoustid_listed.add(LOOKUP, '{"results": [], "status": "ok"}', content_type='application/json')
+    window, _ = open_acoustid(mainwin, make_audio, tmp_path, qtbot, user)
+
+    search_ended(user, qtbot, window)
+
+    assert albums(window) == []
+    assert window.label.text() == 'No matching albums were found.'
+
+
+@pytest.mark.xfail(strict=True, reason='a failed lookup reads as no match')
+def test_acoustid_failed_lookup_is_shown(acoustid_listed, mainwin, make_audio, tmp_path, qtbot, user):
+    # The docs don't say; this is what a user should see. Two synthetic files.
+    acoustid_listed.add(LOOKUP, LOOKUP_ERROR, content_type='application/json')
+    window, _ = open_acoustid(mainwin, make_audio, tmp_path, qtbot, user, tags=[{}, {}])
+
+    search_ended(user, qtbot, window)
+
+    assert window.label.text() == 'An error occurred: Error retrieving data: invalid API key'
+    assert len([r for r in acoustid_listed.requests if r.path == LOOKUP]) == 1
+
+
+def test_acoustid_result_without_recordings_previews_its_id(acoustid_listed, mainwin, make_audio, tmp_path, qtbot,
+                                                            user):
+    # The docs don't say; this is what puddletag does. A synthetic reply.
+    acoustid_listed.add(LOOKUP, '{"results": [{"id": "the-acoustid-id", "score": 0.9}], "status": "ok"}',
+                        content_type='application/json')
+    window, _ = open_acoustid(mainwin, make_audio, tmp_path, qtbot, user)
+
+    search(user, qtbot, window, 1)
+
+    assert albums(window) == [' -  [1]']
+    assert previews(mainwin)[0]['acoustid_id'] == 'the-acoustid-id'
+
+
+def test_acoustid_configure_sets_the_score_and_the_key(acoustid_listed, acoust_id, mainwin, make_audio, tmp_path,
+                                                       qtbot, user):
+    # The docs don't say (#189 was this button).
+    window, _ = open_acoustid(mainwin, make_audio, tmp_path, qtbot, user)
+    source = instance(acoust_id.AcoustID)
+
+    dialog = configure_dialog(user, qtbot, window)
+    spin, text = dialog._controls
+    assert (spin.value(), text.text()) == (80, '')
+    replace_text(user, spin, '55')
+    replace_text(user, text, 'Typed key')
+    user.click(push_button(dialog, 'OK'))
+    qtbot.waitUntil(lambda: not dialog.isVisible())
+
+    assert source.min_score == 0.55
+    saved = PuddleConfig(str(Path(CONFIGDIR) / 'tagsources.conf')).data['AcoustID']
+    assert saved == {'AcoustID Key': 'Typed key', 'Minimum Score': 55}
+
+
+@pytest.mark.xfail(strict=True, reason='a click on the album gives the files its tracks by position')
+def test_click_on_the_album_keeps_the_exact_matches(mainwin, make_audio, tmp_path, qtbot, user):
+    # tagsources.txt: "select an appropriate album. That album's metadata will
+    # then be retrieved and the retrieved tags will be applied to the selected
+    # files". The matches are given in the opposite order to the files, so
+    # position and match differ. Synthetic files and matches.
+    window, _ = load(mainwin, make_audio, tmp_path, qtbot, user)
+    the_source().exact = [(2, {'title': 'For file 3'}), (1, {'title': 'For file 2'}), (0, {'title': 'For file 1'})]
+    type_fields(user, window, 'title')
+    search(user, qtbot, window, 1)
+    expected = [{'title': f'For file {n}'} for n in (1, 2, 3)]
+    qtbot.waitUntil(lambda: previews(mainwin) == expected)
+
+    click_album(user, window, 'Alpha')
+    qtbot.wait(200)
+
+    assert previews(mainwin) == expected

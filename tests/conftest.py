@@ -6,7 +6,9 @@ HOME and the XDG dirs are redirected here, when pytest imports this conftest
 and before any test module imports puddlestuff.
 """
 import atexit
+import gzip
 import http.server
+import importlib
 import os
 import shutil
 import socket
@@ -165,13 +167,23 @@ class ServedRequest:
     headers: Message
     body: bytes
 
+    @property
+    def form(self):
+        """A POST's form fields, as ``urllib.parse.parse_qs`` gives them;
+        pyacoustid gzips its bodies."""
+        body = self.body
+        if self.headers.get('Content-Encoding') == 'gzip':
+            body = gzip.decompress(body)
+        return urllib.parse.parse_qs(body.decode('utf-8'), keep_blank_values=True)
+
 
 class WebServer:
     """Canned web responses on 127.0.0.1, for the tag sources' tests.
 
     ``add(path, body)`` answers every request for ``path``, whatever its
     query, unless ``query`` names parameters the request must have, each
-    with exactly that value. The last matching ``add`` wins, so a test can
+    with exactly that value. ``form`` asks the same of a POST's form fields.
+    The last matching ``add`` wins, so a test can
     replace one of a fixture's answers. A request nothing matches gets a
     404, and is recorded in ``unmatched`` so the test fails at teardown
     even when puddletag swallows the error; a test that expects one clears
@@ -213,21 +225,22 @@ class WebServer:
         self._thread.start()
 
     def add(self, path, body=b'', status=200, content_type='application/octet-stream',
-            query=None):
+            query=None, form=None):
         """``body``: bytes, str (sent as UTF-8) or a Path (its bytes)."""
         if isinstance(body, Path):
             body = body.read_bytes()
         elif isinstance(body, str):
             body = body.encode('utf-8')
         with self._lock:
-            self._routes.append((path, query or {}, (status, body, content_type)))
+            self._routes.append((path, query or {}, form or {}, (status, body, content_type)))
 
     def _answer(self, request):
         with self._lock:
             self.requests.append(request)
-            for path, query, answer in reversed(self._routes):
-                if path == request.path and all(
-                        request.query.get(name) == [value] for name, value in query.items()):
+            for path, query, form, answer in reversed(self._routes):
+                if (path == request.path
+                        and all(request.query.get(name) == [value] for name, value in query.items())
+                        and all(request.form.get(name) == [value] for name, value in form.items())):
                     return answer
             self.unmatched.append(f'{request.method} {request.path}?{request.raw_query}')
             return 404, f'no canned response for {request.method} {request.path}'.encode(), 'text/plain'
@@ -300,12 +313,12 @@ def _ffmpeg_encoders(ffmpeg):
     return {line.split()[1] for line in encoders.splitlines() if line.strip()}
 
 
-def _encode_silence(path, codec):
+def _encode_silence(path, codec, seconds=1):
     if codec not in _ffmpeg_encoders(shutil.which('ffmpeg')):
         _missing(f'ffmpeg has no {codec} encoder')
     subprocess.run(
         ['ffmpeg', '-nostdin', '-loglevel', 'error',
-         '-f', 'lavfi', '-i', 'anullsrc=r=44100:cl=mono', '-t', '1',
+         '-f', 'lavfi', '-i', 'anullsrc=r=44100:cl=mono', '-t', str(seconds),
          '-map_metadata', '-1', '-fflags', '+bitexact', '-flags:a', '+bitexact',
          '-c:a', codec, str(path)],
         check=True)
@@ -367,10 +380,11 @@ def make_audio(tmp_path):
     """Return a factory for synthetic audio files.
 
     Synthetic: one second of silence encoded by ffmpeg, carrying only the
-    tags the test passes. The tags are written with mutagen rather than
-    ffmpeg's -metadata, because ffmpeg's ASF muxer writes Author twice and
-    adds a second, lowercase title. ffmpeg has no encoder for Musepack
-    (.mpc), so mpcenc encodes ffmpeg's WAV; nothing in Ubuntu encodes
+    tags the test passes. ``seconds`` makes the silence longer, for the
+    formats ffmpeg or mpcenc encode. The tags are written with mutagen
+    rather than ffmpeg's -metadata, because ffmpeg's ASF muxer writes Author
+    twice and adds a second, lowercase title. ffmpeg has no encoder for
+    Musepack (.mpc), so mpcenc encodes ffmpeg's WAV; nothing in Ubuntu encodes
     Monkey's Audio (.ape), so an .ape file is a header and no audio; and
     ffmpeg can't write DSDIFF (.dff) or DSF (.dsf), so the fixture writes
     them. A Monkey's Audio link file (.apl) is the fixture's text and an
@@ -380,7 +394,7 @@ def make_audio(tmp_path):
     if shutil.which('ffmpeg') is None:
         _missing('ffmpeg is not installed')
 
-    def make(name, directory=None, **tags):
+    def make(name, directory=None, *, seconds=1, **tags):
         path = (directory or tmp_path) / name
         path.parent.mkdir(parents=True, exist_ok=True)
         ext = path.suffix[1:]
@@ -396,11 +410,11 @@ def make_audio(tmp_path):
             if shutil.which('mpcenc') is None:
                 _missing('mpcenc (musepack-tools) is not installed')
             wav = path.with_name(path.name + '.wav')
-            _encode_silence(wav, 'pcm_s16le')
+            _encode_silence(wav, 'pcm_s16le', seconds)
             subprocess.run(['mpcenc', '--silent', str(wav), str(path)], check=True, capture_output=True)
             wav.unlink()
         else:
-            _encode_silence(path, _CODECS[ext])
+            _encode_silence(path, _CODECS[ext], seconds)
 
         if ext in _APEV2_ONLY:
             apev2 = mutagen.apev2.APEv2()
@@ -422,6 +436,98 @@ def make_audio(tmp_path):
         return path
 
     return make
+
+
+# AcoustID --------------------------------------------------------------------
+
+class StubFpcalc:
+    """Stands in for chromaprint's fpcalc, first on PATH: a shell script that
+    prints what the real one prints and keeps the path of each file it's
+    given in ``files``. Its fingerprint is synthetic."""
+
+    def __init__(self, directory):
+        self._calls = directory / 'calls'
+        self._script = directory / 'fpcalc'
+        self.directory = directory
+        self.answer()
+
+    def _write(self, body):
+        self._script.write_text(f"#!/bin/sh\necho \"$3\" >> '{self._calls}'\n{body}\n")
+        self._script.chmod(0o755)
+
+    def answer(self, duration=42, fingerprint='AQABsynthetic'):
+        self._write(f'echo DURATION={duration}\necho FINGERPRINT={fingerprint}')
+
+    def fail(self):
+        """As the real one ends on audio too short for a fingerprint."""
+        self._write('echo "ERROR: Empty fingerprint" >&2\nexit 2')
+
+    @property
+    def files(self):
+        return self._calls.read_text().splitlines() if self._calls.exists() else []
+
+
+@pytest.fixture
+def fpcalc(tmp_path_factory, monkeypatch):
+    directory = tmp_path_factory.mktemp('fpcalc')
+    monkeypatch.setenv('PATH', f'{directory}{os.pathsep}{os.environ["PATH"]}')
+    # pyacoustid runs what this names instead of looking on PATH.
+    monkeypatch.delenv('FPCALC', raising=False)
+    return StubFpcalc(directory)
+
+
+@pytest.fixture
+def acoust_id(fpcalc):
+    """The AcoustID tag source's module, which won't import without fpcalc
+    on PATH. Without a real one it's imported here, under the stub, and
+    stays imported for the rest of the process: nothing but these tests
+    reads it. puddletag's list of sources isn't changed, it was built when
+    puddlestuff.tagsources was imported."""
+    return importlib.import_module('puddlestuff.tagsources.acoust_id')
+
+
+class WaitClock:
+    """The time module as AcoustID and MusicBrainz see it: time moves only
+    when a source waits, each wait kept in ``waits``."""
+
+    def __init__(self):
+        self.now = 1_000_000.0
+        self.waits = []
+
+    def monotonic(self):
+        return self.now
+
+    def sleep(self, seconds):
+        self.waits.append(seconds)
+        self.now += seconds
+
+    time = monotonic
+
+
+@pytest.fixture
+def acoustid_clock(acoust_id, monkeypatch):
+    import acoustid
+    from puddlestuff.tagsources import musicbrainz
+    clock = WaitClock()
+    monkeypatch.setattr(acoustid, 'time', clock)
+    # When pyacoustid last sent a request, kept on its rate limiter.
+    monkeypatch.setattr(acoustid._api_request, 'last_call', 0.0)
+    monkeypatch.setattr(musicbrainz, 'time', clock)
+    monkeypatch.setattr(musicbrainz, '_last_request', None, raising=False)
+    return clock
+
+
+@pytest.fixture
+def acoustid_service(acoustid_clock, monkeypatch, web_server):
+    """The local server in place of AcoustID's and MusicBrainz's, and a
+    clock that makes the sources' waits take no time."""
+    import acoustid
+    from puddlestuff.tagsources import musicbrainz
+    # set_base_url changes this global: monkeypatch puts it back.
+    monkeypatch.setattr(acoustid, 'API_BASE_URL', acoustid.API_BASE_URL)
+    acoustid.set_base_url(web_server.url + '/v2')
+    monkeypatch.setattr(musicbrainz, 'SERVER', web_server.url + '/ws/2/')
+    return web_server
 
 
 # Main window -----------------------------------------------------------------
