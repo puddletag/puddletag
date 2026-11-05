@@ -208,6 +208,20 @@ def parse_recording_data(data, info=None):
     return album_info, track
 
 
+def find_track(track, release_tracks):
+    """The position of the release's track this match is: by recording id,
+    which AcoustID and MusicBrainz share, or else by title. A track already
+    given to a file isn't given to a second one. None if there's none."""
+    free = [(index, t) for index, t in enumerate(release_tracks) if '#exact' not in t]
+    recording_id = track.get('mbrainz_track_id')
+    for index, t in free:
+        if recording_id and t.get('mbrainz_track_id') == recording_id:
+            return index
+    for index, t in free:
+        if t['title'] == track['title']:
+            return index
+
+
 def retrieve_album_info(album, tracks):
     if not album:
         return album, tracks
@@ -219,14 +233,12 @@ def retrieve_album_info(album, tracks):
 
     info, new_tracks = retrieve_album(album['mbrainz_album_id'])
     for t in tracks:
-        try:
-            index = int(t['track'])
-        except KeyError:
-            for index, nt in enumerate(new_tracks):
-                if nt['title'] == t['title']:
-                    break
-        t.update(new_tracks[index])
-        new_tracks[index] = t
+        index = find_track(t, new_tracks)
+        if index is None:
+            new_tracks.append(t)
+        else:
+            t.update(new_tracks[index])
+            new_tracks[index] = t
 
     return info, new_tracks
 

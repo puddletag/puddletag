@@ -408,7 +408,6 @@ def test_match_joins_the_musicbrainz_release(source, acoustid_service, make_audi
     assert tracks[0]['acoustid_id'] == ACOUSTID_ID
 
 
-@pytest.mark.xfail(strict=True, reason='with no title matching, the merge overwrites the last track')
 def test_no_title_matching_leaves_the_release_alone(source, acoustid_service, make_audio):
     # The docs don't say. Synthetic: a recording the release doesn't hold.
     path = make_audio('a.flac')
@@ -421,7 +420,6 @@ def test_no_title_matching_leaves_the_release_alone(source, acoustid_service, ma
     assert '#exact' in tracks[17]
 
 
-@pytest.mark.xfail(strict=True, reason="the second file's match is lost")
 def test_two_files_of_one_recording_each_get_a_row(source, acoustid_service, make_audio):
     # The docs don't say.
     paths = [make_audio('a.flac'), make_audio('b.flac')]
@@ -432,7 +430,6 @@ def test_two_files_of_one_recording_each_get_a_row(source, acoustid_service, mak
     assert len(tracks) == 18
 
 
-@pytest.mark.xfail(strict=True, reason='the merge compares titles only')
 def test_recording_is_found_by_its_id(source, acoustid_service, make_audio):
     # The docs don't say. Synthetic: the recording's title differs from the release's.
     path = make_audio('a.flac')
