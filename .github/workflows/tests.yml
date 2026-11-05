@@ -36,13 +36,14 @@ jobs:
         python-version: ${{ matrix.python-version }}
 
     # ffmpeg, and mpcenc (musepack-tools) for .mpc, generate the synthetic
-    # audio fixtures; the libraries are what the PyQt6 wheel's Qt
+    # audio fixtures; fpcalc (libchromaprint-tools) fingerprints a file for
+    # the AcoustID tests; the libraries are what the PyQt6 wheel's Qt
     # (offscreen platform) links against.
-    - name: Install the audio encoders and the libraries Qt needs
+    - name: Install the audio encoders, fpcalc and the libraries Qt needs
       run: >-
         sudo apt-get update &&
         sudo apt-get install --yes --no-install-recommends
-        ffmpeg musepack-tools
+        ffmpeg libchromaprint-tools musepack-tools
         libdbus-1-3 libegl1 libfontconfig1 libfreetype6 libgl1
         libglib2.0-0t64 libx11-6 libxkbcommon0
 

@@ -3,10 +3,11 @@ fingerprint, what the web service replies, and how a search turns replies
 into albums. Replies come from a local web server. acoustid/lookup-canon.json
 under tests/data is one AcoustID served (recorded by record_acoustid.py);
 every other reply is synthetic, in its shape, and names a recorded
-MusicBrainz release. fpcalc is a stub.
+MusicBrainz release. fpcalc is a stub, but for the two real_fpcalc tests.
 """
 import json
 import os
+import re
 import socket
 import subprocess
 import sys
@@ -477,3 +478,21 @@ def test_fingerprint_of_many_values_is_calculated_again(source, fpcalc, acoustid
     list(source.search('', tags(path)))
     assert fpcalc.files == [str(path)]
     assert lookups(acoustid_service)[0]['fingerprint'] == ['AQABsynthetic']
+
+
+# The real fpcalc -------------------------------------------------------------
+
+def test_real_fpcalc_fingerprints_a_file(real_fpcalc, make_audio):
+    # tagsources.txt: "calculating a unique fingerprint for your audio files".
+    path = make_audio('a.flac', seconds=4)
+    duration, fingerprint = real_fpcalc.fingerprint_file(str(path))
+    assert duration == 4
+    assert re.fullmatch('[A-Za-z0-9_-]+', fingerprint)
+
+
+def test_real_fpcalc_refuses_a_second_of_silence(real_fpcalc, make_audio):
+    # The docs don't say. Synthetic: a second of silence is too short for
+    # fpcalc to fingerprint.
+    path = make_audio('a.flac')
+    with pytest.raises(acoustid.FingerprintGenerationError, match='^fpcalc exited with status 2$'):
+        real_fpcalc.fingerprint_file(str(path))

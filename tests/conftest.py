@@ -486,6 +486,14 @@ def acoust_id(fpcalc):
     return importlib.import_module('puddlestuff.tagsources.acoust_id')
 
 
+@pytest.fixture
+def real_fpcalc():
+    """The AcoustID tag source's module, on the fpcalc that's installed."""
+    if shutil.which('fpcalc') is None:
+        _missing('fpcalc (libchromaprint-tools) is not installed')
+    return importlib.import_module('puddlestuff.tagsources.acoust_id')
+
+
 class WaitClock:
     """The time module as AcoustID and MusicBrainz see it: time moves only
     when a source waits, each wait kept in ``waits``."""
