@@ -155,10 +155,9 @@ def parse_lookup_result(data, albums=False, fp=None):
     if 'results' not in data:
         raise acoustid.WebServiceError("results not included")
 
-    try:
-        result = data['results'][0]
-    except IndexError:
+    if not data['results']:
         return None
+    result = next((r for r in data['results'] if r.get('recordings')), data['results'][0])
     info = {}
     info['#score'] = result['score']
     info['acoustid_id'] = result['id']
@@ -189,9 +188,10 @@ def parse_recording_data(data, info=None):
         track['__length'] = audioinfo.strlength(data['duration'])
     track['mbrainz_track_id'] = data['id']
 
-    track['artist'] = data.get('artists', [{'name': ""}])[0]['name']
+    artists = data.get('artists') or [{'name': ""}]
+    track['artist'] = artists[0]['name']
     if track['artist']:
-        track['mbrainz_artist_id'] = data['artists'][0]['id']
+        track['mbrainz_artist_id'] = artists[0]['id']
 
     if 'releases' in data:
         album_info = list(map(parse_release_data, data['releases']))
@@ -226,7 +226,7 @@ def retrieve_album_info(album, tracks):
     if not album:
         return album, tracks
     msg = '<b>%s - %s</b>' % tuple(map(escape_html,
-                                       (album['artist'], album['album'])))
+                                       (album.get('artist', ''), album['album'])))
     msg = RETRIEVE_MB_MSG.format(msg)
     write_log(msg)
     set_status(msg)
@@ -333,9 +333,10 @@ class AcoustID(object):
                 break
 
             if hasattr(info, 'items'):
-                albums.append([{}])
-                info['#exact'] = fn
-                tracks.append(info)
+                if info['#score'] >= self.min_score:
+                    albums.append([{}])
+                    info['#exact'] = fn
+                    tracks.append(info)
             elif info is not None:
                 for album, track in info:
                     if track and track['#score'] >= self.min_score:

@@ -345,7 +345,6 @@ def test_minimum_score_filters(source, acoustid_service, make_audio, score, perc
     assert len(albums) == (1 if kept else 0)
 
 
-@pytest.mark.xfail(strict=True, reason='a result without recordings skips the Minimum Score')
 def test_minimum_score_filters_a_result_without_recordings(source, acoustid_service, make_audio):
     # The docs don't say; the preference's name, "Minimum Score".
     path = make_audio('a.flac')
@@ -450,7 +449,6 @@ def empty_artists(recording_):
     return recording_
 
 
-@pytest.mark.xfail(strict=True, reason='a recording without artists stops the search')
 @pytest.mark.parametrize('damage', [without_artists, empty_artists], ids=['no key', 'empty list'])
 def test_recording_without_artists_joins_the_release(source, acoustid_service, make_audio, damage):
     # The docs don't say. Synthetic: pyacoustid's own parser accepts both.
@@ -461,7 +459,6 @@ def test_recording_without_artists_joins_the_release(source, acoustid_service, m
     assert len(exact(tracks)) == 1
 
 
-@pytest.mark.xfail(strict=True, reason='only the first result is read')
 def test_first_result_with_recordings_is_used(source, acoustid_service, make_audio):
     # The docs don't say. Synthetic: the first result has no recordings.
     path = make_audio('a.flac')
