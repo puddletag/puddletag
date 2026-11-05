@@ -161,6 +161,7 @@ def parse_lookup_result(data, albums=False, fp=None):
         return None
     info = {}
     info['#score'] = result['score']
+    info['acoustid_id'] = result['id']
     if not result.get('recordings'):
         # No recording attached. This result is not very useful.
         return {
@@ -182,11 +183,11 @@ def parse_recording_data(data, info=None):
     try:
         track['title'] = data['title']
     except KeyError:
-        track['acoustid_id'] = data['id']
+        track['mbrainz_track_id'] = data['id']
         return {}, track
     if 'duration' in data:
         track['__length'] = audioinfo.strlength(data['duration'])
-    track['acoustid_id'] = data['id']
+    track['mbrainz_track_id'] = data['id']
 
     track['artist'] = data.get('artists', [{'name': ""}])[0]['name']
     if track['artist']:

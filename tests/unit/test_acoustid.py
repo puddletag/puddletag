@@ -146,7 +146,6 @@ def test_minimum_score_is_a_percentage(acoust_id):
     assert source.min_score == 0.85
 
 
-@pytest.mark.xfail(strict=True, reason='acoustid_id holds the MusicBrainz recording id')
 def test_recorded_reply_gives_the_recordings_track(acoust_id):
     # "acoustid_id: The AcoustID identifier for a track as returned by the
     # AcoustID webservice"; "acoustid_fingerprint: The calculated AcoustID
@@ -202,7 +201,6 @@ def test_error_reply_is_an_error(acoust_id):
         acoust_id.parse_lookup_result(json.loads(LOOKUP_ERROR))
 
 
-@pytest.mark.xfail(strict=True, reason='acoustid_id holds the MusicBrainz recording id')
 def test_recording_without_a_title_has_no_album(acoust_id):
     # "acoustid_id: The AcoustID identifier for a track as returned by the
     # AcoustID webservice". Synthetic recording.
@@ -394,7 +392,6 @@ def test_unreadable_reply_stops_the_search(source, acoustid_service, log, make_a
     assert 'Error retrieving data: response is not valid JSON' in log
 
 
-@pytest.mark.xfail(strict=True, reason='acoustid_id holds the MusicBrainz recording id')
 def test_match_joins_the_musicbrainz_release(source, acoustid_service, make_audio):
     # tagsources.txt: "AcoustID returns the same data as the MusicBrainz tag source".
     path = make_audio('a.flac')

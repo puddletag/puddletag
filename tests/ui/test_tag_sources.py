@@ -1993,7 +1993,6 @@ def test_acoustid_offers_submit_and_no_text_search(acoustid_listed, mainwin, mak
     assert configure_button(window).isVisible()
 
 
-@pytest.mark.xfail(strict=True, reason='acoustid_id holds the MusicBrainz recording id')
 def test_acoustid_finds_a_file_with_no_metadata(acoustid_listed, mainwin, make_audio, tmp_path, qtbot, user):
     # tagsources.txt: "This allows you to find information for tracks that
     # have no metadata!" One synthetic MP3 without tags.
