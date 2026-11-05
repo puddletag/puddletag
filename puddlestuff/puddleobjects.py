@@ -708,6 +708,8 @@ def getfiles(files: Union[str, List[str]], subfolders: bool = False) -> Generato
             if not subfolders:
                 # don't recurse deeper
                 dirnames.clear()
+            # files named alike in two folders stay in this order in the table
+            dirnames.sort(key=natural_sort_key)
 
 
 def gettags(files):
@@ -805,7 +807,7 @@ def load_actions():
 
     os.makedirs(ACTIONDIR, exist_ok=True)
 
-    files = glob(os.path.join(ACTIONDIR, '*.action'))
+    files = sorted(glob(os.path.join(ACTIONDIR, '*.action')))
     if firstrun and not files:
         filenames = ['data:./caseconversion.action', 'data:./standard.action']
         files = list(map(open_resourcefile, filenames))
@@ -816,7 +818,7 @@ def load_actions():
             f = open(filename, 'w')
             f.write(fileobj.read())
             f.close()
-        files = glob(os.path.join(ACTIONDIR, '*.action'))
+        files = sorted(glob(os.path.join(ACTIONDIR, '*.action')))
 
     files = [z for z in order if z in files] + \
             [z for z in files if z not in order]

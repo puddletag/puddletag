@@ -107,6 +107,16 @@ def test_clean_profile_gets_the_default_actions(clean_profile):
             assert [describe(f) for f in funcs] == [describe(f) for f in shipped]
 
 
+def test_actions_load_in_name_order(clean_profile, monkeypatch):
+    # The docs don't say; users shouldn't see an order that varies by machine.
+    # Synthetic: the listing comes back in reverse name order.
+    from puddlestuff import puddleobjects
+
+    real_glob = puddleobjects.glob
+    monkeypatch.setattr(puddleobjects, 'glob', lambda pattern: sorted(real_glob(pattern), reverse=True))
+    assert [name for funcs, name, path in load_actions()] == ['Case Conversion', 'Standard']
+
+
 # Running actions -------------------------------------------------------------
 
 def test_each_step_sees_what_the_steps_before_set(make_audio, tmp_path):

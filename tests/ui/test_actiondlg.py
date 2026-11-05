@@ -27,6 +27,20 @@ def test_functions_dialog_can_shrink_with_long_history(qtbot, qapp, clean_profil
     assert dialog.stack.currentWidget().controls[0].currentText() == pattern
 
 
+def test_actions_window_lists_the_actions_in_name_order(qtbot, clean_profile, monkeypatch):
+    # The docs don't say; users shouldn't see an order that varies by machine.
+    # Synthetic: the listing comes back in reverse name order.
+    import glob as glob_module
+    from puddlestuff.actiondlg import ActionWindow
+
+    real_glob = glob_module.glob
+    monkeypatch.setattr(glob_module, 'glob', lambda pattern: sorted(real_glob(pattern), reverse=True))
+    window = ActionWindow()
+    qtbot.addWidget(window)
+    names = [window.listbox.item(row).text() for row in range(window.listbox.count())]
+    assert names == ['Case Conversion', 'Standard']
+
+
 def click_row(user, listbox, row):
     user.click(listbox.viewport(), listbox.visualItemRect(listbox.item(row)).center())
 

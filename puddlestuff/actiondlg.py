@@ -895,7 +895,7 @@ class ActionWindow(QDialog):
 
         os.makedirs(ACTIONDIR, exist_ok=True)
 
-        files = glob(os.path.join(ACTIONDIR, '*.action'))
+        files = sorted(glob(os.path.join(ACTIONDIR, '*.action')))
         if firstrun and not files:
             filenames = ['data:./caseconversion.action', 'data:./standard.action']
             files = list(map(open_resourcefile, filenames))
@@ -906,7 +906,7 @@ class ActionWindow(QDialog):
                 f = open(filename, 'w')
                 f.write(fileobj.read())
                 f.close()
-            files = glob(os.path.join(ACTIONDIR, '*.action'))
+            files = sorted(glob(os.path.join(ACTIONDIR, '*.action')))
 
         files = [z for z in order if z in files] + \
                 [z for z in files if z not in order]
