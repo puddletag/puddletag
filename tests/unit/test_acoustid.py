@@ -258,13 +258,11 @@ def test_file_fpcalc_cant_read_is_skipped(source, fpcalc, acoustid_service, log,
     assert 'Error generating fingerprint: fpcalc exited with status 2' in log
 
 
-@pytest.mark.xfail(strict=True, reason='acoustid_fingerprint comes back as bytes')
 def test_fingerprint_is_text(acoust_id, make_audio):
     # tagsources.txt: "acoustid_fingerprint: The calculated AcoustID fingerprint."
     assert acoust_id.fingerprint_file(str(make_audio('a.flac'))) == (42.0, 'AQABsynthetic')
 
 
-@pytest.mark.xfail(strict=True, reason="fingerprints go through pyacoustid's private _fingerprint_file_fpcalc")
 def test_fingerprint_comes_from_pyacoustids_public_call(acoust_id, monkeypatch):
     # The docs don't say; this is what puddletag does. No behaviour differs
     # (the public call runs the private one, with the same 120 seconds), so
@@ -486,7 +484,6 @@ def test_first_result_with_recordings_is_used(source, acoustid_service, make_aud
     assert len(exact(tracks)) == 1
 
 
-@pytest.mark.xfail(strict=True, reason='a fingerprint older versions wrote, one value a byte, is sent as it is')
 def test_fingerprint_of_many_values_is_calculated_again(source, fpcalc, acoustid_service, make_audio):
     # The docs don't say. Synthetic: what older versions wrote for 'AQA'.
     path = make_audio('a.flac', acoustid_fingerprint=['65', '81', '65'])

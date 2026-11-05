@@ -2021,7 +2021,6 @@ def test_acoustid_finds_a_file_with_no_metadata(acoustid_listed, mainwin, make_a
     assert 'Retrieving MB album data:' in logs_text()
 
 
-@pytest.mark.xfail(strict=True, reason='acoustid_fingerprint comes back as bytes')
 def test_acoustid_fingerprint_is_written_whole(acoustid_listed, fpcalc, mainwin, make_audio, tmp_path, qtbot, user):
     # tagsources.txt: "The calculated AcoustID fingerprint. Can be a very
     # large value." One synthetic MP3 without tags.

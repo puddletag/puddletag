@@ -97,11 +97,13 @@ def convert_for_submit(tags):
 
 
 def fingerprint_file(fn):
-    return acoustid._fingerprint_file_fpcalc(fn, 120)
+    duration, fingerprint = acoustid.fingerprint_file(fn, force_fpcalc=True)
+    return duration, to_string(fingerprint)
 
 
 def id_in_tag(tag):
-    if 'acoustid_fingerprint' in tag:
+    # Older versions wrote a fingerprint as one value a byte.
+    if 'acoustid_fingerprint' in tag and len(tag['acoustid_fingerprint']) == 1:
         fp = to_string(tag['acoustid_fingerprint'])
     else:
         return
