@@ -2055,7 +2055,6 @@ def test_acoustid_no_match_says_so(acoustid_listed, mainwin, make_audio, tmp_pat
     assert window.label.text() == 'No matching albums were found.'
 
 
-@pytest.mark.xfail(strict=True, reason='a failed lookup reads as no match')
 def test_acoustid_failed_lookup_is_shown(acoustid_listed, mainwin, make_audio, tmp_path, qtbot, user):
     # The docs don't say; this is what a user should see. Two synthetic files.
     acoustid_listed.add(LOOKUP, LOOKUP_ERROR, content_type='application/json')

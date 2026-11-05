@@ -10,11 +10,11 @@ from itertools import chain, product, starmap
 
 import acoustid
 
-from puddlestuff import audioinfo
+from puddlestuff import audioinfo, tagsources
 
 from puddlestuff.audioinfo import stringtags
 from puddlestuff.constants import SPINBOX, TEXT
-from puddlestuff.tagsources import set_status, write_log, SubmissionError
+from puddlestuff.tagsources import set_status, write_log, RetrievalError, SubmissionError
 from puddlestuff.tagsources.musicbrainz import retrieve_album
 from puddlestuff.translations import translate
 from puddlestuff.util import escape_html, isempty, to_string
@@ -125,7 +125,7 @@ def match(apikey, path, fp=None, dur=None, meta='releases recordings tracks'):
     path = os.path.abspath(os.path.expanduser(path))
     if None in (fp, dur):
         dur, fp = fingerprint_file(path)
-    response = acoustid.lookup(apikey, fp, dur, meta)
+    response = acoustid.lookup(apikey, fp, dur, meta, timeout=tagsources.TIMEOUT)
     return response, fp
 
 
@@ -150,7 +150,8 @@ def parse_release_data(rel):
 
 def parse_lookup_result(data, albums=False, fp=None):
     if data['status'] != 'ok':
-        raise acoustid.WebServiceError("status: %s" % data['status'])
+        message = data.get('error', {}).get('message', 'status: %s' % data['status'])
+        raise acoustid.WebServiceError(message)
     if 'results' not in data:
         raise acoustid.WebServiceError("results not included")
 
@@ -314,6 +315,8 @@ class AcoustID(object):
             except acoustid.WebServiceError as e:
                 set_status(WEB_ERROR_MSG.format(str(e)))
                 write_log(WEB_ERROR_MSG.format(str(e)))
+                if not tracks:
+                    raise RetrievalError(WEB_ERROR_MSG.format(str(e)))
                 break
 
             if hasattr(info, 'items'):

@@ -195,7 +195,6 @@ def test_reply_without_results_is_an_error(acoust_id):
         acoust_id.parse_lookup_result({'status': 'ok'})
 
 
-@pytest.mark.xfail(strict=True, reason="the service's message is dropped for 'status: error'")
 def test_error_reply_is_an_error(acoust_id):
     # The docs don't say; this is what puddletag does. Synthetic, in the
     # shape of the service's errors.
@@ -279,7 +278,6 @@ def test_fingerprint_comes_from_pyacoustids_public_call(acoust_id, monkeypatch):
 
 
 @pytest.mark.timeout(10)
-@pytest.mark.xfail(strict=True, reason="AcoustID's lookups have no timeout")
 def test_lookup_gives_up_on_a_silent_server(source, silent_server, monkeypatch, make_audio):
     # The docs don't say; every other source's request has this timeout.
     monkeypatch.setattr(tagsources, 'TIMEOUT', 0.2)
@@ -378,7 +376,6 @@ def test_an_error_stops_the_search(source, acoustid_service, log, make_audio):
     assert any(line.startswith('Error retrieving data: ') for line in log)
 
 
-@pytest.mark.xfail(strict=True, reason='a failed lookup reads as no match')
 def test_a_first_error_is_raised(source, acoustid_service, make_audio):
     # The docs don't say.
     paths = [make_audio('a.flac'), make_audio('b.flac')]
@@ -388,7 +385,6 @@ def test_a_first_error_is_raised(source, acoustid_service, make_audio):
     assert len(lookups(acoustid_service)) == 1
 
 
-@pytest.mark.xfail(strict=True, reason='a failed lookup reads as no match')
 def test_unreadable_reply_stops_the_search(source, acoustid_service, log, make_audio):
     # The docs don't say.
     path = make_audio('a.flac')
