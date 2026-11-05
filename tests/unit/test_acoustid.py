@@ -295,7 +295,6 @@ def test_lookups_wait_between_requests(source, acoustid_clock, acoustid_service,
     assert min(acoustid_clock.waits) >= 0.33
 
 
-@pytest.mark.xfail(strict=True, reason="AcoustID's __init__ replaces a function pyacoustid no longer has")
 def test_source_leaves_pyacoustid_alone(acoust_id, monkeypatch):
     # The docs don't say; this is what puddletag does. pyacoustid no longer
     # has the function the source used to replace.

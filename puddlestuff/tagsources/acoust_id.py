@@ -1,11 +1,5 @@
-import contextlib
-import http.client
 import os
-import time
 import traceback
-import urllib.error
-import urllib.parse
-import urllib.request
 from itertools import chain, product, starmap
 
 import acoustid
@@ -273,25 +267,7 @@ class AcoustID(object):
             [translate("AcoustID", 'Minimum Score'), SPINBOX, [0, 100, 80]],
             [translate("AcoustID", "AcoustID Key"), TEXT, ""]
         ]
-        self.__lasttime = time.time()
-        acoustid._send_request = self._send_request
         self.__user_key = ""
-
-    def _send_request(self, req):
-        """Given a urllib2 Request object, make the request and return a
-        tuple containing the response data and headers.
-        """
-        if time.time() - self.__lasttime < 0.4:
-            time.sleep(time.time() - self.__lasttime + 0.1)
-        try:
-            with contextlib.closing(urllib.request.urlopen(req)) as f:
-                return f.read(), f.info()
-        except urllib.error.HTTPError as exc:
-            raise acoustid.WebServiceError('HTTP status %i' % exc.code, exc.read())
-        except http.client.BadStatusLine:
-            raise acoustid.WebServiceError('bad HTTP status line')
-        except IOError:
-            raise acoustid.WebServiceError('connection failed')
 
     def search(self, artist, fns=None):
 
