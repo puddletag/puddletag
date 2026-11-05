@@ -2,6 +2,8 @@
 folders clicked in its tree, its right-click menu and Go to parent
 folder. Each load is checked in the table and on disk. Synthetic files.
 """
+import threading
+
 import pytest
 from PyQt6.QtCore import QPoint, QRect, Qt, QTimer
 from PyQt6.QtWidgets import (QAbstractItemView, QApplication, QCheckBox, QMenu, QMessageBox, QProxyStyle, QStyle,
@@ -10,6 +12,7 @@ from PyQt6.QtWidgets import (QAbstractItemView, QApplication, QCheckBox, QMenu, 
 from puddlestuff import audioinfo
 from puddlestuff.mainwin import dirview
 from puddlestuff.mainwin.dirview import DirView, DirViewWidget
+from puddlestuff.puddleobjects import PuddleThread
 from puddlestuff.puddlesettings import SettingsDialog
 
 pytestmark = pytest.mark.ui
@@ -587,3 +590,36 @@ def test_go_to_parent_folder_after_unloading_a_folder(mainwin, qtbot, user, musi
     qtbot.waitUntil(lambda: selected_folders(view) == [str(tmp_path / 'a' / 'sub')] and view.isEnabled(),
                     timeout=2000)
     assert in_file(music['a'])['title'] == ['Title a']
+
+
+def test_a_write_during_a_load_doesnt_load_the_folder_again(mainwin, make_audio, tmp_path, qtbot, user,
+                                                            monkeypatch):
+    # The docs don't say; a write that ends just after a load shouldn't
+    # load the folder again. It would replace the table with what was read
+    # before the write, and lose Undo. The dock's folder search is held
+    # back (synthetic) so the write ends first, as it can on a busy machine.
+    release = threading.Event()
+
+    class Held(PuddleThread):
+        def run(self):
+            release.wait(10)
+            super().run()
+
+    monkeypatch.setattr(dirview, 'PuddleThread', Held)
+    path = make_audio('Artist - New.mp3', tmp_path / 'a', title='Old')
+    mainwin.openDir(str(path.parent), False)
+    table = mainwin._table
+    wait_for_rows(qtbot, table, [path])
+    user.activate()
+    audio = table.model().taginfo[0]
+    user.click_cell(user.cell(0, 'title'))
+    user.press(Key.Key_F8)
+    user.type('%artist% - %title%')
+    user.press(Key.Key_F8)
+    user.press(Key.Key_T, Ctrl)
+    qtbot.waitUntil(lambda: in_file(path)['title'] == ['New'])
+    release.set()
+    qtbot.waitUntil(tree(mainwin).isEnabled)
+    qtbot.wait(200)
+    assert table.model().taginfo[0] is audio
+    assert user.action('&Undo').isEnabled()

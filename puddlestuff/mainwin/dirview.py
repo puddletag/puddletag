@@ -210,6 +210,7 @@ class DirView(QTreeView):
     def dirMoved(self, dirs):
         if not self.isVisible():
             return
+        load = self._load
         self._load = False
         model = self.model()
         selectindex = self.selectionModel().select
@@ -233,7 +234,7 @@ class DirView(QTreeView):
 
         for d in [z[1] for z in dirs] + selected:
             self.selectIndex(getindex(d))
-        self._load = True
+        self._load = load
 
     def loadSettings(self):
         settings = QSettings(QT_CONFIG, QSettings.Format.IniFormat)
