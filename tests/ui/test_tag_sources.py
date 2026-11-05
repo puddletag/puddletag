@@ -2097,7 +2097,6 @@ def test_acoustid_configure_sets_the_score_and_the_key(acoustid_listed, acoust_i
     assert saved == {'AcoustID Key': 'Typed key', 'Minimum Score': 55}
 
 
-@pytest.mark.xfail(strict=True, reason='a click on the album gives the files its tracks by position')
 def test_click_on_the_album_keeps_the_exact_matches(mainwin, make_audio, tmp_path, qtbot, user):
     # tagsources.txt: "select an appropriate album. That album's metadata will
     # then be retrieved and the retrieved tags will be applied to the selected

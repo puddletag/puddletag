@@ -672,7 +672,11 @@ class ReleaseWidget(QTreeView):
                     break
             else:
                 self.infoChanged.emit('')
-        self.emitTracks(tracks)
+        exact = [track for item in items if not isTrack(item) for track in item.exact_matches()]
+        if exact:
+            self.emitInitialExact(exact)
+        else:
+            self.emitTracks(tracks)
         self.itemSelectionChanged.emit()
 
     def _setCollapsedFlag(self, index):
