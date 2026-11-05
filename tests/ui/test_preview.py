@@ -3,6 +3,8 @@ written"), run as a user runs it: the Preview Mode menu, its shortcuts and
 the switch in the status bar. Each change is checked in the table and in
 the files. Synthetic files.
 """
+import threading
+
 import pytest
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QApplication, QLabel, QMessageBox
@@ -10,6 +12,7 @@ from PyQt6.QtWidgets import QApplication, QLabel, QMessageBox
 from puddlestuff import audioinfo
 from puddlestuff.mainwin.storedtags import StoredTags
 from puddlestuff.mainwin.tagpanel import FrameCombo
+from puddlestuff.puddleobjects import PuddleThread
 from puddlestuff.puddlesettings import SettingsDialog
 from puddlestuff.puddletag import PreviewLabel
 
@@ -308,6 +311,36 @@ def test_stored_tags_show_the_file(mainwin, user, loaded, qtbot):
     user.click_cell(user.cell(0, 'title'))
     qtbot.waitUntil(lambda: 'Title 1' in labels())
     assert 'New' not in labels()
+
+
+def test_stored_tags_ignore_a_slower_earlier_file(mainwin, user, loaded, qtbot, monkeypatch):
+    # menus.txt: "The Stored Tags dialog displays the Tags of the currently
+    # selected files as stored on disk". Synthetic: the first file's read is
+    # held back so it finishes last, as it can on a busy machine.
+    table, paths = loaded
+    user.click_menu('Stored Tags')
+    [stored] = mainwin.findChildren(StoredTags)
+    qtbot.waitUntil(stored.isVisible)
+    labels = lambda: [label.text() for label in stored.findChildren(QLabel)]
+    release = threading.Event()
+    real_tag = audioinfo._Tag
+
+    def held_tag(path, *args, **kwargs):
+        if path == str(paths[0]):
+            release.wait(10)
+        return real_tag(path, *args, **kwargs)
+
+    monkeypatch.setattr(audioinfo, '_Tag', held_tag)
+    user.click_cell(user.cell(1, 'title'))
+    qtbot.waitUntil(lambda: 'Title 2' in labels())
+    user.click_cell(user.cell(0, 'title'))
+    user.click_cell(user.cell(2, 'title'))
+    qtbot.waitUntil(lambda: 'Title 3' in labels())
+    release.set()
+    qtbot.waitUntil(lambda: not any(thread.isRunning() for thread in stored.findChildren(PuddleThread)))
+    qtbot.wait(100)
+    assert 'Title 3' in labels()
+    assert 'Title 1' not in labels()
 
 
 @pytest.mark.parametrize('answer, still_on, title', [(Yes, False, ('Title 1', 'plain')),

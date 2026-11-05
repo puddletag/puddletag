@@ -37,6 +37,8 @@ class StoredTags(QScrollArea):
         self._status = status
         self._loading = False
         self._lastfilepath = None
+        # Numbers the requests, so a slower, older thread's result is dropped.
+        self._request = 0
 
     def _init(self):
         widget = QWidget()
@@ -57,6 +59,7 @@ class StoredTags(QScrollArea):
                 return
             self._lastfilepath = filepath
         else:
+            self._request += 1
             self._init()
             return
 
@@ -91,6 +94,8 @@ class StoredTags(QScrollArea):
             return ret
 
         def _load(tags):
+            if request != self._request:
+                return
             # print 'loading', time.time()
             while self._loading:
                 QApplication.processEvents()
@@ -125,6 +130,8 @@ class StoredTags(QScrollArea):
             finally:
                 self._loading = False
 
+        self._request += 1
+        request = self._request
         thread = PuddleThread(retrieve_tag, self)
         thread.threadfinished.connect(_load)
         # print 'starting thread', time.time()
