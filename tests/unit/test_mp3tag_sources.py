@@ -746,7 +746,6 @@ def test_sayrest_says_the_rest_of_the_line(folder):
     assert album_fields(folder, parser) == {'album': 'line three <i>x</i> tail'}
 
 
-@pytest.mark.xfail(strict=True, reason="SayRest leaves the pointer on the line's last character, so the next Say command says it again")
 def test_second_sayrest_says_nothing_more(folder):
     # Docs-silent: the maintainer's choice (not a quote): after SayRest the
     # pointer is past the line's end, so the next Say command says nothing.
@@ -767,7 +766,6 @@ def test_sayuntil_says_up_to_the_text(folder, parser, expected):
     assert album_fields(folder, 'outputto "album"\n' + parser) == expected
 
 
-@pytest.mark.xfail(strict=True, reason="SayUntil without the text leaves the pointer on the line's last character, so the next Say command says it again")
 def test_sayuntil_without_the_text_says_the_rest(folder):
     # Docs-silent: the maintainer's choice (not a quote): the rest of the
     # line is said and the pointer is past its end.
@@ -776,7 +774,6 @@ def test_sayuntil_without_the_text_says_the_rest(folder):
     assert album_fields(folder, parser) == {'album': 'line one'}
 
 
-@pytest.mark.xfail(strict=True, reason="SayNChars says one character fewer, leaving out the first")
 @pytest.mark.parametrize('parser, expected', [
     ('findline "three"\nsaynchars 4\noutputto "artist"\nsayrest\n',
      {'album': 'line', 'artist': 'three <i>x</i> tail'}),
@@ -800,7 +797,6 @@ def test_saynext_says_the_next_number_or_word(folder, parser, expected):
     assert album_fields(folder, 'outputto "album"\n' + parser) == expected
 
 
-@pytest.mark.xfail(strict=True, reason="SayNextNumber and SayNextWord move the pointer by the length of what they say, not past it")
 @pytest.mark.parametrize('parser, expected', [
     ('findline "Year:"\nsaynextnumber\noutputto "artist"\nsayrest\n',
      {'album': '1999', 'artist': 'end'}),
@@ -813,7 +809,6 @@ def test_saynext_moves_past_what_it_says(folder, parser, expected):
     assert album_fields(folder, 'outputto "album"\n' + parser) == expected
 
 
-@pytest.mark.xfail(strict=True, raises=AttributeError, reason="SayNextWord raises when the rest of the line has no word")
 def test_saynextword_without_a_word_says_nothing(folder):
     # Docs-silent: the maintainer's choice (not a quote): with nothing to
     # say, nothing is said and the script goes on.
@@ -843,7 +838,6 @@ def test_saynewline_separates_search_results(folder):
                        {'#url': 'u2', 'album': 'Second'}]
 
 
-@pytest.mark.xfail(strict=True, reason="SayRegexp without a separator says only the first match")
 def test_sayregexp_says_every_match_separated_by_a_space(folder):
     # Mp3tag's reference: "Outputs all matches of the regular expression in
     # the first parameter separated by the string in the second parameter,
@@ -867,7 +861,6 @@ def test_sayregexp_with_separator_and_end(folder, arguments, expected):
     assert album_fields(folder, parser) == expected
 
 
-@pytest.mark.xfail(strict=True, raises=AttributeError, reason="SayRegexp without a separator raises when nothing matches")
 def test_sayregexp_without_a_match_says_nothing(folder):
     # Docs-silent: the maintainer's choice (not a quote): with no match,
     # nothing is said and the script goes on.
@@ -876,7 +869,6 @@ def test_sayregexp_without_a_match_says_nothing(folder):
     assert album_fields(folder, parser) == {'album': '!'}
 
 
-@pytest.mark.xfail(strict=True, reason="SayUntilML keeps the space puddletag adds at each line's end")
 def test_sayuntilml_says_across_lines(folder):
     # Mp3tag's reference: "Send everything until S to output searching
     # across multiple lines". Docs-silent for the joins, the maintainer's
@@ -886,7 +878,6 @@ def test_sayuntilml_says_across_lines(folder):
     assert album_fields(folder, parser) == {'album': 'line three <i>x</i> tail\nline four\nline'}
 
 
-@pytest.mark.xfail(strict=True, reason="SayUntilML leaves the pointer one character past the text's position in the line")
 def test_sayuntilml_leaves_the_pointer_on_the_text(folder):
     # Docs-silent: the maintainer's choice (not a quote): as SayUntil, the
     # pointer stays on S.

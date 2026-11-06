@@ -248,7 +248,7 @@ def say(cursor, text):
 
 
 def saynchars(cursor, num):
-    cursor.cache += cursor.line[cursor.charno + 1: cursor.charno + num]
+    cursor.cache += cursor.line[cursor.charno: cursor.charno + num]
     cursor.charno += num
 
 
@@ -257,19 +257,20 @@ def saynewline(cursor):
 
 
 def saynextnumber(cursor):
-    try:
-        number = re.search(r'\d+', cursor.line[cursor.charno:]).group()
-        cursor.log('Saying number %s\n' % number)
-        cursor.cache += number
-        cursor.charno += len(number)
-    except AttributeError:
+    m = re.search(r'\d+', cursor.line[cursor.charno:])
+    if m is None:
         return
+    cursor.log('Saying number %s\n' % m.group())
+    cursor.cache += m.group()
+    cursor.charno += m.end()
 
 
 def saynextword(cursor):
-    word = re.search(r'\w+', cursor.line[cursor.charno:]).group()
-    cursor.cache += word
-    cursor.charno += len(word)
+    m = re.search(r'\w+', cursor.line[cursor.charno:])
+    if m is None:
+        return
+    cursor.cache += m.group()
+    cursor.charno += m.end()
 
 
 def sayoutput(cursor, field):
@@ -295,23 +296,15 @@ def sayoutput(cursor, field):
         cursor.cache += v
 
 
-def sayregexp(cursor, rexp, separator=None, check=None):
+def sayregexp(cursor, rexp, separator=' ', check=None):
     if (check is not None) and (check not in cursor.line):
-        return
-    if cursor.charno + 1 == len(cursor.line):
         return
     if check:
         line = cursor.line[cursor.charno: cursor.line.find(check, cursor.charno)]
     else:
         line = cursor.line[cursor.charno:]
-    if separator is not None:
-        matches = [match.group() for match in
-                   re.finditer(rexp, line)]
-        cursor.cache += separator.join(matches)
-    else:
-        match = re.search(rexp, line).group()
-        if match:
-            cursor.cache += match
+    matches = [match.group() for match in re.finditer(rexp, line)]
+    cursor.cache += separator.join(matches)
 
 
 def sayrest(cursor):
@@ -319,7 +312,7 @@ def sayrest(cursor):
     cursor.log('Line: %s.' % cursor.line)
     cursor.log('Saying: %s\n' % cursor.line[cursor.charno:])
     cursor.cache += cursor.line[cursor.charno:]
-    cursor.charno = len(cursor.line) - 1
+    cursor.charno = len(cursor.line)
 
 
 def sayuntil(cursor, text):
@@ -335,12 +328,12 @@ def sayuntil(cursor, text):
         cursor.log('%s not found.\n' % text)
         cursor.log('Saying: %s\n' % line)
         cursor.cache += line
-        cursor.charno = len(cursor.line) - 1
+        cursor.charno = len(cursor.line)
 
 
 def sayuntilml(cursor, text):
     cache = []
-    lines = cursor.lines[::]
+    lines = [z.strip() for z in cursor.lines]
     lines[0] = cursor.line[cursor.charno:]
     for i, line in enumerate(lines):
         index = line.find(text)
@@ -349,8 +342,11 @@ def sayuntilml(cursor, text):
         else:
             cache.append(line[:index])
             cursor.cache += '\n'.join(cache)
-            cursor.charno = index + 1
-            cursor.lineno += i
+            if i:
+                cursor.lineno += i
+                cursor.charno = index
+            else:
+                cursor.charno += index
             return
 
 
