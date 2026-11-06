@@ -316,7 +316,7 @@ class AcoustID(object):
                 write_log(RETRIEVE_MSG.format(i + 1, fns_len))
                 set_status(RETRIEVE_MSG.format(i + 1, fns_len))
 
-                data, fp = match("gT8GJxhO", fn.filepath, fp, dur)
+                data, fp = match(API_KEY, fn.filepath, fp, dur)
                 write_log(translate('AcoustID', "Parsing Data"))
 
                 info = parse_lookup_result(data, fp=fp)
@@ -419,18 +419,3 @@ if not which('fpcalc'):
     raise ImportError("fpcalc not found on system")
 
 info = AcoustID
-
-if __name__ == '__main__':
-    x = AcoustID()
-    x.applyPrefs([85, "KEIY0X4P"])
-    file_dir = ''
-    files = []
-    for z in os.listdir(file_dir):
-        fn = os.path.join(file_dir, z)
-        try:
-            tag = audioinfo.Tag(fn)
-            if tag is not None:
-                files.append(tag)
-        except:
-            pass
-    x.submit(files)
