@@ -1949,6 +1949,11 @@ def test_album_shows_its_track_count_after_a_space(mainwin, make_audio, tmp_path
 ABBEY_ROAD = '6bb3793b-f991-378e-9bff-0bd3117f2298'
 LOOKUP = '/v2/lookup'
 LOOKUP_ERROR = '{"error": {"code": 4, "message": "invalid API key"}, "status": "error"}'
+REFUSAL = 'error 6: invalid user API key ("User with the API key does not exist")'
+SUBMIT = '/v2/submit'
+SUBMIT_ERROR = ('{"error": {"code": 6, "message": "invalid user API key (\\"User with the API key '
+                'does not exist\\")"}, "status": "error"}')
+SUBMITTED = '{"status": "ok", "submissions": [{"id": 123456789, "status": "pending"}]}'
 
 
 def acoustid_reply():
@@ -1981,6 +1986,20 @@ def open_acoustid(mainwin, make_audio, tmp_path, qtbot, user, tags=({},)):
     pick(user, qtbot, window.sourcelist, 'AcoustID')
     user.activate()
     return window, paths
+
+
+def enter_acoustid_key(user, qtbot, window, key):
+    """Types the user key into the source's Configure dialog."""
+    dialog = configure_dialog(user, qtbot, window)
+    spin, text = dialog._controls
+    replace_text(user, text, key)
+    user.click(push_button(dialog, 'OK'))
+    qtbot.waitUntil(lambda: not dialog.isVisible())
+    user.activate()
+
+
+def sent(service):
+    return [request.form for request in service.requests if request.path == SUBMIT]
 
 
 def test_acoustid_offers_submit_and_no_text_search(acoustid_listed, mainwin, make_audio, tmp_path, qtbot, user):
@@ -2095,6 +2114,50 @@ def test_acoustid_configure_sets_the_score_and_the_key(acoustid_listed, acoust_i
     assert source.min_score == 0.55
     saved = PuddleConfig(str(Path(CONFIGDIR) / 'tagsources.conf')).data['AcoustID']
     assert saved == {'AcoustID Key': 'Typed key', 'Minimum Score': 55}
+
+
+def test_acoustid_submit_without_a_key_asks_for_it(acoustid_listed, mainwin, make_audio, tmp_path, qtbot, user):
+    # The docs don't say; this is what a user should see.
+    window, _ = open_acoustid(mainwin, make_audio, tmp_path, qtbot, user)
+    submit_and_wait(user, qtbot, window, 'An error occurred: Please enter AcoustID user key in settings.')
+    assert sent(acoustid_listed) == []
+
+
+@pytest.mark.xfail(strict=True, reason="the length goes as the text '42.0', which pyacoustid's int() refuses")
+def test_acoustid_submit_sends_the_typed_key(acoustid_listed, mainwin, make_audio, tmp_path, qtbot, user):
+    # The docs don't say. Synthetic: one MP3 titled One.
+    acoustid_listed.add(SUBMIT, SUBMITTED, content_type='application/json')
+    window, paths = open_acoustid(mainwin, make_audio, tmp_path, qtbot, user, tags=[{'title': 'One'}])
+    enter_acoustid_key(user, qtbot, window, 'Typed key')
+    submit_and_wait(user, qtbot, window, 'Submission completed.')
+    [form] = sent(acoustid_listed)
+    assert form['duration.0'] == ['42']
+    assert form['fingerprint.0'] == ['AQABsynthetic']
+    assert form['track.0'] == ['One']
+    assert form['user'] == ['Typed key']
+    assert in_file(paths[0])['title'] == ['One']
+
+
+@pytest.mark.xfail(strict=True, reason="the length goes as the text '42.0', which pyacoustid's int() refuses")
+def test_acoustid_refusal_is_shown(acoustid_listed, mainwin, make_audio, tmp_path, qtbot, user):
+    # The docs don't say; this is what a user should see.
+    acoustid_listed.add(SUBMIT, SUBMIT_ERROR, status=400, content_type='application/json')
+    window, _ = open_acoustid(mainwin, make_audio, tmp_path, qtbot, user)
+    enter_acoustid_key(user, qtbot, window, 'Typed key')
+    submit_and_wait(user, qtbot, window, f'An error occurred: Error submitting data: {REFUSAL}')
+    assert len(sent(acoustid_listed)) == 1
+    assert f'Error submitting data: {REFUSAL}' in logs_text()
+
+
+@pytest.mark.xfail(strict=True, reason='a submit that sent nothing reports that it completed')
+def test_acoustid_submit_that_sends_nothing_says_so(acoustid_listed, fpcalc, mainwin, make_audio, tmp_path, qtbot,
+                                                    user):
+    # The docs don't say; the maintainer's call.
+    fpcalc.fail()
+    window, _ = open_acoustid(mainwin, make_audio, tmp_path, qtbot, user)
+    enter_acoustid_key(user, qtbot, window, 'Typed key')
+    submit_and_wait(user, qtbot, window, 'No files were submitted.')
+    assert sent(acoustid_listed) == []
 
 
 def test_click_on_the_album_keeps_the_exact_matches(mainwin, make_audio, tmp_path, qtbot, user):

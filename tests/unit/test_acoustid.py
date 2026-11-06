@@ -1,9 +1,10 @@
 """The AcoustID tag source (tagsources.txt, "Using AcoustID"): a file's
-fingerprint, what the web service replies, and how a search turns replies
-into albums. Replies come from a local web server. acoustid/lookup-canon.json
-under tests/data is one AcoustID served (recorded by record_acoustid.py);
-every other reply is synthetic, in its shape, and names a recorded
-MusicBrainz release. fpcalc is a stub, but for the two real_fpcalc tests.
+fingerprint, what the web service replies, how a search turns replies
+into albums, and what a submit sends. Replies come from a local web server.
+acoustid/lookup-canon.json under tests/data is one AcoustID served (recorded by
+record_acoustid.py); every other reply is synthetic, in its shape, and names a
+recorded MusicBrainz release. fpcalc is a stub, but for the two real_fpcalc
+tests.
 """
 import json
 import os
@@ -14,10 +15,11 @@ import sys
 from pathlib import Path
 
 import acoustid
+import mutagen.id3
 import pytest
 
 from puddlestuff import audioinfo, tagsources
-from puddlestuff.tagsources import RetrievalError, musicbrainz
+from puddlestuff.tagsources import RetrievalError, SubmissionError, musicbrainz
 
 DATA = Path(__file__).parent.parent / 'data'
 REPO = Path(__file__).parent.parent.parent
@@ -32,6 +34,16 @@ SOMETHING = 'b849acd4-0638-49ea-8e40-7391613d4890'
 LOOKUP = '/v2/lookup'
 # Synthetic, in the shape of the service's errors.
 LOOKUP_ERROR = '{"error": {"code": 4, "message": "invalid API key"}, "status": "error"}'
+# The service docs' own example id.
+MBID = '4e0d8649-1f89-44f3-91af-4c0dbee81f28'
+REFUSAL = 'error 6: invalid user API key ("User with the API key does not exist")'
+SUBMIT = '/v2/submit'
+# Synthetic, in the shape of the service's errors.
+SUBMIT_ERROR = ('{"error": {"code": 6, "message": "invalid user API key (\\"User with the API key '
+                'does not exist\\")"}, "status": "error"}')
+# Synthetic, in the shape of the service docs' example.
+SUBMITTED = '{"status": "ok", "submissions": [{"id": 123456789, "status": "pending"}]}'
+USER_KEY = 'synthetic-user-key'
 
 
 def recorded_reply():
@@ -74,6 +86,16 @@ def lookups(service):
     return [request.form for request in service.requests if request.path == LOOKUP]
 
 
+def submissions(service):
+    """The form fields of each submit request sent."""
+    return [request.form for request in service.requests if request.path == SUBMIT]
+
+
+def sending(lines):
+    """The lines that announce a request."""
+    return [line for line in lines if line.startswith('Submitting data')]
+
+
 def exact(tracks):
     return [track for track in tracks if '#exact' in track]
 
@@ -106,6 +128,22 @@ def log(acoust_id, monkeypatch):
 
 
 @pytest.fixture
+def statuses(acoust_id, monkeypatch):
+    """The lines the source writes to the Tag Sources window's label."""
+    lines = []
+    monkeypatch.setattr(acoust_id, 'set_status', lines.append)
+    return lines
+
+
+@pytest.fixture
+def submitter(source, acoustid_service):
+    """AcoustID with a user key, on a local server that takes every submit."""
+    source.applyPrefs([80, USER_KEY])
+    acoustid_service.add(SUBMIT, SUBMITTED, content_type='application/json')
+    return source
+
+
+@pytest.fixture
 def silent_server():
     """A local address that takes connections and never answers. Closing it
     at teardown frees any request still waiting."""
@@ -114,6 +152,16 @@ def silent_server():
     listener.listen()
     yield f'http://127.0.0.1:{listener.getsockname()[1]}/v2'
     listener.close()
+
+
+@pytest.fixture
+def closed_server():
+    """A local address nothing listens on."""
+    listener = socket.socket()
+    listener.bind(('127.0.0.1', 0))
+    port = listener.getsockname()[1]
+    listener.close()
+    return f'http://127.0.0.1:{port}/v2'
 
 
 # Loading, preferences and parsers --------------------------------------------
@@ -478,6 +526,408 @@ def test_fingerprint_of_many_values_is_calculated_again(source, fpcalc, acoustid
     list(source.search('', tags(path)))
     assert fpcalc.files == [str(path)]
     assert lookups(acoustid_service)[0]['fingerprint'] == ['AQABsynthetic']
+
+
+# Submitting ------------------------------------------------------------------
+
+def test_submit_needs_the_users_key(source, acoustid_service, make_audio):
+    # acoustid.org/webservice, Submit: "user": required, "users's API key". The
+    # message itself: the docs don't say; this is what puddletag does.
+    path = make_audio('a.flac', acoustid_fingerprint='AQABstored')
+    with pytest.raises(SubmissionError, match=r'^Please enter AcoustID user key in settings\.$'):
+        source.submit(tags(path))
+    assert submissions(acoustid_service) == []
+
+
+def test_ten_files_go_in_one_request(submitter, acoustid_service, log, statuses, make_audio):
+    # acoustid.org/webservice, Submit: "Multiple fingerprints can be submitted
+    # in one call." The number ten: the docs don't say; this is what puddletag
+    # does.
+    paths = [make_audio(f'{n}.flac', acoustid_fingerprint=f'AQAB{n}') for n in range(10)]
+    submitter.submit(tags(*paths))
+    (form,) = submissions(acoustid_service)
+    assert [form[f'fingerprint.{n}'] for n in range(10)] == [[f'AQAB{n}'] for n in range(10)]
+    assert form['client'] == ['gT8GJxhO']
+    assert form['format'] == ['json']
+    assert form['user'] == [USER_KEY]
+    assert sending(log) == statuses == ['Submitting data to AcoustID: 1 to 10 of 10.']
+
+
+def test_eleventh_file_goes_in_a_second_request(submitter, acoustid_service, log, statuses,
+                                                make_audio):
+    # acoustid.org/webservice, Submit: "Multiple fingerprints can be submitted
+    # in one call." The number ten: the docs don't say; this is what puddletag
+    # does.
+    paths = [make_audio(f'{n}.flac', acoustid_fingerprint=f'AQAB{n}') for n in range(11)]
+    submitter.submit(tags(*paths))
+    first, second = submissions(acoustid_service)
+    assert 'fingerprint.9' in first
+    assert 'fingerprint.10' not in first
+    assert second['fingerprint.0'] == ['AQAB10']
+    assert 'fingerprint.1' not in second
+    assert statuses == ['Submitting data to AcoustID: 1 to 10 of 11.',
+                        'Submitting data to AcoustID: 11 to 11 of 11.']
+    assert sending(log) == statuses
+
+
+def test_submits_wait_between_requests(submitter, acoustid_clock, make_audio):
+    # acoustid.org/webservice: "Do not make more than 3 requests per second."
+    paths = [make_audio(f'{n}.flac', acoustid_fingerprint=f'AQAB{n}') for n in range(11)]
+    submitter.submit(tags(*paths))
+    assert len(acoustid_clock.waits) == 1
+    assert min(acoustid_clock.waits) >= 0.33
+
+
+@pytest.mark.parametrize(('duration', 'sent'), [(42, '42'), (42.9, '42')])
+@pytest.mark.xfail(strict=True, reason="the length goes as the text '42.0', which pyacoustid's "
+                                       "int() refuses")
+def test_computed_fingerprint_is_submitted(submitter, fpcalc, acoustid_service, log, make_audio,
+                                           duration, sent):
+    # acoustid.org/webservice, Submit: "duration": "duration of the whole audio
+    # file in seconds"; "fingerprint": "audio fingerprint data". The second
+    # length is synthetic: fpcalc prints whole seconds, and pyacoustid cuts
+    # with int().
+    fpcalc.answer(duration=duration)
+    path = make_audio('a.flac')  # synthetic: no tags
+    submitter.submit(tags(path))
+    assert fpcalc.files == [str(path)]
+    (form,) = submissions(acoustid_service)
+    assert form['duration.0'] == [sent]
+    assert form['fingerprint.0'] == ['AQABsynthetic']
+    assert 'Calculating ID' in log
+
+
+def test_fingerprint_in_the_file_is_submitted_without_fpcalc(submitter, fpcalc, acoustid_service,
+                                                             log, make_audio):
+    # The docs don't say; this is what puddletag does.
+    path = make_audio('a.flac', acoustid_fingerprint='AQABstored')
+    submitter.submit(tags(path))
+    assert fpcalc.files == []
+    (form,) = submissions(acoustid_service)
+    assert form['duration.0'] == ['1']  # the file's length
+    assert form['fingerprint.0'] == ['AQABstored']
+    assert 'Found AcoustID in file.' in log
+
+
+@pytest.mark.xfail(strict=True, reason="the length goes as the text '42.0', which pyacoustid's "
+                                       "int() refuses")
+def test_fingerprint_goes_as_plain_text(submitter, fpcalc, acoustid_service, make_audio):
+    # acoustid.org/webservice, Submit: "fingerprint": "audio fingerprint data",
+    # as in AQABz0qUkZ...
+    fpcalc.answer(fingerprint='AQAB-_synthetic')
+    path = make_audio('a.flac')  # synthetic: no tags
+    submitter.submit(tags(path))
+    (form,) = submissions(acoustid_service)
+    assert form['fingerprint.0'] == ['AQAB-_synthetic']
+
+
+@pytest.mark.xfail(strict=True, reason='files waiting are sent only when the last file succeeds')
+def test_files_before_a_failed_last_file_are_sent(submitter, fpcalc, acoustid_service, log,
+                                                  make_audio):
+    # The docs don't say.
+    fpcalc.fail()
+    first = make_audio('a.flac', acoustid_fingerprint='AQABa')
+    second = make_audio('b.flac', acoustid_fingerprint='AQABb')
+    third = make_audio('c.flac')  # synthetic: no tags
+    submitter.submit(tags(first, second, third))
+    (form,) = submissions(acoustid_service)
+    assert form['fingerprint.0'] == ['AQABa']
+    assert form['fingerprint.1'] == ['AQABb']
+    assert 'fingerprint.2' not in form
+    assert 'Error generating fingerprint: fpcalc exited with status 2' in log
+
+
+@pytest.mark.xfail(strict=True, reason='the first number counts back from the last file by the '
+                                       'files waiting')
+def test_file_fpcalc_cant_read_leaves_the_others(submitter, fpcalc, acoustid_service, log,
+                                                 make_audio):
+    # The docs don't say.
+    fpcalc.fail()
+    first = make_audio('a.flac', acoustid_fingerprint='AQABa')
+    second = make_audio('b.flac')  # synthetic: no tags
+    third = make_audio('c.flac', acoustid_fingerprint='AQABc')
+    submitter.submit(tags(first, second, third))
+    (form,) = submissions(acoustid_service)
+    assert form['fingerprint.0'] == ['AQABa']
+    assert form['fingerprint.1'] == ['AQABc']
+    assert sending(log) == ['Submitting data to AcoustID: 1 to 3 of 3.']
+
+
+@pytest.mark.parametrize(('body', 'status', 'message'), [
+    (SUBMIT_ERROR, 400, REFUSAL), ('not json', 500, 'response is not valid JSON')],
+    ids=['refused', 'unreadable'])
+@pytest.mark.xfail(strict=True, reason='the error is only logged, so the window says the submit '
+                                       'completed')
+def test_refusal_stops_the_submit(submitter, acoustid_service, log, make_audio, body, status,
+                                  message):
+    # The docs don't say. Like the search's first error, which is raised.
+    paths = [make_audio(f'{n}.flac', acoustid_fingerprint=f'AQAB{n}') for n in range(11)]
+    acoustid_service.add(SUBMIT, body, status=status, content_type='application/json')
+    with pytest.raises(SubmissionError) as error:
+        submitter.submit(tags(*paths))
+    assert str(error.value) == f'Error submitting data: {message}'
+    assert len(submissions(acoustid_service)) == 1
+    assert str(error.value) in log
+
+
+@pytest.mark.xfail(strict=True, reason='the error is only logged, so the window says the submit '
+                                       'completed')
+def test_refusal_of_a_later_request_keeps_the_first(submitter, acoustid_service, log, make_audio):
+    # The docs don't say.
+    paths = [make_audio(f'{n}.flac', acoustid_fingerprint=f'AQAB{n}') for n in range(11)]
+    acoustid_service.add(SUBMIT, SUBMIT_ERROR, status=400, content_type='application/json',
+                         form={'fingerprint.0': 'AQAB10'})
+    with pytest.raises(SubmissionError):
+        submitter.submit(tags(*paths))
+    assert len(submissions(acoustid_service)) == 2
+
+
+@pytest.mark.xfail(strict=True, reason='the error is only logged, so the window says the submit '
+                                       'completed')
+def test_dropped_connection_stops_the_submit(submitter, closed_server, log, make_audio):
+    # The docs don't say. A refused connection takes the same branch as a
+    # dropped one.
+    path = make_audio('a.flac', acoustid_fingerprint='AQABstored')
+    acoustid.set_base_url(closed_server)
+    with pytest.raises(SubmissionError, match='^Error submitting data: HTTP request failed: '):
+        submitter.submit(tags(path))
+
+
+@pytest.mark.timeout(10)
+@pytest.mark.xfail(strict=True, reason='acoustid.submit is called without a timeout')
+def test_submit_gives_up_on_a_silent_server(submitter, silent_server, monkeypatch, make_audio):
+    # The docs don't say; every other source's request has this timeout.
+    path = make_audio('a.flac', acoustid_fingerprint='AQABstored')
+    monkeypatch.setattr(tagsources, 'TIMEOUT', 0.2)
+    acoustid.set_base_url(silent_server)
+    with pytest.raises(SubmissionError, match='timed out'):
+        submitter.submit(tags(path))
+
+
+@pytest.mark.xfail(strict=True, reason='a submit that sent nothing reports that it completed')
+def test_nothing_to_send_says_so(submitter, fpcalc, acoustid_service, make_audio):
+    # The docs don't say; the maintainer's call. Nothing selected, then a file
+    # fpcalc can't read.
+    fpcalc.fail()
+    path = make_audio('a.flac')  # synthetic: no tags
+    assert submitter.submit([]) == 'No files were submitted.'
+    assert submitter.submit(tags(path)) == 'No files were submitted.'
+    assert submissions(acoustid_service) == []
+
+
+# What a submit sends ---------------------------------------------------------
+
+FIELDS = {'album': 'The Division Bell', 'artist': 'Pink Floyd', 'date': '1994', 'discnumber': '1',
+          'genre': 'Rock', 'title': 'High Hopes', 'tracknumber': '11'}
+
+
+def flac_with_fields(make_audio):
+    return make_audio('a.flac', acoustid_fingerprint='AQABstored', musicbrainz_trackid=MBID, **FIELDS)
+
+
+def mp3_with_fields(make_audio):
+    path = make_audio('a.mp3', **FIELDS)
+    id3 = mutagen.id3.ID3(str(path))
+    id3.add(mutagen.id3.TXXX(encoding=3, desc='acoustid_fingerprint', text=['AQABstored']))
+    id3.add(mutagen.id3.UFID(owner='http://musicbrainz.org', data=MBID.encode()))
+    id3.save()
+    return path
+
+
+@pytest.mark.parametrize('file_with_fields', [flac_with_fields, mp3_with_fields], ids=['flac', 'mp3'])
+def test_fields_go_under_the_services_names(submitter, acoustid_service, make_audio, file_with_fields):
+    # webservice, Submit: "track title", "track artist", "album title",
+    # "album release year", "track number", "disc number", "corresponding
+    # MusicBrainz recording ID"; and "If the file has embedded MusicBrainz
+    # tags, please send the MusicBrainz recording ID."
+    path = file_with_fields(make_audio)
+    submitter.submit(tags(path))
+    (form,) = submissions(acoustid_service)
+    # The bitrate depends on the encoder: the next tests look at it.
+    assert {key: value for key, value in form.items() if key != 'bitrate.0'} == {
+        'album.0': ['The Division Bell'], 'artist.0': ['Pink Floyd'], 'client': ['gT8GJxhO'],
+        'discno.0': ['1'], 'duration.0': ['1'], 'fingerprint.0': ['AQABstored'], 'format': ['json'],
+        'mbid.0': [MBID], 'track.0': ['High Hopes'], 'trackno.0': ['11'], 'user': [USER_KEY],
+        'year.0': ['1994']}
+
+
+def test_puid_is_sent(submitter, acoustid_service, make_audio):
+    # The docs don't say: the page no longer lists it; Picard still sends it.
+    path = make_audio('a.flac', acoustid_fingerprint='AQABstored', musicip_puid=MBID)
+    submitter.submit(tags(path))
+    (form,) = submissions(acoustid_service)
+    assert form['puid.0'] == [MBID]
+
+
+@pytest.mark.xfail(strict=True, reason='the text 0 is compared with the number 0')
+def test_zero_bitrate_is_not_sent(submitter, acoustid_service, make_audio):
+    # webservice, Submit: "bitrate of the audio file", 192: none isn't a bitrate of 0.
+    path = make_audio('a.flac', acoustid_fingerprint='AQABstored')
+    assert tags(path)[0]['__bitrate'] == '0 kb/s'
+    submitter.submit(tags(path))
+    (form,) = submissions(acoustid_service)
+    assert 'bitrate.0' not in form
+
+
+def test_bitrate_goes_as_a_number(submitter, acoustid_service, make_audio):
+    # webservice, Submit: "bitrate of the audio file", 192.
+    submitter.submit(tags(mp3_with_fields(make_audio)))
+    (form,) = submissions(acoustid_service)
+    assert re.fullmatch('[1-9][0-9]*', form['bitrate.0'][0])
+
+
+@pytest.mark.xfail(strict=True, reason='convert_for_submit reads a bitrate that may not be there')
+def test_file_without_a_bitrate_is_sent(submitter, acoustid_service, make_audio):
+    # webservice, Submit: bitrate.# is optional. Synthetic: every format
+    # audioinfo reads has a bitrate, so this tag is a plain dict.
+    tag = {'__length': '00:42', '__path': '/music/a.flac', 'acoustid_fingerprint': ['AQABdict']}
+    path = make_audio('a.flac', acoustid_fingerprint='AQABfile')
+    submitter.submit([tag, *tags(path)])
+    (form,) = submissions(acoustid_service)
+    assert form['fingerprint.0'] == ['AQABdict']
+    assert form['fingerprint.1'] == ['AQABfile']
+    assert 'bitrate.0' not in form
+
+
+# Values a submit changes -----------------------------------------------------
+
+@pytest.mark.xfail(strict=True, reason='values go as they are in the file')
+def test_track_disc_and_year_go_as_the_service_reads_them(submitter, acoustid_service, make_audio):
+    # webservice, Submit: "track number", 11; "disc number", 1; "album
+    # release year", 1994.
+    path = make_audio('a.flac', acoustid_fingerprint='AQABstored', date='2001-05-06', discnumber='1/2',
+                      tracknumber='3/12')
+    submitter.submit(tags(path))
+    (form,) = submissions(acoustid_service)
+    assert form['discno.0'] == ['1']
+    assert form['trackno.0'] == ['3']
+    assert form['year.0'] == ['2001']
+
+
+@pytest.mark.xfail(strict=True, reason='values go as they are in the file')
+def test_values_that_arent_numbers_are_left_out(submitter, acoustid_service, make_audio):
+    # webservice, Submit: "track number", 11; "album release year", 1994.
+    path = make_audio('a.flac', acoustid_fingerprint='AQABstored', date='unknown', tracknumber='A1')
+    submitter.submit(tags(path))
+    (form,) = submissions(acoustid_service)
+    assert 'trackno.0' not in form
+    assert 'year.0' not in form
+
+
+@pytest.mark.xfail(strict=True, reason="values go joined by puddletag's own separator")
+def test_several_values_are_joined_for_the_service(submitter, acoustid_service, make_audio):
+    # webservice, Submit: "track artist". Picard joins several with "; ".
+    path = make_audio('a.flac', acoustid_fingerprint='AQABstored', artist=['A1', 'A2'])
+    submitter.submit(tags(path))
+    (form,) = submissions(acoustid_service)
+    assert form['artist.0'] == ['A1; A2']
+
+
+@pytest.mark.xfail(strict=True, reason="values go joined by puddletag's own separator")
+def test_where_the_service_takes_one_value_the_first_goes(submitter, acoustid_service, make_audio):
+    # webservice, Submit: "track number", 11; "disc number", 1; "album
+    # release year", 1994; "corresponding MusicBrainz recording ID".
+    path = make_audio('a.flac', acoustid_fingerprint='AQABstored', date=['2001', '2002'],
+                      discnumber=['1', '2'], musicbrainz_trackid=[MBID, 'other'], tracknumber=['3', '4'])
+    submitter.submit(tags(path))
+    (form,) = submissions(acoustid_service)
+    assert form['discno.0'] == ['1']
+    assert form['mbid.0'] == [MBID]
+    assert form['trackno.0'] == ['3']
+    assert form['year.0'] == ['2001']
+
+
+@pytest.mark.xfail(strict=True, reason='a field named like a service parameter goes as that parameter')
+def test_fields_named_like_the_services_are_not_sent(submitter, acoustid_service, make_audio):
+    # The docs don't say; the maintainer's call: only the file's real values go.
+    # Synthetic: fields named like the service's parameters.
+    path = make_audio('a.flac', acoustid_fingerprint='AQABstored', bitrate='999', discno='2',
+                      mbid='other', trackno='7')
+    submitter.submit(tags(path))
+    (form,) = submissions(acoustid_service)
+    for name in ('bitrate.0', 'discno.0', 'mbid.0', 'trackno.0'):
+        assert name not in form
+
+
+@pytest.mark.xfail(strict=True, reason='a field named like a service parameter goes as that parameter')
+def test_field_named_like_the_services_leaves_the_real_value(submitter, acoustid_service):
+    # The docs don't say; the maintainer's call. Synthetic: a plain dict, not a
+    # file, because a file's fields come in a different order on each run, and
+    # here the field named like the service's must come after the real one.
+    tag = {'__length': '00:42', '__path': '/music/a.flac', 'acoustid_fingerprint': ['AQABdict'],
+           'discnumber': ['1'], 'discno': ['2'], 'mbrainz_track_id': [MBID], 'mbid': ['other'],
+           'track': ['3'], 'trackno': ['7']}
+    submitter.submit([tag])
+    (form,) = submissions(acoustid_service)
+    assert form['discno.0'] == ['1']
+    assert form['mbid.0'] == [MBID]
+    assert form['trackno.0'] == ['3']
+
+
+# Fingerprints in the file ----------------------------------------------------
+
+def mp3_with_picards_fingerprint(make_audio):
+    path = make_audio('a.mp3')
+    id3 = mutagen.id3.ID3(str(path))
+    id3.add(mutagen.id3.TXXX(encoding=3, desc='Acoustid Fingerprint', text=['AQABpicard']))
+    id3.save()
+    return path
+
+
+@pytest.mark.xfail(strict=True, reason="Picard's field name isn't read")
+def test_picards_fingerprint_is_read(submitter, fpcalc, acoustid_service, make_audio):
+    # Picard's tag mapping: AcoustID Fingerprint, ID3v2 TXXX:Acoustid Fingerprint.
+    path = mp3_with_picards_fingerprint(make_audio)
+    submitter.submit(tags(path))
+    assert fpcalc.files == []
+    (form,) = submissions(acoustid_service)
+    assert form['fingerprint.0'] == ['AQABpicard']
+
+
+@pytest.mark.xfail(strict=True, reason="Picard's field name isn't read")
+def test_picards_fingerprint_is_read_by_a_search(source, fpcalc, acoustid_service, make_audio):
+    # Picard's tag mapping: AcoustID Fingerprint, ID3v2 TXXX:Acoustid Fingerprint.
+    path = mp3_with_picards_fingerprint(make_audio)
+    answer(acoustid_service, reply())
+    list(source.search('', tags(path)))
+    assert lookups(acoustid_service)[0]['fingerprint'] == ['AQABpicard']
+
+
+@pytest.mark.xfail(strict=True, reason="a length puddletag can't read goes to the service as 0")
+@pytest.mark.parametrize('name', ['a.apl', 'a.tta'])
+def test_fingerprint_without_a_length_is_calculated_again(submitter, fpcalc, acoustid_service,
+                                                          make_audio, name):
+    # acoustid.org/webservice, Submit: "duration of the whole audio file in
+    # seconds", 641. puddletag reads only the APEv2 tag in these files, so it
+    # has no length for them.
+    path = make_audio(name, acoustid_fingerprint='AQABstored')
+    assert tags(path)[0]['__length'] == '00:00'
+    submitter.submit(tags(path))
+    assert fpcalc.files == [str(path)]
+    (form,) = submissions(acoustid_service)
+    assert form['duration.0'] == ['42']
+    assert form['fingerprint.0'] == ['AQABsynthetic']
+
+
+@pytest.mark.xfail(strict=True, reason="a length puddletag can't read goes to the service as 0")
+def test_search_calculates_a_fingerprint_without_a_length(source, fpcalc, acoustid_service,
+                                                          make_audio):
+    # acoustid.org/webservice, Submit: "duration of the whole audio file in
+    # seconds", 641. puddletag reads only the APEv2 tag in these files, so it
+    # has no length for them.
+    path = make_audio('a.tta', acoustid_fingerprint='AQABstored')
+    answer(acoustid_service, reply(recording()))
+    list(source.search('', tags(path)))
+    assert fpcalc.files == [str(path)]
+    assert lookups(acoustid_service)[0]['duration'] == ['42']
+
+
+# The service's address -------------------------------------------------------
+
+@pytest.mark.xfail(strict=True, reason="pyacoustid's default address is plain http")
+def test_requests_go_to_the_services_https_address(acoust_id):
+    # acoustid.org/webservice, Submit: https://api.acoustid.org/v2/submit
+    assert acoustid.API_BASE_URL == 'https://api.acoustid.org/v2/'
 
 
 # The real fpcalc -------------------------------------------------------------
