@@ -186,7 +186,7 @@ Caveats
 
 The sources I've tested work like Mp3tag's. They also bomb on the same pages. However, unlike Mp3tag, puddletag doesn't 'detect' when retrieval has gone awry. So sometimes you might get nothing in Mp3tag, while getting jibberish in puddletag.
 
-Tag sources that use **[Include]** (they come with a **.inc** file) aren't supported yet.
+Tag sources that use **[Include]** (they come with a **.inc** file) aren't supported yet. Nor are tag sources that use a command puddletag doesn't have (such as **SkipChars**, **IfOutput** or the **json** commands): the Tag Sources window names the command and its line.
 
 I won't be supporting the creation of Mp3tag tag source nor does puddletag have any useful debugging facilities for them. However, if a tag source works fine with Mp3tag, but doesn't with puddletag, `create an issue <https://github.com/puddletag/puddletag/issues>`_ with a link to the tag source and some example searches and I'll fix 'em.
 

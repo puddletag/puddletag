@@ -160,9 +160,7 @@ INCLUDE_HEADER = {'Include': 'Synthetic Web.inc', 'IndexUrl': 'https://example.o
     pytest.param('# A comment\n', 'utf-8', 'no [Name] line', id='only-comments'),
     pytest.param(script({**HEADER, **INDEX_HEADER}, index='sayrest\nSkipChars " "\n'), 'utf-8',
                  "line 8 uses a command puddletag doesn't have: SkipChars",
-                 id='unknown-command', marks=pytest.mark.xfail(
-                     strict=True, raises=AssertionError,
-                     reason="a command puddletag doesn't have is found only when the page is parsed, as a KeyError")),
+                 id='unknown-command'),
 ])
 def test_script_that_cannot_load_logs_why(folder, caplog, text, encoding, reason):
     # Mp3tag's reference lists the header keys; a script without the ones it
@@ -1192,8 +1190,6 @@ def test_page_naming_its_charset_in_html_is_read_in_it(folder, server, meta):
     assert info['album'] == 'Café'
 
 
-@pytest.mark.xfail(strict=True, raises=AssertionError,
-                   reason="a command puddletag doesn't have is found only when the page is parsed, as a KeyError")
 @pytest.mark.parametrize('command', sorted([
     'DebugWriteInput', 'IfGreater', 'IfLess', 'IfNotOutput', 'IfNotVar', 'IfOutput', 'IfVar', 'Insert',
     'SayDate', 'SayDuration', 'SayFormat', 'SayVar', 'SkipChars', 'Trim', 'Use', 'UseFormat', 'json',

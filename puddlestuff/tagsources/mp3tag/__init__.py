@@ -194,6 +194,9 @@ def parse_func(lineno, line):
     args = [i.replace('\\\\', '\\') if isinstance(i, str) else i
             for i in args]
     if funcname and not funcname.startswith('#'):
+        if funcname.lower() not in FUNCTIONS:
+            raise ParseError(translate(
+                'Mp3tag', "line {} uses a command puddletag doesn't have: {}").format(lineno, funcname))
         return funcname.lower(), lineno, args
 
 
