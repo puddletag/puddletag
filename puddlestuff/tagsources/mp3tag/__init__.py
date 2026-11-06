@@ -1,6 +1,4 @@
-import os
 import re
-import traceback
 import urllib.parse
 from copy import deepcopy
 from html.entities import name2codepoint as n2cp
@@ -202,14 +200,6 @@ def parse_func(lineno, line):
 def parse_ident(line):
     ident, value = re.search(r'^\[(\w+)\]=(.*)$', line).groups()
     return ident, value
-
-
-def parse_lines(lines):
-    for line in lines:
-        if line.startswith('['):
-            print(parse_ident(line))
-        else:
-            print(parse_func(line))
 
 
 def parse_search_page(indexformat, page, search_source, url=None):
@@ -466,48 +456,4 @@ class Mp3TagSource(object):
         return info, tracks
 
 
-def load_mp3tag_sources(dirpath='.'):
-    "Loads Mp3tag tag sources from dirpath and return the tag source classes."
-    import glob
-    files = glob.glob(os.path.join(dirpath, '*.src'))
-    classes = []
-    for f in files:
-        try:
-            idents, search, album = open_script(f)
-            classes.append(Mp3TagSource(idents, search, album))
-        except:
-            traceback.print_exc()
-            continue
-    return classes
-
-
 from ..discogs import urlopen
-
-if __name__ == '__main__':
-    # text = open(sys.argv[1], 'r').read()
-    # text = open(sys.argv[1], 'r').read()
-    tagsources = load_mp3tag_sources('.')
-    albums = tagsources[2].search('Goth-Erotika')
-    tagsources[2]._get_cover = False
-    print(tagsources[2].retrieve(albums[0][0]))
-    # pdb.set_trace()
-    # import puddlestuff.tagsources
-    # encoding, text = puddlestuff.tagsources.get_encoding(text, True, 'utf8')
-
-    # #pdb.set_trace()
-    # idents, search, album = open_script(sys.argv[2])
-    # value = parse_search_page(idents['indexformat'], text, search)
-
-    # #value = parse_album_page(text, album, 'url')
-    # print value
-    # pdb.set_trace()
-    # print convert_value(value)
-    # #source = find_idents(lines)[1]
-
-    # #print parse_search(idents['indexformat'], search, text)
-    # ##text = open('d_album.htm', 'r').read()
-    # #c = Cursor(text.decode('utf8', 'replace'), source)
-    # #c.parse_page()
-    # ##print c.cache
-    # ##print c.tracks[0]
-    # #print '\n'.join('%s: %s' % z for z in c.album.items())
