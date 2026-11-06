@@ -367,15 +367,16 @@ def test_retrieve_requests_album_url_with_the_result_url_appended(folder, server
 
 def test_retrieve_gives_the_album_page_fields(folder, server):
     # The result list's fields stay and the album page's are added. The
-    # explicitness, label and currenturl are left out (the commands' tests
-    # cover them). The year is the script's: it reads releaseDate up to the
-    # next key.
+    # explicitness and currenturl are left out (the commands' tests cover
+    # them). The year is the script's: it reads releaseDate up to the next
+    # key.
     info, tracks = retrieve_itunes_album(folder, server)
 
     assert {'#cover-url': f'{server.url}/cover.jpg', 'album': 'First Light',
             'albumartist': 'Synthétique Band', 'albumsort': 'First Light',
             'artist': 'Synthétique Band', 'artistsort': 'Synthétique Band',
-            'copyright': '℗ 2001 Synthetic Records', 'tracks': '2',
+            'copyright': '℗ 2001 Synthetic Records', 'label': '℗ 2001 Synthetic Records',
+            'tracks': '2',
             'year': '2001-03-12T08:00:00Z'}.items() <= info.items()
 
 
@@ -1382,6 +1383,32 @@ def test_itunes_album_keeps_its_label(folder, server):
 
     assert info['label'] == '℗ 2001 Synthetic Records'
     assert [t for t in tracks if 'label' in t] == []
+
+
+def test_itunes_results_read_the_scripts_replacements(folder, server):
+    # The iTunes script has `replace "notExplicit" "Not Explicit"` for the
+    # explicitness of each search result.
+    server.add('/search', itunes_page(itunes_album(server)))
+
+    [(info, _)] = install_itunes(folder, server).keyword_search('First Light')
+
+    assert info['explicitness'] == 'Not Explicit'
+
+
+def test_itunes_tracks_read_the_scripts_replacements(folder, server):
+    # The iTunes script replaces `notExplicit` with `0`, `song` with `Normal`
+    # and `\"` with `&quot;`. The title with quotes is synthetic.
+    server.add('/search', itunes_page(itunes_album(server)))
+    server.add('/lookup', itunes_page(itunes_album(server), itunes_track(1, 'Say "Hi"'),
+                                      itunes_track(2, 'Dusk')))
+    source = install_itunes(folder, server)
+    source.applyPrefs([False])
+    [(result, _)] = source.keyword_search('First Light')
+
+    info, tracks = source.retrieve(result)
+
+    assert [(t['title'], t['itunesadvisory'], t['itunesmediatype']) for t in tracks] == [
+        ('Say "Hi"', '0', 'Normal'), ('Dusk', '0', 'Normal')]
 
 
 def test_set_takes_a_number(folder):
