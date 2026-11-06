@@ -52,6 +52,8 @@ AcoustID returns the same data as the :ref:`MusicBrainz tag source <musicbrainz>
 +   **acoustid_id**: The AcoustID identifier for a track as returned by the AcoustID webservice.
 +   **acoustid_fingerprint**: The calculated AcoustID fingerprint. Can be a very large value.
 
+**Submit Tags** adds the selected files to the AcoustID database: each file's fingerprint and length, with its title, artist, album, year, track and disc numbers, bitrate and MusicBrainz ids. It needs your AcoustID user key, from your account on `acoustid.org <https://acoustid.org>`_, in the tag source's **AcoustID Key** preference. A fingerprint already in **acoustid_fingerprint** is sent as it is; otherwise one is calculated. The line under the results says when the submission has finished, or what went wrong.
+
 .. _discogs:
 
 Using Discogs
