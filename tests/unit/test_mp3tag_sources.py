@@ -379,7 +379,6 @@ def test_retrieve_gives_the_album_page_fields(folder, server):
             'year': '2001-03-12T08:00:00Z'}.items() <= info.items()
 
 
-@pytest.mark.xfail(strict=True, reason='the last track comes out twice')
 def test_retrieve_gives_one_entry_per_track(folder, server):
     # Mp3tag's reference: "Mp3tag expects the output buffer to contain the
     # individual values separated and finalized by the pipe character".
@@ -1272,8 +1271,6 @@ def test_album_fields_before_the_tracks_stay_the_albums(folder):
         {'album': 'A'}, [{'title': 'Song 1'}, {'title': 'Song 2'}])
 
 
-@pytest.mark.xfail(strict=True, reason='outputs after an OutputTo "tracks" outside a loop go to '
-                                       'the album, as several values')
 def test_outputs_after_the_titles_are_per_track(folder):
     # Mp3tag's reference: "For fields that have varying contents for
     # tracks, e.g., TITLE, TRACK, or ISRC, Mp3tag expects the output buffer
@@ -1286,7 +1283,6 @@ def test_outputs_after_the_titles_are_per_track(folder):
         {'artist': 'Artist 1', 'title': 'Song 1'}, {'artist': 'Artist 2', 'title': 'Song 2'}])
 
 
-@pytest.mark.xfail(strict=True, reason='a TITLE output with pipes becomes several album titles')
 def test_title_with_pipes_gives_each_tracks_title(folder):
     # Mp3tag's reference: "For fields that have varying contents for
     # tracks, e.g., TITLE, TRACK, or ISRC, Mp3tag expects the output buffer
@@ -1298,9 +1294,6 @@ def test_title_with_pipes_gives_each_tracks_title(folder):
         {'album': 'Alb'}, [{'title': 'T1'}, {'title': 'T2'}])
 
 
-@pytest.mark.xfail(strict=True, reason="in a loop, the album's last field goes into the first "
-                                       "track, each track's last field into the next, and the "
-                                       "last track comes out twice")
 def test_loop_gives_one_track_per_pass(folder):
     # Mp3tag's reference, Do ... While: "Execute the command surrounded by
     # the two commands while S occurs on current position."; and the
@@ -1316,8 +1309,7 @@ def test_loop_gives_one_track_per_pass(folder):
 @pytest.mark.parametrize('condition, expected', [
     ('"item"', 'item 1 item 2 item 3 item 4 item 5'),
     ('"zzz"', 'item 1'),
-    pytest.param('"item" 2', 'item 1 item 2', marks=pytest.mark.xfail(
-        strict=True, reason="Do/While's limit never limits")),
+    ('"item" 2', 'item 1 item 2'),
 ])
 def test_while_repeats_while_the_text_is_there(folder, condition, expected):
     # Mp3tag's reference, Do ... While: "Execute the command surrounded by
@@ -1340,8 +1332,6 @@ def test_set_sets_or_resets_a_field(folder, parser, expected):
     assert album_fields(folder, parser) == expected
 
 
-@pytest.mark.xfail(strict=True, reason='Set on the field being output to is overwritten by '
-                                       'what was said before it')
 def test_set_replaces_the_field_being_written(folder):
     # Mp3tag's reference, Set: "Sets the content of output S to the value s."
     parser = 'outputto "album"\nsay "abc"\nset "album" "xx"'
@@ -1365,7 +1355,6 @@ def test_sayoutput_currenturl_says_the_page_address(folder, server):
     assert info['album'] == f'{server.url}/album?id=u1'
 
 
-@pytest.mark.xfail(strict=True, reason='CurrentUrl comes out as a field')
 def test_currenturl_is_not_a_field(folder, server):
     # Mp3tag's reference, SayOutput: "The output CurrentUrl is always
     # generated at runtime." It isn't something the script outputs.
@@ -1373,15 +1362,12 @@ def test_currenturl_is_not_a_field(folder, server):
         {'#url': f'{server.url}/album?id=u1', 'album': 'A'}, None)
 
 
-@pytest.mark.xfail(strict=True, reason='what a script says before any OutputTo comes out as a '
-                                       'track holding CurrentUrl, or as a field with no name')
 def test_say_before_any_outputto_makes_no_track(folder, server):
     # Docs-silent: the maintainer's choice (not a quote): text said before
     # any OutputTo has no field to go to and is dropped.
     assert retrieve(folder, server, 'say "x"') == ({'#url': f'{server.url}/album?id=u1'}, None)
 
 
-@pytest.mark.xfail(strict=True, reason='the index parser knows CurrentUrl only in that exact case')
 def test_index_parser_reads_currenturl_in_any_case(folder, server):
     # Mp3tag's reference, SayOutput: "The output CurrentUrl is always
     # generated at runtime." Output names are read in any case.
@@ -1393,7 +1379,6 @@ def test_index_parser_reads_currenturl_in_any_case(folder, server):
         ({'#url': 'u1', 'album': f'{server.url}/search?q=First+Light'}, [])]
 
 
-@pytest.mark.xfail(strict=True, reason="the album's last field goes into the first track")
 def test_itunes_album_keeps_its_label(folder, server):
     # The iTunes script outputs PUBLISHER (which puddletag calls label) as
     # the album's last field before the track loop.
@@ -1403,7 +1388,6 @@ def test_itunes_album_keeps_its_label(folder, server):
     assert [t for t in tracks if 'label' in t] == []
 
 
-@pytest.mark.xfail(strict=True, reason='Set turns a number to nothing')
 def test_set_takes_a_number(folder):
     # Mp3tag's reference, Set: "Sets the content of output S to the value
     # s. Resets the content if s is omitted." The number is synthetic.

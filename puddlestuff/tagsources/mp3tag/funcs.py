@@ -1,11 +1,8 @@
-from copy import deepcopy
-
 import re
 
 from html.parser import HTMLParser
 
 from puddlestuff.functions import replace_regex
-from puddlestuff.audioinfo import CaselessDict
 
 conditionals = set(['if', 'ifnot'])
 
@@ -20,8 +17,7 @@ def debug(cursor, flag, filename=None, maxsize=None):
 
 
 def do(cursor):
-    cursor._domodified = deepcopy(cursor.output)
-    cursor.num_loop += 1
+    """Only marks where `_while` jumps back to."""
     return
 
 
@@ -216,30 +212,8 @@ def moveline(cursor, num, exit=None):
 
 
 def outputto(cursor, text):
-    if text.lower() == 'tracks' and cursor.num_loop:
-        if cursor.output is not cursor.album:
-            cursor.tracks.append(cursor.output)
-        cursor.output = CaselessDict()
-        cursor.field = 'title'
-    elif text.lower() == 'tracks':
-        if cursor.field in cursor.output:
-            cursor.output[cursor.field] += cursor.cache
-        else:
-            cursor.output[cursor.field] = cursor.cache
-        field = cursor.field
-        cursor.cache = ''
-        cursor.tracks = {}
-        cursor.output = CaselessDict()
-        cursor.field = 'title'
-        del (cursor.output[field])
-    elif not cursor.num_loop:
-        if cursor.output is not cursor.album:
-            cursor.output = cursor.album
-        cursor.log('Outputting %s' % text)
-        cursor.field = text
-    else:
-        cursor.log('Outputting %s' % text)
-        cursor.field = text
+    cursor.log('Outputting %s' % text)
+    cursor.field = text
 
 
 def replace(cursor, s, repl):
@@ -287,26 +261,12 @@ def saynextword(cursor):
 
 
 def sayoutput(cursor, field):
-    if field.lower().strip() == 'tracks' and cursor.tracks:
-        field = 'title'
-
-    track_field = [field.lower(), cursor.field.lower()]
-    track_field = cursor.track_fields.intersection(track_field)
-    track_field = track_field or (cursor.field.lower() == 'track')
-
-    if track_field and cursor.tracks:
-        field = field.lower()
-        if field in cursor.output:
-            v = [z.strip() for z in cursor.output[field].split("|")]
-            v_len = len(v)
-        for i, t in enumerate(cursor.tracks):
-            if field in t:
-                t[cursor.field] = t.get(field)
-            elif v and i < v_len:
-                t[cursor.field] = v[i]
+    if field.lower() == 'currenturl':
+        cursor.cache += cursor.url or ''
+    elif field.lower() == cursor.field.lower():
+        cursor.cache += cursor.cache
     else:
-        v = cursor.output.get(field, '')
-        cursor.cache += v
+        cursor.cache += cursor.album.get(field, '')
 
 
 def sayregexp(cursor, rexp, separator=' ', check=None):
@@ -364,44 +324,32 @@ def sayuntilml(cursor, text):
 
 
 def _set(cursor, field, value=None):
-    if not value:
-        if field in cursor.output:
-            del (cursor.output[field])
-        elif cursor.field == field:
-            cursor.cache = ""
-    else:
-        cursor.output[field] = value if \
-            isinstance(value, str) else str(value)
+    value = '' if value is None else str(value)
+    if field in cursor.album:
+        del cursor.album[field]
+    if field.lower() == cursor.field.lower():
+        cursor.cache = value
+    elif value:
+        cursor.album[field] = value
 
 
 def _while(cursor, condition, numtimes=None):
-    cursor.num_loop -= 1
-    cursor.num_iters = 0
     nested = 0
-    if cursor.line[cursor.charno:].startswith(condition):
-        for i, (cmd, lineno, args) in enumerate(reversed(cursor.source[:cursor.cmd_index])):
-            if cmd == 'do':
-                if nested > 0:
-                    nested -= 1
-                    continue
-                if numtimes is None:
-                    cursor.next_cmd = cursor.cmd_index - i - 1
-                    return True
-                elif numtimes >= cursor.num_iters:
-                    cursor.next_cmd = cursor.cmd_index - i - 1
-                    return True
-                cursor.num_iters += 1
-            elif cmd == 'while':
-                nested += 1
-
-    if cursor.tracks == {}:
-        cursor.tracks = [{'title': z.strip()} for z in
-                         cursor.cache.split('|')]
-        cursor.track_fields.add('title')
-    elif cursor.output and cursor.tracks:
-        if cursor.output != cursor._domodified:
-            cursor.tracks.append(cursor.output)
-            list(map(cursor.track_fields.add, (z.lower() for z in cursor.output)))
+    for i, (cmd, lineno, args) in enumerate(reversed(cursor.source[:cursor.cmd_index])):
+        if cmd == 'while':
+            nested += 1
+        elif cmd == 'do':
+            if nested > 0:
+                nested -= 1
+                continue
+            do_index = cursor.cmd_index - i - 1
+            cursor.passes[do_index] = cursor.passes.get(do_index, 0) + 1
+            if (cursor.line[cursor.charno:].startswith(condition)
+                    and (numtimes is None or cursor.passes[do_index] < numtimes)):
+                cursor.next_cmd = do_index
+                return True
+            cursor.passes[do_index] = 0
+            return
 
 
 def unspace(cursor):

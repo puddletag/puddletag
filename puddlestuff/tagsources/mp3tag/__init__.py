@@ -162,24 +162,27 @@ def open_script(filename):
 
 def parse_album_page(page, album_source, url=None):
     cursor = Cursor(page, album_source)
-    if url:
-        cursor.output = CaselessDict({'CurrentUrl': url})
-        cursor.album = CaselessDict({'CurrentUrl': url})
-
+    cursor.url = url
     cursor.parse_page()
-    info = convert_dict(cursor.album)
-    if hasattr(cursor.tracks, 'items'):
-        tracks = []
-        for field, values in cursor.tracks.items():
-            values = convert_value(values)
-            if tracks:
-                for d, v in zip(tracks, values):
-                    d[field] = v
-            else:
-                tracks = [{field: v} for v in values]
-    else:
-        tracks = [_f for _f in map(convert_dict, cursor.tracks) if _f]
-    return (info, tracks)
+
+    # Text said before any OutputTo has no field to go to.
+    outputs = {k.lower(): v for k, v in cursor.album.items() if k}
+    if 'tracks' in outputs:
+        outputs['title'] = outputs.pop('tracks') + outputs.get('title', '')
+
+    info = {}
+    per_track = {}
+    for field, text in outputs.items():
+        values = [z.strip() for z in text.split('|') if z.strip()]
+        if field != 'coverurl' and (field == 'title' or len(values) > 1):
+            per_track[field] = values
+        else:
+            info[field] = text
+    info = convert_dict(info)
+
+    tracks = [{field: values[i] for field, values in per_track.items() if i < len(values)}
+              for i in range(max(map(len, per_track.values()), default=0))]
+    return (info, [_f for _f in map(convert_dict, tracks) if _f])
 
 
 def parse_func(lineno, line):
@@ -208,8 +211,7 @@ def parse_ident(line):
 def parse_search_page(indexformat, page, search_source, url=None):
     fields = [z[1:-1] for z in indexformat.split('|')]
     cursor = Cursor(page, search_source)
-    if url:
-        cursor.output = {'CurrentUrl': url}
+    cursor.url = url
     cursor.parse_page()
 
     i = 0
@@ -235,12 +237,10 @@ class Cursor(object):
         self.source = source_lines
         self.debug = False
         self._field = ''
-        self.tracks = []
         self.album = CaselessDict()
-        self.num_loop = 0
-        self.output = self.album
+        self.passes = {}
         self.stop = False
-        self.track_fields = set(['track'])
+        self.url = None
 
     @property
     def char(self):
@@ -264,8 +264,8 @@ class Cursor(object):
 
     @field.setter
     def field(self, value):
-        self.output[self._field] = self.cache
-        self.cache = self.output.get(value, '')
+        self.album[self._field] = self.cache
+        self.cache = self.album.get(value, '')
         self._field = value
 
     @property
@@ -301,18 +301,13 @@ class Cursor(object):
         elif self.debug:
             print(text)
 
-    def parse_page(self, debug=False):
+    def parse_page(self):
         self.next_cmd = 0
         self.cmd_index = 0
-        i = 1
 
-        ret = []
-        debug_info = []
-
-        i = 0
         while (not self.stop) and (self.next_cmd < len(self.source)):
 
-            self.log(str(self.output))
+            self.log(str(self.album))
             cmd, lineno, args = self.source[self.cmd_index]
 
             self.log(str(self.source[self.cmd_index]))
@@ -329,24 +324,10 @@ class Cursor(object):
             if not FUNCTIONS[cmd](self, *args):
                 self.next_cmd += 1
 
-            if debug:
-                debug_info.append(
-                    {'lineno': lineno, 'cmd': cmd, 'params': args,
-                     'output': self.cache, 'charno': self.charno,
-                     'line': self.line})
             self.cmd_index = self.next_cmd
 
-        self.output[self.field] = self.cache
-
-        if self.output is not self.album:
-            try:
-                self.tracks.append(self.output)
-            except AttributeError:
-                self.tracks.update(self.output)
+        self.album[self.field] = self.cache
         self.stop = False
-
-        if debug:
-            return debug_info
 
 
 class Mp3TagSource(object):
