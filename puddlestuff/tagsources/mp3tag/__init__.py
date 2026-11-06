@@ -276,9 +276,19 @@ class Cursor(object):
     def lineno(self, value):
         self._lineno = value
         try:
-            self.line = self.all_lines[self.lineno].strip()
+            self._line = self.all_lines[self.lineno].strip()
         except IndexError:
             self.stop = True
+
+    @property
+    def line(self):
+        return self._line
+
+    @line.setter
+    def line(self, value):
+        # Written back, so a change to the line outlasts moving the pointer.
+        self._line = value
+        self.all_lines[self.lineno] = value
 
     @property
     def lines(self):

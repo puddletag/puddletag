@@ -1012,7 +1012,6 @@ def test_replace_replaces_every_occurrence(folder):
     assert album_fields(folder, parser) == {'album': '<b>ARtist:</b> Foo BaR  YeaR: 1999 end'}
 
 
-@pytest.mark.xfail(strict=True, reason='Replace only changes the line from the pointer on')
 def test_replace_covers_the_whole_line(folder):
     # Mp3tag's reference, Replace: "Replaces all occurrences of the first
     # parameter by the second parameter." Docs-silent on the reach: the
@@ -1031,7 +1030,6 @@ def test_replace_covers_the_whole_line(folder):
                  'Artist: Foo Bar  Year: 1999 end', id='regexpreplace'),
     pytest.param('killtag "*" ""\nfindline "B"\nsayrest', TAGS, 'A B C', id='killtag'),
 ])
-@pytest.mark.xfail(strict=True, reason='a change to the line is undone when FindLine moves to a line')
 def test_changes_last_past_the_next_findline(folder, parser, page, expected):
     # Mp3tag's reference, Replace: "Replaces all occurrences of the first
     # parameter by the second parameter." RegexpReplace: "Replaces everything
@@ -1060,7 +1058,6 @@ def test_regexpreplace_replaces_matches(folder, parser, expected):
     pytest.param('killtag "b" ""\nsayrest', '<p class="c">A</p> B C', id='b'),
     pytest.param('killtag "p"\nsayrest', 'A  <b>B</b> <B>C</B>', id='p'),
 ])
-@pytest.mark.xfail(strict=True, reason='KillTag replaces only the lowercase opening tag without attributes')
 def test_killtag_replaces_the_tag(folder, parser, expected):
     # Mp3tag's reference, KillTag: "Replaces tag S with s in current line
     # (or blank if omitted)." Docs-silent on the details: the maintainer's
@@ -1087,7 +1084,6 @@ def test_unspace_strips_the_line(folder, parser):
     assert album_fields(folder, 'outputto "album"\n' + parser, TAGS) == {'album': 'padded line'}
 
 
-@pytest.mark.xfail(strict=True, reason='JoinLines N joins N-1 lines and drops the joined line')
 def test_joinlines_joins_the_next_n_lines(folder):
     # Mp3tag's reference, JoinLines: "Joins the current line with the next
     # N lines."
@@ -1102,7 +1098,6 @@ def test_joinlines_joins_the_next_n_lines(folder):
     pytest.param('findline "line four"\njoinlines -1\nsayrest', id='minus-one'),
     pytest.param('findline "line four"\njoinlines 10\nsayrest', id='too-many'),
 ])
-@pytest.mark.xfail(strict=True, reason='JoinLines puts a space between the lines and, past the page, drops every line')
 def test_joinlines_minus_one_or_too_many_joins_every_line(folder, parser):
     # Mp3tag's reference, JoinLines: "If N is -1 or exceeds input range,
     # all available lines are joined." Docs-silent on the separator: the
@@ -1418,7 +1413,6 @@ def test_set_takes_a_number(folder):
 
 
 @pytest.mark.parametrize('n', [-1, 10])
-@pytest.mark.xfail(strict=True, reason='JoinLines also joins the page end line')
 def test_joinlines_keeps_the_page_end(folder, n):
     # Mp3tag's reference, JoinLines: "If N is -1 or exceeds input range, all
     # available lines are joined."; FindLine: "If the 3rd parameter is set to 1,

@@ -145,9 +145,13 @@ def ifnot(cursor, text):
 
 
 def joinlines(cursor, num):
-    ret = cursor.lines[:num]
-    cursor.all_lines[cursor.lineno] = ''.join(ret)
-    del (cursor.all_lines[cursor.lineno: cursor.lineno + num])
+    # The page's last line is Cursor's extra end line: never join or delete it.
+    lines = cursor.lines[:-1]
+    if not lines:
+        return
+    count = len(lines) if num == -1 else min(num + 1, len(lines))
+    cursor.all_lines[cursor.lineno] = ''.join(z.strip() for z in lines[:count])
+    del (cursor.all_lines[cursor.lineno + 1: cursor.lineno + count])
     cursor.lineno = cursor.lineno
 
 
@@ -189,8 +193,8 @@ def killtag(cursor, tag, repl=' '):
         cursor.line = text
         return
     else:
-        leave, to_rep = cursor.line[:cursor.charno], cursor.line[cursor.charno:]
-        cursor.line = leave + to_rep.replace('<%s>' % tag, repl)
+        regexp = re.compile(r'</?%s(\s[^>]*)?>' % re.escape(tag), re.I)
+        cursor.line = regexp.sub(lambda m: repl, cursor.line)
 
 
 def movechar(cursor, num):
@@ -239,8 +243,7 @@ def outputto(cursor, text):
 
 
 def replace(cursor, s, repl):
-    text = cursor.line[cursor.charno:].replace(s, repl)
-    cursor.line = cursor.line[:cursor.charno] + text
+    cursor.line = cursor.line.replace(s, repl)
 
 
 def regexpreplace(cursor, regexp, s):
