@@ -82,11 +82,9 @@ def convert_for_submit(tags):
 
     ret = dict((cipher.get(k, k), v) for k, v in stringtags(tags).items()
                if cipher.get(k, k) in valid_keys and v)
-    bitrate = ret['bitrate'].split(' ')[0]
-    if bitrate == 0:
-        del (ret['bitrate'])
-    else:
-        ret['bitrate'] = str(bitrate)
+    bitrate = ret.pop('bitrate', '').split(' ')[0]
+    if bitrate not in ('', '0'):
+        ret['bitrate'] = bitrate
 
     return ret
 

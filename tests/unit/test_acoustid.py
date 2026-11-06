@@ -744,7 +744,6 @@ def test_puid_is_sent(submitter, acoustid_service, make_audio):
     assert form['puid.0'] == [MBID]
 
 
-@pytest.mark.xfail(strict=True, reason='the text 0 is compared with the number 0')
 def test_zero_bitrate_is_not_sent(submitter, acoustid_service, make_audio):
     # webservice, Submit: "bitrate of the audio file", 192: none isn't a bitrate of 0.
     path = make_audio('a.flac', acoustid_fingerprint='AQABstored')
@@ -761,7 +760,6 @@ def test_bitrate_goes_as_a_number(submitter, acoustid_service, make_audio):
     assert re.fullmatch('[1-9][0-9]*', form['bitrate.0'][0])
 
 
-@pytest.mark.xfail(strict=True, reason='convert_for_submit reads a bitrate that may not be there')
 def test_file_without_a_bitrate_is_sent(submitter, acoustid_service, make_audio):
     # webservice, Submit: bitrate.# is optional. Synthetic: every format
     # audioinfo reads has a bitrate, so this tag is a plain dict.
