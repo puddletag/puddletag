@@ -110,9 +110,12 @@ def fingerprint_file(fn):
 
 
 def id_in_tag(tag):
-    # Older versions wrote a fingerprint as one value a byte.
-    if 'acoustid_fingerprint' in tag and len(tag['acoustid_fingerprint']) == 1:
-        fp = to_string(tag['acoustid_fingerprint'])
+    # Older versions wrote a fingerprint as one value a byte. Picard's field
+    # reads as Acoustid Fingerprint in an MP3.
+    for field in ('acoustid_fingerprint', 'Acoustid Fingerprint'):
+        if field in tag and len(tag[field]) == 1:
+            fp = to_string(tag[field])
+            break
     else:
         return
 
@@ -121,7 +124,10 @@ def id_in_tag(tag):
     else:
         return
 
-    return (duration, fp)
+    # A format whose length puddletag can't read shows 00:00, and the service
+    # refuses a length of 0.
+    if duration:
+        return (duration, fp)
 
 
 def match(apikey, path, fp=None, dur=None, meta='releases recordings tracks'):

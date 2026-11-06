@@ -851,7 +851,6 @@ def mp3_with_picards_fingerprint(make_audio):
     return path
 
 
-@pytest.mark.xfail(strict=True, reason="Picard's field name isn't read")
 def test_picards_fingerprint_is_read(submitter, fpcalc, acoustid_service, make_audio):
     # Picard's tag mapping: AcoustID Fingerprint, ID3v2 TXXX:Acoustid Fingerprint.
     path = mp3_with_picards_fingerprint(make_audio)
@@ -861,7 +860,6 @@ def test_picards_fingerprint_is_read(submitter, fpcalc, acoustid_service, make_a
     assert form['fingerprint.0'] == ['AQABpicard']
 
 
-@pytest.mark.xfail(strict=True, reason="Picard's field name isn't read")
 def test_picards_fingerprint_is_read_by_a_search(source, fpcalc, acoustid_service, make_audio):
     # Picard's tag mapping: AcoustID Fingerprint, ID3v2 TXXX:Acoustid Fingerprint.
     path = mp3_with_picards_fingerprint(make_audio)
@@ -870,7 +868,6 @@ def test_picards_fingerprint_is_read_by_a_search(source, fpcalc, acoustid_servic
     assert lookups(acoustid_service)[0]['fingerprint'] == ['AQABpicard']
 
 
-@pytest.mark.xfail(strict=True, reason="a length puddletag can't read goes to the service as 0")
 @pytest.mark.parametrize('name', ['a.apl', 'a.tta'])
 def test_fingerprint_without_a_length_is_calculated_again(submitter, fpcalc, acoustid_service,
                                                           make_audio, name):
@@ -886,7 +883,6 @@ def test_fingerprint_without_a_length_is_calculated_again(submitter, fpcalc, aco
     assert form['fingerprint.0'] == ['AQABsynthetic']
 
 
-@pytest.mark.xfail(strict=True, reason="a length puddletag can't read goes to the service as 0")
 def test_search_calculates_a_fingerprint_without_a_length(source, fpcalc, acoustid_service,
                                                           make_audio):
     # acoustid.org/webservice, Submit: "duration of the whole audio file in
