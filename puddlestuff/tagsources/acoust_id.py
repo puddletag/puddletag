@@ -20,6 +20,7 @@ FP_ERROR_MSG = translate('AcoustID', "Error generating fingerprint: {}")
 WEB_ERROR_MSG = translate('AcoustID', "Error retrieving data: {}")
 SUBMIT_ERROR_MSG = translate('AcoustID', "Error submitting data: {}")
 SUBMIT_MSG = translate('AcoustID', "Submitting data to AcoustID: {} to {} of {}.")
+NOTHING_SENT_MSG = translate('AcoustID', "No files were submitted.")
 FOUND_ID_MSG = translate('AcoustID', "Found AcoustID in file.")
 FILE_MSG = translate('AcoustID', "File #{}: {}")
 
@@ -329,6 +330,8 @@ class AcoustID(object):
 
         fns_len = len(fns)
         data = []
+        numbers = []
+        sent = False
         for i, fn in enumerate(fns):
 
             try:
@@ -345,31 +348,43 @@ class AcoustID(object):
                 else:
                     write_log(CALCULATE_MSG)
                     dur, fp = fingerprint_file(fn.filepath)
-
-                info = {
-                    'duration': str(dur),
-                    'fingerprint': str(fp),
-                }
-
-                info.update(convert_for_submit(fn))
-                data.append(info)
-
-                if len(data) > 9 or i == fns_len - 1:
-                    msg = SUBMIT_MSG.format(i - len(data) + 2, i + 1, fns_len)
-                    write_log(msg)
-                    set_status(msg)
-                    acoustid.submit(API_KEY, self.__user_key, data)
-                    data = []
-
             except acoustid.FingerprintGenerationError as e:
                 traceback.print_exc()
                 write_log(FP_ERROR_MSG.format(str(e)))
                 continue
-            except acoustid.WebServiceError as e:
-                traceback.print_exc()
-                set_status(SUBMIT_ERROR_MSG.format(str(e)))
-                write_log(SUBMIT_ERROR_MSG.format(str(e)))
-                break
+
+            info = {
+                'duration': str(int(dur)),
+                'fingerprint': str(fp),
+            }
+
+            info.update(convert_for_submit(fn))
+            data.append(info)
+            numbers.append(i + 1)
+
+            if len(data) > 9:
+                self.__send(data, numbers, fns_len)
+                sent = True
+                data, numbers = [], []
+
+        if data:
+            self.__send(data, numbers, fns_len)
+            sent = True
+
+        if not sent:
+            return NOTHING_SENT_MSG
+
+    def __send(self, data, numbers, total):
+        msg = SUBMIT_MSG.format(numbers[0], numbers[-1], total)
+        write_log(msg)
+        set_status(msg)
+        try:
+            acoustid.submit(API_KEY, self.__user_key, data, timeout=tagsources.TIMEOUT)
+        except acoustid.WebServiceError as e:
+            traceback.print_exc()
+            message = SUBMIT_ERROR_MSG.format(str(e))
+            write_log(message)
+            raise SubmissionError(message)
 
     def retrieve(self, info):
         return None

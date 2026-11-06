@@ -2123,7 +2123,6 @@ def test_acoustid_submit_without_a_key_asks_for_it(acoustid_listed, mainwin, mak
     assert sent(acoustid_listed) == []
 
 
-@pytest.mark.xfail(strict=True, reason="the length goes as the text '42.0', which pyacoustid's int() refuses")
 def test_acoustid_submit_sends_the_typed_key(acoustid_listed, mainwin, make_audio, tmp_path, qtbot, user):
     # The docs don't say. Synthetic: one MP3 titled One.
     acoustid_listed.add(SUBMIT, SUBMITTED, content_type='application/json')
@@ -2138,7 +2137,6 @@ def test_acoustid_submit_sends_the_typed_key(acoustid_listed, mainwin, make_audi
     assert in_file(paths[0])['title'] == ['One']
 
 
-@pytest.mark.xfail(strict=True, reason="the length goes as the text '42.0', which pyacoustid's int() refuses")
 def test_acoustid_refusal_is_shown(acoustid_listed, mainwin, make_audio, tmp_path, qtbot, user):
     # The docs don't say; this is what a user should see.
     acoustid_listed.add(SUBMIT, SUBMIT_ERROR, status=400, content_type='application/json')
@@ -2149,7 +2147,6 @@ def test_acoustid_refusal_is_shown(acoustid_listed, mainwin, make_audio, tmp_pat
     assert f'Error submitting data: {REFUSAL}' in logs_text()
 
 
-@pytest.mark.xfail(strict=True, reason='a submit that sent nothing reports that it completed')
 def test_acoustid_submit_that_sends_nothing_says_so(acoustid_listed, fpcalc, mainwin, make_audio, tmp_path, qtbot,
                                                     user):
     # The docs don't say; the maintainer's call.

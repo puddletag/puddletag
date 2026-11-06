@@ -579,8 +579,6 @@ def test_submits_wait_between_requests(submitter, acoustid_clock, make_audio):
 
 
 @pytest.mark.parametrize(('duration', 'sent'), [(42, '42'), (42.9, '42')])
-@pytest.mark.xfail(strict=True, reason="the length goes as the text '42.0', which pyacoustid's "
-                                       "int() refuses")
 def test_computed_fingerprint_is_submitted(submitter, fpcalc, acoustid_service, log, make_audio,
                                            duration, sent):
     # acoustid.org/webservice, Submit: "duration": "duration of the whole audio
@@ -609,8 +607,6 @@ def test_fingerprint_in_the_file_is_submitted_without_fpcalc(submitter, fpcalc, 
     assert 'Found AcoustID in file.' in log
 
 
-@pytest.mark.xfail(strict=True, reason="the length goes as the text '42.0', which pyacoustid's "
-                                       "int() refuses")
 def test_fingerprint_goes_as_plain_text(submitter, fpcalc, acoustid_service, make_audio):
     # acoustid.org/webservice, Submit: "fingerprint": "audio fingerprint data",
     # as in AQABz0qUkZ...
@@ -621,7 +617,6 @@ def test_fingerprint_goes_as_plain_text(submitter, fpcalc, acoustid_service, mak
     assert form['fingerprint.0'] == ['AQAB-_synthetic']
 
 
-@pytest.mark.xfail(strict=True, reason='files waiting are sent only when the last file succeeds')
 def test_files_before_a_failed_last_file_are_sent(submitter, fpcalc, acoustid_service, log,
                                                   make_audio):
     # The docs don't say.
@@ -637,8 +632,6 @@ def test_files_before_a_failed_last_file_are_sent(submitter, fpcalc, acoustid_se
     assert 'Error generating fingerprint: fpcalc exited with status 2' in log
 
 
-@pytest.mark.xfail(strict=True, reason='the first number counts back from the last file by the '
-                                       'files waiting')
 def test_file_fpcalc_cant_read_leaves_the_others(submitter, fpcalc, acoustid_service, log,
                                                  make_audio):
     # The docs don't say.
@@ -656,8 +649,6 @@ def test_file_fpcalc_cant_read_leaves_the_others(submitter, fpcalc, acoustid_ser
 @pytest.mark.parametrize(('body', 'status', 'message'), [
     (SUBMIT_ERROR, 400, REFUSAL), ('not json', 500, 'response is not valid JSON')],
     ids=['refused', 'unreadable'])
-@pytest.mark.xfail(strict=True, reason='the error is only logged, so the window says the submit '
-                                       'completed')
 def test_refusal_stops_the_submit(submitter, acoustid_service, log, make_audio, body, status,
                                   message):
     # The docs don't say. Like the search's first error, which is raised.
@@ -670,8 +661,6 @@ def test_refusal_stops_the_submit(submitter, acoustid_service, log, make_audio, 
     assert str(error.value) in log
 
 
-@pytest.mark.xfail(strict=True, reason='the error is only logged, so the window says the submit '
-                                       'completed')
 def test_refusal_of_a_later_request_keeps_the_first(submitter, acoustid_service, log, make_audio):
     # The docs don't say.
     paths = [make_audio(f'{n}.flac', acoustid_fingerprint=f'AQAB{n}') for n in range(11)]
@@ -682,8 +671,6 @@ def test_refusal_of_a_later_request_keeps_the_first(submitter, acoustid_service,
     assert len(submissions(acoustid_service)) == 2
 
 
-@pytest.mark.xfail(strict=True, reason='the error is only logged, so the window says the submit '
-                                       'completed')
 def test_dropped_connection_stops_the_submit(submitter, closed_server, log, make_audio):
     # The docs don't say. A refused connection takes the same branch as a
     # dropped one.
@@ -694,7 +681,6 @@ def test_dropped_connection_stops_the_submit(submitter, closed_server, log, make
 
 
 @pytest.mark.timeout(10)
-@pytest.mark.xfail(strict=True, reason='acoustid.submit is called without a timeout')
 def test_submit_gives_up_on_a_silent_server(submitter, silent_server, monkeypatch, make_audio):
     # The docs don't say; every other source's request has this timeout.
     path = make_audio('a.flac', acoustid_fingerprint='AQABstored')
@@ -704,7 +690,6 @@ def test_submit_gives_up_on_a_silent_server(submitter, silent_server, monkeypatc
         submitter.submit(tags(path))
 
 
-@pytest.mark.xfail(strict=True, reason='a submit that sent nothing reports that it completed')
 def test_nothing_to_send_says_so(submitter, fpcalc, acoustid_service, make_audio):
     # The docs don't say; the maintainer's call. Nothing selected, then a file
     # fpcalc can't read.

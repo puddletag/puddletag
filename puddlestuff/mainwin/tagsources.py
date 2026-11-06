@@ -905,7 +905,7 @@ class MainWin(QWidget):
 
         def submit():
             try:
-                self.curSource.submit(files)
+                message = self.curSource.submit(files)
             except SubmissionError as e:
                 traceback.print_exc()
                 return translate("Tag Sources",
@@ -915,7 +915,7 @@ class MainWin(QWidget):
                 return translate("Tag Sources",
                                  "An unhandled error occurred: {}").format(str(e))
 
-            return translate("Tag Sources", "Submission completed.")
+            return message or translate("Tag Sources", "Submission completed.")
 
         t = PuddleThread(submit, self)
         t.threadfinished.connect(end)
