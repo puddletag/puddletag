@@ -2,7 +2,7 @@
 and runs them. tagsources.txt says where they go and how they're
 listed; Mp3tag's reference (docs.mp3tag.de/tag-sources/development/)
 defines their header keys and commands. Every script here is synthetic
-except jonaaa20's iTunes script (tests/data/mp3tag/, Apache-2.0); every
+except the iTunes script in tests/data/mp3tag/ (Apache-2.0); every
 page is synthetic, in the layout of the service its script was written for.
 """
 import json
@@ -158,6 +158,11 @@ INCLUDE_HEADER = {'Include': 'Synthetic Web.inc', 'IndexUrl': 'https://example.o
                  'no [Name] line', id='no-name'),
     pytest.param(script({**HEADER, 'Name': 'Synthétique'}), 'latin-1', 'not UTF-8 text', id='not-utf-8'),
     pytest.param('# A comment\n', 'utf-8', 'no [Name] line', id='only-comments'),
+    pytest.param(script({**HEADER, **INDEX_HEADER}, index='sayrest\nSkipChars " "\n'), 'utf-8',
+                 "line 8 uses a command puddletag doesn't have: SkipChars",
+                 id='unknown-command', marks=pytest.mark.xfail(
+                     strict=True, raises=AssertionError,
+                     reason="a command puddletag doesn't have is found only when the page is parsed, as a KeyError")),
 ])
 def test_script_that_cannot_load_logs_why(folder, caplog, text, encoding, reason):
     # Mp3tag's reference lists the header keys; a script without the ones it
@@ -243,7 +248,7 @@ def local_header(server, **keys):
 
 
 def install_itunes(folder, server):
-    """jonaaa20's iTunes script as a user installs it, with its iTunes
+    """The iTunes script as a user installs it, with its iTunes
     address replaced by the local server's."""
     text = ITUNES.read_bytes().replace(b'https://itunes.apple.com', server.url.encode())
     (folder / ITUNES.name).write_bytes(text)
@@ -253,7 +258,7 @@ def install_itunes(folder, server):
 
 def itunes_page(*results):
     """An answer in the iTunes Search API's layout, one result per line, as
-    jonaaa20's script reads it."""
+    the iTunes script reads it."""
     lines = ', \n'.join(json.dumps(r, ensure_ascii=False, separators=(', ', ':')) for r in results)
     return f'\n\n\n{{\n "resultCount":{len(results)},\n "results": [\n{lines}]\n}}\n\n\n'
 
@@ -321,7 +326,7 @@ def retrieve_itunes_album(folder, server, covers=False):
 def test_search_box_search_requests_index_url(folder, server):
     # Mp3tag's reference: [IndexUrl] "Search URL where %s is replaced by the
     # search criteria entered by the user"; [WordSeparator] "Character/string
-    # used instead of blanks within the search criteria". jonaaa20's script
+    # used instead of blanks within the search criteria". The iTunes script
     # sets "+".
     server.add('/search', itunes_page(itunes_album(server)))
 
@@ -706,3 +711,740 @@ def test_cover_that_cannot_be_downloaded_leaves_the_album(folder, server, monkey
     assert info['album'] == 'First Light'
     assert '__image' not in info
     assert "Couldn't retrieve the cover: HTTP Error 404: Not Found" in lines
+
+
+# The parser commands, each against Mp3tag's reference
+# (docs.mp3tag.de/tag-sources/development/). Every page is synthetic.
+
+PAGE = ('line one\n'
+        '<b>Artist:</b> Foo Bar  Year: 1999 end\n'
+        'line three <i>x</i> tail\n'
+        'line four\n'
+        'line five')
+
+
+def parse_album(folder, parser, page=PAGE):
+    """The album's fields and its tracks, as the script's album parser
+    `parser` reads them from `page` for Retrieve."""
+    source = load_one(folder, script(album=parser))
+    return mp3tag.parse_album_page(page, source.album_source)
+
+
+def album_fields(folder, parser, page=PAGE):
+    return parse_album(folder, parser, page)[0]
+
+
+def test_say_sends_its_text(folder):
+    # Mp3tag's reference: "Send S to output"
+    parser = 'outputto "album"\nsay "hi"\nsay "!"\n'
+
+    assert album_fields(folder, parser) == {'album': 'hi!'}
+
+
+def test_sayrest_says_the_rest_of_the_line(folder):
+    # Mp3tag's reference: "Send everything to the end of the current line to output"
+    parser = 'outputto "album"\nfindline "three"\nsayrest\n'
+
+    assert album_fields(folder, parser) == {'album': 'line three <i>x</i> tail'}
+
+
+@pytest.mark.xfail(strict=True, reason="SayRest leaves the pointer on the line's last character, so the next Say command says it again")
+def test_second_sayrest_says_nothing_more(folder):
+    # Docs-silent: the maintainer's choice (not a quote): after SayRest the
+    # pointer is past the line's end, so the next Say command says nothing.
+    parser = 'outputto "album"\nsayrest\nsayrest\n'
+
+    assert album_fields(folder, parser) == {'album': 'line one'}
+
+
+@pytest.mark.parametrize('parser, expected', [
+    ('findline "Artist"\nfindinline "</b>"\nsayuntil "Year"\n',
+     {'album': 'Foo Bar'}),
+    ('findline "Artist"\nsayuntil "Foo"\noutputto "artist"\nsayrest\n',
+     {'album': '<b>Artist:</b>', 'artist': 'Foo Bar  Year: 1999 end'}),
+])
+def test_sayuntil_says_up_to_the_text(folder, parser, expected):
+    # Mp3tag's reference: "Send everything until S to output". Docs-silent
+    # for the pointer, the maintainer's choice (not a quote): it stays on S.
+    assert album_fields(folder, 'outputto "album"\n' + parser) == expected
+
+
+@pytest.mark.xfail(strict=True, reason="SayUntil without the text leaves the pointer on the line's last character, so the next Say command says it again")
+def test_sayuntil_without_the_text_says_the_rest(folder):
+    # Docs-silent: the maintainer's choice (not a quote): the rest of the
+    # line is said and the pointer is past its end.
+    parser = 'outputto "album"\nsayuntil "zzz"\nsayrest\n'
+
+    assert album_fields(folder, parser) == {'album': 'line one'}
+
+
+@pytest.mark.xfail(strict=True, reason="SayNChars says one character fewer, leaving out the first")
+@pytest.mark.parametrize('parser, expected', [
+    ('findline "three"\nsaynchars 4\noutputto "artist"\nsayrest\n',
+     {'album': 'line', 'artist': 'three <i>x</i> tail'}),
+    ('findline "Artist"\ngotochar 4\nsaynchars 6\n',
+     {'album': 'Artist'}),
+])
+def test_saynchars_says_n_characters(folder, parser, expected):
+    # Mp3tag's reference: "Send next N characters to output"
+    assert album_fields(folder, 'outputto "album"\n' + parser) == expected
+
+
+@pytest.mark.parametrize('parser, expected', [
+    ('findline "Year:"\nfindinline "Year:"\nsaynextnumber\n',
+     {'album': '1999'}),
+    ('findline "Artist"\nfindinline "</b>"\nsaynextword\n',
+     {'album': 'Foo'}),
+])
+def test_saynext_says_the_next_number_or_word(folder, parser, expected):
+    # Mp3tag's reference: "Outputs the next numeric value from the input."
+    # and "Outputs the next word from the input."
+    assert album_fields(folder, 'outputto "album"\n' + parser) == expected
+
+
+@pytest.mark.xfail(strict=True, reason="SayNextNumber and SayNextWord move the pointer by the length of what they say, not past it")
+@pytest.mark.parametrize('parser, expected', [
+    ('findline "Year:"\nsaynextnumber\noutputto "artist"\nsayrest\n',
+     {'album': '1999', 'artist': 'end'}),
+    ('findline "Artist"\nfindinline "</b>"\nsaynextword\noutputto "artist"\nsayrest\n',
+     {'album': 'Foo', 'artist': 'Bar  Year: 1999 end'}),
+])
+def test_saynext_moves_past_what_it_says(folder, parser, expected):
+    # Docs-silent: the maintainer's choice (not a quote): the pointer is
+    # left just past the number or word said.
+    assert album_fields(folder, 'outputto "album"\n' + parser) == expected
+
+
+@pytest.mark.xfail(strict=True, raises=AttributeError, reason="SayNextWord raises when the rest of the line has no word")
+def test_saynextword_without_a_word_says_nothing(folder):
+    # Docs-silent: the maintainer's choice (not a quote): with nothing to
+    # say, nothing is said and the script goes on.
+    parser = ('outputto "album"\nfindline "line four"\nfindinline "four"\n'
+              'saynextword\nsay "!"\n')
+
+    assert album_fields(folder, parser) == {'album': '!'}
+
+
+def test_saynewline_starts_a_new_line(folder):
+    # Mp3tag's reference: "Outputs a carriage return, line feed (CR LF)
+    # sequence." The maintainer's choice (not a quote): puddletag says "\n".
+    parser = 'outputto "album"\nsay "a"\nsaynewline\nsay "b"\n'
+
+    assert album_fields(folder, parser) == {'album': 'a\nb'}
+
+
+def test_saynewline_separates_search_results(folder):
+    # Mp3tag's reference, [IndexFormat]: "Format string for splitting the
+    # output buffer from the first search pass into different fields".
+    # The iTunes script's index parser ends each result with SayNewline.
+    source = load_one(folder, script({**HEADER, **INDEX_HEADER}, index='say "u1|First"\nsaynewline\nsay "u2|Second"\n'))
+
+    results = mp3tag.parse_search_page(source.indexformat, PAGE, source.search_source)
+
+    assert results == [{'#url': 'u1', 'album': 'First'},
+                       {'#url': 'u2', 'album': 'Second'}]
+
+
+@pytest.mark.xfail(strict=True, reason="SayRegexp without a separator says only the first match")
+def test_sayregexp_says_every_match_separated_by_a_space(folder):
+    # Mp3tag's reference: "Outputs all matches of the regular expression in
+    # the first parameter separated by the string in the second parameter,
+    # which defaults to the space character."
+    parser = 'outputto "album"\nfindline "Artist"\nsayregexp "[A-Z][a-z]+"\n'
+
+    assert album_fields(folder, parser) == {'album': 'Artist Foo Bar Year'}
+
+
+@pytest.mark.parametrize('arguments, expected', [
+    ('", "', {'album': 'Artist, Foo, Bar, Year'}),
+    ('"," "Year"', {'album': 'Artist,Foo,Bar'}),
+    ('"," "zzz"', {}),
+])
+def test_sayregexp_with_separator_and_end(folder, arguments, expected):
+    # Mp3tag's reference: "If the third parameter is provided, the match is
+    # only performed till the third parameter content is reached. If the
+    # third parameter content cannot be found, the line is ignored."
+    parser = f'outputto "album"\nfindline "Artist"\nsayregexp "[A-Z][a-z]+" {arguments}\n'
+
+    assert album_fields(folder, parser) == expected
+
+
+@pytest.mark.xfail(strict=True, raises=AttributeError, reason="SayRegexp without a separator raises when nothing matches")
+def test_sayregexp_without_a_match_says_nothing(folder):
+    # Docs-silent: the maintainer's choice (not a quote): with no match,
+    # nothing is said and the script goes on.
+    parser = 'outputto "album"\nfindline "Artist"\nsayregexp "[0-9]{5}"\nsay "!"\n'
+
+    assert album_fields(folder, parser) == {'album': '!'}
+
+
+@pytest.mark.xfail(strict=True, reason="SayUntilML keeps the space puddletag adds at each line's end")
+def test_sayuntilml_says_across_lines(folder):
+    # Mp3tag's reference: "Send everything until S to output searching
+    # across multiple lines". Docs-silent for the joins, the maintainer's
+    # choice (not a quote): the lines are joined with "\n", each stripped.
+    parser = 'outputto "album"\nfindline "three"\nsayuntilml "five"\n'
+
+    assert album_fields(folder, parser) == {'album': 'line three <i>x</i> tail\nline four\nline'}
+
+
+@pytest.mark.xfail(strict=True, reason="SayUntilML leaves the pointer one character past the text's position in the line")
+def test_sayuntilml_leaves_the_pointer_on_the_text(folder):
+    # Docs-silent: the maintainer's choice (not a quote): as SayUntil, the
+    # pointer stays on S.
+    parser = ('outputto "album"\nfindline "three"\nfindinline "three"\n'
+              'sayuntilml "four"\noutputto "artist"\nsayrest\n')
+
+    assert album_fields(folder, parser) == {'album': '<i>x</i> tail\nline', 'artist': 'four'}
+
+
+@pytest.mark.parametrize('commands, expected', [
+    # Mp3tag's reference, FindLine: "Find line with first or Nth occurrence
+    # of S (starting from the current position)."
+    ('findline "four"\nsayrest', {'album': 'line four'}),
+    ('findline "line" 3\nsayrest', {'album': 'line four'}),
+    # Docs-silent: the maintainer's choice (not a quote): the current line
+    # counts as the first occurrence (the iTunes script's loop relies on it).
+    ('findline "line four"\nfindline "line"\nsayrest', {'album': 'line four'}),
+    # Docs-silent: the maintainer's choice (not a quote): a negative N
+    # searches upwards from the line above.
+    ('findline "line five"\nfindline "line" -2\nsayrest',
+     {'album': 'line three <i>x</i> tail'}),
+    # Mp3tag's reference, FindLineNoCase: the same "(ignoring case and
+    # starting from the current position)".
+    ('findlinenocase "LINE FOUR"\nsayrest', {'album': 'line four'}),
+], ids=['first', 'nth', 'current-line', 'upwards', 'nocase'])
+def test_findline_finds_the_line(folder, commands, expected):
+    assert album_fields(folder, 'outputto "album"\n' + commands) == expected
+
+
+@pytest.mark.xfail(strict=True, reason="a FindLine, FindLineNoCase or FindInLine that finds nothing doesn't stop the script")
+@pytest.mark.parametrize('commands', [
+    'say "before"\nfindline "zzz"\noutputto "artist"\nsay "after"',
+    'say "before"\nfindlinenocase "ZZZ"\noutputto "artist"\nsay "after"',
+    'say "before"\nfindline "Artist"\nfindinline "zzz"\noutputto "artist"\nsay "after"',
+], ids=['findline', 'findlinenocase', 'findinline'])
+def test_find_that_finds_nothing_stops_the_script(folder, commands):
+    # Mp3tag's reference, FindLine: "If the 3rd parameter is set to 1, no
+    # error is produced if S is not found", so without it, not finding S is
+    # an error. Docs-silent: the maintainer's choice (not a quote): the
+    # script stops there and keeps what it output so far.
+    assert album_fields(folder, 'outputto "album"\n' + commands) == {'album': 'before'}
+
+
+def test_findline_told_not_to_fail_goes_on(folder):
+    # Mp3tag's reference, FindLine: "If the 3rd parameter is set to 1, no
+    # error is produced if S is not found." Docs-silent: the maintainer's
+    # choice (not a quote): the pointer goes to the page's end.
+    commands = 'findline "zzz" 1 1\nsayrest\noutputto "artist"\nsay "after"'
+
+    assert album_fields(folder, 'outputto "album"\n' + commands) == {'artist': 'after'}
+
+
+@pytest.mark.xfail(strict=True, reason="a FindInLine that finds nothing leaves the pointer on the line's last character")
+def test_findinline_told_not_to_fail_goes_to_the_line_end(folder):
+    # Mp3tag's reference, FindInLine: "If the 3rd parameter is set to 1, no
+    # error is produced if S is not found." Docs-silent: the maintainer's
+    # choice (not a quote): the pointer goes to the line's end, so SayRest
+    # says nothing.
+    commands = ('findline "Artist"\nfindinline "zzz" 1 1\nsayrest\n'
+                'outputto "artist"\nsay "after"')
+
+    assert album_fields(folder, 'outputto "album"\n' + commands) == {'artist': 'after'}
+
+
+@pytest.mark.xfail(strict=True, reason="FindLineNoCase reads the lines as they were before JoinUntil joined them")
+def test_findlinenocase_sees_joined_lines(folder):
+    # Mp3tag's reference, FindLineNoCase: "(ignoring case and starting from
+    # the current position)", and JoinUntil: "Joins the current line to the
+    # next occurrence of S." So "line four" is read after the join.
+    commands = ('findline "line one"\njoinuntil "three"\n'
+                'findlinenocase "LINE FOUR"\nsayrest')
+
+    assert album_fields(folder, 'outputto "album"\n' + commands) == {'album': 'line four'}
+
+
+@pytest.mark.parametrize('commands, expected', [
+    # Mp3tag's reference: "FindInLine ... looks within the current line
+    # where the pointer is and positions it after the found text".
+    ('findline "Artist"\nfindinline "</b>"\nsayrest', {'album': 'Foo Bar  Year: 1999 end'}),
+    # Mp3tag's reference, FindInLine: "Find the next/Nth occurrence of S
+    # within the current line."
+    ('findline "Artist"\nfindinline "a" 2\nsayrest', {'album': 'r: 1999 end'}),
+], ids=['first', 'nth'])
+def test_findinline_goes_past_the_text(folder, commands, expected):
+    assert album_fields(folder, 'outputto "album"\n' + commands) == expected
+
+
+@pytest.mark.xfail(strict=True, reason="GotoLine N also moves to character N")
+def test_gotoline_goes_to_the_lines_first_character(folder):
+    # Mp3tag's reference, GotoLine: "Go to Nth line (counting from top)",
+    # and: "In all cases the pointer would be moved to the first character
+    # of the target line."
+    assert album_fields(folder, 'outputto "album"\ngotoline 4\nsayrest') == {'album': 'line four'}
+
+
+@pytest.mark.parametrize('commands, expected', [
+    # Mp3tag's reference, MoveLine: "Move down/up N lines (starting from
+    # current position)."
+    ('moveline 2\nsayrest', {'album': 'line three <i>x</i> tail'}),
+    ('findline "four"\nmoveline -1\nsayrest', {'album': 'line three <i>x</i> tail'}),
+    # Mp3tag's reference, GotoChar: "Skip to the Nth character in the
+    # current line". MoveChar: "Move right/left N characters".
+    ('findline "Artist"\ngotochar 4\nsayrest', {'album': 'Artist:</b> Foo Bar  Year: 1999 end'}),
+    ('findline "Artist"\nmovechar 3\nsayrest', {'album': 'Artist:</b> Foo Bar  Year: 1999 end'}),
+    ('findline "Artist"\nfindinline "Foo"\nmovechar -3\nsayrest', {'album': 'Foo Bar  Year: 1999 end'}),
+], ids=['moveline-down', 'moveline-up', 'gotochar', 'movechar', 'movechar-left'])
+def test_pointer_moves(folder, commands, expected):
+    assert album_fields(folder, 'outputto "album"\n' + commands) == expected
+
+
+@pytest.mark.parametrize('commands', [
+    'say "before"\nmoveline 10\noutputto "artist"\nsay "after"',
+    pytest.param('say "before"\nmoveline -1\noutputto "artist"\nsay "after"',
+                 marks=pytest.mark.xfail(strict=True, reason="a MoveLine above the first line wraps round to the page's end")),
+], ids=['past-the-end', 'above-the-first'])
+def test_moveline_out_of_the_page_stops_the_script(folder, commands):
+    # Docs-silent: the maintainer's choice (not a quote): a MoveLine that
+    # leaves the page stops the script and keeps what it output so far.
+    assert album_fields(folder, 'outputto "album"\n' + commands) == {'album': 'before'}
+
+
+@pytest.mark.xfail(strict=True, reason="MoveLine's second parameter doesn't keep the script going")
+def test_moveline_told_to_ignore_errors_goes_on(folder):
+    # Mp3tag's reference, MoveLine: "If the second parameter is set to 1,
+    # possible errors are ignored."
+    commands = 'say "before"\nmoveline 10 1\noutputto "artist"\nsay "after"'
+
+    assert album_fields(folder, 'outputto "album"\n' + commands) == {'album': 'before', 'artist': 'after'}
+
+
+TAGS = '<p class="c">A</p> <b>B</b> <B>C</B>\n   padded line   '
+
+
+def test_replace_replaces_every_occurrence(folder):
+    # Mp3tag's reference, Replace: "Replaces all occurrences of the first
+    # parameter by the second parameter."
+    parser = 'outputto "album"\nfindline "Artist"\nreplace "r" "R"\nsayrest'
+
+    assert album_fields(folder, parser) == {'album': '<b>ARtist:</b> Foo BaR  YeaR: 1999 end'}
+
+
+@pytest.mark.xfail(strict=True, reason='Replace only changes the line from the pointer on')
+def test_replace_covers_the_whole_line(folder):
+    # Mp3tag's reference, Replace: "Replaces all occurrences of the first
+    # parameter by the second parameter." Docs-silent on the reach: the
+    # maintainer's choice (not a quote): the whole current line, as
+    # RegexpReplace.
+    parser = ('findline "Artist"\nfindinline "Bar"\nreplace "r" "R"\ngotochar 1\n'
+              'outputto "album"\nsayrest')
+
+    assert album_fields(folder, parser) == {'album': '<b>ARtist:</b> Foo BaR  YeaR: 1999 end'}
+
+
+@pytest.mark.parametrize('parser, page, expected', [
+    pytest.param('findline "Artist"\nreplace "Foo" "Baz"\nfindline "Artist"\nsayrest', PAGE,
+                 '<b>Artist:</b> Baz Bar  Year: 1999 end', id='replace'),
+    pytest.param('findline "Artist"\nregexpreplace "<[^>]+>" ""\nfindline "Artist"\nsayrest', PAGE,
+                 'Artist: Foo Bar  Year: 1999 end', id='regexpreplace'),
+    pytest.param('killtag "*" ""\nfindline "B"\nsayrest', TAGS, 'A B C', id='killtag'),
+])
+@pytest.mark.xfail(strict=True, reason='a change to the line is undone when FindLine moves to a line')
+def test_changes_last_past_the_next_findline(folder, parser, page, expected):
+    # Mp3tag's reference, Replace: "Replaces all occurrences of the first
+    # parameter by the second parameter." RegexpReplace: "Replaces everything
+    # that is matched by the regular expression in the first parameter by
+    # the string in the second parameter." KillTag: "Replaces tag S with s
+    # in current line (or blank if omitted)." A replaced line stays replaced
+    # when the script looks at it again.
+    assert album_fields(folder, 'outputto "album"\n' + parser, page) == {'album': expected}
+
+
+@pytest.mark.parametrize('parser, expected', [
+    pytest.param('findline "Artist"\nregexpreplace "<[^>]+>" ""\nsayrest',
+                 'Artist: Foo Bar  Year: 1999 end', id='tags'),
+    pytest.param('findline "Year"\nregexpreplace "(\\d+)" "[$1]"\nsayrest',
+                 '<b>Artist:</b> Foo Bar  Year: [1999] end', id='group'),
+])
+def test_regexpreplace_replaces_matches(folder, parser, expected):
+    # Mp3tag's reference, RegexpReplace: "Replaces everything that is
+    # matched by the regular expression in the first parameter by the string
+    # in the second parameter." The group reference `$1` is the one the
+    # Apple Music script in #795 uses (`RegexpReplace "...(.*)..." "$1"`).
+    assert album_fields(folder, 'outputto "album"\n' + parser) == {'album': expected}
+
+
+@pytest.mark.parametrize('parser, expected', [
+    pytest.param('killtag "b" ""\nsayrest', '<p class="c">A</p> B C', id='b'),
+    pytest.param('killtag "p"\nsayrest', 'A  <b>B</b> <B>C</B>', id='p'),
+])
+@pytest.mark.xfail(strict=True, reason='KillTag replaces only the lowercase opening tag without attributes')
+def test_killtag_replaces_the_tag(folder, parser, expected):
+    # Mp3tag's reference, KillTag: "Replaces tag S with s in current line
+    # (or blank if omitted)." Docs-silent on the details: the maintainer's
+    # choice (not a quote): opening tags with any attributes and closing
+    # tags, in any case, on the whole line; a blank is a space.
+    assert album_fields(folder, 'outputto "album"\n' + parser, TAGS) == {'album': expected}
+
+
+def test_killtag_star_kills_every_tag(folder):
+    # Mp3tag's reference, KillTag: "Replaces tag S with s in current line
+    # (or blank if omitted)." Docs-silent on "*": the maintainer's choice
+    # (not a quote): it kills every tag.
+    assert album_fields(folder, 'outputto "album"\nkilltag "*" ""\nsayrest', TAGS) == {'album': 'A B C'}
+
+
+@pytest.mark.parametrize('parser', [
+    pytest.param('findline "padded"\nunspace\nsayrest', id='at-the-start'),
+    pytest.param('findline "padded"\nfindinline "padded"\nunspace\nsayrest', id='after-the-pointer'),
+])
+def test_unspace_strips_the_line(folder, parser):
+    # Mp3tag's reference, Unspace: "Removes leading and trailing spaces
+    # from the current line." Docs-silent on the pointer: the maintainer's
+    # choice (not a quote): it goes back to the line's start.
+    assert album_fields(folder, 'outputto "album"\n' + parser, TAGS) == {'album': 'padded line'}
+
+
+@pytest.mark.xfail(strict=True, reason='JoinLines N joins N-1 lines and drops the joined line')
+def test_joinlines_joins_the_next_n_lines(folder):
+    # Mp3tag's reference, JoinLines: "Joins the current line with the next
+    # N lines."
+    parser = ('outputto "album"\nfindline "line three"\njoinlines 1\nsayrest\n'
+              'outputto "artist"\nmoveline 1\nsayrest')
+
+    assert album_fields(folder, parser) == {'album': 'line three <i>x</i> tailline four',
+                                            'artist': 'line five'}
+
+
+@pytest.mark.parametrize('parser', [
+    pytest.param('findline "line four"\njoinlines -1\nsayrest', id='minus-one'),
+    pytest.param('findline "line four"\njoinlines 10\nsayrest', id='too-many'),
+])
+@pytest.mark.xfail(strict=True, reason='JoinLines puts a space between the lines and, past the page, drops every line')
+def test_joinlines_minus_one_or_too_many_joins_every_line(folder, parser):
+    # Mp3tag's reference, JoinLines: "If N is -1 or exceeds input range,
+    # all available lines are joined." Docs-silent on the separator: the
+    # maintainer's choice (not a quote): nothing between the lines, as
+    # JoinUntil.
+    assert album_fields(folder, 'outputto "album"\n' + parser) == {'album': 'line fourline five'}
+
+
+def test_joinuntil_joins_up_to_the_text(folder):
+    # Mp3tag's reference, JoinUntil: "Joins the current line to the next
+    # occurrence of S." Docs-silent on the separator: nothing between the
+    # lines.
+    parser = ('outputto "album"\nfindline "line three"\njoinuntil "four"\nsayrest\n'
+              'outputto "artist"\nmoveline 1\nsayrest')
+
+    assert album_fields(folder, parser) == {'album': 'line three <i>x</i> tailline four',
+                                            'artist': 'line five'}
+
+
+def retrieve_page(folder, server, parser):
+    """What Retrieve gives for the page the server serves at /album, read by
+    the album parser `parser`."""
+    source = load_one(folder, script(local_header(server), index=INDEX_PARSER, album=parser))
+    return source.retrieve('x')
+
+
+@pytest.mark.xfail(strict=True, reason="named and hexadecimal entities aren't converted")
+def test_entities_in_outputs_are_converted(folder):
+    # Docs-silent: the maintainer's choice (not a quote): every HTML entity
+    # in an output is converted. The iTunes script turns `\"` into `&quot;`
+    # and expects a quote back.
+    parser = 'outputto "album"\nsay "Caf&eacute; &amp; &quot;x&quot; &#233; &#xe9;"'
+
+    assert album_fields(folder, parser) == {'album': 'Café & "x" é é'}
+
+
+def test_decimal_entities_are_converted(folder):
+    # Docs-silent: the maintainer's choice (not a quote): every HTML entity
+    # in an output is converted, the decimal ones too.
+    assert album_fields(folder, 'outputto "album"\nsay "Caf&#233;"') == {'album': 'Café'}
+
+
+@pytest.mark.xfail(strict=True, raises=ValueError,
+                   reason="several cover addresses fail the retrieval")
+def test_several_cover_addresses_give_every_cover(folder, server):
+    # Docs-silent: the maintainer's choice (not a quote): each address of
+    # COVERURL is downloaded and they all are the album's images.
+    server.add('/album', 'Synthetic album page')
+    server.add('/a.jpg', b'cover a', content_type='image/jpeg')
+    server.add('/b.jpg', b'cover b', content_type='image/jpeg')
+    parser = f'outputto "coverurl"\nsay "{server.url}/a.jpg|{server.url}/b.jpg|"'
+
+    info, tracks = retrieve_page(folder, server, parser)
+
+    assert info['__image'] == [{'data': b'cover a'}, {'data': b'cover b'}]
+
+
+@pytest.mark.xfail(strict=True, reason="a charset named only in the page's HTML is ignored")
+@pytest.mark.parametrize('meta', ['<meta charset="iso-8859-1">',
+                                  '<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">'],
+                         ids=['charset', 'http-equiv'])
+def test_page_naming_its_charset_in_html_is_read_in_it(folder, server, meta):
+    # Docs-silent: the maintainer's choice (not a quote): a page that names
+    # its charset in a meta tag is read in it. Synthetic: a Latin-1 page.
+    server.add('/album', f'<html><head>{meta}</head>\nCafé\n'.encode('latin-1'))
+
+    info, tracks = retrieve_page(folder, server, 'outputto "album"\nfindline "Caf"\nsayrest')
+
+    assert info['album'] == 'Café'
+
+
+@pytest.mark.xfail(strict=True, raises=AssertionError,
+                   reason="a command puddletag doesn't have is found only when the page is parsed, as a KeyError")
+@pytest.mark.parametrize('command', sorted([
+    'DebugWriteInput', 'IfGreater', 'IfLess', 'IfNotOutput', 'IfNotVar', 'IfOutput', 'IfVar', 'Insert',
+    'SayDate', 'SayDuration', 'SayFormat', 'SayVar', 'SkipChars', 'Trim', 'Use', 'UseFormat', 'json',
+    'json_foreach', 'json_foreach_counter', 'json_foreach_end', 'json_foreach_reverse', 'json_select',
+    'json_select_array', 'json_select_many', 'json_select_many_count', 'json_select_object',
+    'json_unselect_object']))
+def test_script_with_a_command_puddletag_lacks_says_which(folder, caplog, command):
+    # tagsources.txt: "A tag source that can't be loaded is left out, and
+    # the reason is shown in the Tag Sources window and written to
+    # puddletag's log". The command names are Mp3tag's reference's.
+    path = write(folder, script(album=f'outputto "album"\n{command} "x"\nsayrest\n'))
+    assert loaded(folder) == []
+    assert errors(caplog) == [f"Couldn't load Mp3tag Tag Source {path}: "
+                              f"line 6 uses a command puddletag doesn't have: {command}"]
+
+
+def test_commands_are_read_in_any_case(folder):
+    # Mp3tag's reference writes OutputTo, FindLine and SayRest; the scripts
+    # also write outputto, findline and sayrest.
+    assert album_fields(folder, 'OutputTo "album"\nFindLine "four"\nSayRest') == {'album': 'line four'}
+
+
+@pytest.mark.parametrize('commands, expected', [
+    pytest.param('if "line"\nsay "yes"\nelse\nsay "no"\nendif', 'yes', id='if-found'),
+    pytest.param('if "xx"\nsay "yes"\nelse\nsay "no"\nendif', 'no', id='if-missing'),
+    pytest.param('if "four"\nsay "yes"\nelse\nsay "no"\nendif', 'no', id='if-after-the-pointer'),
+    pytest.param('ifnot "xx"\nsay "yes"\nendif\nsay "!"', 'yes!', id='ifnot-missing'),
+    pytest.param('ifnot "line"\nsay "yes"\nelse\nsay "no"\nendif', 'no', id='ifnot-found'),
+    pytest.param('if "line"\nif "zz"\nsay "a"\nelse\nsay "b"\nendif\nsay "c"\nendif', 'bc', id='nested'),
+])
+def test_if_checks_the_text_at_the_pointer(folder, commands, expected):
+    # Mp3tag's reference: If "Check for occurrence of S on current
+    # position."; IfNot "Check for absence of S on current position."; Else
+    # "Alternative branch of an If operation."; Endif "End of an
+    # If/IfNot/IfOutput/IfNotOutput/IfVar/IfNotVar operation."
+    assert album_fields(folder, f'outputto "album"\nfindline "line four"\n{commands}') == {'album': expected}
+
+
+def test_debug_on_writes_the_named_file(folder, tmp_path, monkeypatch):
+    # Mp3tag's reference: Debug "Debug output, S= "on" or "off", s is an
+    # optional file name." tagsources.txt: "Be sure to set 'debug off' or
+    # remove it alltogether unless you're in the mood for having your
+    # filesystem being littered with junk files."
+    monkeypatch.chdir(tmp_path)
+
+    fields = album_fields(folder, 'debug "on" "debug.out"\noutputto "album"\nsay "ok"')
+
+    assert fields == {'album': 'ok'}
+    assert (tmp_path / 'debug.out').read_text() != ''
+
+
+def test_debug_off_writes_nothing(folder, tmp_path, monkeypatch):
+    # Mp3tag's reference: Debug "Debug output, S= "on" or "off", s is an
+    # optional file name."
+    monkeypatch.chdir(tmp_path)
+
+    fields = album_fields(folder, 'debug "off"\noutputto "album"\nsay "ok"')
+
+    assert fields == {'album': 'ok'}
+    assert list(tmp_path.iterdir()) == [folder]
+
+
+ITEMS = 'item 1\nitem 2\nitem 3\nitem 4\nitem 5'
+
+
+def retrieve(folder, server, parser, page=PAGE):
+    """Retrieve's result for the album page `page`, served at the script's
+    [AlbumUrl] with the result address u1."""
+    server.add('/album', page)
+    source = load_one(folder, script({**HEADER, 'AlbumUrl': f'{server.url}/album?id='},
+                                     album=parser))
+    return source.retrieve({'#url': 'u1'})
+
+
+def test_outputto_names_the_field_say_writes_to(folder):
+    # Mp3tag's reference, OutputTo: "Sets the name of the output buffer of
+    # the Say commands to S."
+    parser = 'outputto "album"\nsay "A"\noutputto "artist"\nsay "B"\noutputto "album"\nsay "C"'
+
+    assert album_fields(folder, parser) == {'album': 'AC', 'artist': 'B'}
+
+
+def test_tracks_output_gives_the_track_titles(folder):
+    # Mp3tag's reference: "For fields that have varying contents for
+    # tracks, e.g., TITLE, TRACK, or ISRC, Mp3tag expects the output buffer
+    # to contain the individual values separated and finalized by the pipe
+    # character |, e.g., Title 1|Title 2|Title 3|." That TRACKS holds the
+    # titles comes from scripts (the iTunes one), not the reference.
+    parser = 'outputto "tracks"\nsay "Song 1|Song 2|"'
+
+    assert parse_album(folder, parser) == ({}, [{'title': 'Song 1'}, {'title': 'Song 2'}])
+
+
+def test_album_fields_before_the_tracks_stay_the_albums(folder):
+    # Mp3tag's reference: "For fields that have varying contents for
+    # tracks ... the individual values separated and finalized by the pipe
+    # character |". An output with one value is the album's.
+    parser = 'outputto "album"\nsay "A"\noutputto "tracks"\nsay "Song 1|Song 2|"'
+
+    assert parse_album(folder, parser) == (
+        {'album': 'A'}, [{'title': 'Song 1'}, {'title': 'Song 2'}])
+
+
+@pytest.mark.xfail(strict=True, reason='outputs after an OutputTo "tracks" outside a loop go to '
+                                       'the album, as several values')
+def test_outputs_after_the_titles_are_per_track(folder):
+    # Mp3tag's reference: "For fields that have varying contents for
+    # tracks, e.g., TITLE, TRACK, or ISRC, Mp3tag expects the output buffer
+    # to contain the individual values separated and finalized by the pipe
+    # character |, e.g., Title 1|Title 2|Title 3|."
+    parser = ('outputto "tracks"\nsay "Song 1|Song 2|"\n'
+              'outputto "artist"\nsay "Artist 1|Artist 2|"')
+
+    assert parse_album(folder, parser) == ({}, [
+        {'artist': 'Artist 1', 'title': 'Song 1'}, {'artist': 'Artist 2', 'title': 'Song 2'}])
+
+
+@pytest.mark.xfail(strict=True, reason='a TITLE output with pipes becomes several album titles')
+def test_title_with_pipes_gives_each_tracks_title(folder):
+    # Mp3tag's reference: "For fields that have varying contents for
+    # tracks, e.g., TITLE, TRACK, or ISRC, Mp3tag expects the output buffer
+    # to contain the individual values separated and finalized by the pipe
+    # character |, e.g., Title 1|Title 2|Title 3|."
+    parser = 'outputto "title"\nsay "T1|T2|"\noutputto "album"\nsay "Alb"'
+
+    assert parse_album(folder, parser) == (
+        {'album': 'Alb'}, [{'title': 'T1'}, {'title': 'T2'}])
+
+
+@pytest.mark.xfail(strict=True, reason="in a loop, the album's last field goes into the first "
+                                       "track, each track's last field into the next, and the "
+                                       "last track comes out twice")
+def test_loop_gives_one_track_per_pass(folder):
+    # Mp3tag's reference, Do ... While: "Execute the command surrounded by
+    # the two commands while S occurs on current position."; and the
+    # pipe quote: "Mp3tag expects the output buffer to contain the
+    # individual values separated and finalized by the pipe character |".
+    parser = ('outputto "album"\nsay "Alb"\ndo\noutputto "tracks"\nsayrest\nsay "|"\n'
+              'outputto "artist"\nsay "Ar|"\nmoveline 1\nwhile "item"')
+
+    assert parse_album(folder, parser, page=ITEMS) == (
+        {'album': 'Alb'}, [{'artist': 'Ar', 'title': f'item {n}'} for n in range(1, 6)])
+
+
+@pytest.mark.parametrize('condition, expected', [
+    ('"item"', 'item 1 item 2 item 3 item 4 item 5'),
+    ('"zzz"', 'item 1'),
+    pytest.param('"item" 2', 'item 1 item 2', marks=pytest.mark.xfail(
+        strict=True, reason="Do/While's limit never limits")),
+])
+def test_while_repeats_while_the_text_is_there(folder, condition, expected):
+    # Mp3tag's reference, Do ... While: "Execute the command surrounded by
+    # the two commands while S occurs on current position. The optional
+    # second parameter limits the execution of the loop to maximal n times."
+    # The check comes after the body, so a false condition still runs it once.
+    parser = f'outputto "album"\ndo\nsayrest\nsay " "\nmoveline 1\nwhile {condition}'
+
+    assert album_fields(folder, parser, page=ITEMS) == {'album': expected}
+
+
+@pytest.mark.parametrize('parser, expected', [
+    ('set "album" "xx"', {'album': 'xx'}),
+    ('outputto "album"\nsay "abc"\nset "album"', {}),
+    ('outputto "artist"\nsay "B"\noutputto "album"\nsay "A"\nset "artist"', {'album': 'A'}),
+])
+def test_set_sets_or_resets_a_field(folder, parser, expected):
+    # Mp3tag's reference, Set: "Sets the content of output S to the value
+    # s. Resets the content if s is omitted."
+    assert album_fields(folder, parser) == expected
+
+
+@pytest.mark.xfail(strict=True, reason='Set on the field being output to is overwritten by '
+                                       'what was said before it')
+def test_set_replaces_the_field_being_written(folder):
+    # Mp3tag's reference, Set: "Sets the content of output S to the value s."
+    parser = 'outputto "album"\nsay "abc"\nset "album" "xx"'
+
+    assert album_fields(folder, parser) == {'album': 'xx'}
+
+
+def test_sayoutput_says_another_field(folder):
+    # Mp3tag's reference, SayOutput: "Send the content of output S to the
+    # current output."
+    parser = 'outputto "artist"\nsay "AA"\noutputto "album"\nsayoutput "artist"'
+
+    assert album_fields(folder, parser) == {'album': 'AA', 'artist': 'AA'}
+
+
+def test_sayoutput_currenturl_says_the_page_address(folder, server):
+    # Mp3tag's reference, SayOutput: "The output CurrentUrl is always
+    # generated at runtime."
+    info, tracks = retrieve(folder, server, 'outputto "album"\nsayoutput "CurrentUrl"')
+
+    assert info['album'] == f'{server.url}/album?id=u1'
+
+
+@pytest.mark.xfail(strict=True, reason='CurrentUrl comes out as a field')
+def test_currenturl_is_not_a_field(folder, server):
+    # Mp3tag's reference, SayOutput: "The output CurrentUrl is always
+    # generated at runtime." It isn't something the script outputs.
+    assert retrieve(folder, server, 'outputto "album"\nsay "A"') == (
+        {'#url': f'{server.url}/album?id=u1', 'album': 'A'}, None)
+
+
+@pytest.mark.xfail(strict=True, reason='what a script says before any OutputTo comes out as a '
+                                       'track holding CurrentUrl, or as a field with no name')
+def test_say_before_any_outputto_makes_no_track(folder, server):
+    # Docs-silent: the maintainer's choice (not a quote): text said before
+    # any OutputTo has no field to go to and is dropped.
+    assert retrieve(folder, server, 'say "x"') == ({'#url': f'{server.url}/album?id=u1'}, None)
+
+
+@pytest.mark.xfail(strict=True, reason='the index parser knows CurrentUrl only in that exact case')
+def test_index_parser_reads_currenturl_in_any_case(folder, server):
+    # Mp3tag's reference, SayOutput: "The output CurrentUrl is always
+    # generated at runtime." Output names are read in any case.
+    server.add('/search', 'any page')
+    source = load_one(folder, script(local_header(server),
+                                     index='say "u1|"\nsayoutput "currenturl"\n'))
+
+    assert source.keyword_search('First Light') == [
+        ({'#url': 'u1', 'album': f'{server.url}/search?q=First+Light'}, [])]
+
+
+@pytest.mark.xfail(strict=True, reason="the album's last field goes into the first track")
+def test_itunes_album_keeps_its_label(folder, server):
+    # The iTunes script outputs PUBLISHER (which puddletag calls label) as
+    # the album's last field before the track loop.
+    info, tracks = retrieve_itunes_album(folder, server)
+
+    assert info['label'] == '℗ 2001 Synthetic Records'
+    assert [t for t in tracks if 'label' in t] == []
+
+
+@pytest.mark.xfail(strict=True, reason='Set turns a number to nothing')
+def test_set_takes_a_number(folder):
+    # Mp3tag's reference, Set: "Sets the content of output S to the value
+    # s. Resets the content if s is omitted." The number is synthetic.
+    parser = 'set "track" 0\noutputto "album"\nsay "x"'
+
+    assert album_fields(folder, parser) == {'album': 'x', 'track': '0'}
+
+
+@pytest.mark.parametrize('n', [-1, 10])
+@pytest.mark.xfail(strict=True, reason='JoinLines also joins the page end line')
+def test_joinlines_keeps_the_page_end(folder, n):
+    # Mp3tag's reference, JoinLines: "If N is -1 or exceeds input range, all
+    # available lines are joined."; FindLine: "If the 3rd parameter is set to 1,
+    # no error is produced if S is not found." Docs-silent: the maintainer's
+    # choice (not a quote): with the 1, the pointer goes to the page's end.
+    parser = (f'outputto "album"\nfindline "line four"\njoinlines {n}\n'
+              'findline "zz" 1 1\nsayrest\noutputto "artist"\nsay "after"')
+
+    assert album_fields(folder, parser) == {'artist': 'after'}
