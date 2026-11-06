@@ -229,7 +229,6 @@ class Cursor(object):
     def __init__(self, text, source_lines):
         self.text = text
         self.all_lines = [z + ' ' for z in text.split('\n')] + [' ']
-        self.all_lowered = [z.lower() for z in self.all_lines]
         self.lineno = 0
         self.charno = 0
         self.cache = ''
@@ -284,10 +283,6 @@ class Cursor(object):
     @property
     def lines(self):
         return self.all_lines[self.lineno:]
-
-    @property
-    def lowered(self):
-        return self.all_lowered[self.lineno:]
 
     def log(self, text):
         if self.debug and self.debug_file:

@@ -184,7 +184,7 @@ You can search as you do using Mp3tag by using the Search box. Selecting files a
 Caveats
 ^^^^^^^
 
-The sources I've tested work like Mp3tag's. They also bomb on the same pages. However, unlike Mp3tag, puddletag doesn't 'detect' when retrieval has gone awry. So sometimes you might get nothing in Mp3tag, while getting jibberish in puddletag.
+The sources I've tested work like Mp3tag's. They also bomb on the same pages. However, where Mp3tag gives up on a page when a **FindLine** finds nothing, puddletag stops reading it there and keeps what it found so far.
 
 Tag sources that use **[Include]** (they come with a **.inc** file) aren't supported yet. Nor are tag sources that use a command puddletag doesn't have (such as **SkipChars**, **IfOutput** or the **json** commands): the Tag Sources window names the command and its line.
 

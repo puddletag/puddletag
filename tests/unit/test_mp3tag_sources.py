@@ -438,7 +438,6 @@ def test_search_without_results_finds_nothing(folder, server):
     assert source.keyword_search('Nothing') == []
 
 
-@pytest.mark.xfail(strict=True, reason="a findline that finds nothing doesn't stop the script")
 def test_itunes_answer_without_results_finds_nothing(folder, server):
     # Mp3tag's reference, FindLine: "An optional third parameter set to 1
     # suppresses the error when S is not found", so a line that isn't found
@@ -907,7 +906,6 @@ def test_findline_finds_the_line(folder, commands, expected):
     assert album_fields(folder, 'outputto "album"\n' + commands) == expected
 
 
-@pytest.mark.xfail(strict=True, reason="a FindLine, FindLineNoCase or FindInLine that finds nothing doesn't stop the script")
 @pytest.mark.parametrize('commands', [
     'say "before"\nfindline "zzz"\noutputto "artist"\nsay "after"',
     'say "before"\nfindlinenocase "ZZZ"\noutputto "artist"\nsay "after"',
@@ -930,7 +928,6 @@ def test_findline_told_not_to_fail_goes_on(folder):
     assert album_fields(folder, 'outputto "album"\n' + commands) == {'artist': 'after'}
 
 
-@pytest.mark.xfail(strict=True, reason="a FindInLine that finds nothing leaves the pointer on the line's last character")
 def test_findinline_told_not_to_fail_goes_to_the_line_end(folder):
     # Mp3tag's reference, FindInLine: "If the 3rd parameter is set to 1, no
     # error is produced if S is not found." Docs-silent: the maintainer's
@@ -942,7 +939,6 @@ def test_findinline_told_not_to_fail_goes_to_the_line_end(folder):
     assert album_fields(folder, 'outputto "album"\n' + commands) == {'artist': 'after'}
 
 
-@pytest.mark.xfail(strict=True, reason="FindLineNoCase reads the lines as they were before JoinUntil joined them")
 def test_findlinenocase_sees_joined_lines(folder):
     # Mp3tag's reference, FindLineNoCase: "(ignoring case and starting from
     # the current position)", and JoinUntil: "Joins the current line to the
@@ -965,7 +961,6 @@ def test_findinline_goes_past_the_text(folder, commands, expected):
     assert album_fields(folder, 'outputto "album"\n' + commands) == expected
 
 
-@pytest.mark.xfail(strict=True, reason="GotoLine N also moves to character N")
 def test_gotoline_goes_to_the_lines_first_character(folder):
     # Mp3tag's reference, GotoLine: "Go to Nth line (counting from top)",
     # and: "In all cases the pointer would be moved to the first character
@@ -990,8 +985,7 @@ def test_pointer_moves(folder, commands, expected):
 
 @pytest.mark.parametrize('commands', [
     'say "before"\nmoveline 10\noutputto "artist"\nsay "after"',
-    pytest.param('say "before"\nmoveline -1\noutputto "artist"\nsay "after"',
-                 marks=pytest.mark.xfail(strict=True, reason="a MoveLine above the first line wraps round to the page's end")),
+    'say "before"\nmoveline -1\noutputto "artist"\nsay "after"',
 ], ids=['past-the-end', 'above-the-first'])
 def test_moveline_out_of_the_page_stops_the_script(folder, commands):
     # Docs-silent: the maintainer's choice (not a quote): a MoveLine that
@@ -999,7 +993,6 @@ def test_moveline_out_of_the_page_stops_the_script(folder, commands):
     assert album_fields(folder, 'outputto "album"\n' + commands) == {'album': 'before'}
 
 
-@pytest.mark.xfail(strict=True, reason="MoveLine's second parameter doesn't keep the script going")
 def test_moveline_told_to_ignore_errors_goes_on(folder):
     # Mp3tag's reference, MoveLine: "If the second parameter is set to 1,
     # possible errors are ignored."

@@ -55,8 +55,10 @@ def findinline(cursor, text, n=1, exit=None):
             cursor.charno += pos
             return
         i += 1
-    cursor.charno = len(cursor.line) - 1
-    return
+    if exit == 1:
+        cursor.charno = len(cursor.line)
+    else:
+        cursor.stop = True
 
 
 def findline(cursor, text, index=1, exit=None, no_case=False):
@@ -65,11 +67,10 @@ def findline(cursor, text, index=1, exit=None, no_case=False):
         text = text.lower()
     if index < 0:
         index = 0 - index
-        if no_case:
-            lines = reversed(cursor.all_lowered[:cursor.lineno])
-        else:
-            lines = reversed(cursor.all_lines[:cursor.lineno])
+        lines = reversed(cursor.all_lines[:cursor.lineno])
         for i, line in enumerate(lines):
+            if no_case:
+                line = line.lower()
             if text in line:
                 if num_found == index:
                     cursor.log('Found %s at line %d\n' % (text, i))
@@ -79,11 +80,9 @@ def findline(cursor, text, index=1, exit=None, no_case=False):
                 else:
                     num_found += 1
     else:
-        if no_case:
-            lines = cursor.lowered
-        else:
-            lines = cursor.lines
-        for i, line in enumerate(lines):
+        for i, line in enumerate(cursor.lines):
+            if no_case:
+                line = line.lower()
             if text in line:
                 if num_found == index:
                     cursor.log('Found %s at line %d\n' % (text, i))
@@ -93,11 +92,14 @@ def findline(cursor, text, index=1, exit=None, no_case=False):
                 else:
                     num_found += 1
 
-    cursor.lineno = len(cursor.all_lines) - 1
+    if exit == 1:
+        cursor.lineno = len(cursor.all_lines) - 1
+    else:
+        cursor.stop = True
 
 
 def findlinenocase(cursor, text, num=1, exit=None):
-    return findline(cursor, text, num, text, True)
+    return findline(cursor, text, num, exit, True)
 
 
 def gotochar(cursor, num):
@@ -106,7 +108,7 @@ def gotochar(cursor, num):
 
 def gotoline(cursor, num):
     cursor.lineno = num - 1
-    cursor.charno = num - 1
+    cursor.charno = 0
 
 
 def _if(cursor, text, ifnot=False):
@@ -197,7 +199,15 @@ def movechar(cursor, num):
 
 def moveline(cursor, num, exit=None):
     cursor.log('Moving to line %d' % (cursor.lineno + num))
-    cursor.lineno = cursor.lineno + num
+    target = cursor.lineno + num
+    if target < 0 or target >= len(cursor.all_lines):
+        if exit == 1:
+            cursor.lineno = len(cursor.all_lines) - 1
+            cursor.charno = 0
+        else:
+            cursor.stop = True
+        return
+    cursor.lineno = target
     cursor.charno = 0
 
 
