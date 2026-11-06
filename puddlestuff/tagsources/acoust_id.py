@@ -24,6 +24,8 @@ FOUND_ID_MSG = translate('AcoustID', "Found AcoustID in file.")
 FILE_MSG = translate('AcoustID', "File #{}: {}")
 
 API_KEY = "gT8GJxhO"
+# pyacoustid's default is plain http, which would carry the user's key unencrypted.
+acoustid.set_base_url('https://api.acoustid.org/v2/')
 
 
 def album_hash(d):

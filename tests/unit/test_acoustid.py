@@ -897,7 +897,6 @@ def test_search_calculates_a_fingerprint_without_a_length(source, fpcalc, acoust
 
 # The service's address -------------------------------------------------------
 
-@pytest.mark.xfail(strict=True, reason="pyacoustid's default address is plain http")
 def test_requests_go_to_the_services_https_address(acoust_id):
     # acoustid.org/webservice, Submit: https://api.acoustid.org/v2/submit
     assert acoustid.API_BASE_URL == 'https://api.acoustid.org/v2/'
