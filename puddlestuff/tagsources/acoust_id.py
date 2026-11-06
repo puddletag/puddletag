@@ -6,7 +6,6 @@ import acoustid
 
 from puddlestuff import audioinfo, tagsources
 
-from puddlestuff.audioinfo import stringtags
 from puddlestuff.constants import SPINBOX, TEXT
 from puddlestuff.tagsources import set_status, write_log, RetrievalError, SubmissionError
 from puddlestuff.tagsources.musicbrainz import retrieve_album
@@ -69,22 +68,38 @@ def best_match(albums, tracks):
 
 def convert_for_submit(tags):
     cipher = {
+        '__bitrate': 'bitrate',
+        'album': 'album',
+        'artist': 'artist',
+        'discnumber': 'discno',
         'mbrainz_track_id': 'mbid',
+        'musicip_puid': 'puid',
         'title': 'track',
         'track': 'trackno',
-        'discnumber': 'discno',
-        '__bitrate': 'bitrate',
-        'musicip_puid': 'puid',
+        'year': 'year',
     }
+    joined = ('album', 'artist', 'track')
 
-    valid_keys = set(['artist', 'album', 'title', 'track', 'discno',
-                      'mbid', 'year', 'bitrate', 'puid', 'trackno'])
+    ret = {}
+    for field, value in tags.items():
+        if field not in cipher:
+            continue
+        values = [value] if isinstance(value, str) else [v for v in value if v]
+        if any(values):
+            name = cipher[field]
+            ret[name] = '; '.join(values) if name in joined else values[0]
 
-    ret = dict((cipher.get(k, k), v) for k, v in stringtags(tags).items()
-               if cipher.get(k, k) in valid_keys and v)
     bitrate = ret.pop('bitrate', '').split(' ')[0]
     if bitrate not in ('', '0'):
         ret['bitrate'] = bitrate
+
+    # The service reads these as whole numbers.
+    numbers = {
+        'discno': ret.pop('discno', '').split('/')[0],
+        'trackno': ret.pop('trackno', '').split('/')[0],
+        'year': ret.pop('year', '')[:4],
+    }
+    ret.update((name, text) for name, text in numbers.items() if text.isdecimal())
 
     return ret
 

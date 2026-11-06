@@ -774,7 +774,6 @@ def test_file_without_a_bitrate_is_sent(submitter, acoustid_service, make_audio)
 
 # Values a submit changes -----------------------------------------------------
 
-@pytest.mark.xfail(strict=True, reason='values go as they are in the file')
 def test_track_disc_and_year_go_as_the_service_reads_them(submitter, acoustid_service, make_audio):
     # webservice, Submit: "track number", 11; "disc number", 1; "album
     # release year", 1994.
@@ -787,7 +786,6 @@ def test_track_disc_and_year_go_as_the_service_reads_them(submitter, acoustid_se
     assert form['year.0'] == ['2001']
 
 
-@pytest.mark.xfail(strict=True, reason='values go as they are in the file')
 def test_values_that_arent_numbers_are_left_out(submitter, acoustid_service, make_audio):
     # webservice, Submit: "track number", 11; "album release year", 1994.
     path = make_audio('a.flac', acoustid_fingerprint='AQABstored', date='unknown', tracknumber='A1')
@@ -797,7 +795,6 @@ def test_values_that_arent_numbers_are_left_out(submitter, acoustid_service, mak
     assert 'year.0' not in form
 
 
-@pytest.mark.xfail(strict=True, reason="values go joined by puddletag's own separator")
 def test_several_values_are_joined_for_the_service(submitter, acoustid_service, make_audio):
     # webservice, Submit: "track artist". Picard joins several with "; ".
     path = make_audio('a.flac', acoustid_fingerprint='AQABstored', artist=['A1', 'A2'])
@@ -806,7 +803,6 @@ def test_several_values_are_joined_for_the_service(submitter, acoustid_service, 
     assert form['artist.0'] == ['A1; A2']
 
 
-@pytest.mark.xfail(strict=True, reason="values go joined by puddletag's own separator")
 def test_where_the_service_takes_one_value_the_first_goes(submitter, acoustid_service, make_audio):
     # webservice, Submit: "track number", 11; "disc number", 1; "album
     # release year", 1994; "corresponding MusicBrainz recording ID".
@@ -820,7 +816,6 @@ def test_where_the_service_takes_one_value_the_first_goes(submitter, acoustid_se
     assert form['year.0'] == ['2001']
 
 
-@pytest.mark.xfail(strict=True, reason='a field named like a service parameter goes as that parameter')
 def test_fields_named_like_the_services_are_not_sent(submitter, acoustid_service, make_audio):
     # The docs don't say; the maintainer's call: only the file's real values go.
     # Synthetic: fields named like the service's parameters.
@@ -832,7 +827,6 @@ def test_fields_named_like_the_services_are_not_sent(submitter, acoustid_service
         assert name not in form
 
 
-@pytest.mark.xfail(strict=True, reason='a field named like a service parameter goes as that parameter')
 def test_field_named_like_the_services_leaves_the_real_value(submitter, acoustid_service):
     # The docs don't say; the maintainer's call. Synthetic: a plain dict, not a
     # file, because a file's fields come in a different order on each run, and
