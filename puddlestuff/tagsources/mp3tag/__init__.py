@@ -1,7 +1,7 @@
+import html
 import re
 import urllib.parse
 from copy import deepcopy
-from html.entities import name2codepoint as n2cp
 
 from pyparsing import (nums, printables, Combine, Optional,
                        QuotedString, Word, ZeroOrMore)
@@ -50,9 +50,7 @@ MTAG_KEYS = {
 
 
 def convert_entities(s):
-    s = re.sub(r'&#(\d+);', lambda m: chr(int(m.groups(0)[0])), s)
-    return re.sub(r'&(\w)+;',
-                  lambda m: n2cp.get(m.groups(0), '&%s;' % m.groups(0)[0]), s)
+    return html.unescape(s)
 
 
 def convert_value(value):
@@ -70,9 +68,13 @@ def convert_dict(d, keys=MTAG_KEYS):
 
 
 def decode_page(data):
-    """A downloaded page as text: UTF-8, unless its XML declaration names
-    another encoding. Bytes that don't decode become U+FFFD."""
-    encoding = get_encoding(data.decode('utf-8', 'replace'))
+    """A downloaded page as text: UTF-8, unless its XML declaration or a
+    meta tag names another encoding. Bytes that don't decode become U+FFFD."""
+    text = data.decode('utf-8', 'replace')
+    encoding = get_encoding(text)
+    if not encoding:
+        meta = re.search(r'<meta\s[^>]*?charset\s*=\s*["\']?([\w.:-]+)', text, re.I)
+        encoding = meta and meta.group(1)
     if encoding:
         try:
             return data.decode(encoding, 'replace')
@@ -435,9 +437,9 @@ class Mp3TagSource(object):
             cover_url = new_info[COVER]
             try:
                 if isinstance(cover_url, str):
-                    info.update(retrieve_cover(cover_url))
-                else:
-                    info.update(list(map(retrieve_cover, cover_url)))
+                    cover_url = [cover_url]
+                info['__image'] = [image for url in cover_url
+                                   for image in retrieve_cover(url)['__image']]
             except RetrievalError as e:
                 write_log(translate('Mp3tag', "Couldn't retrieve the cover: {}").format(e))
         if not tracks:

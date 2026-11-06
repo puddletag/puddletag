@@ -1123,7 +1123,6 @@ def retrieve_page(folder, server, parser):
     return source.retrieve('x')
 
 
-@pytest.mark.xfail(strict=True, reason="named and hexadecimal entities aren't converted")
 def test_entities_in_outputs_are_converted(folder):
     # Docs-silent: the maintainer's choice (not a quote): every HTML entity
     # in an output is converted. The iTunes script turns `\"` into `&quot;`
@@ -1139,8 +1138,6 @@ def test_decimal_entities_are_converted(folder):
     assert album_fields(folder, 'outputto "album"\nsay "Caf&#233;"') == {'album': 'Café'}
 
 
-@pytest.mark.xfail(strict=True, raises=ValueError,
-                   reason="several cover addresses fail the retrieval")
 def test_several_cover_addresses_give_every_cover(folder, server):
     # Docs-silent: the maintainer's choice (not a quote): each address of
     # COVERURL is downloaded and they all are the album's images.
@@ -1154,7 +1151,6 @@ def test_several_cover_addresses_give_every_cover(folder, server):
     assert info['__image'] == [{'data': b'cover a'}, {'data': b'cover b'}]
 
 
-@pytest.mark.xfail(strict=True, reason="a charset named only in the page's HTML is ignored")
 @pytest.mark.parametrize('meta', ['<meta charset="iso-8859-1">',
                                   '<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">'],
                          ids=['charset', 'http-equiv'])
