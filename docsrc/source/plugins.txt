@@ -33,7 +33,7 @@ Plugins will be imported using **modulename**, as such only valid in Python modu
 + **puddletag_version**: The version of puddletag this plugin was created with. May be used for backward compatibility if the plugin interface changes.
 + **description**: Add a short synopsis of what your plugin does.
 
-Your plugin will not be loaded unless all this information is present. A plugin that can't be loaded is left out, and the reason is written to puddletag's log.
+Your plugin will not be loaded unless all this information is present. A plugin that can't be loaded is left out, and the reason is written to puddletag's log. A tag source of a plugin that can't be started is left out too, and the reason is shown in the **Tag Sources** window and written to puddletag's log.
 
 Plugin Examples:
 ----------------

@@ -477,7 +477,6 @@ def no_default_plugin(clean_profile):
     tick('no_default_plugin')
 
 
-@pytest.mark.xfail(strict=True, reason="a tag source whose constructor raises stops puddletag from starting")
 def test_tag_source_that_fails_to_start_is_left_out(mainwin, user, qtbot, restart, new_process, caplog):
     # plugins.txt: "A tag source of a plugin that can't be started is left
     # out too, and the reason is shown in the **Tag Sources** window and
@@ -494,7 +493,6 @@ def test_tag_source_that_fails_to_start_is_left_out(mainwin, user, qtbot, restar
                                                  "synthetic constructor failure")
 
 
-@pytest.mark.xfail(strict=True, reason="a tag source whose saved preferences can't be applied is skipped silently")
 def test_preferences_that_fail_to_apply_are_logged(no_default_plugin, mainwin, user, qtbot, caplog):
     # The docs are silent; this is what puddletag does. The plugin is
     # synthetic: a TEXT preference without the default that the example

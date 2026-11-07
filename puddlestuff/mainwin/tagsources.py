@@ -587,7 +587,15 @@ class MainWin(QWidget):
         self.fieldMapping = audioinfo.mapping
 
         self._status = status
-        self.__sources = [z() for z in tagsources]
+        self.__sources = []
+        start_failures = []
+        for cls in tagsources:
+            try:
+                self.__sources.append(cls())
+            except Exception as e:
+                name = getattr(cls, 'name', cls.__name__)
+                logging.exception(f"Couldn't load tag source {name}")
+                start_failures.append((name, str(e)))
         failures = []
         self.__sources.extend(load_mp3tag_sources(failures=failures))
 
@@ -595,8 +603,8 @@ class MainWin(QWidget):
             if hasattr(ts, 'preferences'):
                 try:
                     ts.applyPrefs(load_source_prefs(ts.name, ts.preferences))
-                except:
-                    continue
+                except Exception:
+                    logging.exception(f"Couldn't apply the preferences of tag source {ts.name}")
 
         status['initialized_tagsources'] = self.__sources
 
@@ -635,10 +643,12 @@ class MainWin(QWidget):
         # The instruction/feedback label (between Search box and the results)
         self.label = QLabel(translate("Tag Sources",
                                       "Select files and click on Search to retrieve metadata."))
-        if failures:
-            self.label.setText('<br />'.join(
-                translate("Tag Sources", "Couldn't load Mp3tag script {}: {}").format(name, reason)
-                for name, reason in failures))
+        if start_failures or failures:
+            lines = [translate("Tag Sources", "Couldn't load tag source {}: {}").format(name, reason)
+                     for name, reason in start_failures]
+            lines += [translate("Tag Sources", "Couldn't load Mp3tag script {}: {}").format(name, reason)
+                      for name, reason in failures]
+            self.label.setText('<br />'.join(lines))
 
         # The results box (a tree view of album releases)
         self.listbox = ReleaseWidget(status, self.curSource)
