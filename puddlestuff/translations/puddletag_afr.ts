@@ -92,67 +92,72 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
   <context>
     <name>AcoustID</name>
     <message>
-      <location filename="../tagsources/acoust_id.py" line="22" />
+      <location filename="../tagsources/acoust_id.py" line="15" />
       <source>Calculating ID</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../tagsources/acoust_id.py" line="23" />
+      <location filename="../tagsources/acoust_id.py" line="16" />
       <source>Retrieving AcoustID data: {} of {}.</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../tagsources/acoust_id.py" line="24" />
+      <location filename="../tagsources/acoust_id.py" line="17" />
       <source>Retrieving MB album data: {}</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../tagsources/acoust_id.py" line="25" />
+      <location filename="../tagsources/acoust_id.py" line="18" />
       <source>Error generating fingerprint: {}</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../tagsources/acoust_id.py" line="26" />
+      <location filename="../tagsources/acoust_id.py" line="19" />
       <source>Error retrieving data: {}</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../tagsources/acoust_id.py" line="27" />
+      <location filename="../tagsources/acoust_id.py" line="20" />
       <source>Error submitting data: {}</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../tagsources/acoust_id.py" line="28" />
+      <location filename="../tagsources/acoust_id.py" line="21" />
       <source>Submitting data to AcoustID: {} to {} of {}.</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../tagsources/acoust_id.py" line="29" />
+      <location filename="../tagsources/acoust_id.py" line="22" />
+      <source>No files were submitted.</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../tagsources/acoust_id.py" line="23" />
       <source>Found AcoustID in file.</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../tagsources/acoust_id.py" line="30" />
+      <location filename="../tagsources/acoust_id.py" line="24" />
       <source>File #{}: {}</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../tagsources/acoust_id.py" line="257" />
+      <location filename="../tagsources/acoust_id.py" line="289" />
       <source>Minimum Score</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../tagsources/acoust_id.py" line="258" />
+      <location filename="../tagsources/acoust_id.py" line="290" />
       <source>AcoustID Key</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../tagsources/acoust_id.py" line="306" />
+      <location filename="../tagsources/acoust_id.py" line="320" />
       <source>Parsing Data</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../tagsources/acoust_id.py" line="332" />
+      <location filename="../tagsources/acoust_id.py" line="349" />
       <source>Please enter AcoustID user key in settings.</source>
       <translation type="unfinished" />
     </message>
@@ -240,83 +245,83 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
   <context>
     <name>Artwork</name>
     <message>
-      <location filename="../puddleobjects.py" line="1990" />
-      <location filename="../puddleobjects.py" line="1615" />
+      <location filename="../puddleobjects.py" line="2001" />
+      <location filename="../puddleobjects.py" line="1626" />
       <source>Enter a description</source>
       <translation>Stel 'n beskrywing</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1620" />
+      <location filename="../puddleobjects.py" line="1631" />
       <source>&lt;p&gt;Enter a description for the current cover.&lt;/p&gt;&lt;p&gt;For ID3 tags the description has to be different for each cover as per the ID3 spec. If they don't differ then spaces are appended to the description when the tag is saved.&lt;/p&gt;</source>
       <translation>&lt;p&gt;Stel 'n deskripsie vir die gewysigde prent.&lt;/p&gt;&lt;p&gt;Vir ID3 tags, moet die deskripsie vir elke prent verskil volgens die ID3 spec. As hulle nie verskil nie dan sal spasies by die deskripsie gesit word tot dit uniek is.&lt;/p&gt;</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1630" />
+      <location filename="../puddleobjects.py" line="1641" />
       <source>&amp;Description</source>
       <translation>&amp;Deskripsie</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1638" />
+      <location filename="../puddleobjects.py" line="1649" />
       <source>&amp;Type</source>
       <translation>&amp;Tipe</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1650" />
+      <location filename="../puddleobjects.py" line="1661" />
       <source>&lt;p&gt;Select a cover type for the artwork.&lt;/p&gt;</source>
       <translation>&lt;p&gt;Kies 'n prent-tipe.&lt;/p&gt;</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1742" />
+      <location filename="../puddleobjects.py" line="1753" />
       <source>&amp;Save cover to file</source>
       <translation>&amp;Stel prent na vyl</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1745" />
+      <location filename="../puddleobjects.py" line="1756" />
       <source>&amp;Add cover</source>
       <translation>&amp;Voeg prent by</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1748" />
+      <location filename="../puddleobjects.py" line="1759" />
       <source>C&amp;opy cover</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1751" />
+      <location filename="../puddleobjects.py" line="1762" />
       <source>&amp;Paste cover</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1754" />
+      <location filename="../puddleobjects.py" line="1765" />
       <source>&amp;Remove cover</source>
       <translation>&amp;Verwyder prent</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1757" />
+      <location filename="../puddleobjects.py" line="1768" />
       <source>&amp;Change cover</source>
       <translation>&amp;Verwyder prent</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1824" />
+      <location filename="../puddleobjects.py" line="1835" />
       <source>Select Image...</source>
       <translation>Kies Prent...</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1825" />
+      <location filename="../puddleobjects.py" line="1836" />
       <source>JPEG &amp; PNG Images (*.jpg *.jpeg *.png);;JPEG Images (*.jpg *.jpeg);;PNG Images (*.png);;All Files(*.*)</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="2038" />
+      <location filename="../puddleobjects.py" line="2049" />
       <source>Save artwork as...</source>
       <translation>Save verfwerk as...</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="2040" />
+      <location filename="../puddleobjects.py" line="2051" />
       <source>JPEG Images (*.jpg);;PNG Images (*.png);;All Files(*.*)</source>
       <translation>JPEG Prente (*.jpg);;PNG Prente (*.png);;All Vyle(*.*)</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="2050" />
+      <location filename="../puddleobjects.py" line="2061" />
       <source>Writing to &lt;b&gt;{}&lt;/b&gt; failed.</source>
       <translation>Ek kon nie na &lt;b&gt;{}&lt;/b&gt; skryf nie.</translation>
     </message>
@@ -334,7 +339,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
       <translation>Geen Prente Nie</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1586" />
+      <location filename="../puddleobjects.py" line="1597" />
       <source>{}/{}</source>
       <translation>{} van {}</translation>
     </message>
@@ -457,30 +462,30 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
   <context>
     <name>Column Settings</name>
     <message>
-      <location filename="../puddleobjects.py" line="997" />
-      <source>Title</source>
-      <translation>Titel</translation>
-    </message>
-    <message>
-      <location filename="../tagmodel.py" line="382" />
+      <location filename="../tagmodel.py" line="384" />
       <source>Columns</source>
       <translation>Kolomme</translation>
     </message>
     <message>
-      <location filename="../tagmodel.py" line="411" />
+      <location filename="../tagmodel.py" line="413" />
       <source>Adjust visibility of columns.</source>
       <translation>Verander wysigheid van kolomme.</translation>
     </message>
     <message>
-      <location filename="../tagmodel.py" line="1363" />
+      <location filename="../tagmodel.py" line="1365" />
       <source>&amp;Select Columns</source>
       <translation>&amp;Kies Kolomme</translation>
+    </message>
+    <message>
+      <location filename="../puddleobjects.py" line="1008" />
+      <source>Title</source>
+      <translation>Titel</translation>
     </message>
   </context>
   <context>
     <name>Combo Box</name>
     <message>
-      <location filename="../puddleobjects.py" line="2305" />
+      <location filename="../puddleobjects.py" line="2316" />
       <source>Remove current item.</source>
       <translation>Verwyder huidige item.</translation>
     </message>
@@ -814,60 +819,37 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../puddletag.py" line="682" />
-      <location filename="../puddletag.py" line="679" />
-      <location filename="../puddletag.py" line="672" />
-      <location filename="../musiclib.py" line="216" />
-      <location filename="../tagmodel.py" line="2135" />
-      <location filename="../tagmodel.py" line="2129" />
-      <location filename="../puddleobjects.py" line="2049" />
-      <location filename="../puddleobjects.py" line="507" />
-      <source>Error</source>
-      <translation>Fout</translation>
-    </message>
-    <message>
-      <location filename="../puddleobjects.py" line="508" />
-      <source>&lt;br /&gt; Do you want to continue?</source>
-      <translation>&lt;br /&gt; Wil jy aan gaan?</translation>
-    </message>
-    <message>
-      <location filename="../mainwin/tagpanel.py" line="430" />
-      <location filename="../puddleobjects.py" line="999" />
-      <source>Field</source>
-      <translation>Veld</translation>
-    </message>
-    <message>
-      <location filename="../helperwin.py" line="1203" />
-      <location filename="../puddleobjects.py" line="1433" />
-      <source>OK</source>
-      <translation type="unfinished" />
-    </message>
-    <message>
-      <location filename="../puddleobjects.py" line="2232" />
-      <location filename="../puddleobjects.py" line="1434" />
-      <source>Cancel</source>
-      <translation>Kanselleer</translation>
-    </message>
-    <message>
-      <location filename="../tagmodel.py" line="1973" />
+      <location filename="../tagmodel.py" line="1975" />
       <source>Reading Directory: {}</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../tagmodel.py" line="1975" />
+      <location filename="../tagmodel.py" line="1977" />
       <source>Reading Directory: {} + others</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../tagmodel.py" line="1977" />
+      <location filename="../tagmodel.py" line="1979" />
       <source>Reading Dir</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../tagmodel.py" line="2003" />
-      <location filename="../tagmodel.py" line="2000" />
+      <location filename="../tagmodel.py" line="2060" />
+      <location filename="../tagmodel.py" line="2056" />
       <source>Loading </source>
       <translation>Lading </translation>
+    </message>
+    <message>
+      <location filename="../puddletag.py" line="682" />
+      <location filename="../puddletag.py" line="679" />
+      <location filename="../puddletag.py" line="672" />
+      <location filename="../musiclib.py" line="216" />
+      <location filename="../puddleobjects.py" line="2060" />
+      <location filename="../puddleobjects.py" line="507" />
+      <location filename="../tagmodel.py" line="2193" />
+      <location filename="../tagmodel.py" line="2187" />
+      <source>Error</source>
+      <translation>Fout</translation>
     </message>
     <message>
       <location filename="../util.py" line="29" />
@@ -895,9 +877,32 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
       <translation type="unfinished" />
     </message>
     <message>
+      <location filename="../puddleobjects.py" line="1444" />
+      <location filename="../helperwin.py" line="1203" />
+      <source>OK</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
       <location filename="../helperwin.py" line="1205" />
       <source>Never show this message again.</source>
       <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../puddleobjects.py" line="508" />
+      <source>&lt;br /&gt; Do you want to continue?</source>
+      <translation>&lt;br /&gt; Wil jy aan gaan?</translation>
+    </message>
+    <message>
+      <location filename="../mainwin/tagpanel.py" line="430" />
+      <location filename="../puddleobjects.py" line="1010" />
+      <source>Field</source>
+      <translation>Veld</translation>
+    </message>
+    <message>
+      <location filename="../puddleobjects.py" line="2243" />
+      <location filename="../puddleobjects.py" line="1445" />
+      <source>Cancel</source>
+      <translation>Kanselleer</translation>
     </message>
     <message>
       <location filename="../mainwin/tagsources.py" line="146" />
@@ -949,7 +954,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
       <translation>&amp;Wysig</translation>
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="406" />
+      <location filename="../masstag/dialogs.py" line="391" />
       <source>Fields: </source>
       <translation type="unfinished" />
     </message>
@@ -1038,7 +1043,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
       <translation>Aksies</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="2174" />
+      <location filename="../puddleobjects.py" line="2185" />
       <source>Album Art</source>
       <translation type="unfinished" />
     </message>
@@ -1089,7 +1094,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
       <translation>Maak oop in leêr manipuleerder</translation>
     </message>
     <message>
-      <location filename="../mainwin/dirview.py" line="422" />
+      <location filename="../mainwin/dirview.py" line="423" />
       <source>Subfolders</source>
       <translation type="unfinished" />
     </message>
@@ -1251,57 +1256,57 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
   <context>
     <name>Fields</name>
     <message>
-      <location filename="../tagmodel.py" line="76" />
+      <location filename="../tagmodel.py" line="78" />
       <source>Filename</source>
       <translation>Leêrnaam</translation>
     </message>
     <message>
-      <location filename="../tagmodel.py" line="76" />
+      <location filename="../tagmodel.py" line="78" />
       <source>Artist</source>
       <translation>Kunstenaar</translation>
     </message>
     <message>
-      <location filename="../tagmodel.py" line="77" />
+      <location filename="../tagmodel.py" line="79" />
       <source>Title</source>
       <translation>Titel</translation>
     </message>
     <message>
-      <location filename="../tagmodel.py" line="77" />
+      <location filename="../tagmodel.py" line="79" />
       <source>Album</source>
       <translation>Album</translation>
     </message>
     <message>
-      <location filename="../tagmodel.py" line="78" />
+      <location filename="../tagmodel.py" line="80" />
       <source>Track</source>
       <translation>Nommer</translation>
     </message>
     <message>
-      <location filename="../tagmodel.py" line="78" />
+      <location filename="../tagmodel.py" line="80" />
       <source>Length</source>
       <translation>Lengte</translation>
     </message>
     <message>
-      <location filename="../tagmodel.py" line="79" />
+      <location filename="../tagmodel.py" line="81" />
       <source>Year</source>
       <translation>Jaar</translation>
     </message>
     <message>
-      <location filename="../tagmodel.py" line="79" />
+      <location filename="../tagmodel.py" line="81" />
       <source>Bitrate</source>
       <translation>Bitraat</translation>
     </message>
     <message>
-      <location filename="../tagmodel.py" line="80" />
+      <location filename="../tagmodel.py" line="82" />
       <source>Genre</source>
       <translation>Genre</translation>
     </message>
     <message>
-      <location filename="../tagmodel.py" line="80" />
+      <location filename="../tagmodel.py" line="82" />
       <source>Comment</source>
       <translation>Kommentaar</translation>
     </message>
     <message>
-      <location filename="../tagmodel.py" line="81" />
+      <location filename="../tagmodel.py" line="83" />
       <source>Dirpath</source>
       <translation>Gidspad</translation>
     </message>
@@ -1988,52 +1993,52 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
   <context>
     <name>List Buttons</name>
     <message>
-      <location filename="../puddleobjects.py" line="1273" />
+      <location filename="../puddleobjects.py" line="1284" />
       <source>Add</source>
       <translation>Voeg By</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1276" />
+      <location filename="../puddleobjects.py" line="1287" />
       <source>Remove</source>
       <translation>Verwyder</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1280" />
+      <location filename="../puddleobjects.py" line="1291" />
       <source>Move Up</source>
       <translation>Beweeg Op</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1283" />
+      <location filename="../puddleobjects.py" line="1294" />
       <source>Move Down</source>
       <translation>Beweeg Af</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1286" />
+      <location filename="../puddleobjects.py" line="1297" />
       <source>Edit</source>
       <translation>Wysig</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1289" />
+      <location filename="../puddleobjects.py" line="1300" />
       <source>Duplicate</source>
       <translation>Tweevoud</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1291" />
+      <location filename="../puddleobjects.py" line="1302" />
       <source>Copy to clipboard</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1293" />
+      <location filename="../puddleobjects.py" line="1304" />
       <source>Paste from clipboard</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1354" />
+      <location filename="../puddleobjects.py" line="1365" />
       <source>&amp;&gt;&gt;</source>
       <translation>&amp;&gt;&gt;</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1355" />
+      <location filename="../puddleobjects.py" line="1366" />
       <source>&amp;&lt;&lt;</source>
       <translation>&amp;&lt;&lt;</translation>
     </message>
@@ -2117,77 +2122,6 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
   </context>
   <context>
     <name>Masstagging</name>
-    <message>
-      <location filename="../masstag/dialogs.py" line="647" />
-      <location filename="../masstag/dialogs.py" line="40" />
-      <source>An error occurred during the search: &lt;b&gt;{}&lt;/b&gt;</source>
-      <translation type="unfinished" />
-    </message>
-    <message>
-      <location filename="../masstag/dialogs.py" line="650" />
-      <location filename="../masstag/dialogs.py" line="45" />
-      <source>An error occurred during album retrieval: &lt;b&gt;{}&lt;/b&gt;</source>
-      <translation type="unfinished" />
-    </message>
-    <message>
-      <location filename="../masstag/dialogs.py" line="517" />
-      <source>Mass Tagging</source>
-      <translation>Opeenvolgende Taggery</translation>
-    </message>
-    <message>
-      <location filename="../masstag/dialogs.py" line="690" />
-      <location filename="../masstag/dialogs.py" line="641" />
-      <location filename="../masstag/dialogs.py" line="601" />
-      <location filename="../masstag/dialogs.py" line="519" />
-      <source>&amp;Search</source>
-      <translation type="unfinished">&amp;Soek</translation>
-    </message>
-    <message>
-      <location filename="../masstag/dialogs.py" line="520" />
-      <source>&amp;Configure Profiles</source>
-      <translation type="unfinished" />
-    </message>
-    <message>
-      <location filename="../masstag/dialogs.py" line="521" />
-      <source>&amp;Write Previews</source>
-      <translation type="unfinished" />
-    </message>
-    <message>
-      <location filename="../masstag/dialogs.py" line="522" />
-      <source>Clear &amp;Preview</source>
-      <translation>Beleeg &amp;Voorskou</translation>
-    </message>
-    <message>
-      <location filename="../masstag/dialogs.py" line="546" />
-      <source>&amp;Profile:</source>
-      <translation>&amp;Profiel:</translation>
-    </message>
-    <message>
-      <location filename="../masstag/dialogs.py" line="598" />
-      <location filename="../masstag/dialogs.py" line="595" />
-      <source>&amp;Stop</source>
-      <translation>&amp;Stop</translation>
-    </message>
-    <message>
-      <location filename="../masstag/dialogs.py" line="610" />
-      <source>The profile file &lt;b&gt;{}&lt;/b&gt; can't be read and was skipped: {}</source>
-      <translation type="unfinished" />
-    </message>
-    <message>
-      <location filename="../masstag/dialogs.py" line="639" />
-      <source>&lt;b&gt;Please choose a tagging profile.&lt;/b&gt;</source>
-      <translation type="unfinished" />
-    </message>
-    <message>
-      <location filename="../masstag/dialogs.py" line="653" />
-      <source>An error occurred: &lt;b&gt;{}&lt;/b&gt;</source>
-      <translation type="unfinished" />
-    </message>
-    <message>
-      <location filename="../masstag/dialogs.py" line="688" />
-      <source>&lt;b&gt;Lookups completed.&lt;/b&gt;</source>
-      <translation type="unfinished" />
-    </message>
     <message>
       <location filename="../masstag/__init__.py" line="22" />
       <source>Continue</source>
@@ -2334,13 +2268,81 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../masstag/__init__.py" line="484" />
+      <location filename="../masstag/__init__.py" line="486" />
       <source>Rechecking</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../masstag/__init__.py" line="612" />
+      <location filename="../masstag/__init__.py" line="614" />
       <source>Retrying search with album name: &lt;b&gt;{}&lt;/b&gt;</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../masstag/dialogs.py" line="502" />
+      <source>Mass Tagging</source>
+      <translation>Opeenvolgende Taggery</translation>
+    </message>
+    <message>
+      <location filename="../masstag/dialogs.py" line="677" />
+      <location filename="../masstag/dialogs.py" line="626" />
+      <location filename="../masstag/dialogs.py" line="504" />
+      <source>&amp;Search</source>
+      <translation type="unfinished">&amp;Soek</translation>
+    </message>
+    <message>
+      <location filename="../masstag/dialogs.py" line="505" />
+      <source>&amp;Configure Profiles</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../masstag/dialogs.py" line="506" />
+      <source>&amp;Write Previews</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../masstag/dialogs.py" line="507" />
+      <source>Clear &amp;Preview</source>
+      <translation>Beleeg &amp;Voorskou</translation>
+    </message>
+    <message>
+      <location filename="../masstag/dialogs.py" line="531" />
+      <source>&amp;Profile:</source>
+      <translation>&amp;Profiel:</translation>
+    </message>
+    <message>
+      <location filename="../masstag/dialogs.py" line="584" />
+      <location filename="../masstag/dialogs.py" line="581" />
+      <source>&amp;Stop</source>
+      <translation>&amp;Stop</translation>
+    </message>
+    <message>
+      <location filename="../masstag/dialogs.py" line="597" />
+      <source>The profile file &lt;b&gt;{}&lt;/b&gt; can't be read and was skipped: {}</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../masstag/dialogs.py" line="624" />
+      <source>&lt;b&gt;Please choose a tagging profile.&lt;/b&gt;</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../masstag/dialogs.py" line="632" />
+      <source>An error occurred during the search: &lt;b&gt;{}&lt;/b&gt;</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../masstag/dialogs.py" line="635" />
+      <source>An error occurred during album retrieval: &lt;b&gt;{}&lt;/b&gt;</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../masstag/dialogs.py" line="638" />
+      <source>An error occurred: &lt;b&gt;{}&lt;/b&gt;</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../masstag/dialogs.py" line="675" />
+      <source>&lt;b&gt;Lookups completed.&lt;/b&gt;</source>
       <translation type="unfinished" />
     </message>
   </context>
@@ -2824,67 +2826,72 @@ Do you want to go ahead?</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../tagsources/mp3tag/__init__.py" line="374" />
+      <location filename="../tagsources/mp3tag/__init__.py" line="203" />
+      <source>line {} uses a command puddletag doesn't have: {}</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../tagsources/mp3tag/__init__.py" line="355" />
       <source>&lt;p&gt;Enter search keywords here. If empty, the selected files are used.&lt;br /&gt;&lt;br /&gt;Searches are done by &lt;b&gt;{}&lt;/b&gt;&lt;/p&gt;</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../tagsources/mp3tag/__init__.py" line="389" />
+      <location filename="../tagsources/mp3tag/__init__.py" line="370" />
       <source>This script has no [SearchBy] line. Type the search in the Search box.</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../tagsources/mp3tag/__init__.py" line="392" />
+      <location filename="../tagsources/mp3tag/__init__.py" line="373" />
       <source>[SearchBy] with several search fields (||) isn't supported. Type the search in the Search box.</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../tagsources/mp3tag/__init__.py" line="404" />
+      <location filename="../tagsources/mp3tag/__init__.py" line="385" />
       <source>[SearchBy] uses a function puddletag doesn't have ({}). Type the search in the Search box.</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../tagsources/mp3tag/__init__.py" line="422" />
+      <location filename="../tagsources/mp3tag/__init__.py" line="403" />
       <source>Retrieving search page: {}</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../tagsources/mp3tag/__init__.py" line="423" />
+      <location filename="../tagsources/mp3tag/__init__.py" line="404" />
       <source>Retrieving search page...</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../tagsources/mp3tag/__init__.py" line="426" />
+      <location filename="../tagsources/mp3tag/__init__.py" line="407" />
       <source>Parsing search page.</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../tagsources/mp3tag/__init__.py" line="427" />
+      <location filename="../tagsources/mp3tag/__init__.py" line="408" />
       <source>Parsing search page...</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../tagsources/mp3tag/__init__.py" line="446" />
+      <location filename="../tagsources/mp3tag/__init__.py" line="427" />
       <source>Retrieving album page: {}</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../tagsources/mp3tag/__init__.py" line="447" />
+      <location filename="../tagsources/mp3tag/__init__.py" line="428" />
       <source>Retrieving album page...</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../tagsources/mp3tag/__init__.py" line="450" />
+      <location filename="../tagsources/mp3tag/__init__.py" line="431" />
       <source>Parsing album page.</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../tagsources/mp3tag/__init__.py" line="451" />
+      <location filename="../tagsources/mp3tag/__init__.py" line="432" />
       <source>Parsing album page...</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../tagsources/mp3tag/__init__.py" line="463" />
+      <location filename="../tagsources/mp3tag/__init__.py" line="444" />
       <source>Couldn't retrieve the cover: {}</source>
       <translation type="unfinished" />
     </message>
@@ -3127,27 +3134,27 @@ Do you want to go ahead?</source>
   <context>
     <name>Plugin Settings</name>
     <message>
-      <location filename="../pluginloader.py" line="107" />
+      <location filename="../pluginloader.py" line="115" />
       <source>Name</source>
       <translation>Naam</translation>
     </message>
     <message>
-      <location filename="../pluginloader.py" line="108" />
+      <location filename="../pluginloader.py" line="116" />
       <source>Author</source>
       <translation>Skrywer</translation>
     </message>
     <message>
-      <location filename="../pluginloader.py" line="109" />
+      <location filename="../pluginloader.py" line="117" />
       <source>Description</source>
       <translation>Beskrywing</translation>
     </message>
     <message>
-      <location filename="../pluginloader.py" line="110" />
+      <location filename="../pluginloader.py" line="118" />
       <source>Version</source>
       <translation>Versie</translation>
     </message>
     <message>
-      <location filename="../pluginloader.py" line="132" />
+      <location filename="../pluginloader.py" line="140" />
       <source>&lt;b&gt;Loading/unloading plugins requires a restart.&lt;/b&gt;</source>
       <translation>&lt;b&gt;Laaing/aflaaing van insluiting benodig 'n herbegin&lt;/b&gt;</translation>
     </message>
@@ -3155,18 +3162,18 @@ Do you want to go ahead?</source>
   <context>
     <name>Previews</name>
     <message>
-      <location filename="../tagmodel.py" line="126" />
+      <location filename="../tagmodel.py" line="128" />
       <source>Do you want to exit Preview Mode? Unsaved changes will be discarded</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../tagmodel.py" line="1597" />
+      <location filename="../tagmodel.py" line="1599" />
       <source>Some files have uncommited previews. Changes will be lost once you unload them. &lt;br /&gt;Do you still want to unload everything?&lt;br /&gt;</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../tagmodel.py" line="2191" />
-      <location filename="../tagmodel.py" line="2165" />
+      <location filename="../tagmodel.py" line="2249" />
+      <location filename="../tagmodel.py" line="2223" />
       <source>There are unsaved changes pending. Do you want to discard and reload?</source>
       <translation type="unfinished" />
     </message>
@@ -3198,7 +3205,7 @@ Do you want to go ahead?</source>
       <translation>Tag verwydering is net moontlik as Voorskou Mode &lt;b&gt;af&lt;/b&gt; is. Skakel dit af eerste.</translation>
     </message>
     <message>
-      <location filename="../mainwin/tagsources.py" line="666" />
+      <location filename="../mainwin/tagsources.py" line="676" />
       <source>Clea&amp;r preview</source>
       <translation>Belee&amp;g voorskou</translation>
     </message>
@@ -3213,12 +3220,12 @@ Do you want to go ahead?</source>
   <context>
     <name>Profile Config</name>
     <message>
-      <location filename="../masstag/dialogs.py" line="55" />
+      <location filename="../masstag/dialogs.py" line="44" />
       <source>Configure Mass Tagging Profiles</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="85" />
+      <location filename="../masstag/dialogs.py" line="74" />
       <source>Masstagging Profiles</source>
       <translation type="unfinished" />
     </message>
@@ -3226,7 +3233,7 @@ Do you want to go ahead?</source>
   <context>
     <name>Profile Editor</name>
     <message>
-      <location filename="../masstag/dialogs.py" line="248" />
+      <location filename="../masstag/dialogs.py" line="233" />
       <location filename="../mainwin/tagsources.py" line="368" />
       <source>Brute force unmatched files.</source>
       <translation>Gebruik dom krag vir ongematchde leêrs.</translation>
@@ -3257,108 +3264,108 @@ Do you want to go ahead?</source>
       <translation>&amp;Velde om te gebruik vir liedjie matches: </translation>
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="280" />
+      <location filename="../masstag/dialogs.py" line="265" />
       <location filename="../mainwin/tagsources.py" line="428" />
       <source>Minimum percentage required for track match.</source>
       <translation>Minimum persentasie benodiig vir 'n liedjie match.</translation>
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="201" />
+      <location filename="../masstag/dialogs.py" line="186" />
       <source>Edit Masstagging Profile</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="207" />
+      <location filename="../masstag/dialogs.py" line="192" />
       <source>Masstagging Profile</source>
       <translation>Opeenvolgende Taggery Profiel</translation>
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="220" />
+      <location filename="../masstag/dialogs.py" line="205" />
       <source>&lt;p&gt;If no tag information is found in a file, the tags retrieved using this pattern will be used instead.&lt;/p&gt;</source>
       <translation>&lt;p&gt;As geen tag informasie in die leêr gevind is nie, sal hierdie patroon gebruik word om tags van die leêrnaam to kry&lt;/p&gt;</translation>
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="227" />
+      <location filename="../masstag/dialogs.py" line="212" />
       <source>&lt;p&gt;The album's artist and album name are each compared with the files' by fuzzy matching. The album matches when both are at least this percentage alike. A search result with as many tracks as the selected files also matches, whatever its names.&lt;/p&gt;</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="235" />
+      <location filename="../masstag/dialogs.py" line="220" />
       <source>&lt;p&gt;The fields listed here are compared between each file and each retrieved track by fuzzy matching; a track lacking one of them is skipped. The field with the lowest match percentage decides, and the track matches when that is at least the "Minimum percentage required for track match". An empty box means artist and title; track is ignored beside other fields.&lt;/p&gt;</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="250" />
+      <location filename="../masstag/dialogs.py" line="235" />
       <source>&lt;p&gt;Check to enable brute forcing matches.  If a proper match isn't found for a file, the unmatched files are sorted by discnumber, then track (or by filename without them), the retrieved tracks by discnumber, then track, and paired in order.&lt;/p&gt;</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="258" />
+      <location filename="../masstag/dialogs.py" line="243" />
       <source>Update empty fields only.</source>
       <translation>Update net leë velde.</translation>
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="265" />
+      <location filename="../masstag/dialogs.py" line="250" />
       <source>&amp;Name:</source>
       <translation>&amp;Naam:</translation>
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="267" />
+      <location filename="../masstag/dialogs.py" line="252" />
       <source>&amp;Description</source>
       <translation>&amp;Beskrywing</translation>
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="271" />
+      <location filename="../masstag/dialogs.py" line="256" />
       <source>Pattern to match filenames against.</source>
       <translation>Patroon of leêrname teen te vergelyk.</translation>
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="274" />
+      <location filename="../masstag/dialogs.py" line="259" />
       <source>Minimum percentage required for album matches.</source>
       <translation>Minimum grens-vereiste vir album matches.</translation>
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="277" />
+      <location filename="../masstag/dialogs.py" line="262" />
       <source>Match tracks using fields: </source>
       <translation>Match liedjies met velde:</translation>
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="380" />
+      <location filename="../masstag/dialogs.py" line="365" />
       <source>{} (not found)</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="396" />
+      <location filename="../masstag/dialogs.py" line="381" />
       <source>Edit Tag Source Config</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="407" />
+      <location filename="../masstag/dialogs.py" line="392" />
       <source>&lt;p&gt;Enter a comma-separated list of fields to retrieve. Leave empty to retrieve all available fields/values. &lt;br /&gt;&lt;br /&gt;Eg. &lt;b&gt;artist, album, title&lt;/b&gt; will only retrieve the artist, album and title fields of from the Tag Source. &lt;br /&gt;&lt;br /&gt;Start the list with the tilde (~) character to write all retrieved fields , but the ones listed. Eg the field list &lt;b&gt;~composer,__image&lt;/b&gt; will write all fields but the composer and __image (aka cover art) fields.&lt;/p&gt;&lt;p&gt;If a field has been retrieved in a previous Tag Source the values will be combined if they differ. Eg. If genre=&lt;b&gt;Rock&lt;/b&gt; for the first tag source polled and genre=&lt;b&gt;Alternative&lt;/b&gt; for the tag source polled second then the resulting field will have multiple-values ie. genre=&lt;b&gt;Rock\\Rap&lt;/b&gt;</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="429" />
+      <location filename="../masstag/dialogs.py" line="414" />
       <source>Fields to replace: </source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="431" />
+      <location filename="../masstag/dialogs.py" line="416" />
       <source>Enter a comma-separated lists of fields that'll replace any retrieved from previously polled tag sources. &lt;br /&gt;Start the list with the tilde (~) character to replace all but the fields you list. &lt;br /&gt;&lt;b&gt;NB: Fields listed here must also be listed in the list of fields to retrieve.&lt;/b&gt;&lt;br /&gt;&lt;br /&gt;Eg. Assume you have two Tag Sources. The first retrieves &lt;b&gt;artist=Freshlyground, album=Nomvula, genre=Afro Pop&lt;/b&gt;. The second source gets &lt;b&gt;artist=Freshly Ground, album=Nomvula, genre=Pop&lt;/b&gt;. For the second Tag Source, setting just &lt;b&gt;artist&lt;/b&gt; as the list of fields to replace will overwrite the artist field retrieved from the first tag source. The resulting retrieved fields/values as shown in puddletag will then be &lt;b&gt;artist=Freshly Ground, album=Nomvula, genre=Afro Pop\\Pop&lt;/b&gt;.</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="455" />
+      <location filename="../masstag/dialogs.py" line="440" />
       <source>&amp;Source</source>
       <translation>&amp;Bron</translation>
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="459" />
+      <location filename="../masstag/dialogs.py" line="444" />
       <source>&amp;If no results found: </source>
       <translation>&amp;As geen resultate gevind is nie:</translation>
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="461" />
+      <location filename="../masstag/dialogs.py" line="446" />
       <source>&lt;p&gt;&lt;b&gt;Continue&lt;/b&gt;: The lookup for the current album will continue by checking the other tag sources if no matching results were found for this tag source.&lt;/p&gt;&lt;p&gt;&lt;b&gt;Stop:&lt;/b&gt; The lookup for the current album will stop and any previously retrieved results will be used.&lt;/p&gt;</source>
       <translation type="unfinished" />
     </message>
@@ -3366,12 +3373,12 @@ Do you want to go ahead?</source>
   <context>
     <name>Progress Dialog</name>
     <message>
-      <location filename="../puddleobjects.py" line="2212" />
+      <location filename="../puddleobjects.py" line="2223" />
       <source>Please Wait...</source>
       <translation>Wag net 'n bietjie...</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="2213" />
+      <location filename="../puddleobjects.py" line="2224" />
       <source>{}{} of {}...</source>
       <translation>{}{} van {}...</translation>
     </message>
@@ -3521,7 +3528,7 @@ Do you want to go ahead?</source>
       <translation>Wysig Kortgewings</translation>
     </message>
     <message>
-      <location filename="../tagmodel.py" line="351" />
+      <location filename="../tagmodel.py" line="353" />
       <source>File Properties</source>
       <translation>Leêr Eienskappe</translation>
     </message>
@@ -3560,54 +3567,54 @@ Do you want to go ahead?</source>
   <context>
     <name>Table</name>
     <message>
-      <location filename="../tagmodel.py" line="722" />
+      <location filename="../tagmodel.py" line="724" />
       <source>Preview: {}
 Real: {}</source>
       <translation>Voorskou: {}
 Egte: {}</translation>
     </message>
     <message>
-      <location filename="../tagmodel.py" line="1647" />
+      <location filename="../tagmodel.py" line="1649" />
       <source>Disable Preview Mode first to enable tag deletion.</source>
       <translation>Skakel eerste Voorskou Mode af om tag verwydering aan te skakel.</translation>
     </message>
     <message>
-      <location filename="../tagmodel.py" line="1657" />
+      <location filename="../tagmodel.py" line="1659" />
       <source>An error occurred while deleting the tag of {}: &lt;b&gt;{}&lt;/b&gt;</source>
       <translation>'n Fout het plaasgevind gedurende die verwydering van die tag van {}:&lt;b&gt; {}&lt;/b&gt;</translation>
     </message>
     <message>
-      <location filename="../tagmodel.py" line="1666" />
+      <location filename="../tagmodel.py" line="1668" />
       <source>There was an error deleting the tag of {}: &lt;b&gt;Tag deletion isn't supported for {} files.&lt;/b&gt;</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../tagmodel.py" line="1674" />
+      <location filename="../tagmodel.py" line="1676" />
       <source>Deleting tag... </source>
       <translation>Besig om tags te verwyder...</translation>
     </message>
     <message>
-      <location filename="../tagmodel.py" line="1716" />
+      <location filename="../tagmodel.py" line="1718" />
       <source>Are you sure you want to move the selected files to the trash?</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../tagmodel.py" line="1745" />
+      <location filename="../tagmodel.py" line="1747" />
       <source>I couldn't move &lt;b&gt;{}&lt;/b&gt; to the trash ({})</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../tagmodel.py" line="1764" />
+      <location filename="../tagmodel.py" line="1766" />
       <source>Moving to the trash </source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../tagmodel.py" line="2130" />
+      <location filename="../tagmodel.py" line="2188" />
       <source>An error occurred while trying to play the selected files: &lt;b&gt;{}&lt;/b&gt;&lt;br /&gt;Does the music player you defined (&lt;b&gt;{}&lt;/b&gt;) exist?</source>
       <translation>'n Fout het plaasgevind toe ek probeer het om die gekiesde leêrs te speel: &lt;b&gt;{}&lt;/b&gt;&lt;br /&gt;Bestaan die musiek speler (&lt;b&gt;{}&lt;/b&gt;) wat jy gestel het?</translation>
     </message>
     <message>
-      <location filename="../tagmodel.py" line="2136" />
+      <location filename="../tagmodel.py" line="2194" />
       <source>It wasn't possible to play the selected files, because the music player you defined (&lt;b&gt;{}&lt;/b&gt;) does not exist.</source>
       <translation>Dit was nie moontlik om die gekiesde leêr te speel nie. Die musiek speler wat jy gestel het (&lt;b&gt;{}&lt;/b&gt;) bestaan nie.</translation>
     </message>
@@ -3676,53 +3683,6 @@ Egte: {}</translation>
   <context>
     <name>Tag Sources</name>
     <message>
-      <location filename="../mainwin/releasewidget.py" line="20" />
-      <source>Retrieved Albums (sorted by {})</source>
-      <translation type="unfinished" />
-    </message>
-    <message>
-      <location filename="../mainwin/releasewidget.py" line="79" />
-      <source>&lt;b&gt;Error in pattern&lt;/b&gt;</source>
-      <translation>&lt;b&gt;Fout in patroon&lt;/b&gt;</translation>
-    </message>
-    <message>
-      <location filename="../mainwin/releasewidget.py" line="259" />
-      <source>Retrieved Albums</source>
-      <translation>Afgelaaide Albums</translation>
-    </message>
-    <message>
-      <location filename="../mainwin/tagsources.py" line="911" />
-      <location filename="../mainwin/tagsources.py" line="886" />
-      <location filename="../mainwin/releasewidget.py" line="466" />
-      <location filename="../mainwin/releasewidget.py" line="369" />
-      <source>An error occurred: {}</source>
-      <translation>'n Fout het plaasgevind: {}</translation>
-    </message>
-    <message>
-      <location filename="../mainwin/tagsources.py" line="915" />
-      <location filename="../mainwin/tagsources.py" line="890" />
-      <location filename="../mainwin/releasewidget.py" line="471" />
-      <location filename="../mainwin/releasewidget.py" line="374" />
-      <source>An unhandled error occurred: {}</source>
-      <translation type="unfinished" />
-    </message>
-    <message>
-      <location filename="../mainwin/releasewidget.py" line="379" />
-      <source>Retrieving album tracks...</source>
-      <translation>Besig om album liedjies af te laai...</translation>
-    </message>
-    <message>
-      <location filename="../mainwin/releasewidget.py" line="482" />
-      <location filename="../mainwin/releasewidget.py" line="387" />
-      <source>Retrieval complete.</source>
-      <translation>Aflaai is gedaan.</translation>
-    </message>
-    <message>
-      <location filename="../mainwin/releasewidget.py" line="488" />
-      <source>Retrieving tracks...</source>
-      <translation>Besig om liedjies af te laai...</translation>
-    </message>
-    <message>
       <location filename="../mainwin/tagsources.py" line="30" />
       <source>Enter search parameters here. If empty, the selected files are used. &lt;ul&gt;&lt;li&gt;&lt;b&gt;artist;album&lt;/b&gt; searches for a specific album/artist combination.&lt;/li&gt;&lt;li&gt;To list the albums by an artist leave off the album part, but keep the semicolon (eg. &lt;b&gt;Ratatat;&lt;/b&gt;). For an album only leave the artist part as in &lt;b&gt;;Resurrection&lt;/b&gt;.&lt;/li&gt;&lt;/ul&gt;</source>
       <translation>&lt;p&gt;Stel you soek parameters hier. As geen woorde gestel is nie, sal die geselekteerde leêrs gebruik word.&lt;p&gt;&lt;ul&gt;&lt;li&gt;&lt;b&gt;kunstenaar;album&lt;/b&gt; soek vir a spesifieke kunstenaar/album kombinasie.&lt;/li&gt;&lt;li&gt;Om net die albums van 'n kunstenaar, behou net die kunstenaar se naam soos in &lt;b&gt;Ratatat;&lt;/b&gt; (nb. die komma-punt moet bly). Om net vir 'n spesifieke album to soek kan jy die kunstenaar gedeelte af los soos in &lt;b&gt;;Resurrection&lt;/b&gt;.&lt;/li&gt;&lt;/ul&gt;</translation>
@@ -3785,79 +3745,131 @@ Egte: {}</translation>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../mainwin/tagsources.py" line="614" />
+      <location filename="../mainwin/tagsources.py" line="622" />
       <source>Sour&amp;ce: </source>
       <translation>&amp;Bron:</translation>
     </message>
     <message>
-      <location filename="../mainwin/tagsources.py" line="620" />
+      <location filename="../mainwin/tagsources.py" line="628" />
       <source>Configure</source>
       <translation>Stel</translation>
     </message>
     <message>
-      <location filename="../mainwin/tagsources.py" line="630" />
+      <location filename="../mainwin/tagsources.py" line="638" />
       <source>&amp;Search</source>
       <translation>&amp;Soek</translation>
     </message>
     <message>
-      <location filename="../mainwin/tagsources.py" line="636" />
+      <location filename="../mainwin/tagsources.py" line="644" />
       <source>Select files and click on Search to retrieve metadata.</source>
       <translation>Kies leêrs en klik om Soek om metadata af te laai.</translation>
     </message>
     <message>
-      <location filename="../mainwin/tagsources.py" line="640" />
+      <location filename="../mainwin/tagsources.py" line="647" />
+      <source>Couldn't load tag source {}: {}</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../mainwin/tagsources.py" line="649" />
       <source>Couldn't load Mp3tag script {}: {}</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../mainwin/tagsources.py" line="657" />
+      <location filename="../mainwin/tagsources.py" line="667" />
       <source>S&amp;ubmit Tags</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../mainwin/tagsources.py" line="662" />
+      <location filename="../mainwin/tagsources.py" line="672" />
       <source>&amp;Write</source>
       <translation>&amp;Skryf</translation>
     </message>
     <message>
-      <location filename="../mainwin/tagsources.py" line="676" />
+      <location filename="../mainwin/tagsources.py" line="686" />
       <source>Update empty fields only.</source>
       <translation>Update alleenlik leë velde.</translation>
     </message>
     <message>
-      <location filename="../mainwin/tagsources.py" line="683" />
+      <location filename="../mainwin/tagsources.py" line="693" />
       <source>Automatically retrieve matches.</source>
       <translation>Laai oorenstemmende albums automaties af.</translation>
     </message>
     <message>
-      <location filename="../mainwin/tagsources.py" line="851" />
+      <location filename="../mainwin/tagsources.py" line="861" />
       <source>Searching complete.</source>
       <translation>Versoekings is gedaan.</translation>
     </message>
     <message>
-      <location filename="../mainwin/tagsources.py" line="854" />
+      <location filename="../mainwin/tagsources.py" line="864" />
       <source>No matching albums were found.</source>
       <translation>Geen ooreenstemmende albums was gevind nie.</translation>
     </message>
     <message>
-      <location filename="../mainwin/tagsources.py" line="869" />
+      <location filename="../mainwin/tagsources.py" line="879" />
       <source>Searching...</source>
       <translation>Besig om te soek...</translation>
     </message>
     <message>
-      <location filename="../mainwin/tagsources.py" line="874" />
+      <location filename="../mainwin/tagsources.py" line="884" />
       <source>&lt;b&gt;Select some files or enter search parameters.&lt;/b&gt;</source>
       <translation>&lt;b&gt;Kies leêr eerste of stel terme om mee 'n versoek te doen&lt;/b&gt;</translation>
     </message>
     <message>
-      <location filename="../mainwin/tagsources.py" line="918" />
+      <location filename="../mainwin/releasewidget.py" line="466" />
+      <location filename="../mainwin/releasewidget.py" line="369" />
+      <location filename="../mainwin/tagsources.py" line="921" />
+      <location filename="../mainwin/tagsources.py" line="896" />
+      <source>An error occurred: {}</source>
+      <translation>'n Fout het plaasgevind: {}</translation>
+    </message>
+    <message>
+      <location filename="../mainwin/releasewidget.py" line="471" />
+      <location filename="../mainwin/releasewidget.py" line="374" />
+      <location filename="../mainwin/tagsources.py" line="925" />
+      <location filename="../mainwin/tagsources.py" line="900" />
+      <source>An unhandled error occurred: {}</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../mainwin/tagsources.py" line="928" />
       <source>Submission completed.</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../mainwin/tagsources.py" line="951" />
+      <location filename="../mainwin/tagsources.py" line="961" />
       <source>&lt;b&gt;Tags were written.&lt;/b&gt;</source>
       <translation>&lt;b&gt;Tags was geskryfe&lt;/b&gt;</translation>
+    </message>
+    <message>
+      <location filename="../mainwin/releasewidget.py" line="20" />
+      <source>Retrieved Albums (sorted by {})</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../mainwin/releasewidget.py" line="79" />
+      <source>&lt;b&gt;Error in pattern&lt;/b&gt;</source>
+      <translation>&lt;b&gt;Fout in patroon&lt;/b&gt;</translation>
+    </message>
+    <message>
+      <location filename="../mainwin/releasewidget.py" line="259" />
+      <source>Retrieved Albums</source>
+      <translation>Afgelaaide Albums</translation>
+    </message>
+    <message>
+      <location filename="../mainwin/releasewidget.py" line="379" />
+      <source>Retrieving album tracks...</source>
+      <translation>Besig om album liedjies af te laai...</translation>
+    </message>
+    <message>
+      <location filename="../mainwin/releasewidget.py" line="482" />
+      <location filename="../mainwin/releasewidget.py" line="387" />
+      <source>Retrieval complete.</source>
+      <translation>Aflaai is gedaan.</translation>
+    </message>
+    <message>
+      <location filename="../mainwin/releasewidget.py" line="488" />
+      <source>Retrieving tracks...</source>
+      <translation>Besig om liedjies af te laai...</translation>
     </message>
     <message>
       <location filename="../tagsources/__init__.py" line="91" />
@@ -3930,24 +3942,24 @@ Egte: {}</translation>
   <context>
     <name>WebDB</name>
     <message>
-      <location filename="../mainwin/releasewidget.py" line="717" />
+      <location filename="../mainwin/tagsources.py" line="417" />
+      <source>Automatic retrieval options</source>
+      <translation type="unfinished">Automities aflaii opsies</translation>
+    </message>
+    <message>
+      <location filename="../mainwin/releasewidget.py" line="721" />
       <source>No matching albums were found.</source>
       <translation type="unfinished">Geen ooreenstemmende albums was gevind nie.</translation>
     </message>
     <message>
-      <location filename="../mainwin/releasewidget.py" line="720" />
+      <location filename="../mainwin/releasewidget.py" line="724" />
       <source>More than one album matches. None will be retrieved.</source>
       <translation type="unfinished">Meer as een album stem oorleen. Geen sal afgelaai word nie.</translation>
     </message>
     <message>
-      <location filename="../mainwin/releasewidget.py" line="723" />
+      <location filename="../mainwin/releasewidget.py" line="727" />
       <source>Retrieving album.</source>
       <translation type="unfinished">Besig om album af te laai.</translation>
-    </message>
-    <message>
-      <location filename="../mainwin/tagsources.py" line="417" />
-      <source>Automatic retrieval options</source>
-      <translation type="unfinished">Automities aflaii opsies</translation>
     </message>
   </context>
 </TS>
