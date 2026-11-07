@@ -635,7 +635,8 @@ def test_search_error_is_shown_in_the_window(mainwin, make_audio, tmp_path, qtbo
     # The docs don't say what the window does when a search fails; this is what
     # puddletag does. tagsources.txt's example plugin: "Raise
     # puddlestuff.tagsources.RetrievalError if an error occurs. It accepts a
-    # message the only argument (may be html)." Synthetic source and error.
+    # message as its only argument (may be html), which the Tag Sources
+    # window shows." Synthetic source and error.
     window, paths = load(mainwin, make_audio, tmp_path, qtbot, user)
     fail_to_search(user, qtbot, window, RetrievalError('<b>Synthetic failure</b>'),
                    'An error occurred: <b>Synthetic failure</b>')
@@ -1211,9 +1212,8 @@ def test_freedb_unreadable_reply(gnudb, mainwin, make_audio, tmp_path, qtbot, us
 
 class Configurable:
     """A tag source with one control of each kind a source's preferences
-    can declare: the example plugin's CHECKBOX, COMBO and TEXT, and the
-    SPINBOX AcoustID's Minimum Score uses. applyPrefs records each list of
-    values it's given. Synthetic."""
+    can declare: the example plugin's CHECKBOX, COMBO, SPINBOX and TEXT.
+    applyPrefs records each list of values it's given. Synthetic."""
     group_by = ['album', 'artist']
     name = 'Configurable'
 
@@ -1333,9 +1333,9 @@ def edit_configure(user, qtbot, dialog):
 def test_configure_shows_each_control_with_its_default(more_sources, mainwin, make_audio, tmp_path, qtbot, user):
     # tut4.txt: "You can configure the Tag Source's behaviour (if not
     # previously configured to your liking). This is done by clicking on the
-    # Configuration icon." The example plugin: "Object.preferences is a list
-    # of lists definining the the controls that'll be used to created the
-    # Tag Source's config dialog." The defaults shown are the source's own.
+    # Configuration icon." The example plugin: "preferences is a list of lists
+    # defining the controls of the Tag Source's config dialog" and "The
+    # default, which is required". The defaults shown are the source's own.
     # Synthetic source.
     window, paths = load(mainwin, make_audio, tmp_path, qtbot, user, select=False)
     pick(user, qtbot, window.sourcelist, 'Configurable')
@@ -1359,12 +1359,13 @@ def test_configure_shows_each_control_with_its_default(more_sources, mainwin, ma
 
 def test_configure_ok_applies_the_values_and_keeps_them_after_a_restart(more_sources, mainwin, make_audio, tmp_path,
                                                                         qtbot, user, restart):
-    # The example plugin: "When the user has finished editing, the
-    # Object.applyPrefs will be called with a list of values correcsponding
-    # to the order in which the were defined. The value returned will be
-    # either True or False for CHECKBOX. For TEXT, it'll be just the text and
-    # for COMBO it'll be the index the user's selected." The docs don't say
-    # the values are kept after a restart; this is what puddletag does.
+    # The example plugin: "Called when puddletag starts, with the saved values
+    # (the defaults until the user changes them), and when the user has
+    # finished editing and clicks OK. values is a list in the order the
+    # controls were defined: True or False for CHECKBOX, the text for TEXT,
+    # the selected index for COMBO and the number for SPINBOX." The docs
+    # don't say the values are kept after a restart; this is what puddletag
+    # does.
     # Synthetic source.
     window, paths = load(mainwin, make_audio, tmp_path, qtbot, user, select=False)
     pick(user, qtbot, window.sourcelist, 'Configurable')
@@ -1511,10 +1512,10 @@ def test_unhandled_submit_error_is_shown_in_the_window(more_sources, mainwin, ma
 
 
 def test_search_box_is_off_for_a_source_without_text_search(more_sources, mainwin, make_audio, tmp_path, qtbot, user):
-    # tagsources.txt's example plugin: "This method is optional, but
-    # recommended." (keyword_search); tut4.txt: "For all Tag Sources, but
-    # FreeDB and AcoustID, you can also do textual searching". Synthetic
-    # source.
+    # The example plugin: "This method is optional, but recommended: without
+    # it the Search box is disabled." (keyword_search); tut4.txt: "For all
+    # Tag Sources, but FreeDB and AcoustID, you can also do textual
+    # searching". Synthetic source.
     window, paths = load(mainwin, make_audio, tmp_path, qtbot, user)
     assert window.searchEdit.isEnabled()
 
@@ -1524,9 +1525,9 @@ def test_search_box_is_off_for_a_source_without_text_search(more_sources, mainwi
 
 
 def test_source_without_grouping_searches_the_selected_files(more_sources, mainwin, make_audio, tmp_path, qtbot, user):
-    # The docs don't say; this is what puddletag should do. The interface it
-    # describes for sources: "if self.group_by is Falsey, a list of selected
-    # audio files as ModelTag instances." (synthetic files and source)
+    # The example plugin: "With group_by = None, search() gets the selected
+    # files themselves instead: search(self, files)." (synthetic files and
+    # source)
     window, paths = load(mainwin, make_audio, tmp_path, qtbot, user)
     pick(user, qtbot, window.sourcelist, 'Ungrouped')
     user.activate()
@@ -1754,9 +1755,8 @@ def test_track_display_format_applies_to_the_shown_albums(mainwin, make_audio, t
 
 
 def test_album_link_is_shown_and_opens_in_the_browser(browser, mainwin, make_audio, tmp_path, qtbot, user):
-    # The docs don't say; this is what puddletag does. The example plugin
-    # sets info['#extrainfo'] = ('Album at Amazon', page_url(item)) without
-    # a comment. Synthetic album and address.
+    # The example plugin: "'#extrainfo', a (text, address) pair, is shown as
+    # a link when the user picks the album." Synthetic album and address.
     window, _ = load(mainwin, make_audio, tmp_path, qtbot, user)
     the_source().albums[0][0]['#extrainfo'] = ('Alpha at Synthetic', 'https://example.org/alpha?id=1&v=2')
     search(user, qtbot, window)

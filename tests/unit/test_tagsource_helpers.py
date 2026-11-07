@@ -158,8 +158,8 @@ def test_unknown_host_becomes_a_retrieval_error(unknown_host):
 
 
 def test_retrieve_cover_returns_the_image(web_server):
-    # Example plugin: "Images must be a list of dictonaries with the following
-    # keys (all from puddlestuff.audioinfo): DATA: Required. The images string
+    # Example plugin: "'__image', a list of dictionaries with the following
+    # keys (all from puddlestuff.audioinfo): DATA: Required. The image's
     # data."
     web_server.add('/cover.jpg', b'synthetic image', content_type='image/jpeg')
     assert tagsources.retrieve_cover(web_server.url + '/cover.jpg') == {'__image': [{DATA: b'synthetic image'}]}

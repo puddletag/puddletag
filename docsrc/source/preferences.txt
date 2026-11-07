@@ -119,7 +119,7 @@ puddletag supports writing ID3v2.4 (text as UTF-8) and ID3v2.3 (text as UTF-16, 
 Plugins
 -------
 
-Plugins are a means with which to extend puddletag. If you want to install one drop it into "~/.puddletag/plugins". Enable it, then restart.
+Plugins are a means with which to extend puddletag. If you want to install one drop it into "~/.local/share/puddletag/plugins". Enable it, then restart.
 
 **Plugins are executable code akin to installing a program on you PC. Do not use any that aren't from trustworthy sources.**
 

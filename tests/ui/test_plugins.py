@@ -499,3 +499,94 @@ def test_preferences_that_fail_to_apply_are_logged(no_default_plugin, mainwin, u
     # plugin says is required.
     assert 'No Default Source' in listed_sources()
     assert startup_errors(caplog, 'setup') == ["Couldn't apply the preferences of tag source No Default Source"]
+
+
+# The docs' example tag source.
+
+EXAMPLE = DOCS / 'source' / 'tagsource.tar.gz'
+
+
+def example_installed(user, qtbot, mainwin, restart, new_process):
+    """Installs the docs' example plugin as plugins.txt describes, ticks it
+    on the Plugins page and restarts. Returns the new window and the user
+    driving it."""
+    with tarfile.open(EXAMPLE) as archive:
+        archive.extractall(PLUGINDIR, filter='data')
+    dialog, page = plugins_page(user, qtbot, mainwin)
+    click_check_box(user, page, 'Example Tag Source')
+    click_ok(user, qtbot, dialog)
+    new = start_again(restart, new_process)
+    user = type(user)(qtbot, new)
+    return new, user
+
+
+def test_example_tag_source_plugin_tags_the_files(mainwin, make_audio, tmp_path, qtbot, user, restart, new_process):
+    # plugins.txt: "The Tag Source Example contains a tag source that
+    # answers from its own list of albums, with comments on everything a
+    # tag source can do. Extract it into the plugins folder, tick **Example
+    # Tag Source** on the Plugins page of Edit->Preferences and restart
+    # puddletag to try it." The example: "In the Tag Sources window pick
+    # Example Source, select files whose album is First Album or Second
+    # Album and click Search." tut4.txt's steps: select, Search, pick the
+    # album, Write. The files are synthetic.
+    music = tmp_path / 'music'
+    paths = [make_audio(f'0{n}.mp3', music, album='First Album', artist='Example Artist', title=f'Old {n}')
+             for n in (1, 2, 3)]
+    new, user = example_installed(user, qtbot, mainwin, restart, new_process)
+    new.openDir(str(music), False)
+    qtbot.waitUntil(lambda: new._table.model().rowCount() == 3)
+
+    user.click_menu('Tag Sources')
+    window = tag_sources_window()
+    qtbot.waitUntil(window.isVisible)
+    pick(user, qtbot, window.sourcelist, 'Example Source')
+    user.activate()
+    user.click_cell(user.cell(0, 'title'))
+    user.press(Key.Key_A, Ctrl)
+    user.click(window.searchButton)
+    qtbot.waitUntil(lambda: window.searchButton.isEnabled() and albums(window) == ['Example Artist - First Album'])
+    click_album(user, window, 'First Album')
+    album = {'album': 'First Album', 'artist': 'Example Artist', 'year': '2001'}
+    expected = [dict(album, title=title, track=track)
+                for title, track in (('Opening', '1'), ('Middle', '2'), ('Closing', '3'))]
+    qtbot.waitUntil(lambda: previews(new) == expected)
+
+    user.activate()
+    user.click(button(window, '&Write'))
+    qtbot.waitUntil(lambda: in_file(paths[2]).get('title') == ['Closing'])
+    assert [in_file(path) for path in paths] == [{key: [value] for key, value in track.items()} for track in expected]
+    assert previews(new) == [{}, {}, {}]
+
+
+def test_example_source_configure_shows_its_defaults(mainwin, qtbot, user, restart, new_process):
+    # The example: "3. The default, which is required" and the controls it
+    # defines: a check box "Retrieve the year" ticked, a combo of "As
+    # listed" and "Upper case" at the first, a text with '' and a spin box
+    # with 99. tut4.txt: "This is done by clicking on the Configuration
+    # icon."
+    _, user = example_installed(user, qtbot, mainwin, restart, new_process)
+    user.click_menu('Tag Sources')
+    window = tag_sources_window()
+    qtbot.waitUntil(window.isVisible)
+    pick(user, qtbot, window.sourcelist, 'Example Source')
+
+    user.click(window._MainWin__preferencesButton)
+    dialog = opened(qtbot, SimpleDialog)
+    user.activate(dialog)
+
+    check, combo, text, spin = dialog._controls
+    assert [check.isChecked(), combo.currentText(), text.text(), spin.value()] == [True, 'As listed', '', 99]
+    assert check.text() == 'Retrieve the year'
+    user.click(button(dialog, 'Cancel'))
+
+
+def test_example_archive_is_built_from_its_folder():
+    # plugins.txt: "The Tag Source Example" download is the archive; the
+    # folder docsrc/source/tagsource_plugin is its source.
+    spec = importlib.util.spec_from_file_location('make_tagsource_example', DOCS / 'make_tagsource_example.py')
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+
+    assert gzip.decompress(EXAMPLE.read_bytes()) == module.tar_bytes()
+    with tarfile.open(EXAMPLE) as archive:
+        assert archive.getnames() == ['tagsource_plugin', 'tagsource_plugin/__init__.py', 'tagsource_plugin/info']

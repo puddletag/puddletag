@@ -1,0 +1,6 @@
+[info]
+name = Example Tag Source
+author = puddletag
+version = 1.0
+puddletag_version = 2.5.0
+description = A tag source that answers from its own list of albums. Read its __init__.py to write your own.
