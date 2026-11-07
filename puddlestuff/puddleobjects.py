@@ -662,29 +662,6 @@ def natural_sort_key(s: Union[str, List[str]], case_insensitive=True) -> Natural
     return NaturalSortKey([int(part) if i % 2 else part for i, part in enumerate(parts)], collator)
 
 
-def dupes(l, method=None):
-    if method is None:
-        method = lambda a, b: int(a == b)
-    l = [{'key': z, 'index': i} for i, z in enumerate(l)]
-    chars = chars = r'/\*?;"|:\''
-    strings = sorted([(safe_name(z['key'].lower(), chars, ''), z['index'])
-                      for z in l if z['key'] is not None])
-    try:
-        last = strings[0][0]
-    except IndexError:
-        return []
-    groups = [[0]]
-    for z, i in strings[1:]:
-        if z is not None:
-            val = method(last, z)
-            if val >= 0.85:
-                groups[-1].append(i)
-            else:
-                last = z
-                groups.append([i])
-    return [z for z in groups if len(z) > 1]
-
-
 def getfiles(files: Union[str, List[str]], subfolders: bool = False) -> Generator[str, None, None]:
     """For the given path(s), yield all the files.
 

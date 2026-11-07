@@ -188,17 +188,6 @@ def filenametotag(m_tags, p_pattern):
     return findfunc.filenametotag(p_pattern, m_tags[PATH], True)
 
 
-def finddups(tracks, key='title', method=None):
-    from .puddleobjects import dupes
-    li = []
-    for z in tracks:
-        try:
-            li.append(z[key])
-        except KeyError:
-            li.append(None)
-    return dupes(li, method)
-
-
 def floor(n_value):
     return str(math.floor(n_value))
 

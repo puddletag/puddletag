@@ -74,7 +74,6 @@ def versions():
         'ConfigObj': get_module_version('configobj'),
         'Unidecode': get_module_version('unidecode'),
         'pyacoustid': get_module_version('pyacoustid'),
-        'Levenshtein': get_module_version('Levenshtein'),
         'Send2Trash': get_module_version('send2trash'),
     }
 
