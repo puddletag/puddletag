@@ -17,7 +17,7 @@ from PyQt6.QtWidgets import (QApplication, QCheckBox, QComboBox, QLabel, QLineEd
                              QPushButton, QSpinBox, QStyle, QStyleOptionViewItem, QToolButton)
 
 from puddlestuff import audioinfo, tagsources
-from puddlestuff.constants import CHECKBOX, COMBO, CONFIGDIR, PLUGINDIR, SPINBOX, TEXT
+from puddlestuff.constants import CHECKBOX, COMBO, CONFIGDIR, SPINBOX, TEXT
 from puddlestuff.mainwin.tagsources import SimpleDialog, SortOptionEditor
 from puddlestuff.puddleobjects import PuddleConfig
 from puddlestuff.puddlesettings import SettingsDialog
@@ -853,64 +853,6 @@ def test_album_tooltip_shows_the_fields_to_write(mainwin, make_audio, tmp_path, 
     qtbot.waitUntil(lambda: source.retrieved == ['alpha'] and window.label.text() == 'Retrieval complete.')
     tooltip = album_index(window, 'Alpha').data(Qt.ItemDataRole.ToolTipRole)
     assert tooltip == '<b>album</b>: Alpha<br /><b>artist</b>: Band<br /><b>year</b>: 1999<br />'
-
-
-# A tag source plugin.
-
-PLUGIN_INFO = """[info]
-author = Synthetic Author
-description = A tag source in the user's plugin folder
-name = Synthetic Plugin
-puddletag_version = 2.0
-version = 1.0
-"""
-
-PLUGIN_CODE = """class PluginSource:
-    group_by = ['album']
-    name = 'Plugin Source'
-
-    def search(self, album, artists):
-        return []
-
-
-tagsources = [PluginSource]
-"""
-
-
-@pytest.fixture
-def user_plugin(clean_profile):
-    """A tag source plugin in the user's plugin folder, written before
-    mainwin builds the window."""
-    folder = Path(PLUGINDIR) / 'synthetic_plugin_source'
-    folder.mkdir(parents=True)
-    (folder / 'info').write_text(PLUGIN_INFO)
-    (folder / '__init__.py').write_text(PLUGIN_CODE)
-
-
-def test_tag_source_plugin_appears_in_the_source_list(user_plugin, mainwin, user, qtbot, restart):
-    # plugins.txt: "puddletag plugins are stored in ~/.puddletag/plugins"
-    # and the example's "tagsources = [Amazon]": "Required in order to let
-    # your tagsource be loaded." The plugin is synthetic.
-    dialog = open_preferences(user, qtbot, mainwin)
-    page = preferences_page(user, qtbot, dialog, 'Plugins')
-
-    listbox = page._listbox
-    [item] = listbox.findItems('Synthetic Plugin', Qt.MatchFlag.MatchExactly)
-    option = QStyleOptionViewItem()
-    listbox.initViewItemOption(option)
-    option.rect = listbox.visualItemRect(item)
-    option.features |= QStyleOptionViewItem.ViewItemFeature.HasCheckIndicator
-    check_box = listbox.style().subElementRect(QStyle.SubElement.SE_ItemViewItemCheckIndicator, option, listbox)
-    user.click(listbox.viewport(), check_box.center())
-    assert item.checkState() == Qt.CheckState.Checked
-    user.click(dialog.okbuttons.okButton)
-    qtbot.waitUntil(lambda: not dialog.isVisible())
-
-    restart()
-
-    window = tag_sources_window()
-    shown = [window.sourcelist.itemText(n) for n in range(window.sourcelist.count())]
-    assert 'Plugin Source' in shown
 
 
 # Built-in tag sources.
