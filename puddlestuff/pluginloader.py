@@ -6,7 +6,7 @@ from importlib import import_module
 
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QApplication, QDialog, QHBoxLayout, QLabel, QListWidget, QListWidgetItem, QVBoxLayout
-from configobj import ConfigObj
+from configobj import ConfigObj, ConfigObjError
 
 from . import plugins as plugins_package
 from .constants import (FUNCTIONS, TAGSOURCE, SAVEDIR, PLUGINDIR,
@@ -36,10 +36,18 @@ def get_plugins(plugindir):
         info_path = os.path.join(plugindir, module, 'info')
         if not exists(info_path):
             continue
-        config_data = dict(ConfigObj(info_path))
+        try:
+            config_data = dict(ConfigObj(info_path))
+        except ConfigObjError as error:
+            logging.warning(f"Plugin {module} not loaded: its info file can't be read ({error})")
+            continue
         values = [config_data.get(INFO_SECTION, {}).get(prop, '') for prop in PROPERTIES]
+        # ConfigObj reads an unquoted comma as a list; give back what was written.
+        values = [', '.join(value) if isinstance(value, list) else value for value in values]
 
-        if len([_f for _f in values if _f]) < len(PROPERTIES):
+        missing = sorted(prop for prop, value in zip(PROPERTIES, values) if not value)
+        if missing:
+            logging.warning(f"Plugin {module} not loaded: its info file lacks {', '.join(missing)}")
             continue
         d = dict(list(zip(PROPERTIES, values)))
         d[MODULE_NAME] = module

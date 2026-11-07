@@ -369,7 +369,6 @@ def comma_in_description(clean_profile):
                  description='Looks up albums, quickly')
 
 
-@pytest.mark.xfail(strict=True, reason="an info file ConfigObj can't read stops puddletag from starting")
 def test_unreadable_info_is_logged_and_puddletag_starts(mainwin, user, qtbot, restart, new_process, caplog):
     # plugins.txt: "**info** is a INI file", "Your plugin will not be
     # loaded unless all this information is present." and "A plugin that
@@ -392,7 +391,6 @@ def test_unreadable_info_is_logged_and_puddletag_starts(mainwin, user, qtbot, re
     assert 'Unreadable Plugin' not in shown
 
 
-@pytest.mark.xfail(strict=True, reason="a comma in an info value is read as a list")
 def test_info_value_with_a_comma_is_shown_as_written(comma_in_description, mainwin, user, qtbot):
     # plugins.txt: "**description**: Add a short synopsis of what your
     # plugin does." The description is synthetic.
@@ -404,7 +402,6 @@ def test_info_value_with_a_comma_is_shown_as_written(comma_in_description, mainw
     assert 'Looks up albums, quickly' in info.text()
 
 
-@pytest.mark.xfail(strict=True, reason="a comma in an info value is read as a list")
 def test_plugin_named_with_a_comma_lets_puddletag_start(mainwin, user, qtbot, restart, new_process):
     # plugins.txt: "**name**: The name of the plugin as it'll be displayed
     # to a puddletag user." The plugin is synthetic.
@@ -418,7 +415,6 @@ def test_plugin_named_with_a_comma_lets_puddletag_start(mainwin, user, qtbot, re
     assert 'Comma Source' in listed_sources()
 
 
-@pytest.mark.xfail(strict=True, reason="a plugin left out for a missing info key isn't logged")
 @pytest.mark.parametrize('key', INFO_KEYS)
 def test_plugin_missing_an_info_key_is_logged(key, incomplete_plugin, mainwin, user, qtbot, caplog):
     # plugins.txt: "Your plugin will not be loaded unless all this
