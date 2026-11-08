@@ -97,8 +97,16 @@ class ModalDialogs:
         return stub
 
 
+@pytest.hookimpl(wrapper=True)
+def pytest_runtest_makereport(item, call):
+    # Read before the xfail plugin rewrites the report.
+    if call.when == 'call':
+        item._call_failed = call.excinfo is not None
+    return (yield)
+
+
 @pytest.fixture(autouse=True)
-def dialogs(monkeypatch):
+def dialogs(monkeypatch, request):
     guard = ModalDialogs()
     for cls, names in _MODAL_FUNCTIONS.items():
         for name in names:
@@ -106,7 +114,8 @@ def dialogs(monkeypatch):
     yield guard
     if guard.unexpected:
         pytest.fail(f'unexpected modal dialogs: {guard.unexpected!r}')
-    if guard.unused_answers():
+    # A test that failed before the dialog came up leaves its answers unused.
+    if guard.unused_answers() and not getattr(request.node, '_call_failed', False):
         pytest.fail(f'queued dialog answers never used: {guard.unused_answers()!r}')
 
 
