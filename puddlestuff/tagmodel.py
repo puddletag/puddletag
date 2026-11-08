@@ -24,7 +24,7 @@ from .audioinfo import (PATH, FILENAME, DIRPATH, FILETAGS, READONLY, INFOTAGS, D
                         EXTENSION, FILENAME_NO_EXT, PARENT_DIR, CaselessDict, encode_fn, decode_fn, get_filename_tags)
 from .puddleobjects import (unique, partial, natural_sort_key, gettag,
                             HeaderSetting, getfiles, progress, PuddleConfig, singleerror, winsettings, issubfolder,
-                            fnmatch)
+                            fnmatch, errormsg)
 
 from collections import defaultdict
 from .util import write, to_string
@@ -1209,8 +1209,12 @@ class TagModel(QAbstractTableModel):
     def supportedDropActions(self):
         return Qt.DropAction.CopyAction
 
-    def undo(self):
+    def undo(self, on_error=None):
         """Undos the last action.
+
+        on_error(error, audio, last) is called for a file that can't be
+        written; the file stays in the step. If it returns False, the
+        files not yet reached stay in the step too and undo stops.
 
         Basically, if a tag has a key which is = self.undolevel - 1,
         then the tag is updated with the dictionary in that key.
@@ -1241,8 +1245,11 @@ class TagModel(QAbstractTableModel):
         loaded = {audio.filepath: audio for audio in self.taginfo + self._filtered}
         row_of = {id(audio): row for row, audio in enumerate(self.taginfo)}
 
-        for audio, undo_tags in undo[level].items():
-            audio = loaded.get(audio.filepath)
+        # The files that can't be written stay in the step.
+        failed = {}
+        steps = list(undo[level].items())
+        for i, (key, undo_tags) in enumerate(steps):
+            audio = loaded.get(key.filepath)
             if audio is None:
                 continue
             row = row_of.get(id(audio))
@@ -1254,16 +1261,27 @@ class TagModel(QAbstractTableModel):
                     if v == [] and k in audio.preview:
                         del (audio.preview[k])
             else:
-                if audio.library:
-                    oldfiles.append(deepcopy(audio.tags))
-                edited.append(self.setRowData(row, undo_tags, False, audio=audio))
+                try:
+                    old = deepcopy(audio.tags) if audio.library else None
+                    edited.append(self.setRowData(row, undo_tags, False, audio=audio))
+                except EnvironmentError as e:
+                    failed[key] = undo_tags
+                    if on_error is not None and on_error(e, audio, i == len(steps) - 1) is False:
+                        failed.update(steps[i + 1:])
+                        break
+                else:
+                    if old is not None:
+                        oldfiles.append(old)
 
-        del (undo[level])
+        if failed:
+            undo[level] = failed
+        else:
+            del (undo[level])
         if rows:
             self.updateTable(rows)
             if edited:
                 self.libfilesedited.emit(edited)
-        if self.undolevel > 0:
+        if not failed and self.undolevel > 0:
             self.undolevel -= 1
 
     def removeFromUndo(self, files):
@@ -1461,7 +1479,6 @@ class TagTable(QTableView):
 
         model.enableUndo.connect(emitundo)
         model.libfilesedited.connect(self.libfilesedited)
-        self.undo = model.undo
 
         self.closeEditor = self._closeEditor
         delegate = TagDelegate(self)
@@ -2351,6 +2368,22 @@ class TagTable(QTableView):
     @selectedColumns.setter
     def selectedColumns(self, val):
         self._selectedColumns = val
+
+    def undo(self):
+        """Undos the last action, reporting a file that can't be written
+        as any write does."""
+        yes_to_all = False
+
+        def on_error(error, audio, last):
+            nonlocal yes_to_all
+            if yes_to_all:
+                return True
+            ret = errormsg(self.parentWidget(), rename_error_msg(error, audio.filepath),
+                           1 if last else 2)
+            yes_to_all = bool(ret)
+            return ret
+
+        self.model().undo(on_error)
 
     def selectionChanged(self, selected=None, deselected=None):
         """Pretty important. This updates self.selectedRows, which is used

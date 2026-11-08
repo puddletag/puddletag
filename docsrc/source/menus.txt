@@ -59,7 +59,7 @@ Edit
 
 Undo (Ctrl+Z)
 ^^^^^^^^^^^^^
-Undo's the last edit. Note that the undo history is cleared when a new folder is imported using *Open Folder*, by *Refresh* and by *Unload Everything* (but not by *Add Folder*), and some things like moving files to the trash cannot be undone (restore them from the trash with your file manager). When there's nothing left to undo, Undo is greyed out.
+Undo's the last edit. Note that the undo history is cleared when a new folder is imported using *Open Folder*, by *Refresh* and by *Unload Everything* (but not by *Add Folder*), and some things like moving files to the trash cannot be undone (restore them from the trash with your file manager). When there's nothing left to undo, Undo is greyed out. If a file can't be written, puddletag says so as it does for any write and goes on with the other files; the files it couldn't restore stay in the undo history, so Undo stays available: fix the file (its permissions, say) and undo again.
 
 .. _extended_tags_menu:
 

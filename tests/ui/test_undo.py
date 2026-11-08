@@ -284,7 +284,6 @@ def asked(dialogs):
 
 
 @pytest.mark.skipif(os.geteuid() == 0, reason='root can write a read-only file')
-@pytest.mark.xfail(strict=True, reason='an Undo whose write fails raises out of the command instead of reporting it')
 def test_undo_of_a_read_only_file_says_why_and_stays_on(user, loaded, qtbot, dialogs):
     # "puddletag says so as it does for any write" and "Undo stays available".
     table, paths = loaded
@@ -307,7 +306,6 @@ def test_undo_of_a_read_only_file_says_why_and_stays_on(user, loaded, qtbot, dia
 
 
 @pytest.mark.skipif(os.geteuid() == 0, reason='root can write a read-only file')
-@pytest.mark.xfail(strict=True, reason='an Undo whose write fails raises out of the command instead of reporting it')
 def test_undo_goes_on_after_a_file_it_cant_write(user, loaded, qtbot, dialogs):
     # "goes on with the other files; the files it couldn't restore stay in
     # the undo history".
@@ -331,7 +329,6 @@ def test_undo_goes_on_after_a_file_it_cant_write(user, loaded, qtbot, dialogs):
 
 
 @pytest.mark.skipif(os.geteuid() == 0, reason='root can write a read-only file')
-@pytest.mark.xfail(strict=True, reason='an Undo whose write fails raises out of the command instead of reporting it')
 def test_no_stops_the_undo(user, loaded, qtbot, dialogs):
     # "says so as it does for any write": No stops, and the files not
     # reached stay in the undo history.
@@ -351,7 +348,6 @@ def test_no_stops_the_undo(user, loaded, qtbot, dialogs):
 
 
 @pytest.mark.skipif(os.geteuid() == 0, reason='root can write a read-only file')
-@pytest.mark.xfail(strict=True, reason='an Undo whose write fails raises out of the command instead of reporting it')
 def test_yes_to_all_stops_asking(user, loaded, qtbot, dialogs):
     # "says so as it does for any write": Yes to All doesn't ask again.
     table, paths = loaded
@@ -372,7 +368,6 @@ def test_yes_to_all_stops_asking(user, loaded, qtbot, dialogs):
 
 
 @pytest.mark.skipif(os.geteuid() == 0, reason='root can write a read-only file')
-@pytest.mark.xfail(strict=True, reason='an Undo whose write fails raises out of the command instead of reporting it')
 def test_last_file_failing_is_a_warning(user, loaded, qtbot, dialogs):
     # "says so as it does for any write": the last file gets a warning, not
     # a question.
