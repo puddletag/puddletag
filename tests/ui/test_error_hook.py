@@ -345,7 +345,6 @@ def test_ctrl_c_is_left_to_python(mainwin, qtbot, user, monkeypatch):
     assert not shown_messages()
 
 
-@pytest.mark.xfail(strict=True, reason='a rotating log handler without a backup count never rolls over')
 def test_the_log_file_rolls_over(tmp_path):
     # Python's logging.handlers docs: "if either of maxBytes or backupCount
     # is zero, rollover never occurs". puddletag's log, which the message
