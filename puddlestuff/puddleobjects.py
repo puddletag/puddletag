@@ -856,7 +856,7 @@ def progress(func: Callable[..., Generator[Optional[Tuple[str, int]], None, None
             f = func()
 
         if maximum == 1:
-            errors = next(f)
+            errors = next(f, None)
             if errors and \
                     not isinstance(errors, (str, int)):
                 errormsg(parent, errors[0], 1)

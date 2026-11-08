@@ -602,7 +602,6 @@ def modified_time_plugin(clean_profile, monkeypatch):
     monkeypatch.delitem(sys.modules, 'puddlestuff.plugins.modified_time', raising=False)
 
 
-@pytest.mark.xfail(strict=True, reason='one selected file makes the progress function raise StopIteration (#619)')
 def test_add_two_seconds_to_one_file(modified_time_plugin, mainwin, user, qtbot, make_audio, tmp_path):
     # The plugin's info: "Add a shortcut to the plugins menu that increases
     # the selected files' modified time by two seconds." #619: Ctrl+M
