@@ -876,23 +876,29 @@ def progress(func: Callable[..., Generator[Optional[Tuple[str, int]], None, None
         def threadfunc() -> None:
             i = 0
             err = False
-            while not win.wasCanceled:
-                try:
-                    temp = next(f)
-                    if isinstance(temp, str):
-                        thread.message.emit(temp)
-                    elif isinstance(temp, int):
-                        thread.set_max.emit(temp)
-                    elif temp is not None:
-                        thread.error.emit(
-                            temp[0], temp[1])
-                        err = True
+            try:
+                while not win.wasCanceled:
+                    try:
+                        temp = next(f)
+                        if isinstance(temp, str):
+                            thread.message.emit(temp)
+                        elif isinstance(temp, int):
+                            thread.set_max.emit(temp)
+                        elif temp is not None:
+                            thread.error.emit(
+                                temp[0], temp[1])
+                            err = True
+                            break
+                        else:
+                            thread.win.emit(i)
+                    except StopIteration:
                         break
-                    else:
-                        thread.win.emit(i)
-                except StopIteration:
-                    break
-                i += 1
+                    i += 1
+            except Exception:
+                # Close the window and finish the command, then let the
+                # error reach the error hook.
+                thread.win.emit(-1)
+                raise
 
             if win.wasCanceled:
                 try:

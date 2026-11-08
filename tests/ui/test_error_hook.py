@@ -171,7 +171,6 @@ def test_escape_closes_the_message(error_hook, mainwin, qtbot, user, monkeypatch
     assert mainwin.isVisible()
 
 
-@pytest.mark.xfail(strict=True, reason='an error in the writing thread leaves the progress window open')
 def test_error_in_the_background_thread_reaches_the_window(error_hook, mainwin, make_audio, tmp_path, qtbot, user,
                                                            monkeypatch, caplog):
     # menus.txt, Help, "When something goes wrong": "it shows the error in a
