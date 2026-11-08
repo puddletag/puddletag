@@ -355,3 +355,10 @@ Shows the Functions dialog as a tool window. Click **Apply** to apply changes to
 Actions
 ^^^^^^^
 Shows the Actions dialog as a tool window. Click **Apply** to apply changes to the selected files.
+
+Help
+----
+
+Report a problem
+^^^^^^^^^^^^^^^^
+Opens a bug report for puddletag's issue tracker on GitHub, filled in with your system (puddletag's version, your OS, display server and desktop, and the libraries puddletag uses) and the last steps you took in puddletag: the last 20 commands you ran, windows you opened and folders you loaded (how many files, not their names or tags). Before you see it, the report leaves out your home folder (shown as ``~``), your user name, your computer's name, email addresses and the keys you gave tag sources. Check and edit the text, then click **Open on GitHub** to finish the issue in your browser, where you describe what you expected; **Copy** puts the text on the clipboard. Nothing is sent until you submit the issue on GitHub.

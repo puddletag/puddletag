@@ -1,8 +1,6 @@
 import logging
 import os
-import platform
 import sys
-import urllib.parse
 from copy import deepcopy
 from functools import partial
 
@@ -14,14 +12,14 @@ from . import loadshortcuts as ls
 from . import m3u, genres
 from . import mainwin
 from . import tagmodel
-from . import version_string, changeset
+from . import bugreport
+from . import steps
 from .mainwin import funcs as mainfuncs
 from .masstag import dialogs
 from .puddleobjects import (PuddleConfig, PuddleDock, winsettings,
                             progress, PuddleStatus, errormsg, dircmp, get_icon)
 from .puddlesettings import SettingsDialog, load_gen_settings, update_settings
 from .tagmodel import TagTable
-from .about import versions
 
 from . import audioinfo
 from .util import rename_error_msg
@@ -172,6 +170,8 @@ def connect_actions(actions, controls):
             [getattr(c, action.togglecheck).connect(action.setEnabled)
              for c in emits[action.togglecheck]]
         command = action.command
+        # Connected first, so the step is there if the command fails.
+        action.triggered.connect(lambda checked=False, a=action: steps.record_command(a.text(), a.command))
         if action.control == 'mainwin' and hasattr(mainfuncs, command):
             f = getattr(mainfuncs, command)
             if 'parent' in f.__code__.co_varnames:
@@ -198,129 +198,6 @@ def connect_action_shortcuts(actions):
             action.setShortcut(shortcut)
 
 
-def get_os():
-    """Returns a string describing the underlying operating system."""
-
-    def osrelease_dict_to_str(osrel):
-        """Returns a pretty string from the given os-release dict."""
-        # First try: The PRETTY_NAME usually already includes a version
-        if 'PRETTY_NAME' in osrel:
-            return osrel['PRETTY_NAME']
-
-        # Second try: Combine name and version
-        name = next((osrel[k] for k in ['NAME', 'ID'] if k in osrel), 'Linux')
-        version = next((osrel[k] for k in ['VERSION', 'VERSION_ID', 'VERSION_CODENAME'] if k in osrel), '')
-        return '%s %s' % (name, version)
-
-    def read_osrelease():
-        """Naive re-implementation of freedesktop_os_release."""
-        for filepath in ['/etc/os-release', '/usr/lib/os-release']:
-            osrelease_dict = {}
-            try:
-                with open(filepath, 'r', -1, 'utf-8') as file:
-                    for line in file:
-                        line = line.strip()
-                        if line.startswith('#'):
-                            continue
-                        name, value = line.split('=', 1)
-                        osrelease_dict[name.strip()] = value.strip('"\'').strip()
-            except OSError:
-                pass
-            else:
-                return osrelease_dict
-        raise OSError('No file to read found')
-
-    def get_linux_name():
-        """Returns the name of the linux distribution. Hopefully."""
-        # First try: The optional distro package (should always work if available)
-        try:
-            import distro
-        except ImportError:
-            pass
-        else:
-            return distro.name(True)
-
-        # Second try: the new function in platform (py v3.10+ only)
-        if hasattr(platform, 'freedesktop_os_release'):
-            try:
-                return osrelease_dict_to_str(platform.freedesktop_os_release())
-            except OSError:
-                pass
-
-        # Third try: the old function in platform (until py v3.7 only)
-        if hasattr(platform, 'linux_distribution'):
-            linux_dist = platform.linux_distribution()
-            if any((x for x in linux_dist if x)):
-                return '%s %s' % (linux_dist[0], linux_dist[1])
-
-        # Fourth try: read the os-release file directly (to fill the gap btw. 3.7 and 3.10)
-        try:
-            return osrelease_dict_to_str(read_osrelease())
-        except OSError:
-            pass
-
-        # We tried hard, but it wasn't enough.
-        return None
-
-    if 'Linux' == platform.system():
-        result = get_linux_name()
-        if result:
-            return result
-        # else fall through to the fallback
-    if 'Windows' == platform.system():
-        win_info = platform.win32_ver()
-        return 'Windows %s' % (win_info[0])
-    if 'Darwin' == platform.system():
-        return 'macOS %s' % (platform.mac_ver()[0])
-
-    # In case of emergency, hope for the best
-    return '%s %s %s' % (platform.system(), platform.release(), platform.version())
-
-
-def get_display_server():
-    """Returns a string describing the display server."""
-    display_server = QApplication.instance().platformName()
-    if display_server == 'xcb':
-        # only a heuristic, but still better than nothing
-        if os.environ.get('XDG_SESSION_TYPE') == 'wayland' or os.environ.get('WAYLAND_DISPLAY'):
-            return 'xwayland'
-        else:
-            return 'x11'
-    if display_server:
-        return display_server
-    return 'unknown'
-
-
-def get_desktop_environment():
-    """Returns a string describing the desktop environment."""
-    for env_var in ('XDG_CURRENT_DESKTOP', 'XDG_SESSION_DESKTOP'):
-        if os.environ.get(env_var):
-            return os.environ[env_var]
-    return 'unknown'
-
-
-def create_bug_report_issue():
-    """Create a new, pre-filled bug report as github issue."""
-    puddletag_version = version_string
-    if changeset:
-        puddletag_version = f'{puddletag_version} ({changeset})'
-    system_list = [
-        ('Puddletag', puddletag_version),
-        ('OS', get_os().strip()),
-        ('Display Server', get_display_server().strip()),
-        ('Desktop Environment', get_desktop_environment().strip()),
-        *versions().items(),
-    ]
-
-    params = urllib.parse.urlencode({
-        'template': 'bug_report.yaml',
-        'labels': 'bug',
-        'system': '\n'.join(map(lambda x: f'{x[0]}: {x[1]}', system_list)),
-    })
-    url = f'https://github.com/puddletag/puddletag/issues/new?{params}'
-    QDesktopServices.openUrl(QUrl(url))
-
-
 def help_menu(parent):
     menu = QMenu(translate("Menus", 'Help'), parent)
     open_url = lambda url: QDesktopServices.openUrl(QUrl(url))
@@ -336,7 +213,7 @@ def help_menu(parent):
             lambda: open_url('https://github.com/puddletag/puddletag'))
 
     issue_link = QAction(translate("Menus", '&Report a problem'), parent)
-    connect(issue_link, create_bug_report_issue)
+    connect(issue_link, lambda: bugreport.report_problem(parent))
 
     about_icon = get_icon('help-about')
     about = QAction(about_icon,
@@ -399,6 +276,8 @@ class MainWin(QMainWindow):
 
     def __init__(self):
         QMainWindow.__init__(self)
+        steps.clear()
+        steps.watch_windows()
 
         self.__updateDirs = True
         self.__dirsToUpdate = []

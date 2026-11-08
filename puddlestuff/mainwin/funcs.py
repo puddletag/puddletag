@@ -10,6 +10,7 @@ from PyQt6.QtWidgets import QApplication
 from .. import actiondlg
 from .. import findfunc
 from .. import helperwin
+from .. import steps
 from ..puddleobjects import (PuddleConfig, PuddleDock)
 
 from ..audioinfo import PATH, DIRNAME, DIRPATH, FILETAGS, AbstractTag, tag_to_json, encode_fn, decode_fn
@@ -36,6 +37,10 @@ def applyaction(files=None, funcs=None):
             r = findfunc.apply_actions
     except IndexError:
         return
+    if isinstance(funcs[0], findfunc.Macro):
+        steps.record(f'Ran action: {funcs[0].name}')
+    else:
+        steps.record('Ran functions: ' + ', '.join(f.function.__name__ for f in funcs))
     state = {'__total_files': str(len(files))}
     state['__files'] = files
 

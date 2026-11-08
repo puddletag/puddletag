@@ -1,7 +1,8 @@
 """The Help menu, used as a user uses it: Online Documentation, GitHub
 project and Report a problem hand their address to the desktop's
 browser (caught before it gets there), and About puddletag and About Qt
-open their windows, which OK closes. No files are loaded.
+open their windows, which OK closes. Report a problem shows the report for
+review first. No files are loaded.
 """
 import importlib.metadata
 import platform
@@ -17,6 +18,7 @@ from PyQt6.QtWidgets import QApplication, QDialog, QLabel, QPushButton, QTabWidg
 
 from puddlestuff import changeset, version_string
 from puddlestuff.about import AboutPuddletag
+from puddlestuff.bugreport import ReviewWindow
 
 pytestmark = pytest.mark.ui
 
@@ -115,6 +117,18 @@ def by_name(lines):
     return {name.lower(): value for name, value in (line.split(': ', 1) for line in lines)}
 
 
+def review_window(qtbot):
+    """The review window, once it's open."""
+    windows = lambda: [w for w in QApplication.topLevelWidgets() if isinstance(w, ReviewWindow) and w.isVisible()]
+    qtbot.waitUntil(lambda: len(windows()) == 1)
+    return windows()[0]
+
+
+def button(window, text):
+    [found] = [b for b in window.findChildren(QPushButton) if b.isVisible() and b.text() == text]
+    return found
+
+
 def test_online_documentation_opens_the_docs(mainwin, qtbot, user, opened):
     # index.txt: "But check out the :doc:`documentation <docs>` first." The
     # docs page (docs.txt) is built to docs.html on docs.puddletag.net
@@ -145,6 +159,8 @@ def test_report_a_problem_opens_a_filled_in_bug_report(mainwin, qtbot, user, ope
     monkeypatch.setenv('XDG_CURRENT_DESKTOP', 'GNOME')
 
     user.click_menu('&Report a problem')
+    window = review_window(qtbot)
+    user.click(button(window, 'Open on GitHub'))
 
     [url] = opened
     parts = urllib.parse.urlsplit(url)

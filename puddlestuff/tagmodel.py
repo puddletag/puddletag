@@ -30,6 +30,7 @@ from collections import defaultdict
 from .util import write, to_string
 from .constants import SELECTIONCHANGED, SEPARATOR, BLANK
 from . import confirmations
+from . import steps
 import logging
 from .translations import translate
 from .util import rename_error_msg
@@ -2063,6 +2064,7 @@ class TagTable(QTableView):
         s(self.parentWidget())
 
     def _loadFilesDone(self, tags, append, filepath):
+        steps.record_loaded([(tag[EXTENSION], tag[DIRPATH]) for tag in tags])
         self.fillTable(tags, append)
         if not filepath:
             self.dirschanged.emit(self.dirs[::])
