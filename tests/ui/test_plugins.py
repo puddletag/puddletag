@@ -7,6 +7,7 @@ source, which is extracted from the archive the docs offer.
 import gzip
 import importlib.util
 import logging
+import os
 import sys
 import tarfile
 from pathlib import Path
@@ -590,3 +591,30 @@ def test_example_archive_is_built_from_its_folder():
     assert gzip.decompress(EXAMPLE.read_bytes()) == module.tar_bytes()
     with tarfile.open(EXAMPLE) as archive:
         assert archive.getnames() == ['tagsource_plugin', 'tagsource_plugin/__init__.py', 'tagsource_plugin/info']
+
+
+@pytest.fixture
+def modified_time_plugin(clean_profile, monkeypatch):
+    """The Modtime + 2sec plugin ticked before mainwin builds the window.
+    It adds its action at import time, so an import made by an earlier
+    test's window is dropped."""
+    tick('modified_time')
+    monkeypatch.delitem(sys.modules, 'puddlestuff.plugins.modified_time', raising=False)
+
+
+@pytest.mark.xfail(strict=True, reason='one selected file makes the progress function raise StopIteration (#619)')
+def test_add_two_seconds_to_one_file(modified_time_plugin, mainwin, user, qtbot, make_audio, tmp_path):
+    # The plugin's info: "Add a shortcut to the plugins menu that increases
+    # the selected files' modified time by two seconds." #619: Ctrl+M
+    # "triggered a core dump" with one file selected (`errors = next(f)`
+    # raised StopIteration). The file is synthetic.
+    path = make_audio('01.mp3', tmp_path / 'music', title='Song')
+    os.utime(path, (1_000_000_000, 1_000_000_000))
+    mainwin.openDir(str(tmp_path / 'music'), False)
+    qtbot.waitUntil(lambda: mainwin._table.model().rowCount() == 1)
+
+    user.activate()
+    user.click_cell(user.cell(0, 'title'))
+    user.press(Key.Key_M, Ctrl)
+
+    qtbot.waitUntil(lambda: os.stat(path).st_mtime == 1_000_000_002)

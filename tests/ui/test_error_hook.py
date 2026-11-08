@@ -171,6 +171,38 @@ def test_escape_closes_the_message(error_hook, mainwin, qtbot, user, monkeypatch
     assert mainwin.isVisible()
 
 
+@pytest.mark.xfail(strict=True, reason='an error in the writing thread leaves the progress window open')
+def test_error_in_the_background_thread_reaches_the_window(error_hook, mainwin, make_audio, tmp_path, qtbot, user,
+                                                           monkeypatch, caplog):
+    # menus.txt, Help, "When something goes wrong": "it shows the error in a
+    # message instead of closing" and "the command that failed may have
+    # stopped part way". Remove Tag on two files writes them in a thread.
+    music = tmp_path / 'music'
+    paths = [make_audio(f'0{i}.mp3', music, artist=f'Artist {i}', title=f'Title {i}') for i in (1, 2)]
+    before = [in_file(p) for p in paths]
+    load(mainwin, qtbot, user, paths)
+    select(user, [0, 1])
+    real = TagModel.deleteTag
+    monkeypatch.setattr(TagModel, 'deleteTag', synthetic_error)
+
+    user.press(Key.Key_R, Ctrl)
+
+    message = error_message(qtbot)
+    assert message.text() == SUMMARY
+    assert not any(w.isVisible() for w in mainwin.findChildren(ProgressWin))
+    assert [in_file(p) for p in paths] == before
+    assert errors_logged(caplog) == [(ValueError, 'synthetic error')]
+
+    user.click(button(message, 'Close'))
+    qtbot.waitUntil(lambda: not shown_messages())
+    monkeypatch.setattr(TagModel, 'deleteTag', real)
+    user.activate()
+    select(user, [0, 1])
+    user.press(Key.Key_R, Ctrl)
+    user.activate()
+    qtbot.waitUntil(lambda: [in_file(p) for p in paths] == [{}, {}])
+
+
 def test_repeated_error_shows_one_message_and_counts_the_rest(error_hook, mainwin, make_audio, tmp_path, qtbot, user,
                                                               monkeypatch, caplog):
     # menus.txt, Help, "When something goes wrong": "If more errors happen
@@ -312,6 +344,33 @@ def test_ctrl_c_is_left_to_python(mainwin, qtbot, user, monkeypatch):
     assert passed_on == [KeyboardInterrupt]
     assert exits == [130]
     assert not shown_messages()
+
+
+@pytest.mark.xfail(strict=True, reason='a rotating log handler without a backup count never rolls over')
+def test_the_log_file_rolls_over(tmp_path):
+    # Python's logging.handlers docs: "if either of maxBytes or backupCount
+    # is zero, rollover never occurs". puddletag's log, which the message
+    # points the user to, must not grow without limit. Run in a process of
+    # its own: init_logger rewires the root logger.
+    config = tmp_path / 'config'
+    (config / 'puddletag').mkdir(parents=True)
+    code = '\n'.join([
+        'import logging',
+        'import logging.handlers',
+        'from puddlestuff import logger',
+        'logger.init_logger(logging.WARN)',
+        '[handler] = [h for h in logging.getLogger().handlers'
+        ' if isinstance(h, logging.handlers.RotatingFileHandler)]',
+        'handler.maxBytes = 100',
+        'for _ in range(3):',
+        "    logging.warning('x' * 60)",
+    ])
+    env = {**os.environ, 'HOME': str(tmp_path), 'PYTHONPATH': str(REPO), 'QT_QPA_PLATFORM': 'offscreen',
+           'XDG_CONFIG_HOME': str(config)}
+
+    subprocess.run([sys.executable, '-c', code], env=env, check=True, cwd=tmp_path)
+
+    assert (config / 'puddletag' / 'puddletag.log.1').exists()
 
 
 # The error report, end to end

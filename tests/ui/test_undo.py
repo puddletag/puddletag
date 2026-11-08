@@ -259,3 +259,136 @@ def test_add_folder_keeps_the_history(user, loaded, qtbot, dialogs, make_audio, 
     user.click_toolbar('&Undo')
     assert in_file(paths[0])['title'] == ['Title 1']
     assert titles(table)[str(paths[0])] == ['Title 1']
+
+
+# menus.txt: "If a file can't be written, puddletag says so as it does for
+# any write and goes on with the other files; the files it couldn't restore
+# stay in the undo history, so Undo stays available: fix the file (its
+# permissions, say) and undo again." Here the file is read-only (synthetic:
+# 0444). Before, the error closed puddletag.
+
+def read_only(*paths):
+    for path in paths:
+        os.chmod(path, 0o444)
+
+
+def writable(*paths):
+    for path in paths:
+        os.chmod(path, 0o644)
+
+
+def asked(dialogs):
+    """The write-error messages shown, as (kind, text)."""
+    return [(name, args[2] if name == 'QMessageBox.warning' else args[0].text())
+            for name, args, kwargs in dialogs.calls]
+
+
+@pytest.mark.skipif(os.geteuid() == 0, reason='root can write a read-only file')
+@pytest.mark.xfail(strict=True, reason='an Undo whose write fails raises out of the command instead of reporting it')
+def test_undo_of_a_read_only_file_says_why_and_stays_on(user, loaded, qtbot, dialogs):
+    # "puddletag says so as it does for any write" and "Undo stays available".
+    table, paths = loaded
+    edit(user, qtbot, 0, 'New', paths[0])
+    read_only(paths[0])
+    dialogs.answer('QMessageBox.warning', QMessageBox.StandardButton.Ok)
+    user.press(Key.Key_Z, Ctrl)
+    [(kind, text)] = asked(dialogs)
+    assert kind == 'QMessageBox.warning'
+    assert str(paths[0]) in text
+    assert 'Permission denied' in text
+    assert in_file(paths[0])['title'] == ['New']
+    assert titles(table)[str(paths[0])] == ['New']
+    assert user.action('&Undo').isEnabled()
+    writable(paths[0])
+    user.press(Key.Key_Z, Ctrl)
+    assert in_file(paths[0])['title'] == ['Title 1']
+    assert titles(table)[str(paths[0])] == ['Title 1']
+    assert not user.action('&Undo').isEnabled()
+
+
+@pytest.mark.skipif(os.geteuid() == 0, reason='root can write a read-only file')
+@pytest.mark.xfail(strict=True, reason='an Undo whose write fails raises out of the command instead of reporting it')
+def test_undo_goes_on_after_a_file_it_cant_write(user, loaded, qtbot, dialogs):
+    # "goes on with the other files; the files it couldn't restore stay in
+    # the undo history".
+    table, paths = loaded
+    edit_all(user, qtbot, 'Same', paths)
+    read_only(paths[0])
+    dialogs.answer('QMessageBox.exec', QMessageBox.StandardButton.Yes)
+    user.press(Key.Key_Z, Ctrl)
+    [(kind, text)] = asked(dialogs)
+    assert kind == 'QMessageBox.exec'
+    assert str(paths[0]) in text
+    assert 'Do you want to continue?' in text
+    assert [in_file(p)['title'] for p in paths] == [['Same'], ['Title 2'], ['Title 3']]
+    assert [titles(table)[str(p)] for p in paths] == [['Same'], ['Title 2'], ['Title 3']]
+    assert user.action('&Undo').isEnabled()
+    writable(paths[0])
+    user.press(Key.Key_Z, Ctrl)
+    assert [in_file(p)['title'] for p in paths] == [['Title 1'], ['Title 2'], ['Title 3']]
+    assert [titles(table)[str(p)] for p in paths] == [['Title 1'], ['Title 2'], ['Title 3']]
+    assert not user.action('&Undo').isEnabled()
+
+
+@pytest.mark.skipif(os.geteuid() == 0, reason='root can write a read-only file')
+@pytest.mark.xfail(strict=True, reason='an Undo whose write fails raises out of the command instead of reporting it')
+def test_no_stops_the_undo(user, loaded, qtbot, dialogs):
+    # "says so as it does for any write": No stops, and the files not
+    # reached stay in the undo history.
+    table, paths = loaded
+    edit_all(user, qtbot, 'Same', paths)
+    read_only(paths[0])
+    dialogs.answer('QMessageBox.exec', QMessageBox.StandardButton.No)
+    user.press(Key.Key_Z, Ctrl)
+    assert [in_file(p)['title'] for p in paths] == [['Same']] * 3
+    assert [titles(table)[str(p)] for p in paths] == [['Same']] * 3
+    assert user.action('&Undo').isEnabled()
+    writable(paths[0])
+    user.press(Key.Key_Z, Ctrl)
+    assert [in_file(p)['title'] for p in paths] == [['Title 1'], ['Title 2'], ['Title 3']]
+    assert [titles(table)[str(p)] for p in paths] == [['Title 1'], ['Title 2'], ['Title 3']]
+    assert not user.action('&Undo').isEnabled()
+
+
+@pytest.mark.skipif(os.geteuid() == 0, reason='root can write a read-only file')
+@pytest.mark.xfail(strict=True, reason='an Undo whose write fails raises out of the command instead of reporting it')
+def test_yes_to_all_stops_asking(user, loaded, qtbot, dialogs):
+    # "says so as it does for any write": Yes to All doesn't ask again.
+    table, paths = loaded
+    edit_all(user, qtbot, 'Same', paths)
+    read_only(paths[0], paths[1])
+    dialogs.answer('QMessageBox.exec', QMessageBox.StandardButton.YesToAll)
+    user.press(Key.Key_Z, Ctrl)
+    [(kind, text)] = asked(dialogs)
+    assert str(paths[0]) in text
+    assert [in_file(p)['title'] for p in paths] == [['Same'], ['Same'], ['Title 3']]
+    assert [titles(table)[str(p)] for p in paths] == [['Same'], ['Same'], ['Title 3']]
+    assert user.action('&Undo').isEnabled()
+    writable(paths[0], paths[1])
+    user.press(Key.Key_Z, Ctrl)
+    assert [in_file(p)['title'] for p in paths] == [['Title 1'], ['Title 2'], ['Title 3']]
+    assert [titles(table)[str(p)] for p in paths] == [['Title 1'], ['Title 2'], ['Title 3']]
+    assert not user.action('&Undo').isEnabled()
+
+
+@pytest.mark.skipif(os.geteuid() == 0, reason='root can write a read-only file')
+@pytest.mark.xfail(strict=True, reason='an Undo whose write fails raises out of the command instead of reporting it')
+def test_last_file_failing_is_a_warning(user, loaded, qtbot, dialogs):
+    # "says so as it does for any write": the last file gets a warning, not
+    # a question.
+    table, paths = loaded
+    edit_all(user, qtbot, 'Same', paths)
+    read_only(paths[2])
+    dialogs.answer('QMessageBox.warning', QMessageBox.StandardButton.Ok)
+    user.press(Key.Key_Z, Ctrl)
+    [(kind, text)] = asked(dialogs)
+    assert kind == 'QMessageBox.warning'
+    assert str(paths[2]) in text
+    assert [in_file(p)['title'] for p in paths] == [['Title 1'], ['Title 2'], ['Same']]
+    assert [titles(table)[str(p)] for p in paths] == [['Title 1'], ['Title 2'], ['Same']]
+    assert user.action('&Undo').isEnabled()
+    writable(paths[2])
+    user.press(Key.Key_Z, Ctrl)
+    assert [in_file(p)['title'] for p in paths] == [['Title 1'], ['Title 2'], ['Title 3']]
+    assert [titles(table)[str(p)] for p in paths] == [['Title 1'], ['Title 2'], ['Title 3']]
+    assert not user.action('&Undo').isEnabled()
