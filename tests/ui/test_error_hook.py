@@ -18,7 +18,7 @@ from PyQt6.QtCore import Qt, QUrl
 from PyQt6.QtWidgets import QApplication, QMessageBox, QPushButton, QTextEdit
 
 from puddlestuff import about, audioinfo, errorhook
-from puddlestuff.bugreport import MAX_URL_LENGTH, ReviewWindow
+from puddlestuff.bugreport import MAX_URL_LENGTH, ReviewWindow, sanitize
 from puddlestuff.mainwin.tagsources import TAGSOURCE_CONFIG
 from puddlestuff.puddleobjects import ProgressWin, PuddleConfig
 from puddlestuff.tagmodel import TagModel
@@ -516,6 +516,8 @@ def test_long_traceback_is_trimmed_to_fit(error_hook, mainwin, qtbot, user, open
             return ping(depth - 1)
         raise ValueError('synthetic error')
 
+    # Synthetic: the user name appears in the paths, as on GitHub's runners.
+    monkeypatch.setenv('LOGNAME', [part for part in REPO.parts if len(part) >= 3][-1])
     monkeypatch.setattr(about, 'AboutPuddletag', lambda *args: ping(300))
     user.click_menu('About puddletag')
 
@@ -526,7 +528,7 @@ def test_long_traceback_is_trimmed_to_fit(error_hook, mainwin, qtbot, user, open
     assert current.endswith(SUMMARY + '\n```')
     assert 'show_about' in frames(current)[0]
     [left_out] = re.findall(r'\[\.\.\. (\d+) frames left out \.\.\.\]', current)
-    assert frames(current)[-3:] == frames(details)[-3:]
+    assert frames(current)[-3:] == frames(sanitize(details))[-3:]
     assert len(frames(current)) + int(left_out) == len(frames(details))
 
     user.click(button(window, 'Open on GitHub'))
