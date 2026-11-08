@@ -258,6 +258,7 @@ if __name__ == '__main__':
     # Load puddletag modules.
     import puddlestuff.resource  # Needs to be first as other modules use it.
     import puddlestuff.constants
+    from puddlestuff import errorhook
 
     migrate_settings()
     from puddlestuff.puddleobjects import get_icon, get_languages, PuddleConfig
@@ -266,6 +267,7 @@ if __name__ == '__main__':
     # Init.
     print_info()
     app = QApplication(sys.argv)
+    errorhook.install(app)
     options, filenames = parse_cmd_options()
     init(options, app)
 
@@ -281,7 +283,12 @@ if __name__ == '__main__':
     splash = splashscreen()
     splash.show()
     app.processEvents()
-    win = MainWin()
+    try:
+        win = MainWin()
+    except Exception:
+        splash.close()
+        errorhook.report_startup_error(*sys.exc_info())
+        sys.exit(1)
     splash.close()
     win.setVisible(True)
     app.processEvents()
@@ -296,4 +303,4 @@ if __name__ == '__main__':
     elif load_gen_settings([('&Load last folder at startup', False)])[0][1]:
         if win._lastdir and os.path.exists(win._lastdir[0]):
             win.openDir(win._lastdir[0], False)
-    app.exec()
+    sys.exit(app.exec())
