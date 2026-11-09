@@ -5,7 +5,7 @@ from os.path import exists
 from importlib import import_module
 
 from PyQt6.QtCore import Qt
-from PyQt6.QtWidgets import QApplication, QDialog, QHBoxLayout, QLabel, QListWidget, QListWidgetItem, QVBoxLayout
+from PyQt6.QtWidgets import QDialog, QHBoxLayout, QLabel, QListWidget, QListWidgetItem, QVBoxLayout
 from configobj import ConfigObj, ConfigObjError
 
 from . import plugins as plugins_package
@@ -104,12 +104,10 @@ def load_plugins(plugins=None, parent=None):
 
 
 class InfoWidget(QLabel):
-    def __init__(self, info=None, parent=None):
+    def __init__(self, parent=None):
         super(InfoWidget, self).__init__(parent)
         self.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignTop)
         self.setWordWrap(True)
-        if info:
-            self.changeInfo(info)
 
     def changeInfo(self, info):
         labels = [translate('Plugin Settings', 'Name'),
@@ -172,10 +170,3 @@ class PluginConfig(QDialog):
         to_load = self.get_to_load()
         cparser = PuddleConfig()
         cparser.set('plugins', 'to_load', to_load)
-
-
-if __name__ == '__main__':
-    app = QApplication([])
-    win = PluginConfig()
-    win.show()
-    app.exec()

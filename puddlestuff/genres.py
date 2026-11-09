@@ -29,12 +29,8 @@ def save_genres(genres, filepath=None):
 class Genres(QWidget):
     def __init__(self, parent=None, status=None):
         QWidget.__init__(self, parent)
-        if status is None:
-            self._status = {}
-            genres = load_genres()
-        else:
-            self._status = status
-            genres = status['genres']
+        self._status = status
+        genres = status['genres']
 
         self.listbox = ListBox()
         self._itemflags = Qt.ItemFlag.ItemIsSelectable | Qt.ItemFlag.ItemIsEditable | Qt.ItemFlag.ItemIsEnabled

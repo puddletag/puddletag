@@ -1,10 +1,8 @@
 import os
-import sys
-from copy import deepcopy
 
 from PyQt6.QtCore import QAbstractListModel, QItemSelection, QItemSelectionModel, QModelIndex, Qt, pyqtSignal
 from PyQt6.QtGui import QBrush, QColor, QPalette
-from PyQt6.QtWidgets import QAbstractItemView, QApplication, QCheckBox, QColorDialog, QComboBox, QDialog, QFrame, \
+from PyQt6.QtWidgets import QAbstractItemView, QCheckBox, QColorDialog, QComboBox, QDialog, QFrame, \
     QGridLayout, QGroupBox, QHBoxLayout, QLabel, QLineEdit, QListView, QMessageBox, QPushButton, QRadioButton, \
     QStackedWidget, QTableWidget, QTableWidgetItem, QVBoxLayout, QWidget
 
@@ -99,10 +97,6 @@ class SettingsLineEdit(QWidget):
     @property
     def settingValue(self):
         return self._desc, str(self._text.text())
-
-    @settingValue.setter
-    def settingValue(self, value):
-        self._text.setText(self._desc, value)
 
 
 class GeneralSettings(QWidget):
@@ -251,7 +245,6 @@ class TagMappings(QWidget):
 
     def __init__(self, parent=None):
         filename = os.path.join(PuddleConfig().savedir, 'mappings')
-        self._edited = deepcopy(audioinfo.mapping)
         self._mappings = audioinfo.mapping
 
         QWidget.__init__(self, parent)
@@ -477,29 +470,12 @@ class ListModel(QAbstractListModel):
         QAbstractListModel.__init__(self)
         self.options = options
 
-    def headerData(self, section, orientation, role=Qt.ItemDataRole.DisplayRole):
-        if role == Qt.ItemDataRole.TextAlignmentRole:
-            if orientation == Qt.Orientation.Horizontal:
-                return Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter
-            return Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter
-        if role != Qt.ItemDataRole.DisplayRole:
-            return None
-        if orientation == Qt.Orientation.Horizontal:
-            return self.headerdata[section]
-        return int(section + 1)
-
     def data(self, index, role=Qt.ItemDataRole.DisplayRole):
         if not index.isValid() or not (0 <= index.row() < len(self.options)):
             return None
         if (role == Qt.ItemDataRole.DisplayRole) or (role == Qt.ItemDataRole.ToolTipRole):
-            try:
-                return str(self.options[index.row()][0])
-            except IndexError:
-                return None
+            return str(self.options[index.row()][0])
         return None
-
-    def widget(self, row):
-        return self.options[row][1]
 
     def rowCount(self, index=QModelIndex()):
         return len(self.options)
@@ -681,7 +657,6 @@ class SettingsDialog(QDialog):
         self.okbuttons.okButton.setDefault(True)
 
         self.okbuttons.ok.connect(self.saveSettings)
-        self.accepted.connect(self.saveSettings)
         self.okbuttons.cancel.connect(self.close)
 
     def showOption(self, option):
@@ -718,12 +693,3 @@ class SettingsDialog(QDialog):
                             translate('Settings',
                                       "An error occurred while saving the settings of <b>{}</b>: {}"
                                       ).format(title, str(error)))
-
-
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    app.setOrganizationName("Puddle Inc.")
-    app.setApplicationName("puddletag")
-    qb = SettingsDialog()
-    qb.show()
-    app.exec()

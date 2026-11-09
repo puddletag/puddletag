@@ -542,8 +542,6 @@ class MassTagWindow(QWidget):
 
     def _appendLog(self, text):
         mutex.lock()
-        if not isinstance(text, str):
-            text = str(text, 'utf8', 'replace')
         if text.startswith(':insert'):
             text = text[len(':insert'):]
             pos = len(self._log.toPlainText()) - 1
@@ -552,8 +550,6 @@ class MassTagWindow(QWidget):
             self._log.insertHtml(text)
         else:
             pos = len(self._log.toPlainText())
-            if pos < 0:
-                pos = 0
             self._log.textCursor().setPosition(pos)
             self._log.append(text)
         mutex.unlock()

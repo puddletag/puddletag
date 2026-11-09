@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import os
 
-from PyQt6.QtWidgets import QApplication, QWidget, QCheckBox, QVBoxLayout
+from PyQt6.QtWidgets import QWidget, QCheckBox, QVBoxLayout
 
 from .constants import CONFIGDIR
 from .puddleobjects import PuddleConfig
@@ -85,13 +85,3 @@ class Settings(QWidget):
         for name, control in self._controls.items():
             _confirmations[name][0] = control.isChecked()
         save()
-
-
-if __name__ == '__main__':
-    app = QApplication([])
-    add('First True', True)
-    add('Name', False, 'Description')
-    print(_confirmations)
-    win = Settings()
-    win.show()
-    app.exec()
