@@ -240,7 +240,9 @@ def pinned_id3_options(monkeypatch):
 @pytest.fixture(autouse=True)
 def restored_confirmations(monkeypatch):
     """OK on the Confirmations page changes a module-level dict that
-    outlives the test's profile; the test puts it back."""
+    outlives the test's profile; the test puts it back. puddletag.py registers its
+    confirmations in that dict when first imported, which must not happen inside the copy."""
+    import puddlestuff.puddletag  # noqa: F401
     monkeypatch.setattr(confirmations, '_confirmations',
                         {name: list(entry) for name, entry in confirmations._confirmations.items()})
 
