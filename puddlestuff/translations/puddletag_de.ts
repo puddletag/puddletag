@@ -165,6 +165,12 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
   <context>
     <name>Actions</name>
     <message>
+      <location filename="../actiondlg.py" line="760" />
+      <location filename="../action_shortcuts.py" line="265" />
+      <source>Edit Shortcuts</source>
+      <translation>Tastenkombinationen bearbeiten</translation>
+    </message>
+    <message>
       <location filename="../actiondlg.py" line="102" />
       <source>Enter a name for the shortcut.</source>
       <translation>Geben Sie einen Namen für die Tastenkombination ein.</translation>
@@ -206,33 +212,28 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
             um Tastenkombinationen nachträglich festzulegen.&lt;/p&gt;</translation>
     </message>
     <message>
-      <location filename="../actiondlg.py" line="760" />
-      <source>Edit Shortcuts</source>
-      <translation>Tastenkombinationen bearbeiten</translation>
-    </message>
-    <message>
-      <location filename="../actiondlg.py" line="962" />
+      <location filename="../actiondlg.py" line="963" />
       <source>New Action</source>
       <translation>Neue Aktion</translation>
     </message>
     <message>
-      <location filename="../actiondlg.py" line="1052" />
-      <location filename="../actiondlg.py" line="963" />
+      <location filename="../actiondlg.py" line="1053" />
+      <location filename="../actiondlg.py" line="964" />
       <source>Enter a name for the new action.</source>
       <translation>Geben Sie einen Namen für die neue Aktion ein.</translation>
     </message>
     <message>
-      <location filename="../actiondlg.py" line="974" />
+      <location filename="../actiondlg.py" line="975" />
       <source>Add Action: </source>
       <translation>Aktion hinzufügen: </translation>
     </message>
     <message>
-      <location filename="../actiondlg.py" line="992" />
+      <location filename="../actiondlg.py" line="993" />
       <source>Edit Action: </source>
       <translation>Aktion bearbeiten: </translation>
     </message>
     <message>
-      <location filename="../actiondlg.py" line="1062" />
+      <location filename="../actiondlg.py" line="1063" />
       <source>Edit Action: {}</source>
       <translation>Aktion bearbeiten: {}</translation>
     </message>
@@ -875,6 +876,25 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
       <translation />
     </message>
     <message>
+      <location filename="../musiclib.py" line="216" />
+      <location filename="../puddleobjects.py" line="2053" />
+      <location filename="../puddleobjects.py" line="507" />
+      <location filename="../tagmodel.py" line="2212" />
+      <location filename="../tagmodel.py" line="2206" />
+      <location filename="../puddletag.py" line="561" />
+      <location filename="../puddletag.py" line="558" />
+      <location filename="../puddletag.py" line="551" />
+      <source>Error</source>
+      <translation>Fehler</translation>
+    </message>
+    <message>
+      <location filename="../puddletag.py" line="864" />
+      <location filename="../puddletag.py" line="853" />
+      <location filename="../puddletag.py" line="837" />
+      <source>Writing </source>
+      <translation>Schreibe </translation>
+    </message>
+    <message>
       <location filename="../util.py" line="29" />
       <source>&lt;p&gt;An error occured while renaming the directory &lt;b&gt;{}&lt;/b&gt; to &lt;i&gt;{}&lt;/i&gt;.&lt;/p&gt;&lt;p&gt;Reason: &lt;b&gt;{}&lt;/b&gt;&lt;br /&gt;File used: {}&lt;/p&gt;</source>
       <translation>&lt;p&gt;Ein Fehler ist beim Umbenennen des Ordners &lt;b&gt;{}&lt;/b&gt; to &lt;i&gt;{}&lt;/i&gt;aufgetreten.&lt;/p&gt;&lt;p&gt;Grund: &lt;b&gt;{}&lt;/b&gt;&lt;br /&gt;Datei verwendet: {}&lt;/p&gt;</translation>
@@ -932,18 +952,6 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
       <translation>Lade </translation>
     </message>
     <message>
-      <location filename="../puddletag.py" line="561" />
-      <location filename="../puddletag.py" line="558" />
-      <location filename="../puddletag.py" line="551" />
-      <location filename="../musiclib.py" line="216" />
-      <location filename="../puddleobjects.py" line="2053" />
-      <location filename="../puddleobjects.py" line="507" />
-      <location filename="../tagmodel.py" line="2212" />
-      <location filename="../tagmodel.py" line="2206" />
-      <source>Error</source>
-      <translation>Fehler</translation>
-    </message>
-    <message>
       <location filename="../puddleobjects.py" line="508" />
       <source>&lt;br /&gt; Do you want to continue?</source>
       <translation>&lt;br /&gt; Wollen Sie fortfahren?</translation>
@@ -965,13 +973,6 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
       <location filename="../actiondlg.py" line="217" />
       <source>&amp;Fields</source>
       <translation>&amp;Felder</translation>
-    </message>
-    <message>
-      <location filename="../puddletag.py" line="864" />
-      <location filename="../puddletag.py" line="853" />
-      <location filename="../puddletag.py" line="837" />
-      <source>Writing </source>
-      <translation>Schreibe </translation>
     </message>
     <message>
       <location filename="../mainwin/action_dialogs.py" line="83" />
@@ -1281,6 +1282,11 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
       <translation>Abschließende Klammer fehlt.</translation>
     </message>
     <message>
+      <location filename="../puddletag.py" line="668" />
+      <source>Your filesystem encoding was detected as &lt;b&gt;ASCII&lt;/b&gt;. &lt;br /&gt;You won't be able to rename files using accented, &lt;br /&gt; cyrillic or any characters outside the ASCII alphabet.</source>
+      <translation>Die Kodierung des Dateisystems wurde als &lt;b&gt;ASCII&lt;/b&gt; erkannt. &lt;br /&gt;Es wird nicht möglich sein, Dateinamen mit akzentuierten, &lt;br /&gt; kyrillischen oder anderen Zeichen außerhalb der ASCII Kodierung zu verwenden.</translation>
+    </message>
+    <message>
       <location filename="../util.py" line="78" />
       <source>Couldn't create intermediate directory: {}</source>
       <translation>Kann temporären Ordner {} nicht erzeugen</translation>
@@ -1289,11 +1295,6 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
       <location filename="../util.py" line="102" />
       <source>Cannot move directory to a subdirectory within itself.</source>
       <translation>Kann Ordner nicht sein eigenes Unterverzeichnis verschieben.</translation>
-    </message>
-    <message>
-      <location filename="../puddletag.py" line="668" />
-      <source>Your filesystem encoding was detected as &lt;b&gt;ASCII&lt;/b&gt;. &lt;br /&gt;You won't be able to rename files using accented, &lt;br /&gt; cyrillic or any characters outside the ASCII alphabet.</source>
-      <translation>Die Kodierung des Dateisystems wurde als &lt;b&gt;ASCII&lt;/b&gt; erkannt. &lt;br /&gt;Es wird nicht möglich sein, Dateinamen mit akzentuierten, &lt;br /&gt; kyrillischen oder anderen Zeichen außerhalb der ASCII Kodierung zu verwenden.</translation>
     </message>
   </context>
   <context>
@@ -3239,22 +3240,6 @@ Wollen Sie fortfahren?</translation>
   <context>
     <name>Previews</name>
     <message>
-      <location filename="../tagmodel.py" line="129" />
-      <source>Do you want to exit Preview Mode? Unsaved changes will be discarded</source>
-      <translation type="unfinished" />
-    </message>
-    <message>
-      <location filename="../tagmodel.py" line="1617" />
-      <source>Some files have uncommited previews. Changes will be lost once you unload them. &lt;br /&gt;Do you still want to unload everything?&lt;br /&gt;</source>
-      <translation type="unfinished" />
-    </message>
-    <message>
-      <location filename="../tagmodel.py" line="2268" />
-      <location filename="../tagmodel.py" line="2242" />
-      <source>There are unsaved changes pending. Do you want to discard and reload?</source>
-      <translation type="unfinished" />
-    </message>
-    <message>
       <location filename="../puddletag.py" line="483" />
       <source>Some files have uncommited previews. These changes will be lost once you exit puddletag. &lt;br /&gt;Do you want to exit without writing those changes?&lt;br /&gt;</source>
       <translation>Einige Dateien haben eine unbestätigte Voschau. Änderungen gehen verloren wenn Sie puddletag beenden.  &lt;br /&gt;Wollen Sie das Programm beenden ohne die Änderungen zu speichern?&lt;br /&gt;</translation>
@@ -3275,6 +3260,22 @@ Wollen Sie fortfahren?</translation>
       <location filename="../puddletag.py" line="590" />
       <source>Some files have uncommited previews. Changes will be lost once you load a directory. &lt;br /&gt;Do you still want to load a new directory?&lt;br /&gt;</source>
       <translation>Einige Dateien haben eine unbestätigte Voschau. Änderungen gehen verloren wenn Sie einen Ordner einlesen.  &lt;br /&gt;Wollen Sie wirklich einen neuen Ordner einlesen?&lt;br /&gt;</translation>
+    </message>
+    <message>
+      <location filename="../tagmodel.py" line="129" />
+      <source>Do you want to exit Preview Mode? Unsaved changes will be discarded</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../tagmodel.py" line="1617" />
+      <source>Some files have uncommited previews. Changes will be lost once you unload them. &lt;br /&gt;Do you still want to unload everything?&lt;br /&gt;</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../tagmodel.py" line="2268" />
+      <location filename="../tagmodel.py" line="2242" />
+      <source>There are unsaved changes pending. Do you want to discard and reload?</source>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../mainwin/tagtools.py" line="56" />
@@ -3590,24 +3591,24 @@ Wollen Sie fortfahren?</translation>
   <context>
     <name>Shortcut Settings</name>
     <message>
-      <location filename="../shortcutsettings.py" line="192" />
+      <location filename="../shortcutsettings.py" line="191" />
       <source>&lt;b&gt;Double click a cell in the Shortcut Column to &lt;br /&gt;modify the key sequence.&lt;/b&gt;</source>
       <translation>&lt;b&gt;Doppelklicken Sie ein Feld der Tabelle um die Tastenkombination zu bearbeiten.&lt;/b&gt;</translation>
     </message>
     <message>
-      <location filename="../shortcutsettings.py" line="200" />
+      <location filename="../shortcutsettings.py" line="199" />
       <source>Description</source>
       <translation>Beschreibung</translation>
     </message>
     <message>
-      <location filename="../shortcutsettings.py" line="201" />
+      <location filename="../shortcutsettings.py" line="200" />
       <source>Shortcut</source>
       <translation>Tastenkombination</translation>
     </message>
     <message>
-      <location filename="../shortcutsettings.py" line="242" />
-      <source>Edit Shortcuts</source>
-      <translation>Tastenkombinationen bearbeiten</translation>
+      <location filename="../shortcutsettings.py" line="286" />
+      <source>{key} moved from {old} to {new}.</source>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../tagmodel.py" line="354" />
@@ -3618,19 +3619,64 @@ Wollen Sie fortfahren?</translation>
   <context>
     <name>Shortcuts</name>
     <message>
-      <location filename="../action_shortcuts.py" line="159" />
+      <location filename="../action_shortcuts.py" line="153" />
+      <source>Name</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../action_shortcuts.py" line="160" />
       <source>&amp;Clear</source>
       <translation>&amp;Aufheben</translation>
     </message>
     <message>
-      <location filename="../action_shortcuts.py" line="184" />
+      <location filename="../action_shortcuts.py" line="186" />
       <source>Invalid shortcut sequence.</source>
       <translation>Ungültige Tastenkombination.</translation>
     </message>
     <message>
-      <location filename="../action_shortcuts.py" line="251" />
+      <location filename="../action_shortcuts.py" line="191" />
+      <source>Actions</source>
+      <translation type="unfinished">Aktionen</translation>
+    </message>
+    <message>
+      <location filename="../action_shortcuts.py" line="193" />
+      <source>Actions to run for shortcut</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../action_shortcuts.py" line="197" />
+      <source>Shortcut &amp;Name: </source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../action_shortcuts.py" line="198" />
+      <source>&amp;Keyboard Shortcut: </source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../action_shortcuts.py" line="253" />
       <source>(Deleted)</source>
       <translation>(Gelöscht)</translation>
+    </message>
+    <message>
+      <location filename="../action_shortcuts.py" line="281" />
+      <source>Shortcuts</source>
+      <translation type="unfinished">Tastenkombinationen</translation>
+    </message>
+    <message>
+      <location filename="../action_shortcuts.py" line="302" />
+      <source>Add Shortcut</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../action_shortcuts.py" line="347" />
+      <source>Duplicate Shortcut</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../action_shortcuts.py" line="364" />
+      <source>Edit Shortcut</source>
+      <translation type="unfinished" />
     </message>
   </context>
   <context>
