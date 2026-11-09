@@ -241,8 +241,6 @@ def test_key_taken_off_play_stays_off_after_a_restart(mainwin, user, qtbot, play
     assert keys(user2, '&Play') == []
 
 
-@pytest.mark.xfail(strict=True, reason="A key another command holds is swapped without a word: the maintainer wants "
-                                       "it moved and the page to say so (#387, #1090)")
 def test_key_another_command_holds_moves_to_the_command_typed_for(mainwin, user, qtbot):
     # Play is "Play (Ctrl+P)" (menus.txt:29); #387's and #1090's reports: Ctrl+P given
     # to Preferences stays on Play too. The key moves, and the page says so.
@@ -255,8 +253,6 @@ def test_key_another_command_holds_moves_to_the_command_typed_for(mainwin, user,
     assert keys(user, '&Preferences') == ['Ctrl+P']
 
 
-@pytest.mark.xfail(strict=True, reason="Clearing a key, then taking a held one, loops and leaves two commands on "
-                                       "Ctrl+S")
 def test_clearing_then_taking_a_held_key_leaves_one_command_per_key(mainwin, user, qtbot):
     # Save is "Save (Ctrl+S)" (menus.txt:25). The docs don't say what happens when a key
     # is cleared and then taken; Open Folder's Ctrl+O is from data/shortcuts and the
@@ -272,7 +268,6 @@ def test_clearing_then_taking_a_held_key_leaves_one_command_per_key(mainwin, use
     user.close_preferences(window, 'Cancel')
 
 
-@pytest.mark.xfail(strict=True, reason="Paste loses Shift+Ins at the first OK")
 def test_second_key_is_kept(mainwin, user, qtbot, restart):
     # Paste is "Paste (Ctrl+V)" (menus.txt:86); its Shift+Ins is from data/shortcuts
     # (the docs don't mention it). Ctrl+L is synthetic. An OK for another command's key

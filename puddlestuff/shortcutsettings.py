@@ -189,6 +189,7 @@ class ActionEditorDialog(QWidget):
         super(ActionEditorDialog, self).__init__(parent)
         self.actions = actions
         self._rows = [action for action in actions if action.text()]
+        self._keys = [[key.toString() for key in action.shortcuts()] for action in self._rows]
 
         help = QLabel(translate("Shortcut Settings", '<b>Double click a cell in the Shortcut Column'
                                                      ' to <br />modify the key sequence.</b>'))
@@ -205,8 +206,6 @@ class ActionEditorDialog(QWidget):
         self.actionTable.verticalHeader().hide()
         self.actionTable.setItemDelegate(ActionEditorDelegate(self))
 
-        self.actionTable.cellChanged.connect(self.validateAction)
-
         for row, action in enumerate(self._rows):
             self.actionTable.insertRow(self.actionTable.rowCount())
 
@@ -216,18 +215,21 @@ class ActionEditorDialog(QWidget):
             self.actionTable.setItem(row, 0, item)
 
             item = QTableWidgetItem()
-            item.setText(action.shortcut().toString())
+            item.setText(QKeySequence.listToString(action.shortcuts()))
             item.setFlags(Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsEditable | Qt.ItemFlag.ItemIsSelectable)
-            item.oldShortcutText = item.text()
             self.actionTable.setItem(row, 1, item)
 
         self.actionTable.resizeColumnsToContents()
+        self.actionTable.cellChanged.connect(self.validateAction)
+
+        self._notice = QLabel()
 
         mainLayout = QVBoxLayout()
         mainLayout.addWidget(help)
         mainLayout.setContentsMargins(8, 8, 8, 8)
         mainLayout.setSpacing(8)
         mainLayout.addWidget(self.actionTable)
+        mainLayout.addWidget(self._notice)
         self.setLayout(mainLayout)
         self._model = self.actionTable.model()
         self._model.edited = False
@@ -244,7 +246,8 @@ class ActionEditorDialog(QWidget):
             if action not in self.actions:
                 continue
             action.setText(self.actionTable.item(row, 0).text())
-            action.setShortcut(QKeySequence(self.actionTable.item(row, 1).text()))
+            if self._keys[row] != [key.toString() for key in action.shortcuts()]:
+                action.setShortcuts([QKeySequence(key) for key in self._keys[row]])
         self.saveSettings(self.actions)
         self._model.edited = False
 
@@ -255,16 +258,18 @@ class ActionEditorDialog(QWidget):
         for action in actions:
             shortcut = cparser.get('shortcuts', str(action.text()), None)
             if shortcut is not None:
-                action.setShortcut(QKeySequence(shortcut))
+                keys = [key for key in QKeySequence.listFromString(shortcut) if not key.isEmpty()]
+                action.setShortcuts(keys)
 
     _loadSettings = classmethod(_loadSettings)
 
     def saveSettings(self, actions):
 
         cparser = PuddleConfig(os.path.join(CONFIGDIR, 'user_shortcuts'))
+        section = cparser.data['shortcuts']
         for action in actions:
-            shortcut = str(action.shortcut().toString())
-            cparser.set('shortcuts', str(action.text()), shortcut)
+            section[str(action.text())] = QKeySequence.listToString(action.shortcuts())
+        cparser.save()
 
     saveSettings = classmethod(saveSettings)
 
@@ -274,24 +279,29 @@ class ActionEditorDialog(QWidget):
             return
 
         item = self.actionTable.item(row, column)
-        shortcutText = QKeySequence(item.text()).toString()
-        thisRow = self.actionTable.row(item)
+        key = QKeySequence(item.text()).toString()
+        self._keys[row] = [key] if key else []
+        self._notice.setText('')
 
-        if shortcutText:
-            for row in range(self.actionTable.rowCount()):
-                if row == thisRow:
+        if key:
+            for other, keys in enumerate(self._keys):
+                if other == row or key not in keys:
                     continue
+                keys.remove(key)
+                self._setCell(other)
+                self._notice.setText(translate("Shortcut Settings", "{key} moved from {old} to {new}.").format(
+                    key=key, old=self._rows[other].text().replace('&', ''),
+                    new=self._rows[row].text().replace('&', '')))
 
-                other = self.actionTable.item(row, 1)
-
-                if other.text() == shortcutText:
-                    other.setText(item.oldShortcutText)
-                    break
-
-            item.setText(shortcutText)
-            item.oldShortcutText = shortcutText
-
+        self._setCell(row)
         self.actionTable.resizeColumnToContents(1)
+
+    def _setCell(self, row):
+        """Shows the row's keys in its cell without calling validateAction."""
+        keys = QKeySequence.listToString([QKeySequence(key) for key in self._keys[row]])
+        blocked = self.actionTable.blockSignals(True)
+        self.actionTable.item(row, 1).setText(keys)
+        self.actionTable.blockSignals(blocked)
 
 
 if __name__ == '__main__':
