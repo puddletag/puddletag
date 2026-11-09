@@ -156,7 +156,7 @@ class Editor(QDialog):
 
         self._items = {}
 
-        self._name = QLineEdit('Name')
+        self._name = QLineEdit(translate('Shortcuts', 'Name'))
 
         if shortcut and shortcut in shortcuts:
             shortcuts.remove(shortcut)
@@ -194,14 +194,14 @@ class Editor(QDialog):
 
         hbox = QHBoxLayout()
         hbox.addLayout(
-            create_buddy('Actions', self._actionList, QVBoxLayout()), 1)
+            create_buddy(translate('Shortcuts', 'Actions'), self._actionList, QVBoxLayout()), 1)
         hbox.addLayout(listbuttons, 0)
-        hbox.addLayout(create_buddy('Actions to run for shortcut',
+        hbox.addLayout(create_buddy(translate('Shortcuts', 'Actions to run for shortcut'),
                                     self._newActionList, QVBoxLayout()), 1)
 
         layout = QVBoxLayout()
-        layout.addLayout(create_buddy('Shortcut &Name: ', self._name))
-        scut_layout = create_buddy('&Keyboard Shortcut: ', self._shortcut)
+        layout.addLayout(create_buddy(translate('Shortcuts', 'Shortcut &Name: '), self._name))
+        scut_layout = create_buddy(translate('Shortcuts', '&Keyboard Shortcut: '), self._shortcut)
         scut_layout.addWidget(clear)
         layout.addLayout(scut_layout)
         layout.addLayout(hbox)
@@ -268,6 +268,7 @@ class Editor(QDialog):
 class ShortcutEditor(QDialog):
     def __init__(self, load=False, parent=None, buttons=False):
         super(ShortcutEditor, self).__init__(parent)
+        self.setWindowTitle(translate('Actions', 'Edit Shortcuts'))
         self._names = []
         self._hotkeys = []
 
@@ -283,7 +284,7 @@ class ShortcutEditor(QDialog):
         self._listbox.connectToListButtons(listbuttons)
 
         hbox = QHBoxLayout()
-        hbox.addLayout(create_buddy('Shortcuts', self._listbox, QVBoxLayout()))
+        hbox.addLayout(create_buddy(translate('Shortcuts', 'Shortcuts'), self._listbox, QVBoxLayout()))
         hbox.addLayout(listbuttons)
 
         okcancel = OKCancel()
@@ -304,7 +305,8 @@ class ShortcutEditor(QDialog):
         shortcuts = get_shortcuts().difference(self._hotkeys).union(
             i.shortcut for i in self._listbox.items() if i.shortcut)
 
-        win = Editor('Add Shortcut', '', self._actions, self.names() + taken_names(), shortcuts, self)
+        win = Editor(translate('Shortcuts', 'Add Shortcut'), '', self._actions,
+                     self.names() + taken_names(), shortcuts, self)
         win.setModal(True)
         win.actionChanged.connect(self.addShortcut)
         win.show()
@@ -350,7 +352,8 @@ class ShortcutEditor(QDialog):
             return
         shortcuts = get_shortcuts().difference(self._hotkeys).union(
             i.shortcut for i in self._listbox.items() if i.shortcut)
-        win = Editor('Duplicate Shortcut', '', self._actions, self.names() + taken_names(), shortcuts, self)
+        win = Editor(translate('Shortcuts', 'Duplicate Shortcut'), '', self._actions,
+                     self.names() + taken_names(), shortcuts, self)
         win.setAttrs(item.actionName, self._actions, item.filenames, '')
         win.setModal(True)
         win.actionChanged.connect(self.addShortcut)
@@ -366,7 +369,8 @@ class ShortcutEditor(QDialog):
 
         names = self.names()
         names.remove(item.actionName)
-        win = Editor('Edit Shortcut', item.shortcut, self._actions, names + taken_names(), shortcuts, self)
+        win = Editor(translate('Shortcuts', 'Edit Shortcut'), item.shortcut, self._actions,
+                     names + taken_names(), shortcuts, self)
         win.setAttrs(item.actionName, self._actions, item.filenames, item.shortcut)
         win.setModal(True)
         win.actionChanged.connect(

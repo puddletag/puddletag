@@ -764,7 +764,6 @@ def test_missing_actions_folder(loaded, mainwin, user, qtbot, monkeypatch):
     assert os.path.isfile(action_shortcuts.FILENAME)
 
 
-@pytest.mark.xfail(strict=True, reason='Edit Shortcuts has no window title')
 def test_edit_shortcuts_window_title_is_translated(loaded, mainwin, user, qtbot, monkeypatch):
     # translate.txt: puddletag's texts can be translated. The translation is
     # synthetic. It is installed after the Actions window opens: the Assign
@@ -784,7 +783,6 @@ def test_edit_shortcuts_window_title_is_translated(loaded, mainwin, user, qtbot,
     assert title == 'Synthetic Edit Shortcuts'
 
 
-@pytest.mark.xfail(strict=True, reason="The Add Shortcut window's strings are not translated")
 def test_add_shortcut_window_strings_are_translated(loaded, mainwin, user, qtbot, monkeypatch):
     # translate.txt: puddletag's texts can be translated. The translations are
     # synthetic.
