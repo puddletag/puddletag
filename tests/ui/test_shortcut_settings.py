@@ -239,3 +239,83 @@ def test_key_taken_off_play_stays_off_after_a_restart(mainwin, user, qtbot, play
     qtbot.waitUntil(lambda: preferences_shown(win))
     assert played == []
     assert keys(user2, '&Play') == []
+
+
+@pytest.mark.xfail(strict=True, reason="A key another command holds is swapped without a word: the maintainer wants "
+                                       "it moved and the page to say so (#387, #1090)")
+def test_key_another_command_holds_moves_to_the_command_typed_for(mainwin, user, qtbot):
+    # Play is "Play (Ctrl+P)" (menus.txt:29); #387's and #1090's reports: Ctrl+P given
+    # to Preferences stays on Play too. The key moves, and the page says so.
+    window, table = shortcuts_page(user)
+    type_key(user, qtbot, table, '&Preferences', Key.Key_P)
+    assert cells(table, '&Play', '&Preferences') == {'&Play': '', '&Preferences': 'Ctrl+P'}
+    assert 'Ctrl+P moved from Play to Preferences.' in notice(window)
+    user.close_preferences(window)
+    assert keys(user, '&Play') == []
+    assert keys(user, '&Preferences') == ['Ctrl+P']
+
+
+@pytest.mark.xfail(strict=True, reason="Clearing a key, then taking a held one, loops and leaves two commands on "
+                                       "Ctrl+S")
+def test_clearing_then_taking_a_held_key_leaves_one_command_per_key(mainwin, user, qtbot):
+    # Save is "Save (Ctrl+S)" (menus.txt:25). The docs don't say what happens when a key
+    # is cleared and then taken; Open Folder's Ctrl+O is from data/shortcuts and the
+    # sequence of steps is synthetic. A key is in one row only.
+    window, table = shortcuts_page(user)
+    click_x(user, qtbot, table, '&Open Folder')
+    type_key(user, qtbot, table, '&Properties', Key.Key_O)
+    type_key(user, qtbot, table, '&Open Folder', Key.Key_S)
+    shown = cells(table, '&Open Folder', '&Properties', '&Save')
+    assert shown == {'&Open Folder': 'Ctrl+S', '&Properties': 'Ctrl+O', '&Save': ''}
+    typed = [text for text in shown.values() if text]
+    assert len(typed) == len(set(typed))
+    user.close_preferences(window, 'Cancel')
+
+
+@pytest.mark.xfail(strict=True, reason="Paste loses Shift+Ins at the first OK")
+def test_second_key_is_kept(mainwin, user, qtbot, restart):
+    # Paste is "Paste (Ctrl+V)" (menus.txt:86); its Shift+Ins is from data/shortcuts
+    # (the docs don't mention it). Ctrl+L is synthetic. An OK for another command's key
+    # leaves Paste's keys as they were.
+    window, table = shortcuts_page(user)
+    type_key(user, qtbot, table, '&Preferences', Key.Key_L)
+    user.close_preferences(window)
+    assert keys(user, '&Paste') == ['Ctrl+V', 'Shift+Ins']
+    assert saved('&Paste') == 'Ctrl+V; Shift+Ins'
+    window, table = shortcuts_page(user)
+    assert cells(table, '&Paste') == {'&Paste': 'Ctrl+V; Shift+Ins'}
+    user.close_preferences(window, 'Cancel')
+    win, user2 = restarted(restart, qtbot, user)
+    assert keys(user2, '&Paste') == ['Ctrl+V', 'Shift+Ins']
+
+
+def test_typed_key_replaces_both_keys(mainwin, user, qtbot):
+    # The docs don't say; this is what puddletag does: the key typed in a cell is the
+    # command's only key. Paste is "Paste (Ctrl+V)" (menus.txt:86); Ctrl+B is synthetic.
+    window, table = shortcuts_page(user)
+    type_key(user, qtbot, table, '&Paste', Key.Key_B)
+    user.close_preferences(window)
+    assert keys(user, '&Paste') == ['Ctrl+B']
+    assert saved('&Paste') == 'Ctrl+B'
+
+
+def test_x_clears_both_keys(mainwin, user, qtbot):
+    # The docs don't say; this is what puddletag does: the x takes away all of the
+    # command's keys. Paste is "Paste (Ctrl+V)" (menus.txt:86).
+    window, table = shortcuts_page(user)
+    click_x(user, qtbot, table, '&Paste')
+    user.close_preferences(window)
+    assert keys(user, '&Paste') == []
+    assert saved('&Paste') == ''
+
+
+def test_cancel_undoes_a_moved_key(mainwin, user, qtbot):
+    # "Cancel or Esc closes the window without saving anything" (preferences.txt). Play
+    # is "Play (Ctrl+P)" (menus.txt:29): the Ctrl+P moved off it is still there.
+    window, table = shortcuts_page(user)
+    type_key(user, qtbot, table, '&Preferences', Key.Key_P)
+    assert cells(table, '&Play', '&Preferences') == {'&Play': '', '&Preferences': 'Ctrl+P'}
+    user.close_preferences(window, 'Cancel')
+    assert keys(user, '&Play') == ['Ctrl+P']
+    assert keys(user, '&Preferences') == []
+    assert not os.path.exists(USER_SHORTCUTS)
