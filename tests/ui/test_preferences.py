@@ -485,7 +485,6 @@ def test_edit_sort_options_then_cancel_changes_nothing(mainwin, qtbot, user, dia
     assert config_files() == before
 
 
-@pytest.mark.xfail(strict=True, reason='the sort order picked is not used after a restart (#243, #558)')
 def test_sort_picked_is_used_after_a_restart(mainwin, make_audio, tmp_path, qtbot, user, restart):
     # preferences.txt:49: "This sort order will be used when loading dirs unless changed (by clicking a
     # header or using another Sort Option.) It is saved across sessions." Synthetic files.

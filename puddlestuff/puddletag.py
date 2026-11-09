@@ -673,9 +673,15 @@ class MainWin(QMainWindow):
         for control, val in gensettings.items():
             control.applyGenSettings(val, 1)
 
+        model = self._table.model()
+        # Restoring the header's state re-sorts the model by the header's own
+        # column, which dropped the sort order the user picked.
+        fields, reverse = model.sortFields, model.reverseSort
         h = self._table.horizontalHeader()
         if settings.value('table/header'):
             h.restoreState(settings.value('table/header'))
+        if fields:
+            model.sortFields, model.reverseSort = fields, reverse
         if settings.value('main/state'):
             self.restoreState(settings.value('main/state'))
         else:
