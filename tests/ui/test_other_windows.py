@@ -57,8 +57,8 @@ def docks(win):
 
 
 def preferences_windows(mainwin):
-    """The Preferences windows showing. Each Edit > Preferences builds a new
-    one, and a closed one stays, hidden, as the main window's child."""
+    """The Preferences windows showing. Edit > Preferences raises the open
+    one; a closed one stays, hidden, until the next one replaces it."""
     return [w for w in mainwin.findChildren(SettingsDialog) if w.isVisible()]
 
 

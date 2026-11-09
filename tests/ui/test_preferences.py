@@ -361,7 +361,6 @@ def test_enter_clicks_ok(mainwin, qtbot, user):
     assert not [w for w in window.findChildren(SortOptionEditor) if w.isVisible()]
 
 
-@pytest.mark.xfail(strict=True, reason='a second Edit > Preferences opens a second window')
 def test_preferences_opened_twice_is_one_window(mainwin, qtbot, user):
     # menus.txt (Edit): "Preferences ... Opens the Preferences dialog."
     window = user.open_preferences()

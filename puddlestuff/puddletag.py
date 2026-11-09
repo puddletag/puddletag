@@ -599,8 +599,15 @@ class MainWin(QMainWindow):
         self.loadFiles.emit(None, filenames, append, None, None)
 
     def openPrefs(self):
-        win = SettingsDialog(list(PuddleDock._controls.values()), self, status)
-        win.show()
+        win = getattr(self, '_preferences', None)
+        if win is not None and win.isVisible():
+            win.raise_()
+            win.activateWindow()
+            return
+        if win is not None:
+            win.deleteLater()
+        self._preferences = SettingsDialog(list(PuddleDock._controls.values()), self, status)
+        self._preferences.show()
 
     def removeShortcuts(self, menu_title, actions):
         if menu_title in self._menus:
