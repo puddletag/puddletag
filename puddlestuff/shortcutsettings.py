@@ -1,12 +1,10 @@
 import os
-import sys
 
 from PyQt6.QtCore import QEvent, QLineF, QRectF, Qt, pyqtRemoveInputHook
 from PyQt6.QtGui import QBrush, QKeySequence, QPainter, QPalette, QPen
-from PyQt6.QtWidgets import QAbstractItemDelegate, QAbstractItemView, QApplication, QFrame, QItemDelegate, QLabel, \
+from PyQt6.QtWidgets import QAbstractItemDelegate, QAbstractItemView, QFrame, QItemDelegate, QLabel, \
     QTableWidget, QTableWidgetItem, QVBoxLayout, QWidget
 
-from . import loadshortcuts as ls
 from .constants import CONFIGDIR
 from .puddleobjects import PuddleConfig
 from .translations import translate
@@ -19,7 +17,6 @@ class ActionEditorWidget(QLabel):
     def __init__(self, text, parent):
 
         QLabel.__init__(self, text, parent)
-        self.key = ""
         self.modifiers = {}
         self.setAutoFillBackground(True)
         palette = self.palette()
@@ -233,9 +230,6 @@ class ActionEditorDialog(QWidget):
         self.setLayout(mainLayout)
         self._model = self.actionTable.model()
         self._model.edited = False
-        self.actionTable.model().edited = False
-
-        self.setWindowTitle(translate("Shortcut Settings", "Edit Shortcuts"))
 
     def applySettings(self, control=None):
         if not self._model.edited:
@@ -302,16 +296,3 @@ class ActionEditorDialog(QWidget):
         blocked = self.actionTable.blockSignals(True)
         self.actionTable.item(row, 1).setText(keys)
         self.actionTable.blockSignals(blocked)
-
-
-if __name__ == '__main__':
-    app = QApplication(sys.argv)
-    # win = ShortcutSettings()
-    # win = EditShortcut('Open', 'Ctrl+O')
-    widget = QWidget()
-    actions = ls.get_actions(widget)
-    ActionEditorDialog._loadSettings(actions)
-    win = ActionEditorDialog(actions)
-    # win.loadSettings(actions)
-    win.show()
-    app.exec()

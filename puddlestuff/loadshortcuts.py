@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 import os
-import sys
 
 from PyQt6.QtGui import QAction
-from PyQt6.QtWidgets import QApplication, QMainWindow, QMenu, QMenuBar, QToolBar
+from PyQt6.QtWidgets import QMenu, QMenuBar, QToolBar
 
 from .constants import CONFIGDIR
 from .puddleobjects import PuddleConfig, get_icon, open_resourcefile
@@ -158,12 +157,3 @@ def get_actions(parent, filepath=None):
             values = dict([(str(k), v) for k, v in setting[section].items()])
             actions.append(create_action(parent, **values))
     return actions
-
-
-if __name__ == '__main__':
-    app = QApplication(sys.argv)
-    win = QMainWindow()
-    win.toolbar = win.addToolBar('toolbar')
-    loadShortCuts()
-    win.show()
-    app.exec()

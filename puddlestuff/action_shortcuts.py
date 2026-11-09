@@ -4,7 +4,7 @@ from functools import partial
 
 from PyQt6.QtCore import QFileSystemWatcher, QItemSelectionModel, pyqtSignal
 from PyQt6.QtGui import QAction
-from PyQt6.QtWidgets import QApplication, QDialog, QHBoxLayout, QLabel, QLineEdit, QListWidgetItem, QPushButton, QVBoxLayout
+from PyQt6.QtWidgets import QDialog, QHBoxLayout, QLabel, QLineEdit, QListWidgetItem, QPushButton, QVBoxLayout
 
 from . import puddleobjects as puddleobjects
 from . import puddletag
@@ -45,16 +45,13 @@ def create_action_shortcuts(method, parent=None):
     return menu_shortcuts
 
 
-def get_shortcuts(default=None):
+def get_shortcuts():
     from .puddletag import status
     if status['actions']:
         ret = [_f for _f in (str(k.toString()) for z in status['actions'] for k in z.shortcuts()) if _f]
     else:
         ret = []
-    if default:
-        return set(ret + default)
-    else:
-        return set(ret)
+    return set(ret)
 
 
 def taken_names():
@@ -71,16 +68,13 @@ def _sections(cparser):
                   key=lambda s: int(s[len(SHORTCUT_SECTION):]))
 
 
-def load_settings(filename=None, actions=None):
-    if filename is None:
-        filename = FILENAME
+def load_settings():
+    if not os.path.exists(os.path.dirname(FILENAME)):
+        os.makedirs(os.path.dirname(FILENAME))
 
-    if not os.path.exists(os.path.dirname(filename)):
-        os.makedirs(os.path.dirname(filename))
+    cparser = PuddleConfig(FILENAME)
 
-    cparser = PuddleConfig(filename)
-
-    actions = load_actions() if actions is None else actions
+    actions = load_actions()
 
     shortcuts = []
     for section in _sections(cparser):
@@ -381,20 +375,14 @@ class ShortcutEditor(QDialog):
         item.shortcut = shortcut
         item.setText(name)
 
-    def loadSettings(self, filename=None, actions=None):
+    def loadSettings(self):
         self._names = []
         self._hotkeys = []
 
-        if filename is None:
-            filename = os.path.join(ACTIONDIR, 'action_shortcuts')
-
         self._listbox.clear()
-        cparser = PuddleConfig(filename)
+        cparser = PuddleConfig(FILENAME)
 
-        if actions is None:
-            self._actions = load_actions()
-        else:
-            self._actions = actions
+        self._actions = load_actions()
 
         from .puddletag import status
         if status['actions']:
@@ -413,12 +401,3 @@ class ShortcutEditor(QDialog):
 
     def names(self):
         return [item.actionName for item in self._listbox.items()]
-
-
-if __name__ == '__main__':
-    app = QApplication([])
-    actions = load_actions()
-    win = ShortcutEditor(buttons=True)
-    win.loadSettings()
-    win.show()
-    app.exec()
