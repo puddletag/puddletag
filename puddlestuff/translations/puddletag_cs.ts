@@ -248,83 +248,83 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
   <context>
     <name>Artwork</name>
     <message>
-      <location filename="../puddleobjects.py" line="1984" />
-      <location filename="../puddleobjects.py" line="1609" />
+      <location filename="../puddleobjects.py" line="1994" />
+      <location filename="../puddleobjects.py" line="1619" />
       <source>Enter a description</source>
       <translation>Zadejte popis</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1614" />
+      <location filename="../puddleobjects.py" line="1624" />
       <source>&lt;p&gt;Enter a description for the current cover.&lt;/p&gt;&lt;p&gt;For ID3 tags the description has to be different for each cover as per the ID3 spec. If they don't differ then spaces are appended to the description when the tag is saved.&lt;/p&gt;</source>
       <translation>&lt;p&gt;Zadejte popis nynějšího obalu.&lt;/p&gt;&lt;p&gt;Pro značky ID3 by měl být popis pro každý obal různý. Pokud se neliší, jsou do popisu při ukládání přidány prázdné znaky.&lt;/p&gt;</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1624" />
+      <location filename="../puddleobjects.py" line="1634" />
       <source>&amp;Description</source>
       <translation>&amp;Popis</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1632" />
+      <location filename="../puddleobjects.py" line="1642" />
       <source>&amp;Type</source>
       <translation>&amp;Typ</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1644" />
+      <location filename="../puddleobjects.py" line="1654" />
       <source>&lt;p&gt;Select a cover type for the artwork.&lt;/p&gt;</source>
       <translation>&lt;p&gt;Vyberte typ obalu pro obrázek.&lt;/p&gt;</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1736" />
+      <location filename="../puddleobjects.py" line="1746" />
       <source>&amp;Save cover to file</source>
       <translation>&amp;Uložit obal do souboru</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1739" />
+      <location filename="../puddleobjects.py" line="1749" />
       <source>&amp;Add cover</source>
       <translation>&amp;Přidat obal</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1742" />
+      <location filename="../puddleobjects.py" line="1752" />
       <source>C&amp;opy cover</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1745" />
+      <location filename="../puddleobjects.py" line="1755" />
       <source>&amp;Paste cover</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1748" />
+      <location filename="../puddleobjects.py" line="1758" />
       <source>&amp;Remove cover</source>
       <translation>&amp;Odstranit obal</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1751" />
+      <location filename="../puddleobjects.py" line="1761" />
       <source>&amp;Change cover</source>
       <translation>&amp;Změnit obal</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1818" />
+      <location filename="../puddleobjects.py" line="1828" />
       <source>Select Image...</source>
       <translation>Vybrat obrázek...</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1819" />
+      <location filename="../puddleobjects.py" line="1829" />
       <source>JPEG &amp; PNG Images (*.jpg *.jpeg *.png);;JPEG Images (*.jpg *.jpeg);;PNG Images (*.png);;All Files(*.*)</source>
       <translation>Obrázky JPEG a PNG (*.jpg *.jpeg *.png);;Obrázky JPEG (*.jpg *.jpeg);;Obrázky PNG (*.png);;Všechny soubory (*.*)</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="2032" />
+      <location filename="../puddleobjects.py" line="2042" />
       <source>Save artwork as...</source>
       <translation>Uložit obrázek jako...</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="2034" />
+      <location filename="../puddleobjects.py" line="2044" />
       <source>JPEG Images (*.jpg);;PNG Images (*.png);;All Files(*.*)</source>
       <translation>Obrázky JPEG (*.jpg);;Obrázky PNG (*.png);;Všechny soubory (*.*)</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="2044" />
+      <location filename="../puddleobjects.py" line="2054" />
       <source>Writing to &lt;b&gt;{}&lt;/b&gt; failed.</source>
       <translation>Chyba při ukládání do &lt;b&gt;{}&lt;/b&gt;.</translation>
     </message>
@@ -342,7 +342,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
       <translation>Žádné obrázky</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1580" />
+      <location filename="../puddleobjects.py" line="1590" />
       <source>{}/{}</source>
       <translation>{}/{}</translation>
     </message>
@@ -485,32 +485,32 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
   <context>
     <name>Colour Settings</name>
     <message>
-      <location filename="../puddlesettings.py" line="546" />
+      <location filename="../puddlesettings.py" line="531" />
       <source>&lt;p&gt;Below are the backgrounds used for various controls in puddletag. &lt;br /&gt; Double click the desired action to change its colour.&lt;/p&gt;</source>
       <translation>&lt;p&gt;Toto jsou barvy pozadí pro různé prvky v Puddletagu. &lt;br /&gt; Dvakrát klepněte na dotyčnou činnost pro změnu její barvy.&lt;/p&gt;</translation>
     </message>
     <message>
-      <location filename="../puddlesettings.py" line="559" />
+      <location filename="../puddlesettings.py" line="544" />
       <source>Row selected in file-view.</source>
       <translation>Vybraný řádek v souborovém pohledu.</translation>
     </message>
     <message>
-      <location filename="../puddlesettings.py" line="560" />
+      <location filename="../puddlesettings.py" line="545" />
       <source>Row colour for files with previews.</source>
       <translation>Barva řádku pro soubory s náhledy.</translation>
     </message>
     <message>
-      <location filename="../puddlesettings.py" line="561" />
+      <location filename="../puddlesettings.py" line="546" />
       <source>Field added in Extended Tags.</source>
       <translation>Přidané pole v rozšířených značkách.</translation>
     </message>
     <message>
-      <location filename="../puddlesettings.py" line="562" />
+      <location filename="../puddlesettings.py" line="547" />
       <source>Field edited in Extended Tags.</source>
       <translation>Upravené pole v rozšířených značkách.</translation>
     </message>
     <message>
-      <location filename="../puddlesettings.py" line="563" />
+      <location filename="../puddlesettings.py" line="548" />
       <source>Field removed in Extended Tags.</source>
       <translation>Odstraněné pole v rozšířených značkách.</translation>
     </message>
@@ -541,7 +541,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
   <context>
     <name>Combo Box</name>
     <message>
-      <location filename="../puddleobjects.py" line="2299" />
+      <location filename="../puddleobjects.py" line="2309" />
       <source>Remove current item.</source>
       <translation>Odstranit nynější položku.</translation>
     </message>
@@ -875,39 +875,6 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
       <translation>Různí umělci</translation>
     </message>
     <message>
-      <location filename="../tagmodel.py" line="1993" />
-      <source>Reading Directory: {}</source>
-      <translation>Čte se adresář: {}</translation>
-    </message>
-    <message>
-      <location filename="../tagmodel.py" line="1995" />
-      <source>Reading Directory: {} + others</source>
-      <translation>Čte se adresář: {} + jiné</translation>
-    </message>
-    <message>
-      <location filename="../tagmodel.py" line="1997" />
-      <source>Reading Dir</source>
-      <translation>Čte se adresář</translation>
-    </message>
-    <message>
-      <location filename="../tagmodel.py" line="2078" />
-      <location filename="../tagmodel.py" line="2074" />
-      <source>Loading </source>
-      <translation>Nahrává se </translation>
-    </message>
-    <message>
-      <location filename="../puddletag.py" line="561" />
-      <location filename="../puddletag.py" line="558" />
-      <location filename="../puddletag.py" line="551" />
-      <location filename="../musiclib.py" line="216" />
-      <location filename="../puddleobjects.py" line="2043" />
-      <location filename="../puddleobjects.py" line="507" />
-      <location filename="../tagmodel.py" line="2212" />
-      <location filename="../tagmodel.py" line="2206" />
-      <source>Error</source>
-      <translation>Chyba</translation>
-    </message>
-    <message>
       <location filename="../util.py" line="29" />
       <source>&lt;p&gt;An error occured while renaming the directory &lt;b&gt;{}&lt;/b&gt; to &lt;i&gt;{}&lt;/i&gt;.&lt;/p&gt;&lt;p&gt;Reason: &lt;b&gt;{}&lt;/b&gt;&lt;br /&gt;File used: {}&lt;/p&gt;</source>
       <translation>&lt;p&gt;Při přejmenovávání adresáře &lt;b&gt;{}&lt;/b&gt; na &lt;i&gt;{}&lt;/i&gt; se vyskytla chyba.&lt;/p&gt;&lt;p&gt;Důvod: &lt;b&gt;{}&lt;/b&gt;&lt;br /&gt;Použitý soubor: {}&lt;/p&gt;</translation>
@@ -933,7 +900,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
       <translation>{} obrázků</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1427" />
+      <location filename="../puddleobjects.py" line="1437" />
       <location filename="../helperwin.py" line="1203" />
       <source>OK</source>
       <translation>OK</translation>
@@ -942,6 +909,39 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
       <location filename="../helperwin.py" line="1205" />
       <source>Never show this message again.</source>
       <translation>Tuto zprávu už nikdy neukazovat znovu.</translation>
+    </message>
+    <message>
+      <location filename="../tagmodel.py" line="1993" />
+      <source>Reading Directory: {}</source>
+      <translation>Čte se adresář: {}</translation>
+    </message>
+    <message>
+      <location filename="../tagmodel.py" line="1995" />
+      <source>Reading Directory: {} + others</source>
+      <translation>Čte se adresář: {} + jiné</translation>
+    </message>
+    <message>
+      <location filename="../tagmodel.py" line="1997" />
+      <source>Reading Dir</source>
+      <translation>Čte se adresář</translation>
+    </message>
+    <message>
+      <location filename="../tagmodel.py" line="2078" />
+      <location filename="../tagmodel.py" line="2074" />
+      <source>Loading </source>
+      <translation>Nahrává se </translation>
+    </message>
+    <message>
+      <location filename="../puddletag.py" line="561" />
+      <location filename="../puddletag.py" line="558" />
+      <location filename="../puddletag.py" line="551" />
+      <location filename="../musiclib.py" line="216" />
+      <location filename="../puddleobjects.py" line="2053" />
+      <location filename="../puddleobjects.py" line="507" />
+      <location filename="../tagmodel.py" line="2212" />
+      <location filename="../tagmodel.py" line="2206" />
+      <source>Error</source>
+      <translation>Chyba</translation>
     </message>
     <message>
       <location filename="../puddleobjects.py" line="508" />
@@ -955,8 +955,8 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
       <translation>Pole</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="2226" />
-      <location filename="../puddleobjects.py" line="1428" />
+      <location filename="../puddleobjects.py" line="2236" />
+      <location filename="../puddleobjects.py" line="1438" />
       <source>Cancel</source>
       <translation>Zrušit</translation>
     </message>
@@ -967,9 +967,9 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
       <translation>&amp;Pole</translation>
     </message>
     <message>
-      <location filename="../puddletag.py" line="851" />
-      <location filename="../puddletag.py" line="840" />
-      <location filename="../puddletag.py" line="824" />
+      <location filename="../puddletag.py" line="864" />
+      <location filename="../puddletag.py" line="853" />
+      <location filename="../puddletag.py" line="837" />
       <source>Writing </source>
       <translation>Zapisuje se </translation>
     </message>
@@ -1099,7 +1099,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
       <translation>Činnosti</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="2168" />
+      <location filename="../puddleobjects.py" line="2178" />
       <source>Album Art</source>
       <translation>Obal alba</translation>
     </message>
@@ -1107,17 +1107,17 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
   <context>
     <name>Dir Renaming</name>
     <message>
-      <location filename="../puddletag.py" line="933" />
+      <location filename="../puddletag.py" line="946" />
       <source>An error occured while renaming &lt;b&gt;{}&lt;/b&gt; to &lt;b&gt;{}&lt;/b&gt;. ({})</source>
       <translation>Při přejmenování &lt;b&gt;{}&lt;/b&gt; na &lt;b&gt;{}&lt;/b&gt;se vyskytla chyba. ({})</translation>
     </message>
     <message>
-      <location filename="../puddletag.py" line="941" />
+      <location filename="../puddletag.py" line="954" />
       <source>Renaming </source>
       <translation>Přejmenovává se </translation>
     </message>
     <message>
-      <location filename="../puddletag.py" line="957" />
+      <location filename="../puddletag.py" line="970" />
       <source>I couldn't rename: &lt;i&gt;{}&lt;/i&gt; to &lt;b&gt;{}&lt;/b&gt; ({})</source>
       <translation>Nepodařilo se přejmenovat &lt;i&gt;{}&lt;/i&gt; na &lt;b&gt;{}&lt;/b&gt; ({})</translation>
     </message>
@@ -1291,7 +1291,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
       <translation>Adresář nelze přesunout do jeho vlastního podadresáře.</translation>
     </message>
     <message>
-      <location filename="../puddletag.py" line="661" />
+      <location filename="../puddletag.py" line="668" />
       <source>Your filesystem encoding was detected as &lt;b&gt;ASCII&lt;/b&gt;. &lt;br /&gt;You won't be able to rename files using accented, &lt;br /&gt; cyrillic or any characters outside the ASCII alphabet.</source>
       <translation>Kódování ve vašem systému bylo určeno jako &lt;b&gt;ASCII&lt;/b&gt;. &lt;br /&gt;Nebudete moci přejmenovávat své soubory pomocí, cyrilice s přízvukem&lt;br /&gt;, nebo jakékoli jiné znaky mimo abecedu ASCII.</translation>
     </message>
@@ -2023,22 +2023,22 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
       <translation>Nahrát &amp;poslední složku při spuštění</translation>
     </message>
     <message>
-      <location filename="../puddlesettings.py" line="130" />
+      <location filename="../puddlesettings.py" line="126" />
       <source>&amp;Edit sort options</source>
       <translation>&amp;Upravit pořadí třídění</translation>
     </message>
     <message>
-      <location filename="../puddlesettings.py" line="133" />
+      <location filename="../puddlesettings.py" line="129" />
       <source>&lt;Autodetect&gt;</source>
       <translation>&lt;Zjistit automaticky&gt;</translation>
     </message>
     <message>
-      <location filename="../puddlesettings.py" line="134" />
+      <location filename="../puddlesettings.py" line="130" />
       <source>Default</source>
       <translation>Výchozí</translation>
     </message>
     <message>
-      <location filename="../puddlesettings.py" line="155" />
+      <location filename="../puddlesettings.py" line="151" />
       <source>Language (Requires a restart)</source>
       <translation>Jazyk (vyžaduje opětovné spuštění)</translation>
     </message>
@@ -2059,52 +2059,52 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
   <context>
     <name>List Buttons</name>
     <message>
-      <location filename="../puddleobjects.py" line="1267" />
+      <location filename="../puddleobjects.py" line="1277" />
       <source>Add</source>
       <translation>Přidat</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1270" />
+      <location filename="../puddleobjects.py" line="1280" />
       <source>Remove</source>
       <translation>Odstranit</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1274" />
+      <location filename="../puddleobjects.py" line="1284" />
       <source>Move Up</source>
       <translation>Posunout nahoru</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1277" />
+      <location filename="../puddleobjects.py" line="1287" />
       <source>Move Down</source>
       <translation>Posunout dolů</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1280" />
+      <location filename="../puddleobjects.py" line="1290" />
       <source>Edit</source>
       <translation>Upravit</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1283" />
+      <location filename="../puddleobjects.py" line="1293" />
       <source>Duplicate</source>
       <translation>Zdvojit</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1285" />
+      <location filename="../puddleobjects.py" line="1295" />
       <source>Copy to clipboard</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1287" />
+      <location filename="../puddleobjects.py" line="1297" />
       <source>Paste from clipboard</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1348" />
+      <location filename="../puddleobjects.py" line="1358" />
       <source>&amp;&gt;&gt;</source>
       <translation>&amp;&gt;&gt;</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1349" />
+      <location filename="../puddleobjects.py" line="1359" />
       <source>&amp;&lt;&lt;</source>
       <translation>&amp;&lt;&lt;</translation>
     </message>
@@ -2143,7 +2143,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
   <context>
     <name>Mapping Settings</name>
     <message>
-      <location filename="../puddlesettings.py" line="254" />
+      <location filename="../puddlesettings.py" line="251" />
       <source>&lt;ul&gt;&lt;li&gt;Tag is the format that the mapping applies to.
                             One of &lt;b&gt;ID3, APEv2, MP4, or VorbisComment&lt;/b&gt;.
                             &lt;/li&gt;&lt;li&gt;Fields will be mapped from Source to Target,
@@ -2159,31 +2159,39 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../puddlesettings.py" line="323" />
-      <location filename="../puddlesettings.py" line="272" />
+      <location filename="../puddlesettings.py" line="332" />
+      <location filename="../puddlesettings.py" line="314" />
+      <location filename="../puddlesettings.py" line="269" />
       <source>Tag</source>
       <translation>Značka</translation>
     </message>
     <message>
-      <location filename="../puddlesettings.py" line="273" />
+      <location filename="../puddlesettings.py" line="270" />
       <source>Original Field</source>
       <translation>Původní pole</translation>
     </message>
     <message>
-      <location filename="../puddlesettings.py" line="325" />
-      <location filename="../puddlesettings.py" line="274" />
+      <location filename="../puddlesettings.py" line="334" />
+      <location filename="../puddlesettings.py" line="316" />
+      <location filename="../puddlesettings.py" line="271" />
       <source>Target</source>
       <translation>Cíl</translation>
     </message>
     <message>
-      <location filename="../puddlesettings.py" line="290" />
+      <location filename="../puddlesettings.py" line="287" />
       <source>&lt;b&gt;A restart is required to apply these settings.&lt;/b&gt;</source>
       <translation>&lt;b&gt;Pro použití těchto nastavení je požadováno opětovné spuštění programu.&lt;/b&gt;</translation>
     </message>
     <message>
-      <location filename="../puddlesettings.py" line="324" />
+      <location filename="../puddlesettings.py" line="333" />
+      <location filename="../puddlesettings.py" line="315" />
       <source>Source</source>
       <translation>Zdroj</translation>
+    </message>
+    <message>
+      <location filename="../puddlesettings.py" line="344" />
+      <source>A field can't hold a comma: {}</source>
+      <translation type="unfinished" />
     </message>
   </context>
   <context>
@@ -2349,8 +2357,8 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
       <translation>Dávkové zpracování značek</translation>
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="677" />
-      <location filename="../masstag/dialogs.py" line="626" />
+      <location filename="../masstag/dialogs.py" line="673" />
+      <location filename="../masstag/dialogs.py" line="622" />
       <location filename="../masstag/dialogs.py" line="504" />
       <source>&amp;Search</source>
       <translation>&amp;Hledat</translation>
@@ -2376,38 +2384,38 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
       <translation>&amp;Profil:</translation>
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="584" />
-      <location filename="../masstag/dialogs.py" line="581" />
+      <location filename="../masstag/dialogs.py" line="580" />
+      <location filename="../masstag/dialogs.py" line="577" />
       <source>&amp;Stop</source>
       <translation>Za&amp;stavit</translation>
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="597" />
+      <location filename="../masstag/dialogs.py" line="593" />
       <source>The profile file &lt;b&gt;{}&lt;/b&gt; can't be read and was skipped: {}</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="624" />
+      <location filename="../masstag/dialogs.py" line="620" />
       <source>&lt;b&gt;Please choose a tagging profile.&lt;/b&gt;</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="632" />
+      <location filename="../masstag/dialogs.py" line="628" />
       <source>An error occurred during the search: &lt;b&gt;{}&lt;/b&gt;</source>
       <translation>Při hledání se vyskytla chyba: &lt;b&gt;{}&lt;/b&gt;</translation>
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="635" />
+      <location filename="../masstag/dialogs.py" line="631" />
       <source>An error occurred during album retrieval: &lt;b&gt;{}&lt;/b&gt;</source>
       <translation>Při získávaní dat o albu se vyskytla chyba: &lt;b&gt;{}&lt;/b&gt;</translation>
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="638" />
+      <location filename="../masstag/dialogs.py" line="634" />
       <source>An error occurred: &lt;b&gt;{}&lt;/b&gt;</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="675" />
+      <location filename="../masstag/dialogs.py" line="671" />
       <source>&lt;b&gt;Lookups completed.&lt;/b&gt;</source>
       <translation>&lt;b&gt;Vyhledávání dokončeno.&lt;/b&gt;</translation>
     </message>
@@ -3172,7 +3180,7 @@ Chcete pokračovat?</translation>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../puddletag.py" line="701" />
+      <location filename="../puddletag.py" line="714" />
       <source>Save Playlist...</source>
       <translation>Uložit seznam skladeb...</translation>
     </message>
@@ -3180,22 +3188,22 @@ Chcete pokračovat?</translation>
   <context>
     <name>Playlist Settings</name>
     <message>
-      <location filename="../puddlesettings.py" line="208" />
+      <location filename="../puddlesettings.py" line="206" />
       <source>&amp;Write extended info</source>
       <translation>&amp;Zapsat podrobné informace</translation>
     </message>
     <message>
-      <location filename="../puddlesettings.py" line="213" />
+      <location filename="../puddlesettings.py" line="211" />
       <source>Entries &amp;relative to working directory</source>
       <translation>Uložit záznamy s &amp;relativní cestou</translation>
     </message>
     <message>
-      <location filename="../puddlesettings.py" line="216" />
+      <location filename="../puddlesettings.py" line="214" />
       <source>Use windows path separator (\)</source>
       <translation>Použít oddělovač cesty používaný ve Windows (\)</translation>
     </message>
     <message>
-      <location filename="../puddlesettings.py" line="221" />
+      <location filename="../puddlesettings.py" line="219" />
       <source>&amp;Filename pattern.</source>
       <translation>Vzor pro &amp;souborový název.</translation>
     </message>
@@ -3203,27 +3211,27 @@ Chcete pokračovat?</translation>
   <context>
     <name>Plugin Settings</name>
     <message>
-      <location filename="../pluginloader.py" line="115" />
+      <location filename="../pluginloader.py" line="113" />
       <source>Name</source>
       <translation>Název</translation>
     </message>
     <message>
-      <location filename="../pluginloader.py" line="116" />
+      <location filename="../pluginloader.py" line="114" />
       <source>Author</source>
       <translation>Autor</translation>
     </message>
     <message>
-      <location filename="../pluginloader.py" line="117" />
+      <location filename="../pluginloader.py" line="115" />
       <source>Description</source>
       <translation>Popis</translation>
     </message>
     <message>
-      <location filename="../pluginloader.py" line="118" />
+      <location filename="../pluginloader.py" line="116" />
       <source>Version</source>
       <translation>Verze</translation>
     </message>
     <message>
-      <location filename="../pluginloader.py" line="140" />
+      <location filename="../pluginloader.py" line="138" />
       <source>&lt;b&gt;Loading/unloading plugins requires a restart.&lt;/b&gt;</source>
       <translation>&lt;b&gt;Nahrání/Ukončení přídavných modulů vyžaduje nové spuštění programu.&lt;/b&gt;</translation>
     </message>
@@ -3442,12 +3450,12 @@ Chcete pokračovat?</translation>
   <context>
     <name>Progress Dialog</name>
     <message>
-      <location filename="../puddleobjects.py" line="2206" />
+      <location filename="../puddleobjects.py" line="2216" />
       <source>Please Wait...</source>
       <translation>Počkejte, prosím...</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="2207" />
+      <location filename="../puddleobjects.py" line="2217" />
       <source>{}{} of {}...</source>
       <translation>{}{} z {}...</translation>
     </message>
@@ -3491,47 +3499,52 @@ Chcete pokračovat?</translation>
   <context>
     <name>Settings</name>
     <message>
-      <location filename="../puddlesettings.py" line="619" />
+      <location filename="../puddlesettings.py" line="600" />
+      <source>puddletag settings</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../puddlesettings.py" line="604" />
       <source>General</source>
       <translation>Obecné</translation>
     </message>
     <message>
-      <location filename="../puddlesettings.py" line="621" />
+      <location filename="../puddlesettings.py" line="606" />
       <source>Confirmations</source>
       <translation>Potvrzení</translation>
     </message>
     <message>
-      <location filename="../puddlesettings.py" line="623" />
+      <location filename="../puddlesettings.py" line="608" />
       <source>Mappings</source>
       <translation>Přiřazení polí</translation>
     </message>
     <message>
-      <location filename="../puddlesettings.py" line="624" />
+      <location filename="../puddlesettings.py" line="609" />
       <source>Playlist</source>
       <translation>Seznam skladeb</translation>
     </message>
     <message>
-      <location filename="../puddlesettings.py" line="625" />
+      <location filename="../puddlesettings.py" line="610" />
       <source>Colours</source>
       <translation>Barvy</translation>
     </message>
     <message>
-      <location filename="../puddlesettings.py" line="626" />
+      <location filename="../puddlesettings.py" line="611" />
       <source>Genres</source>
       <translation>Žánry</translation>
     </message>
     <message>
-      <location filename="../puddlesettings.py" line="628" />
+      <location filename="../puddlesettings.py" line="613" />
       <source>Tags</source>
       <translation>Značky</translation>
     </message>
     <message>
-      <location filename="../puddlesettings.py" line="630" />
+      <location filename="../puddlesettings.py" line="615" />
       <source>Plugins</source>
       <translation>Přídavné moduly</translation>
     </message>
     <message>
-      <location filename="../puddlesettings.py" line="631" />
+      <location filename="../puddlesettings.py" line="616" />
       <source>Shortcuts</source>
       <translation>Klávesové zkratky</translation>
     </message>
@@ -3696,7 +3709,7 @@ Skutečný: {}</translation>
       <translation>Řádek</translation>
     </message>
     <message>
-      <location filename="../mainwin/tagpanel.py" line="488" />
+      <location filename="../mainwin/tagpanel.py" line="485" />
       <source>All row numbers must be integers.</source>
       <translation>Všechna čísla řádků musí být celými čísly.</translation>
     </message>
@@ -3704,47 +3717,47 @@ Skutečný: {}</translation>
   <context>
     <name>Tag Settings</name>
     <message>
-      <location filename="../puddlesettings.py" line="382" />
+      <location filename="../puddlesettings.py" line="384" />
       <source>&amp;Restrict incoming files to (eg. "*.mp3; *.ogg; *.aac")</source>
       <translation>&amp;Omezit nahrání nových souborů na (např. "*.mp3; *.ogg; *.aac")</translation>
     </message>
     <message>
-      <location filename="../puddlesettings.py" line="386" />
+      <location filename="../puddlesettings.py" line="388" />
       <source>Remove ID3v1 tag.</source>
       <translation>Odstranit značku ID3v1.</translation>
     </message>
     <message>
-      <location filename="../puddlesettings.py" line="387" />
+      <location filename="../puddlesettings.py" line="389" />
       <source>Update the ID3v1 tag's values only if an ID3v1 tag is present.</source>
       <translation>Hodnoty značky ID3v1 aktualizovat jen tehdy, když je značka ID3v1 přítomna.</translation>
     </message>
     <message>
-      <location filename="../puddlesettings.py" line="389" />
+      <location filename="../puddlesettings.py" line="391" />
       <source>Create an ID3v1 tag if it's not present. Otherwise update it.</source>
       <translation>Vytvořit značku ID3v1, když není žádná přítomna. Jinak ji aktualizovat.</translation>
     </message>
     <message>
-      <location filename="../puddlesettings.py" line="394" />
+      <location filename="../puddlesettings.py" line="396" />
       <source>puddletag writes only &amp;ID3v2 tags.&lt;br /&gt;What should be done with the ID3v1 tag upon saving?</source>
       <translation>Puddletag zapisuje pouze značky &amp;ID3v2.&lt;br /&gt;jak se má postupovat při ukládání značek ID3v1?</translation>
     </message>
     <message>
-      <location filename="../puddlesettings.py" line="400" />
+      <location filename="../puddlesettings.py" line="402" />
       <source>Default &amp;pattern to use when saving artwork.</source>
       <translation>Výchozí vzor při &amp;ukládání obalů.</translation>
     </message>
     <message>
-      <location filename="../puddlesettings.py" line="416" />
+      <location filename="../puddlesettings.py" line="418" />
       <source>ID3 Options</source>
       <translation>Volby pro ID3</translation>
     </message>
     <message>
-      <location filename="../puddlesettings.py" line="418" />
+      <location filename="../puddlesettings.py" line="420" />
       <source>Write ID3v2.&amp;4</source>
       <translation>Zapsat ID3v2.&amp;4</translation>
     </message>
     <message>
-      <location filename="../puddlesettings.py" line="421" />
+      <location filename="../puddlesettings.py" line="423" />
       <source>Write ID3v2.&amp;3</source>
       <translation>Zapsat ID3v2.&amp;3</translation>
     </message>
