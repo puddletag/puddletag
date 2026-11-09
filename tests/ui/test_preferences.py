@@ -370,7 +370,6 @@ def test_preferences_opened_twice_is_one_window(mainwin, qtbot, user):
     assert [w for w in mainwin.findChildren(SettingsDialog) if w.isVisible()] == [window]
 
 
-@pytest.mark.xfail(strict=True, reason='the Preferences title is not translated')
 def test_window_title_is_translated(mainwin, qtbot, user):
     # translate.txt: puddletag's texts can be translated. The translation is
     # synthetic.

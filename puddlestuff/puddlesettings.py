@@ -613,7 +613,7 @@ class SettingsDialog(QDialog):
 
     def __init__(self, controls, parent=None, status=None):
         QDialog.__init__(self, parent)
-        self.setWindowTitle("puddletag settings")
+        self.setWindowTitle(translate("Settings", "puddletag settings"))
         winsettings('settingswin', self)
 
         built_in = [
