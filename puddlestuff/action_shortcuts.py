@@ -324,14 +324,12 @@ class ShortcutEditor(QDialog):
         from .puddletag import remove_shortcuts, add_shortcuts
         remove_shortcuts('&Actions', self._names)
 
-        f = open(FILENAME, 'w')
-        f.close()
-
         cparser = PuddleConfig(FILENAME)
+        cparser.data.clear()
         for i, item in enumerate(self._listbox.items()):
             section = SHORTCUT_SECTION + str(i)
-            cparser.set(section, NAME, item.actionName)
-            cparser.set(section, FILENAMES, item.filenames)
+            cparser.data[section] = {NAME: item.actionName, FILENAMES: item.filenames}
+        cparser.save()
 
         from .mainwin.funcs import applyaction
 
