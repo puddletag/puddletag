@@ -48,13 +48,20 @@ def create_action_shortcuts(method, parent=None):
 def get_shortcuts(default=None):
     from .puddletag import status
     if status['actions']:
-        ret = [_f for _f in (str(z.shortcut().toString()) for z in status['actions']) if _f]
+        ret = [_f for _f in (str(k.toString()) for z in status['actions'] for k in z.shortcuts()) if _f]
     else:
         ret = []
     if default:
         return set(ret + default)
     else:
         return set(ret)
+
+
+def taken_names():
+    """The texts of the commands that aren't action shortcuts: a shortcut named
+    like one would share its saved key."""
+    from .puddletag import status
+    return [str(a.text()) for a in status['actions'] if not isinstance(a, Shortcut)]
 
 
 def _sections(cparser):
@@ -178,6 +185,7 @@ class Editor(QDialog):
         okcancel.cancel.connect(self.close)
         self._ok = okcancel.okButton
         self._name.textChanged.connect(self.enableOk)
+        self.enableOk(self._name.text())
         scut_status = QLabel('')
         self._shortcut.validityChanged.connect(
             lambda v: scut_status.setText('') if v or (not self._shortcut.text()) else
@@ -296,7 +304,7 @@ class ShortcutEditor(QDialog):
         shortcuts = get_shortcuts().difference(self._hotkeys).union(
             i.shortcut for i in self._listbox.items() if i.shortcut)
 
-        win = Editor('Add Shortcut', '', self._actions, self.names(), shortcuts, self)
+        win = Editor('Add Shortcut', '', self._actions, self.names() + taken_names(), shortcuts, self)
         win.setModal(True)
         win.actionChanged.connect(self.addShortcut)
         win.show()
@@ -342,7 +350,7 @@ class ShortcutEditor(QDialog):
             return
         shortcuts = get_shortcuts().difference(self._hotkeys).union(
             i.shortcut for i in self._listbox.items() if i.shortcut)
-        win = Editor('Duplicate Shortcut', '', self._actions, self.names(), shortcuts, self)
+        win = Editor('Duplicate Shortcut', '', self._actions, self.names() + taken_names(), shortcuts, self)
         win.setAttrs(item.actionName, self._actions, item.filenames, '')
         win.setModal(True)
         win.actionChanged.connect(self.addShortcut)
@@ -358,7 +366,7 @@ class ShortcutEditor(QDialog):
 
         names = self.names()
         names.remove(item.actionName)
-        win = Editor('Edit Shortcut', item.shortcut, self._actions, names, shortcuts, self)
+        win = Editor('Edit Shortcut', item.shortcut, self._actions, names + taken_names(), shortcuts, self)
         win.setAttrs(item.actionName, self._actions, item.filenames, item.shortcut)
         win.setModal(True)
         win.actionChanged.connect(

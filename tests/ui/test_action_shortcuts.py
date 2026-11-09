@@ -723,7 +723,6 @@ def test_ok_disabled_for_an_empty_or_taken_name(loaded, mainwin, user, qtbot, mo
     assert seen == [('', False), ('Case Conversion', False), ('Title Case', True)]
 
 
-@pytest.mark.xfail(strict=True, reason='Add offers the name Name again and its OK takes it')
 def test_offered_name_already_taken_is_refused(loaded, mainwin, user, qtbot, monkeypatch):
     # The docs don't say; this is what puddletag should do: Add offers the
     # name "Name"; once a shortcut has it, the next Add offers it again with
@@ -810,7 +809,6 @@ def test_add_shortcut_window_strings_are_translated(loaded, mainwin, user, qtbot
     assert labels == ['Synthetic &Name']
 
 
-@pytest.mark.xfail(strict=True, reason="The key fields check only a command's first key: Paste's Shift+Ins is taken")
 def test_second_key_of_a_command_is_refused(loaded, qtbot, user, monkeypatch, mainwin):
     # The docs don't say; this is what puddletag should do: a key another
     # command has (Paste's Shift+Ins, from data/shortcuts) is shown but OK
@@ -833,7 +831,6 @@ def test_second_key_of_a_command_is_refused(loaded, qtbot, user, monkeypatch, ma
     assert refused == [('Shift+Ins', False)]
 
 
-@pytest.mark.xfail(strict=True, reason="An action shortcut named like the Filter window's toggle shares its saved key")
 def test_name_a_command_has_is_refused(loaded, qtbot, user, monkeypatch, mainwin):
     # The docs don't say; this is what puddletag should do: the name of a
     # command (the Filter window's toggle, "Filter") leaves OK disabled, as

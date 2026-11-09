@@ -799,12 +799,13 @@ class ActionWindow(QDialog):
     def createShortcut(self):
         macros = self.checked()
         names = [m.name for m in macros]
-        (name, ok) = ShortcutName(self.shortcutNames(), names[0]).getText()
+        from .action_shortcuts import taken_names
+        (name, ok) = ShortcutName(self.shortcutNames() + taken_names(), names[0]).getText()
 
         if name and ok:
             from . import puddletag
-            shortcuts = [str(z.shortcut().toString()) for z in
-                         puddletag.status['actions']]
+            shortcuts = [k.toString() for z in puddletag.status['actions']
+                         for k in z.shortcuts()]
             (shortcut, ok) = ShortcutDialog(shortcuts).getShortcut()
             name = str(name)
 
