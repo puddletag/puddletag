@@ -3,12 +3,10 @@
 Preferences
 ===========
 
+Nothing in Preferences is saved until you click **OK**. **Cancel** or **Esc** closes the window without saving anything, and **Enter** clicks **OK**. If the values on a page can't be saved (for instance a row in the Tag Panel that isn't a number), a warning names the page, the window stays open and nothing is saved.
+
 General
 -------
-
-Load last folder at startup
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
-If checked, the last folder that was loaded upon closing puddletag will be re-opened when puddletag is started.
 
 .. _subfolders:
 
@@ -32,14 +30,24 @@ Automatically resize columns to contents
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 If checked, the columns will be resized to the so that all text is visible upon loading folders. They will not be resize during editing.
 
+Preserve file modification times (if supported)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+If checked, a file keeps the modification time it had before puddletag wrote its tags, where the file system allows it. Otherwise the modification time is set to the time of the write.
+
 Program to play files with:
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Enter the command of the program puddletag should use to play files with. The list of selected files will be appended to the argument list.
+
+Load last folder at startup
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+If checked, the last folder that was loaded upon closing puddletag will be re-opened when puddletag is started.
 
 .. _sort_option_prefs:
 
 Edit sort options
 ^^^^^^^^^^^^^^^^^
+The list you edit here is saved when you click **OK** in Preferences, like every other page.
+
 With Sort Options you can sort the file-view using a list of predefined fields. The window brough up by clicking this button is pretty self explanatory. Any field-lists you add will create a menu item in the **Tools->Sort By** menu.
 
 Provided a single file (or none at all) is selected, clicking on a menu item will sort the file-view in order of the fields defined. So **track/__dirpath/album** will sort the file-view by track first, then __dirpath then album. It's equivalent to clicking the relevant headers in order in the file-view.
@@ -49,6 +57,10 @@ Click on it again and the sort order will be reversed: the same fields, in desce
 This sort order will be used when loading dirs unless changed (by clicking a header or using another Sort Option.) It is saved across sessions.
 
 If you have more than one file selected, **only** the selected files will be sorted using those fields. All other files will remain as is.
+
+Language (Requires a restart)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Choose the language puddletag is shown in: **<Autodetect>** uses your system's language, **Default** is English, and the others are the translations puddletag found. The change takes effect the next time you start puddletag. To add a translation, see :doc:`translate`.
 
 .. _confirmations_prefs:
 
@@ -67,6 +79,9 @@ Now any files that contained the **performer** field before the mapping will ins
 
 The mapping doesn't work in reverse, **albumartist** won't be show as **performer**. You'll need to set up another mapping for that.
 
+* A field can't contain a comma: **OK** refuses it with a warning. A row with an empty cell is ignored.
+* The mappings are saved to the **mappings** file in puddletag's configuration folder only when they differ from the built-in ones. When they're the same again, the file is removed, so the built-in mappings (which may change in a new release) are used.
+* Mappings apply the next time you start puddletag.
 * Tag can be one one of ID3, MP4, APEv2 (for Musepack, WavPack, etc.) or VorbisComment (for FLAC and Ogg Vorbis). Note that these are **case-sensitive**.
 * You can also set mappings for Tag Sources using the **exact** Tag Source's name. eg. **MusicBrainz**.
 * **Mapping default fields like "__filename, __dirpath, __image, etc". will cause undesired behaviour.**
@@ -101,7 +116,7 @@ Defines the background colours to used in various puddletag dialogs. Use it when
 Genres
 ------
 
-The list of genres as used in the Tag Panel. A genre you save in the Tag Panel that isn't in the list is added to it.  Edit to your hearts content. If you want to reset it to the default values remove **~/.puddletag/genres**.
+The list of genres as used in the Tag Panel. A genre you save in the Tag Panel that isn't in the list is added to it.  Edit to your hearts content. The list is saved to **~/.config/puddletag/genres** when puddletag quits. A new genre shows in the Tag Panel's list from the next file you select. If you want to reset it to the default values remove **~/.config/puddletag/genres**.
 
 
 Tags
@@ -111,9 +126,19 @@ Restrict incoming files to (eg. "\*.mp3; \*.ogg; \*.aac")
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Enter a ";"-separated list of texts to restrict the filenames puddletag loads to. "\*.mp3; \*.ogg; \*.aac" will only load filenames beginning ending with '.ogg', '.mp3' or '.aac'. By default puddletag checks every file for a valid tag.
 
+Default pattern to use when saving artwork
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+The pattern used for the name of an image file when you save artwork. The default is **folder**.
+
 ID3
 ^^^
 puddletag supports writing ID3v2.4 (text as UTF-8) and ID3v2.3 (text as UTF-16, as it has no UTF-8) with the option of including ID3v1.1. Choose whichever option you want to use. See :doc:`the ID3 page <id3>` for the frames that only ID3v2.3 has.
+
+puddletag writes only ID3v2 tags. For the ID3v1 tag, choose what saving does:
+
+* **Remove ID3v1 tag.**
+* **Update the ID3v1 tag's values only if an ID3v1 tag is present.**
+* **Create an ID3v1 tag if it's not present. Otherwise update it.** This is the default.
 
 
 Plugins
