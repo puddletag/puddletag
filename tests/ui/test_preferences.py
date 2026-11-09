@@ -627,7 +627,6 @@ def test_old_musicbrainz_album_id_mapping_still_applies(mainwin, qtbot, restart,
     assert model.taginfo[0]['mbrainz_album_id'] == ['synthetic-album-id']
 
 
-@pytest.mark.xfail(strict=True, reason='a comma in a mapping is saved and the row is dropped at the next start')
 def test_mapping_with_a_comma_is_refused(mainwin, user, qtbot, dialogs):
     # preferences.txt: "A field can't contain a comma: **OK** refuses it with
     # a warning." The warning names the page.
@@ -645,7 +644,6 @@ def test_mapping_with_a_comma_is_refused(mainwin, user, qtbot, dialogs):
     user.close_preferences(window, 'Cancel')
 
 
-@pytest.mark.xfail(strict=True, reason='Add then OK saves the placeholder row Tag,Source,Target')
 def test_new_row_left_as_it_is_is_not_saved(mainwin, user, qtbot, restart):
     # Synthetic: a row added and left as its placeholders (Tag, Source,
     # Target) says nothing, so OK doesn't save it.
@@ -665,8 +663,6 @@ def test_new_row_left_as_it_is_is_not_saved(mainwin, user, qtbot, restart):
             assert 'Tag,Source,Target' not in f.read()
 
 
-@pytest.mark.xfail(strict=True,
-                   reason='any OK writes mappings, so later changes to the built-in mappings never reach the user')
 def test_ok_without_changes_writes_no_mappings_file(mainwin, user, qtbot, restart):
     # preferences.txt: "The mappings are saved to the **mappings** file ...
     # only when they differ from the built-in ones. When they're the same
@@ -686,7 +682,6 @@ def test_ok_without_changes_writes_no_mappings_file(mainwin, user, qtbot, restar
     assert not os.path.exists(mappings_file())
 
 
-@pytest.mark.xfail(strict=True, reason='a mappings row whose Tag is puddletag hides other rows with its field')
 def test_puddletag_row_hides_no_other_row(mainwin, user, qtbot, restart):
     # Synthetic: a mappings file with a row whose Tag is puddletag next to
     # a row with the same Original field; the page shows every row.

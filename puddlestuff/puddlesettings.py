@@ -303,14 +303,8 @@ class TagMappings(QWidget):
         setItem = self._table.setItem
         self._table.setRowCount(1)
         row = 0
-        if 'puddletag' in mappings:
-            puddletag = mappings['puddletag']
-        else:
-            puddletag = {}
         for z, v in mappings.items():
             for source, target in v.items():
-                if source in puddletag and z != 'puddletag':
-                    continue
                 setItem(row, 0, QTableWidgetItem(z))
                 setItem(row, 1, QTableWidgetItem(source))
                 setItem(row, 2, QTableWidgetItem(target))
@@ -338,25 +332,36 @@ class TagMappings(QWidget):
     def remove(self):
         self._table.removeRow(self._table.currentRow())
 
-    def applySettings(self, *args):
-        text = []
-        mappings = {}
+    def _rows(self):
+        """The table's rows as (tag, original, target), without the rows
+        still holding the placeholders of a new row and those with an empty
+        cell."""
+        placeholders = (translate("Mapping Settings", 'Tag'),
+                        translate("Mapping Settings", 'Source'),
+                        translate("Mapping Settings", 'Target'))
         item = self._table.item
-        itemtext = lambda row, column: str(item(row, column).text())
-        for row in range(self._table.rowCount()):
-            tag = itemtext(row, 0)
-            original = itemtext(row, 1)
-            other = itemtext(row, 2)
-            text.append((tag, original, other))
-            if tag in mappings:
-                mappings[tag].update({other: original})
-            else:
-                mappings[tag] = {other: original}
-        self._mappings = mappings
+        rows = [tuple(str(item(row, column).text()) for column in range(3))
+                for row in range(self._table.rowCount())]
+        return [r for r in rows if r != placeholders and all(r)]
+
+    def validateSettings(self, control=None):
+        for row in self._rows():
+            for text in row:
+                if ',' in text:
+                    raise SettingsError(translate('Mapping Settings', "A field can't hold a comma: {}").format(text))
+
+    def applySettings(self, *args):
+        self.validateSettings()
+        mappings = {}
+        for tag, original, target in self._rows():
+            mappings.setdefault(tag, {})[original] = target
         filename = os.path.join(PuddleConfig().savedir, 'mappings')
-        f = open(filename, 'w')
-        f.write('\n'.join([','.join(z) for z in text]))
-        f.close()
+        if mappings == audioinfo.DEFAULT_MAPPING:
+            if os.path.exists(filename):
+                os.remove(filename)
+            return
+        with open(filename, 'w') as f:
+            f.write('\n'.join(','.join(row) for row in self._rows()))
 
     def duplicate(self):
         table = self._table
