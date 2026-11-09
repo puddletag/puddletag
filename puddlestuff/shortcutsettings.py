@@ -188,6 +188,7 @@ class ActionEditorDialog(QWidget):
 
         super(ActionEditorDialog, self).__init__(parent)
         self.actions = actions
+        self._rows = [action for action in actions if action.text()]
 
         help = QLabel(translate("Shortcut Settings", '<b>Double click a cell in the Shortcut Column'
                                                      ' to <br />modify the key sequence.</b>'))
@@ -206,12 +207,7 @@ class ActionEditorDialog(QWidget):
 
         self.actionTable.cellChanged.connect(self.validateAction)
 
-        row = 0
-        for action in self.actions:
-
-            if not action.text():
-                continue
-
+        for row, action in enumerate(self._rows):
             self.actionTable.insertRow(self.actionTable.rowCount())
 
             item = QTableWidgetItem()
@@ -224,8 +220,6 @@ class ActionEditorDialog(QWidget):
             item.setFlags(Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsEditable | Qt.ItemFlag.ItemIsSelectable)
             item.oldShortcutText = item.text()
             self.actionTable.setItem(row, 1, item)
-
-            row += 1
 
         self.actionTable.resizeColumnsToContents()
 
@@ -245,13 +239,12 @@ class ActionEditorDialog(QWidget):
         if not self._model.edited:
             return
 
-        row = 0
-        for action in self.actions:
-
-            if action.text():
-                action.setText(self.actionTable.item(row, 0).text())
-                action.setShortcut(QKeySequence(self.actionTable.item(row, 1).text()))
-                row += 1
+        # self.actions is the live list: a command added while this page is open has no row.
+        for row, action in enumerate(self._rows):
+            if action not in self.actions:
+                continue
+            action.setText(self.actionTable.item(row, 0).text())
+            action.setShortcut(QKeySequence(self.actionTable.item(row, 1).text()))
         self.saveSettings(self.actions)
         self._model.edited = False
 

@@ -860,8 +860,6 @@ def test_name_a_command_has_is_refused(loaded, qtbot, user, monkeypatch, mainwin
     assert offered == [('Filter', False), ('Filter Case', True)]
 
 
-@pytest.mark.xfail(strict=True, reason="OK on Preferences fails when Assign Shortcut added a command "
-                                       "while it was open")
 def test_preferences_ok_after_a_shortcut_assigned_meanwhile(loaded, mainwin, user, qtbot, monkeypatch):
     # "I recommend you assign shortcuts to your favourite actions like Ctrl+1, Ctrl+2
     # etc. Use the Assign Shortcut button on the Actions Dialog." (tut3.txt:97-99);
