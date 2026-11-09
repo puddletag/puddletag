@@ -473,8 +473,6 @@ def test_edit_sort_options_adds_a_sort_by_item(mainwin, qtbot, user, dialogs):
                                              '__filename,album,__dirpath', 'artist, title']
 
 
-@pytest.mark.xfail(strict=True, reason='Edit sort options saves at its own OK, before Preferences is OK\'d '
-                                       'or cancelled')
 def test_edit_sort_options_then_cancel_changes_nothing(mainwin, qtbot, user, dialogs):
     # preferences.txt, Edit sort options: "The list you edit here is saved when you click **OK** in
     # Preferences, like every other page."

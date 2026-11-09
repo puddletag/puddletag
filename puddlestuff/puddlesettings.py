@@ -109,6 +109,7 @@ class GeneralSettings(QWidget):
 
     def __init__(self, controls, parent=None):
         QWidget.__init__(self, parent)
+        self._sort_options = None
         settings = []
         for control in controls:
             if hasattr(control, 'gensettings'):
@@ -161,25 +162,27 @@ class GeneralSettings(QWidget):
         self.setLayout(vbox)
 
     def editSortOptions(self):
-        cparser = PuddleConfig()
-        options = cparser.get('table', 'sortoptions',
-                              ['__filename,track,__dirpath', 'track, album',
-                               '__filename,album,__dirpath'])
+        options = self._sort_options
+        if options is None:
+            options = PuddleConfig().get('table', 'sortoptions',
+                                         ['__filename,track,__dirpath', 'track, album',
+                                          '__filename,album,__dirpath'])
 
         from .mainwin.tagsources import SortOptionEditor
         win = SortOptionEditor(options, self)
-        win.options.connect(self.applySortOptions)
+        win.options.connect(self.storeSortOptions)
         win.show()
 
-    def applySortOptions(self, options):
-        from .mainwin import previews
-        previews.set_sort_options(options)
-        cparser = PuddleConfig()
-        cparser.set('table', 'sortoptions', options)
+    def storeSortOptions(self, options):
+        self._sort_options = options
 
     def applySettings(self, controls):
 
         cparser = PuddleConfig()
+        if self._sort_options is not None:
+            from .mainwin import previews
+            previews.set_sort_options(self._sort_options)
+            cparser.set('table', 'sortoptions', self._sort_options)
         index = self._lang_combo.currentIndex()
         if index > 1:
             cparser.set('main', 'lang', str(self._lang_combo.currentText()))
