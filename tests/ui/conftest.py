@@ -134,6 +134,30 @@ class User:
         self.table.scrollTo(index)
         self.right_click(self.table.viewport(), self.table.visualRect(index).center(), name)
 
+    def open_preferences(self, page='General'):
+        """Edit > Preferences, then the page's row in its list, as a user
+        picks a page; returns the window. Only a visible window counts: a
+        closed one can stay as the main window's hidden child."""
+        from puddlestuff.puddlesettings import SettingsDialog
+        self.click_menu('&Preferences')
+        shown = lambda: [w for w in self._mainwin.findChildren(SettingsDialog) if w.isVisible()]
+        self._qtbot.waitUntil(lambda: len(shown()) == 1)
+        [window] = shown()
+        self.activate(window)
+        [row] = [r for r, (title, *_) in window._widgets.items() if title == page]
+        index = window.model.index(row, 0)
+        window.listbox.scrollTo(index)
+        self.click(window.listbox.viewport(), window.listbox.visualRect(index).center())
+        self._qtbot.waitUntil(lambda: window.stack.currentWidget() is window._widgets[row][1])
+        return window
+
+    def close_preferences(self, window, button='OK'):
+        """Clicks OK or Cancel; the main window gets the activation back,
+        as on a desktop."""
+        self.click({'Cancel': window.okbuttons.cancelButton, 'OK': window.okbuttons.okButton}[button])
+        self._qtbot.waitUntil(lambda: not window.isVisible())
+        self.activate()
+
 
 @pytest.fixture
 def user(qtbot, mainwin):

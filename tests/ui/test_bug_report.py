@@ -246,15 +246,8 @@ def test_steps_leave_out_tags_and_names(mainwin, make_audio, tmp_path, qtbot, us
 def test_a_window_opened_is_a_step(mainwin, qtbot, user):
     # menus.txt, Help: "windows you opened". Synthetic: the Preferences
     # window opened and closed, then the report.
-    preferences = lambda: [w for w in QApplication.topLevelWidgets()
-                           if w.isVisible() and w.windowTitle() == 'puddletag settings']
-    user.click_menu('&Preferences')
-    qtbot.waitUntil(lambda: len(preferences()) == 1)
-    [window] = preferences()
-    user.activate(window)
-    user.click(button(window, 'Cancel'))
-    qtbot.waitUntil(lambda: not preferences())
-    user.activate()
+    window = user.open_preferences()
+    user.close_preferences(window, 'Cancel')
 
     review = open_review(mainwin, qtbot, user)
 

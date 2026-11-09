@@ -11,7 +11,6 @@ from PyQt6.QtWidgets import QApplication, QCheckBox, QLabel, QMessageBox, QStyle
 
 from puddlestuff import audioinfo
 from puddlestuff.puddleobjects import PuddleConfig
-from puddlestuff.puddlesettings import SettingsDialog
 
 pytestmark = pytest.mark.ui
 
@@ -65,25 +64,6 @@ def select_rows(user, first, last):
     user.click_cell(user.cell(last, 'title'), Shift)
 
 
-def open_preferences(mainwin, qtbot, user, page='General'):
-    """Edit→Preferences, on the page clicked in its list."""
-    user.click_menu('&Preferences')
-    qtbot.waitUntil(lambda: any(w.isVisible() for w in mainwin.findChildren(SettingsDialog)))
-    [window] = [w for w in mainwin.findChildren(SettingsDialog) if w.isVisible()]
-    user.activate(window)
-    [row] = [r for r, (title, *_) in window._widgets.items() if title == page]
-    index = window.model.index(row, 0)
-    user.click(window.listbox.viewport(), window.listbox.visualRect(index).center())
-    qtbot.waitUntil(lambda: window.stack.currentWidget() is window._widgets[row][1])
-    return window
-
-
-def close_preferences(window, qtbot, user):
-    user.click(window.okbuttons.okButton)
-    qtbot.waitUntil(lambda: not window.isVisible())
-    user.activate()
-
-
 def set_check_box(user, window, text, checked):
     """Clicks the box's indicator if it isn't as wanted: the box stretches
     across the page, and a click at its center misses the label."""
@@ -109,9 +89,9 @@ def labelled(window, text):
 
 
 def set_subfolders(mainwin, qtbot, user, checked):
-    window = open_preferences(mainwin, qtbot, user)
+    window = user.open_preferences()
     set_check_box(user, window, 'Su&bfolders', checked)
-    close_preferences(window, qtbot, user)
+    user.close_preferences(window)
 
 
 def player(tmp_path):
@@ -649,9 +629,9 @@ def test_save_playlist_greyed_out_with_nothing_loaded(user):
 def test_save_playlist_suggests_the_filename_pattern(mainwin, qtbot, user, dialogs, make_audio, tmp_path):
     # "Filename pattern: Then default filename pattern to use when saving
     # playlists." The dialog starts in the last loaded folder (docs-silent).
-    window = open_preferences(mainwin, qtbot, user, 'Playlist')
+    window = user.open_preferences('Playlist')
     set_text(user, labelled(window, '&Filename pattern.'), '%artist%.m3u')
-    close_preferences(window, qtbot, user)
+    user.close_preferences(window)
     music = tmp_path / 'music'
     p1 = make_audio('01.mp3', music, artist='Artist 1', title='Title 1')
     mainwin.openDir(str(music), False)
@@ -667,9 +647,9 @@ def test_save_playlist_without_extended_info(mainwin, qtbot, user, dialogs, unic
     # "Write extended info: When enabled the pattern you will be used to
     # write extended info for M3U playlists."
     table, (p1, p2) = unicode_music
-    window = open_preferences(mainwin, qtbot, user, 'Playlist')
+    window = user.open_preferences('Playlist')
     set_check_box(user, window, '&Write extended info', False)
-    close_preferences(window, qtbot, user)
+    user.close_preferences(window)
     select_rows(user, 0, 1)
     assert save_playlist(user, dialogs, tmp_path / 'lists' / 'out.m3u') == ['#EXTM3U', str(p1), str(p2)]
 
@@ -679,9 +659,9 @@ def test_save_playlist_extended_info_pattern(mainwin, qtbot, user, dialogs, unic
     # write extended info for M3U playlists." The pattern field has no
     # label.
     table, (p1, p2) = unicode_music
-    window = open_preferences(mainwin, qtbot, user, 'Playlist')
+    window = user.open_preferences('Playlist')
     set_text(user, window.stack.currentWidget().extpattern, '%title%')
-    close_preferences(window, qtbot, user)
+    user.close_preferences(window)
     select_rows(user, 0, 1)
     assert save_playlist(user, dialogs, tmp_path / 'lists' / 'out.m3u') == [
         '#EXTM3U', '#EXTINF: 1, Tïtle 1', str(p1), '#EXTINF: 1, Title 2', str(p2)]
@@ -691,9 +671,9 @@ def test_save_playlist_relative_entries(mainwin, qtbot, user, dialogs, unicode_m
     # "Entries relative to working directory: When enabled, the entries are
     # written relative to the playlist's folder, not as absolute paths."
     table, (p1, p2) = unicode_music
-    window = open_preferences(mainwin, qtbot, user, 'Playlist')
+    window = user.open_preferences('Playlist')
     set_check_box(user, window, 'Entries &relative to working directory', True)
-    close_preferences(window, qtbot, user)
+    user.close_preferences(window)
     select_rows(user, 0, 1)
     assert save_playlist(user, dialogs, tmp_path / 'lists' / 'out.m3u') == [
         '#EXTM3U', '#EXTINF: 1, Ärtist - Tïtle 1', os.path.join('..', 'música', '01 Ölü.mp3'),
@@ -704,10 +684,10 @@ def test_save_playlist_with_windows_separators(mainwin, qtbot, user, dialogs, un
     # "Use windows path separator: When enabled, the entries are written
     # with \ instead of /."
     table, (p1, p2) = unicode_music
-    window = open_preferences(mainwin, qtbot, user, 'Playlist')
+    window = user.open_preferences('Playlist')
     set_check_box(user, window, 'Use windows path separator (\\)', True)
     set_check_box(user, window, '&Write extended info', False)
-    close_preferences(window, qtbot, user)
+    user.close_preferences(window)
     select_rows(user, 0, 1)
     assert save_playlist(user, dialogs, tmp_path / 'lists' / 'out.m3u') == [
         '#EXTM3U', str(p1).replace('/', '\\'), str(p2).replace('/', '\\')]
@@ -798,9 +778,9 @@ def test_load_playlist_cancelled(user, dialogs, loaded):
 
 
 def set_player(mainwin, qtbot, user, command):
-    window = open_preferences(mainwin, qtbot, user)
+    window = user.open_preferences()
     set_text(user, labelled(window, 'Program to &play files with:'), command)
-    close_preferences(window, qtbot, user)
+    user.close_preferences(window)
 
 
 PLAY = {

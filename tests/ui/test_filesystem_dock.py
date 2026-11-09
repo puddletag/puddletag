@@ -13,7 +13,6 @@ from puddlestuff import audioinfo
 from puddlestuff.mainwin import dirview
 from puddlestuff.mainwin.dirview import DirView, DirViewWidget
 from puddlestuff.puddleobjects import PuddleThread
-from puddlestuff.puddlesettings import SettingsDialog
 
 pytestmark = pytest.mark.ui
 
@@ -155,24 +154,14 @@ def click_check_box(user, box):
     user.click(box, box.style().subElementRect(QStyle.SubElement.SE_CheckBoxIndicator, option, box).center())
 
 
-def open_preferences(mainwin, qtbot, user):
-    user.click_menu('&Preferences')
-    qtbot.waitUntil(lambda: any(w.isVisible() for w in mainwin.findChildren(SettingsDialog)))
-    [window] = [w for w in mainwin.findChildren(SettingsDialog) if w.isVisible()]
-    user.activate(window)
-    return window
-
-
 def set_subfolders(mainwin, qtbot, user, checked):
     """Preferences → General → Subfolders (its first page)."""
-    window = open_preferences(mainwin, qtbot, user)
+    window = user.open_preferences()
     [box] = [c for c in window.findChildren(QCheckBox) if c.text() == 'Su&bfolders']
     if box.isChecked() != checked:
         click_check_box(user, box)
     assert box.isChecked() == checked
-    user.click(window.okbuttons.okButton)
-    qtbot.waitUntil(lambda: not window.isVisible())
-    user.activate()
+    user.close_preferences(window)
 
 
 def edit(user, qtbot, row, field, text):

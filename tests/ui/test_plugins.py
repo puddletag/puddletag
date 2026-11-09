@@ -22,7 +22,6 @@ from puddlestuff.mainwin.tagsources import SimpleDialog
 from puddlestuff.masstag.dialogs import MassTagEdit, MassTagWindow, MTProfileEdit, TSProfileEdit
 from puddlestuff.pluginloader import InfoWidget
 from puddlestuff.puddleobjects import PuddleConfig
-from puddlestuff.puddlesettings import SettingsDialog
 
 pytestmark = pytest.mark.ui
 
@@ -108,26 +107,6 @@ def listed_sources():
     return [box.itemText(n) for n in range(box.count())]
 
 
-def open_preferences(user, qtbot, mainwin):
-    user.click_menu('&Preferences')
-    qtbot.waitUntil(lambda: any(w.isVisible() for w in mainwin.findChildren(SettingsDialog)))
-    [dialog] = [w for w in mainwin.findChildren(SettingsDialog) if w.isVisible()]
-    user.activate(dialog)
-    return dialog
-
-
-def plugins_page(user, qtbot, mainwin):
-    """Opens Preferences on its Plugins page; returns the dialog and the
-    page."""
-    dialog = open_preferences(user, qtbot, mainwin)
-    [row] = [r for r, w in dialog._widgets.items() if w[0] == 'Plugins']
-    index = dialog.model.index(row, 0)
-    user.click(dialog.listbox.viewport(), dialog.listbox.visualRect(index).center())
-    page = dialog._widgets[row][1]
-    qtbot.waitUntil(lambda: dialog.stack.currentWidget() is page)
-    return dialog, page
-
-
 def listed_plugins(page):
     """The Plugins page's items: (name, ticked)."""
     box = page._listbox
@@ -149,12 +128,6 @@ def click_check_box(user, page, name):
     option.features |= QStyleOptionViewItem.ViewItemFeature.HasCheckIndicator
     check_box = listbox.style().subElementRect(QStyle.SubElement.SE_ItemViewItemCheckIndicator, option, listbox)
     user.click(listbox.viewport(), check_box.center())
-
-
-def click_ok(user, qtbot, dialog):
-    user.click(dialog.okbuttons.okButton)
-    qtbot.waitUntil(lambda: not dialog.isVisible())
-    user.activate()
 
 
 def startup_errors(caplog, phase, level=logging.ERROR):
@@ -251,11 +224,12 @@ def test_plugin_that_isnt_ticked_isnt_loaded(unticked_plugin, mainwin, user, qtb
     # preferences.txt: "If you want to install one drop it into ... Enable
     # it, then restart." plugins.txt: "Plugins will be imported using
     # **modulename**". The plugin is synthetic, and nothing is ticked.
-    dialog, page = plugins_page(user, qtbot, mainwin)
+    dialog = user.open_preferences('Plugins')
+    page = dialog.stack.currentWidget()
     assert ('Synthetic Plugin', False) in listed_plugins(page)
     assert not imported(SYNTHETIC)
     assert 'Plugin Source' not in listed_sources()
-    click_ok(user, qtbot, dialog)
+    user.close_preferences(dialog)
 
 
 def test_unticking_a_plugin_unloads_it_after_a_restart(ticked_plugin, mainwin, user, qtbot, restart,
@@ -265,18 +239,19 @@ def test_unticking_a_plugin_unloads_it_after_a_restart(ticked_plugin, mainwin, u
     # synthetic.
     assert imported(SYNTHETIC)
     assert 'Plugin Source' in listed_sources()
-    dialog, page = plugins_page(user, qtbot, mainwin)
+    dialog = user.open_preferences('Plugins')
+    page = dialog.stack.currentWidget()
     assert ('Synthetic Plugin', True) in listed_plugins(page)
     click_check_box(user, page, 'Synthetic Plugin')
     assert plugin_item(page, 'Synthetic Plugin').checkState() == Qt.CheckState.Unchecked
-    click_ok(user, qtbot, dialog)
+    user.close_preferences(dialog)
     assert PuddleConfig().get('plugins', 'to_load', None) == []
 
     new = start_again(restart, new_process)
 
     assert not imported(SYNTHETIC)
     assert 'Plugin Source' not in listed_sources()
-    _, page = plugins_page(type(user)(qtbot, new), qtbot, new)
+    page = type(user)(qtbot, new).open_preferences('Plugins').stack.currentWidget()
     assert ('Synthetic Plugin', False) in listed_plugins(page)
 
 
@@ -287,11 +262,12 @@ def test_plugin_missing_an_info_key_is_left_out(key, incomplete_plugin, mainwin,
     # present." The plugin is synthetic.
     assert not imported('incomplete_plugin')
     assert 'Incomplete Source' not in listed_sources()
-    dialog, page = plugins_page(user, qtbot, mainwin)
+    dialog = user.open_preferences('Plugins')
+    page = dialog.stack.currentWidget()
     # Found by folder: with name missing there's no name to look for.
     folders = [page._listbox.item(r).plugin['module'] for r in range(page._listbox.count())]
     assert 'incomplete_plugin' not in folders
-    click_ok(user, qtbot, dialog)
+    user.close_preferences(dialog)
 
 
 def test_plugin_that_fails_to_import_is_logged_and_the_others_load(broken_and_good_plugins, mainwin, user,
@@ -311,7 +287,8 @@ def test_plugins_page_shows_the_plugins_info(unticked_plugin, mainwin, user, qtb
     # plugins.txt: "**name**: The name of the plugin as it'll be displayed
     # to a puddletag user." and the descriptions of author, description and
     # version. The plugin is synthetic.
-    dialog, page = plugins_page(user, qtbot, mainwin)
+    dialog = user.open_preferences('Plugins')
+    page = dialog.stack.currentWidget()
     rect = page._listbox.visualItemRect(plugin_item(page, 'Synthetic Plugin'))
     user.click(page._listbox.viewport(), rect.center())
     [info] = page.findChildren(InfoWidget)
@@ -320,7 +297,7 @@ def test_plugins_page_shows_the_plugins_info(unticked_plugin, mainwin, user, qtb
         assert text in shown
     assert '2.5.0' not in shown
     assert ('Synthetic Plugin', False) in listed_plugins(page)
-    click_ok(user, qtbot, dialog)
+    user.close_preferences(dialog)
 
 
 def test_tag_source_plugin_is_offered_in_a_mass_tagging_profile(ticked_plugin, mainwin, user, qtbot):
@@ -350,10 +327,11 @@ def test_tag_source_plugin_appears_in_the_source_list(unticked_plugin, mainwin, 
                                                       new_process):
     # plugins.txt: "In order for a plugin to be registered the following
     # tree structure is required". The plugin is synthetic.
-    dialog, page = plugins_page(user, qtbot, mainwin)
+    dialog = user.open_preferences('Plugins')
+    page = dialog.stack.currentWidget()
     click_check_box(user, page, 'Synthetic Plugin')
     assert plugin_item(page, 'Synthetic Plugin').checkState() == Qt.CheckState.Checked
-    click_ok(user, qtbot, dialog)
+    user.close_preferences(dialog)
 
     start_again(restart, new_process)
 
@@ -386,7 +364,8 @@ def test_unreadable_info_is_logged_and_puddletag_starts(mainwin, user, qtbot, re
     assert not imported('unreadable_plugin')
     [message] = startup_errors(caplog, 'call', logging.WARNING)
     assert message.startswith("Plugin unreadable_plugin not loaded: its info file can't be read")
-    dialog, page = plugins_page(type(user)(qtbot, new), qtbot, new)
+    dialog = type(user)(qtbot, new).open_preferences('Plugins')
+    page = dialog.stack.currentWidget()
     shown = [name for name, _ in listed_plugins(page)]
     assert 'Synthetic Plugin' in shown
     assert 'Unreadable Plugin' not in shown
@@ -395,7 +374,8 @@ def test_unreadable_info_is_logged_and_puddletag_starts(mainwin, user, qtbot, re
 def test_info_value_with_a_comma_is_shown_as_written(comma_in_description, mainwin, user, qtbot):
     # plugins.txt: "**description**: Add a short synopsis of what your
     # plugin does." The description is synthetic.
-    dialog, page = plugins_page(user, qtbot, mainwin)
+    dialog = user.open_preferences('Plugins')
+    page = dialog.stack.currentWidget()
     listbox = page._listbox
     user.click(listbox.viewport(), listbox.visualItemRect(plugin_item(page, 'Synthetic Plugin')).center())
 
@@ -411,7 +391,8 @@ def test_plugin_named_with_a_comma_lets_puddletag_start(mainwin, user, qtbot, re
 
     new = start_again(restart, new_process)
 
-    dialog, page = plugins_page(type(user)(qtbot, new), qtbot, new)
+    dialog = type(user)(qtbot, new).open_preferences('Plugins')
+    page = dialog.stack.currentWidget()
     assert ('Comma, Plugin', True) in listed_plugins(page)
     assert 'Comma Source' in listed_sources()
 
@@ -513,9 +494,10 @@ def example_installed(user, qtbot, mainwin, restart, new_process):
     driving it."""
     with tarfile.open(EXAMPLE) as archive:
         archive.extractall(PLUGINDIR, filter='data')
-    dialog, page = plugins_page(user, qtbot, mainwin)
+    dialog = user.open_preferences('Plugins')
+    page = dialog.stack.currentWidget()
     click_check_box(user, page, 'Example Tag Source')
-    click_ok(user, qtbot, dialog)
+    user.close_preferences(dialog)
     new = start_again(restart, new_process)
     user = type(user)(qtbot, new)
     return new, user

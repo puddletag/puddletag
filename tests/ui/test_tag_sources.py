@@ -20,7 +20,6 @@ from puddlestuff import audioinfo, tagsources
 from puddlestuff.constants import CHECKBOX, COMBO, CONFIGDIR, SPINBOX, TEXT
 from puddlestuff.mainwin.tagsources import SimpleDialog, SortOptionEditor
 from puddlestuff.puddleobjects import PuddleConfig
-from puddlestuff.puddlesettings import SettingsDialog
 from puddlestuff.tagsources import CDDB, RetrievalError, SubmissionError, freedb, write_log
 
 pytestmark = pytest.mark.ui
@@ -239,30 +238,6 @@ def pick_sort(user, qtbot, window, text):
 def the_status():
     from puddlestuff.puddletag import status
     return status
-
-
-def open_preferences(user, qtbot, mainwin):
-    user.click_menu('&Preferences')
-    qtbot.waitUntil(lambda: any(w.isVisible() for w in mainwin.findChildren(SettingsDialog)))
-    [dialog] = [w for w in mainwin.findChildren(SettingsDialog) if w.isVisible()]
-    user.activate(dialog)
-    return dialog
-
-
-def preferences_page(user, qtbot, dialog, title):
-    """Opens the Preferences page with that title and returns it."""
-    [row] = [r for r, w in dialog._widgets.items() if w[0] == title]
-    index = dialog.model.index(row, 0)
-    user.click(dialog.listbox.viewport(), dialog.listbox.visualRect(index).center())
-    page = dialog._widgets[row][1]
-    qtbot.waitUntil(lambda: dialog.stack.currentWidget() is page)
-    return page
-
-
-def close_preferences(user, qtbot, dialog):
-    user.click(dialog.okbuttons.okButton)
-    qtbot.waitUntil(lambda: not dialog.isVisible())
-    user.activate()
 
 
 # The steps tut4.txt describes.
@@ -774,10 +749,10 @@ def test_sort_option_from_preferences_is_kept_after_a_restart(mainwin, make_audi
     the_source().albums = THREE_ALBUMS
     search(user, qtbot, window, 3)
 
-    dialog = open_preferences(user, qtbot, mainwin)
-    page = preferences_page(user, qtbot, dialog, 'Tag Sources')
+    dialog = user.open_preferences('Tag Sources')
+    page = dialog.stack.currentWidget()
     pick(user, qtbot, page._sortoptions, 'album, artist')
-    close_preferences(user, qtbot, dialog)
+    user.close_preferences(dialog)
     assert albums(window) == ['Moe - A', 'Zed - B', 'Abe - C']
 
     win = restart()
@@ -808,8 +783,8 @@ def test_preferences_ok_keeps_the_header_sort(mainwin, make_audio, tmp_path, qtb
     search(user, qtbot, window, 3)
     pick_sort(user, qtbot, window, 'album/artist')
 
-    dialog = open_preferences(user, qtbot, mainwin)
-    close_preferences(user, qtbot, dialog)
+    dialog = user.open_preferences()
+    user.close_preferences(dialog)
 
     assert albums(window) == ['Moe - A', 'Zed - B', 'Abe - C']
 
@@ -1565,8 +1540,8 @@ def test_sort_option_editor_adds_an_option(mainwin, make_audio, tmp_path, qtbot,
     window, paths = load(mainwin, make_audio, tmp_path, qtbot, user)
     the_source().albums = THREE_ALBUMS
     search(user, qtbot, window, 3)
-    dialog = open_preferences(user, qtbot, mainwin)
-    page = preferences_page(user, qtbot, dialog, 'Tag Sources')
+    dialog = user.open_preferences('Tag Sources')
+    page = dialog.stack.currentWidget()
     editor = sort_editor(user, qtbot, page)
 
     dialogs.answer('QInputDialog.getItem', ('album', True))
@@ -1580,7 +1555,7 @@ def test_sort_option_editor_adds_an_option(mainwin, make_audio, tmp_path, qtbot,
     assert combo_items(page._sortoptions) == ['artist, album', 'album, artist', 'album']
     user.activate(dialog)
     pick(user, qtbot, page._sortoptions, 'album')
-    close_preferences(user, qtbot, dialog)
+    user.close_preferences(dialog)
 
     assert albums(window) == ['Moe - A', 'Zed - B', 'Abe - C']
     assert header_text(window) == 'Retrieved Albums (sorted by album)'
@@ -1592,8 +1567,8 @@ def test_sort_option_editor_edit_changes_the_selected_option(mainwin, make_audio
     # bring up an editor for the sort options." The docs don't say how an
     # option is changed; this is what puddletag does. Synthetic option.
     window, paths = load(mainwin, make_audio, tmp_path, qtbot, user, select=False)
-    dialog = open_preferences(user, qtbot, mainwin)
-    page = preferences_page(user, qtbot, dialog, 'Tag Sources')
+    dialog = user.open_preferences('Tag Sources')
+    page = dialog.stack.currentWidget()
     editor = sort_editor(user, qtbot, page)
     lb = editor.listbox
     user.click(lb.viewport(), lb.visualItemRect(lb.item(1)).center())
@@ -1616,8 +1591,8 @@ def test_sort_option_editor_double_click_edits_the_option(mainwin, make_audio, t
     # double-clicking an option edits it; this is what puddletag does.
     # Synthetic option.
     window, paths = load(mainwin, make_audio, tmp_path, qtbot, user, select=False)
-    dialog = open_preferences(user, qtbot, mainwin)
-    page = preferences_page(user, qtbot, dialog, 'Tag Sources')
+    dialog = user.open_preferences('Tag Sources')
+    page = dialog.stack.currentWidget()
     editor = sort_editor(user, qtbot, page)
     lb = editor.listbox
 
@@ -1635,8 +1610,8 @@ def test_sort_option_editor_cancel_keeps_the_options(mainwin, make_audio, tmp_pa
     # The docs don't say; this is what puddletag should do: Cancel in a
     # dialog throws the edits away. Synthetic option.
     window, paths = load(mainwin, make_audio, tmp_path, qtbot, user, select=False)
-    dialog = open_preferences(user, qtbot, mainwin)
-    page = preferences_page(user, qtbot, dialog, 'Tag Sources')
+    dialog = user.open_preferences('Tag Sources')
+    page = dialog.stack.currentWidget()
     editor = sort_editor(user, qtbot, page)
     dialogs.answer('QInputDialog.getItem', ('title, artist', True))
     user.click(tool_button(editor, 'Add'))
@@ -1742,11 +1717,11 @@ def test_track_display_format_applies_to_the_shown_albums(mainwin, make_audio, t
     # the Tag Sources dialog's album list." The docs don't say when it
     # shows; this is what puddletag does.
     window, _, _ = picked_alpha(mainwin, make_audio, tmp_path, qtbot, user)
-    dialog = open_preferences(user, qtbot, mainwin)
-    page = preferences_page(user, qtbot, dialog, 'Tag Sources')
+    dialog = user.open_preferences('Tag Sources')
+    page = dialog.stack.currentWidget()
 
     replace_text(user, page._text, '%title% (%track%)')
-    close_preferences(user, qtbot, dialog)
+    user.close_preferences(dialog)
 
     model = window.listbox.model()
     alpha = album_index(window, 'Alpha')
@@ -1849,12 +1824,12 @@ def test_musicbrainz_search_box_tooltip_lists_its_searches(mainwin, make_audio, 
 def test_user_agent_label(mainwin, qtbot, user):
     # preferences.txt, User-Agent: "The User-Agent puddletag sends to the web
     # sites its tag sources read".
-    dialog = open_preferences(user, qtbot, mainwin)
-    page = preferences_page(user, qtbot, dialog, 'Tag Sources')
+    dialog = user.open_preferences('Tag Sources')
+    page = dialog.stack.currentWidget()
 
     assert 'User-Agent to send when accessing web sites.' in [l.text() for l in page.findChildren(QLabel)]
 
-    close_preferences(user, qtbot, dialog)
+    user.close_preferences(dialog)
 
 
 def test_discogs_search_box_tooltip(mainwin, make_audio, tmp_path, qtbot, user):
@@ -1877,10 +1852,10 @@ def test_album_shows_its_track_count_after_a_space(mainwin, make_audio, tmp_path
     window, _, _ = picked_alpha(mainwin, make_audio, tmp_path, qtbot, user)
     assert albums(window) == ['Band - Alpha [3]', 'Band - Zeta']
 
-    dialog = open_preferences(user, qtbot, mainwin)
-    page = preferences_page(user, qtbot, dialog, 'Tag Sources')
+    dialog = user.open_preferences('Tag Sources')
+    page = dialog.stack.currentWidget()
     assert page._albumdisp.text() == window.listbox.albumPattern
-    close_preferences(user, qtbot, dialog)
+    user.close_preferences(dialog)
 
     assert albums(window) == ['Band - Alpha [3]', 'Band - Zeta']
 

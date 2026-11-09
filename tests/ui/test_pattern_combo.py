@@ -13,8 +13,7 @@ from PyQt6.QtWidgets import (QApplication, QPushButton, QStyle, QStyleOptionComb
                              QToolButton)
 
 from puddlestuff import audioinfo, constants
-from puddlestuff.mainwin.patterncombo import PatternCombo, SettingsWin
-from puddlestuff.puddlesettings import SettingsDialog
+from puddlestuff.mainwin.patterncombo import PatternCombo
 
 pytestmark = pytest.mark.ui
 
@@ -68,28 +67,6 @@ def saved_patterns():
         return json.load(f)['editor']
 
 
-def preferences():
-    return next((w for w in QApplication.topLevelWidgets()
-                 if isinstance(w, SettingsDialog) and w.isVisible()), None)
-
-
-def open_preferences(user, qtbot):
-    user.click_menu('&Preferences')
-    qtbot.waitUntil(lambda: preferences() is not None)
-    return preferences()
-
-
-def open_patterns_page(user, qtbot):
-    """Edit->Preferences, then Patterns in its list of pages."""
-    dialog = open_preferences(user, qtbot)
-    pages = dialog.listbox.model()
-    [index] = [pages.index(row, 0) for row in range(pages.rowCount())
-               if pages.data(pages.index(row, 0)) == 'Patterns']
-    user.click(dialog.listbox.viewport(), dialog.listbox.visualRect(index).center())
-    qtbot.waitUntil(lambda: isinstance(dialog.stack.currentWidget(), SettingsWin))
-    return dialog, dialog.stack.currentWidget()
-
-
 def on_page(page):
     return [page.listbox.item(row).text() for row in range(page.listbox.count())]
 
@@ -105,14 +82,6 @@ def page_button(page, name):
     [button] = [b for b in page.findChildren((QPushButton, QToolButton))
                 if b.isVisible() and name in (b.toolTip(), b.text())]
     return button
-
-
-def close_preferences(user, qtbot, dialog, button):
-    """Clicks OK or Cancel. The main window gets the activation back, as on
-    a desktop."""
-    user.click(button)
-    qtbot.waitUntil(lambda: not dialog.isVisible())
-    user.activate()
 
 
 def test_f8_switches_focus_between_the_combo_and_the_file_view(loaded, user):
@@ -256,9 +225,10 @@ def test_page_lists_the_combo_patterns(loaded, user, qtbot):
     # combo here." (tut3.txt names the Tag Panel page for this: the page is
     # called Patterns.)
     combo, path = loaded
-    dialog, page = open_patterns_page(user, qtbot)
+    dialog = user.open_preferences('Patterns')
+    page = dialog.stack.currentWidget()
     assert on_page(page) == listed(combo)
-    close_preferences(user, qtbot, dialog, dialog.okbuttons.cancelButton)
+    user.close_preferences(dialog, 'Cancel')
 
 
 def test_add_a_pattern(loaded, user, qtbot, dialogs):
@@ -266,11 +236,12 @@ def test_add_a_pattern(loaded, user, qtbot, dialogs):
     # combo here."
     combo, path = loaded
     before = listed(combo)
-    dialog, page = open_patterns_page(user, qtbot)
+    dialog = user.open_preferences('Patterns')
+    page = dialog.stack.currentWidget()
     dialogs.answer('QInputDialog.getItem', ('%title% - %album%', True))
     user.click(page_button(page, 'Add'))
     assert on_page(page) == before + ['%title% - %album%']
-    close_preferences(user, qtbot, dialog, dialog.okbuttons.okButton)
+    user.close_preferences(dialog, 'OK')
     assert listed(combo) == before + ['%title% - %album%']
 
 
@@ -279,11 +250,12 @@ def test_remove_a_pattern(loaded, user, qtbot):
     # combo here."
     combo, path = loaded
     before = listed(combo)
-    dialog, page = open_patterns_page(user, qtbot)
+    dialog = user.open_preferences('Patterns')
+    page = dialog.stack.currentWidget()
     click_row(user, page, 0)
     user.click(page_button(page, 'Remove'))
     assert on_page(page) == before[1:]
-    close_preferences(user, qtbot, dialog, dialog.okbuttons.okButton)
+    user.close_preferences(dialog, 'OK')
     assert listed(combo) == before[1:]
 
 
@@ -300,11 +272,12 @@ def test_move_a_pattern(loaded, user, qtbot, name):
     combo, path = loaded
     before = listed(combo)
     row, expected = MOVES[name]
-    dialog, page = open_patterns_page(user, qtbot)
+    dialog = user.open_preferences('Patterns')
+    page = dialog.stack.currentWidget()
     click_row(user, page, row % len(before))
     user.click(page_button(page, name))
     assert on_page(page) == expected(before)
-    close_preferences(user, qtbot, dialog, dialog.okbuttons.okButton)
+    user.close_preferences(dialog, 'OK')
     assert listed(combo) == expected(before)
 
 
@@ -321,11 +294,12 @@ def test_edit_a_pattern(loaded, user, qtbot, dialogs, way):
     # combo here."
     combo, path = loaded
     before = listed(combo)
-    dialog, page = open_patterns_page(user, qtbot)
+    dialog = user.open_preferences('Patterns')
+    page = dialog.stack.currentWidget()
     dialogs.answer('QInputDialog.getItem', ('%title% - %album%', True))
     EDIT[way](user, page)
     assert on_page(page) == ['%title% - %album%'] + before[1:]
-    close_preferences(user, qtbot, dialog, dialog.okbuttons.okButton)
+    user.close_preferences(dialog, 'OK')
     assert listed(combo) == ['%title% - %album%'] + before[1:]
 
 
@@ -334,11 +308,12 @@ def test_cancel_changes_nothing(loaded, user, qtbot):
     # combo's list as it was.
     combo, path = loaded
     before = listed(combo)
-    dialog, page = open_patterns_page(user, qtbot)
+    dialog = user.open_preferences('Patterns')
+    page = dialog.stack.currentWidget()
     click_row(user, page, 0)
     user.click(page_button(page, 'Remove'))
     assert on_page(page) == before[1:]
-    close_preferences(user, qtbot, dialog, dialog.okbuttons.cancelButton)
+    user.close_preferences(dialog, 'Cancel')
     assert listed(combo) == before
 
 
@@ -347,12 +322,13 @@ def test_sort(loaded, user, qtbot):
     # Sort sorts Z to A, the second A to Z.
     combo, path = loaded
     before = listed(combo)
-    dialog, page = open_patterns_page(user, qtbot)
+    dialog = user.open_preferences('Patterns')
+    page = dialog.stack.currentWidget()
     user.click(page_button(page, '&Sort'))
     assert on_page(page) == sorted(before, reverse=True)
     user.click(page_button(page, '&Sort'))
     assert on_page(page) == sorted(before)
-    close_preferences(user, qtbot, dialog, dialog.okbuttons.okButton)
+    user.close_preferences(dialog, 'OK')
     assert listed(combo) == sorted(before)
 
 
@@ -361,10 +337,11 @@ def test_edited_list_is_kept_after_a_restart(loaded, user, qtbot, dialogs, resta
     # combo here."
     combo, path = loaded
     before = listed(combo)
-    dialog, page = open_patterns_page(user, qtbot)
+    dialog = user.open_preferences('Patterns')
+    page = dialog.stack.currentWidget()
     dialogs.answer('QInputDialog.getItem', ('%title% - %album%', True))
     user.click(page_button(page, 'Add'))
-    close_preferences(user, qtbot, dialog, dialog.okbuttons.okButton)
+    user.close_preferences(dialog, 'OK')
     win = restart()
     assert listed(win.findChild(PatternCombo)) == before + ['%title% - %album%']
     assert saved_patterns()['patterns'] == before + ['%title% - %album%']
@@ -376,8 +353,8 @@ def test_preferences_ok_keeps_a_typed_pattern(loaded, user, qtbot):
     combo, path = loaded
     type_into_combo(user, '%title% - %album%')
     user.press(Key.Key_F8)
-    dialog = open_preferences(user, qtbot)
-    close_preferences(user, qtbot, dialog, dialog.okbuttons.okButton)
+    dialog = user.open_preferences()
+    user.close_preferences(dialog, 'OK')
     assert combo.currentText() == '%title% - %album%'
 
 
@@ -386,8 +363,8 @@ def test_preferences_ok_keeps_a_picked_pattern(loaded, user, qtbot):
     # preferences.
     combo, path = loaded
     pick(user, qtbot, combo, '%artist% - %album%')
-    dialog = open_preferences(user, qtbot)
-    close_preferences(user, qtbot, dialog, dialog.okbuttons.okButton)
+    dialog = user.open_preferences()
+    user.close_preferences(dialog, 'OK')
     assert combo.currentText() == '%artist% - %album%'
     assert combo.currentIndex() == combo.findText('%artist% - %album%')
 

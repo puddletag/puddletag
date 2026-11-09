@@ -62,21 +62,6 @@ def preferences_windows(mainwin):
     return [w for w in mainwin.findChildren(SettingsDialog) if w.isVisible()]
 
 
-def open_preferences(mainwin, qtbot, user):
-    """Edit > Preferences; returns the window."""
-    user.click_menu('&Preferences')
-    qtbot.waitUntil(lambda: len(preferences_windows(mainwin)) == 1)
-    [window] = preferences_windows(mainwin)
-    return window
-
-
-def cancel_preferences(mainwin, qtbot, user, window):
-    user.activate(window)
-    user.click(window.okbuttons.cancelButton)
-    qtbot.waitUntil(lambda: not preferences_windows(mainwin))
-    user.activate()
-
-
 def modal(qtbot, kind):
     """The modal window of this kind the last click opened."""
     qtbot.waitUntil(lambda: isinstance(QApplication.activeModalWidget(), kind))
@@ -127,7 +112,7 @@ def test_preferences_opens_from_the_edit_menu(mainwin, qtbot, user):
     # menus.txt (Edit): "Preferences ... Opens the Preferences dialog."
     # preferences.txt describes the General page first.
     assert user.action('&Preferences').isEnabled()
-    window = open_preferences(mainwin, qtbot, user)
+    window = user.open_preferences()
     shown = [title for title, widget, control in window._widgets.values()
              if widget is window.stack.currentWidget()]
     assert {'modal': QApplication.activeModalWidget() is not None,
@@ -136,7 +121,7 @@ def test_preferences_opens_from_the_edit_menu(mainwin, qtbot, user):
             'title': window.windowTitle(),
             'window': window.isWindow()} == {'modal': False, 'page': ['General'], 'parent': True,
                                              'title': 'puddletag settings', 'window': True}
-    cancel_preferences(mainwin, qtbot, user, window)
+    user.close_preferences(window, 'Cancel')
     assert not window.isVisible()
 
 
@@ -150,7 +135,8 @@ def test_key_set_for_preferences_opens_it(preferences_key, mainwin, qtbot, user)
     qtbot.waitUntil(lambda: len(preferences_windows(mainwin)) == 1)
     [window] = preferences_windows(mainwin)
     assert window.windowTitle() == 'puddletag settings'
-    cancel_preferences(mainwin, qtbot, user, window)
+    user.activate(window)
+    user.close_preferences(window, 'Cancel')
 
 
 def test_preferences_cancel_saves_nothing(mainwin, qtbot, user):
@@ -159,18 +145,17 @@ def test_preferences_cancel_saves_nothing(mainwin, qtbot, user):
     settings = os.path.join(CONFIGDIR, 'gensettings')
     assert mainwin._table.showGrid()
     assert not os.path.exists(settings)
-    window = open_preferences(mainwin, qtbot, user)
-    user.activate(window)
+    window = user.open_preferences()
     box = check_box(window, 'Show &gridlines')
     assert box.isChecked()
     click_check_box(user, box)
     assert not box.isChecked()
-    cancel_preferences(mainwin, qtbot, user, window)
+    user.close_preferences(window, 'Cancel')
     assert mainwin._table.showGrid()
     assert not os.path.exists(settings)
-    window = open_preferences(mainwin, qtbot, user)
+    window = user.open_preferences()
     assert check_box(window, 'Show &gridlines').isChecked()
-    cancel_preferences(mainwin, qtbot, user, window)
+    user.close_preferences(window, 'Cancel')
 
 
 # The Actions window

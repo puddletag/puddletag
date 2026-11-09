@@ -13,7 +13,6 @@ from puddlestuff import audioinfo
 from puddlestuff.mainwin.storedtags import StoredTags
 from puddlestuff.mainwin.tagpanel import FrameCombo
 from puddlestuff.puddleobjects import PuddleThread
-from puddlestuff.puddlesettings import SettingsDialog
 from puddlestuff.puddletag import PreviewLabel
 
 pytestmark = pytest.mark.ui
@@ -251,13 +250,8 @@ def test_tag_panel_after_preferences(mainwin, user, loaded, qtbot, key, modifier
     # to change any tag: the tag will revert back to the previous value".
     table, paths = loaded
     toggle(user)
-    user.click_menu('&Preferences')
-    qtbot.waitUntil(lambda: any(w.isVisible() for w in mainwin.findChildren(SettingsDialog)))
-    [window] = [w for w in mainwin.findChildren(SettingsDialog) if w.isVisible()]
-    user.activate(window)
-    user.click(window.okbuttons.okButton)
-    qtbot.waitUntil(lambda: not window.isVisible())
-    user.activate()
+    window = user.open_preferences()
+    user.close_preferences(window)
     save_in_tag_panel(user, mainwin, 0, 'title', 'Panel', key, modifier)
     assert shown(user, 0, 'title') == ('Panel', 'bold')
     assert in_file(paths[0])['title'] == ['Title 1']

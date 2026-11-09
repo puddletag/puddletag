@@ -3,7 +3,6 @@ import os
 import pytest
 from PyQt6.QtWidgets import QCheckBox
 
-from puddlestuff.puddlesettings import SettingsDialog
 
 pytestmark = pytest.mark.ui
 
@@ -41,17 +40,12 @@ def test_open_dir_with_non_ascii_folder_names(mainwin, make_audio, tmp_path, qtb
     make_audio('01.mp3', music, artist='Artist One', title='First')
     make_audio('02 Λ.mp3', tmp_path / 'Λ' / 'sub', artist='Artist Two', title='Second')
 
-    user.click_menu('&Preferences')
-    qtbot.waitUntil(lambda: any(w.isVisible() for w in mainwin.findChildren(SettingsDialog)))
-    [window] = [w for w in mainwin.findChildren(SettingsDialog) if w.isVisible()]
-    user.activate(window)
+    window = user.open_preferences()
     [box] = [c for c in window.findChildren(QCheckBox) if c.text() == 'Su&bfolders']
     if not box.isChecked():
         user.click(box)
     assert box.isChecked()
-    user.click(window.okbuttons.okButton)
-    qtbot.waitUntil(lambda: not window.isVisible())
-    user.activate()
+    user.close_preferences(window)
 
     mainwin.openDir(str(music), False)
     model = mainwin._table.model()

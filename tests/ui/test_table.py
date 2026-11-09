@@ -15,7 +15,6 @@ from PyQt6.QtWidgets import (QApplication, QCheckBox, QLabel, QMenu, QMessageBox
                              QStyle, QStyleOptionButton, QStyleOptionViewItem, QToolTip)
 
 from puddlestuff import audioinfo
-from puddlestuff.puddlesettings import SettingsDialog
 from puddlestuff.tagmodel import ColumnSettings
 
 pytestmark = pytest.mark.ui
@@ -175,10 +174,7 @@ def set_preference(mainwin, qtbot, user, name, on):
     """Ticks or clears the box in Preferences' general page and clicks OK.
     The box stretches across the page, so a click at its center misses it:
     the click goes to its indicator."""
-    user.click_menu('&Preferences')
-    qtbot.waitUntil(lambda: any(w.isVisible() for w in mainwin.findChildren(SettingsDialog)))
-    [window] = [w for w in mainwin.findChildren(SettingsDialog) if w.isVisible()]
-    user.activate(window)
+    window = user.open_preferences()
     [box] = [c for c in window.findChildren(QCheckBox) if c.text() == name]
     if box.isChecked() != on:
         option = QStyleOptionButton()
@@ -186,9 +182,7 @@ def set_preference(mainwin, qtbot, user, name, on):
         rect = box.style().subElementRect(QStyle.SubElement.SE_CheckBoxIndicator, option, box)
         user.click(box, rect.center())
     assert box.isChecked() == on
-    user.click(window.okbuttons.okButton)
-    qtbot.waitUntil(lambda: not window.isVisible())
-    user.activate()
+    user.close_preferences(window)
 
 
 def drop(table, *paths):

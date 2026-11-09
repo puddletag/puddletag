@@ -13,7 +13,6 @@ from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QApplication, QCheckBox, QMessageBox
 
 from puddlestuff import audioinfo, confirmations, constants
-from puddlestuff.puddlesettings import SettingsDialog
 
 pytestmark = pytest.mark.ui
 
@@ -187,23 +186,11 @@ def restore_confirmations(monkeypatch):
                         list(confirmations._confirmations['trash_files']))
 
 
-def confirmations_page(user, mainwin, qtbot):
-    """Opens Preferences on its Confirmations page."""
-    user.click_menu('&Preferences')
-    qtbot.waitUntil(lambda: any(w.isVisible() for w in mainwin.findChildren(SettingsDialog)))
-    [window] = [w for w in mainwin.findChildren(SettingsDialog) if w.isVisible()]
-    user.activate(window)
-    pages = window.listbox.model()
-    [row] = [i for i in range(pages.rowCount()) if pages.data(pages.index(i, 0)) == 'Confirmations']
-    user.click(window.listbox.viewport(), window.listbox.visualRect(pages.index(row, 0)).center())
-    return window
-
-
 def test_confirmation_turned_off(mainwin, user, loaded, qtbot, dialogs, restore_confirmations):
     # preferences.txt: "Confirmations let you know that you're about to do
     # something that can't be reversed. Turn off the ones that you find grating."
     table, paths = loaded
-    window = confirmations_page(user, mainwin, qtbot)
+    window = user.open_preferences('Confirmations')
     [box] = [c for c in window.findChildren(QCheckBox) if c.text() == 'Confirm when moving files to the trash.']
     assert box.isChecked()
     user.click(box)
@@ -246,7 +233,7 @@ def test_old_confirmation_choice(old_confirmation_choice, mainwin, user, loaded,
     assert questions(dialogs) == [QUESTION]
     assert all(p.exists() for p in paths)
 
-    window = confirmations_page(user, mainwin, qtbot)
+    window = user.open_preferences('Confirmations')
     texts = [c.text() for c in window.findChildren(QCheckBox)]
     assert 'Confirm when deleting files.' not in texts
     [box] = [c for c in window.findChildren(QCheckBox) if c.text() == 'Confirm when moving files to the trash.']
