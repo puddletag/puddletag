@@ -945,7 +945,6 @@ def test_enabled_plugin_adds_its_page(mainwin, user, qtbot, restart, monkeypatch
     new_user.close_preferences(window, 'Cancel')
 
 
-@pytest.mark.xfail(strict=True, reason='a saved confirmation keeps the wording it was saved with')
 def test_confirmation_shows_the_programs_wording(mainwin, user, qtbot, restart, monkeypatch):
     # preferences.txt: "Confirmations let you know that you're about to do
     # something that can't be reversed." The program's wording is shown, not

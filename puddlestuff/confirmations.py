@@ -43,8 +43,12 @@ def _load(filename):
 
 
 def load():
-    # _confirmations.clear()
-    _confirmations.update(_load(_filename))
+    # Only the on/off value is kept: the text is the program's own.
+    for name, (value, desc) in _load(_filename).items():
+        if name in _confirmations:
+            _confirmations[name][0] = value
+        else:
+            _confirmations[name] = [value, desc]
 
 
 def save(filename=None, confirmations=None):
