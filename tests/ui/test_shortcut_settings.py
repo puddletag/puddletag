@@ -213,7 +213,6 @@ def test_shared_key_runs_the_only_enabled_command(play_and_preferences_on_ctrl_p
     assert played == []
 
 
-@pytest.mark.xfail(strict=True, reason="A cleared key comes back at the next start: #255")
 def test_cleared_key_stays_cleared_after_a_restart(mainwin, user, qtbot, restart):
     # The docs don't say; #255's report: a key cleared with the x and saved with OK
     # comes back at the next start.
@@ -225,7 +224,6 @@ def test_cleared_key_stays_cleared_after_a_restart(mainwin, user, qtbot, restart
     assert saved('&Save') == ''
 
 
-@pytest.mark.xfail(strict=True, reason="Play gets Ctrl+P back at the next start, next to Preferences: #1090")
 def test_key_taken_off_play_stays_off_after_a_restart(mainwin, user, qtbot, played, make_audio, tmp_path,
                                                       restart):
     # Play is "Play (Ctrl+P)" (menus.txt:29); #1090's report: Ctrl+P given to Preferences

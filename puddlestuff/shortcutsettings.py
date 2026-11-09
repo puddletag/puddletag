@@ -260,8 +260,8 @@ class ActionEditorDialog(QWidget):
         cparser = PuddleConfig(os.path.join(CONFIGDIR, 'user_shortcuts'))
 
         for action in actions:
-            shortcut = cparser.get('shortcuts', str(action.text()), '')
-            if shortcut:
+            shortcut = cparser.get('shortcuts', str(action.text()), None)
+            if shortcut is not None:
                 action.setShortcut(QKeySequence(shortcut))
 
     _loadSettings = classmethod(_loadSettings)
