@@ -11,7 +11,8 @@ from PyQt6.QtWidgets import QAbstractItemView, QApplication, QCheckBox, QColorDi
 from . import genres, confirmations, audioinfo
 from .constants import TRANSDIR
 from .pluginloader import PluginConfig
-from .puddleobjects import (ListButtons, OKCancel, PuddleConfig, winsettings, get_languages, create_buddy)
+from .puddleobjects import (ListButtons, OKCancel, PuddleConfig, savewinsize, winsettings, get_languages,
+                            create_buddy)
 from .shortcutsettings import ActionEditorDialog
 from .translations import translate
 
@@ -668,8 +669,8 @@ class SettingsDialog(QDialog):
         self.selectionModel.select(selection, QItemSelectionModel.SelectionFlag.Select)
 
         self.okbuttons = OKCancel()
-        self.okbuttons.okButton.setDefault(True)
         self.grid.addLayout(self.okbuttons, 1, 0, 1, 2)
+        self.okbuttons.okButton.setDefault(True)
 
         self.okbuttons.ok.connect(self.saveSettings)
         self.accepted.connect(self.saveSettings)
@@ -683,6 +684,10 @@ class SettingsDialog(QDialog):
         stack.setCurrentWidget(widget)
         if self.width() < self.sizeHint().width():
             self.setMinimumWidth(self.sizeHint().width())
+
+    def reject(self):
+        savewinsize('settingswin', self)
+        super().reject()
 
     def saveSettings(self):
         for z in self._widgets.values():

@@ -337,7 +337,6 @@ def test_esc_closes_without_saving(mainwin, qtbot, user):
     assert mainwin._table.showGrid() is True
 
 
-@pytest.mark.xfail(strict=True, reason='Esc closes Preferences without saving its size')
 def test_esc_remembers_the_window_size(mainwin, qtbot, user, restart):
     # Docs silent (synthetic): Esc saves the window's size, as OK and Cancel do.
     window = user.open_preferences()
@@ -351,7 +350,6 @@ def test_esc_remembers_the_window_size(mainwin, qtbot, user, restart):
     assert (window.width(), window.height()) == (750, 500)
 
 
-@pytest.mark.xfail(strict=True, reason='Enter opens Edit sort options instead of clicking OK')
 def test_enter_clicks_ok(mainwin, qtbot, user):
     # preferences.txt: "**Enter** clicks **OK**".
     window = user.open_preferences()
