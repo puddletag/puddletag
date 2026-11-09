@@ -26,7 +26,7 @@ from PyQt6.QtGui import QAction, QIcon, QBrush, QPixmap, QImage, \
     QKeySequence
 from PyQt6.QtSvg import QSvgRenderer
 from PyQt6.QtSvgWidgets import QGraphicsSvgItem
-from PyQt6.QtWidgets import QAbstractItemView, QApplication, QComboBox, QDialog, QDialogButtonBox, \
+from PyQt6.QtWidgets import QAbstractItemDelegate, QAbstractItemView, QApplication, QComboBox, QDialog, QDialogButtonBox, \
     QDockWidget, QFileDialog, QFrame, QGraphicsPixmapItem, QGraphicsScene, QGraphicsView, QGridLayout, QHBoxLayout, \
     QHeaderView, QLabel, QLayout, QLineEdit, QListWidget, QMenu, QMessageBox, QProgressBar, QPushButton, QScrollArea, \
     QSizePolicy, QTextEdit, QToolButton, QVBoxLayout, QWidget
@@ -1154,6 +1154,13 @@ class ListBox(QListWidget):
         listbuttons.remove.connect(self.removeSelected)
         self.yourlist = yourlist
 
+    def _commitEditor(self):
+        """Keeps what was typed in an open item editor before the items move."""
+        editor = self.indexWidget(self.currentIndex())
+        if editor is not None:
+            self.commitData(editor)
+            self.closeEditor(editor, QAbstractItemDelegate.EndEditHint.NoHint)
+
     def removeSelected(self, yourlist=None, rows=None):
         """Removes the currently selected items.
         If yourlist is not None, then the selected
@@ -1163,6 +1170,7 @@ class ListBox(QListWidget):
 
         If you want to remove anything other than the selected,
         just set rows to a list of integers."""
+        self._commitEditor()
         if not yourlist:
             yourlist = self.yourlist
         if rows:
@@ -1185,6 +1193,7 @@ class ListBox(QListWidget):
         are updated in tandem. Note, that
         the indexes of the items in yourlist and the listbox
         have to correspond."""
+        self._commitEditor()
         if not rows:
             rows = [self.row(item) for item in self.selectedItems()]
         rows = sorted(rows)
@@ -1208,6 +1217,7 @@ class ListBox(QListWidget):
 
     def moveDown(self, yourlist=None, rows=None):
         """See moveup. It's exactly the opposite."""
+        self._commitEditor()
         if rows is None:
             rows = [self.row(item) for item in self.selectedItems()]
         if self.count() - 1 in rows:

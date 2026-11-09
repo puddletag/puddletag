@@ -733,7 +733,6 @@ def test_new_genre_reaches_the_tag_panel_and_the_genres_file(mainwin, make_audio
         assert f.read().splitlines()[-1] == 'Synthetic Genre'
 
 
-@pytest.mark.xfail(strict=True, reason='#470: a new genre moved while still being typed loses its name')
 def test_new_genre_moved_while_typed_keeps_its_name(mainwin, user):
     # #470: a new genre moved up before Enter lost its name.
     from puddlestuff.puddletag import status
