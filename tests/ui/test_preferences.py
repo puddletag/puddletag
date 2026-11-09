@@ -305,7 +305,6 @@ def test_page_that_fails_names_itself_and_stays_open(mainwin, qtbot, user, dialo
     user.close_preferences(window, 'Cancel')
 
 
-@pytest.mark.xfail(strict=True, reason='a page that fails leaves the pages before it saved and applied')
 def test_cancel_after_a_page_fails_saves_nothing(mainwin, qtbot, user, dialogs):
     # preferences.txt: "a warning names the page, the window stays open and
     # nothing is saved." Cancel then leaves the config as it was.

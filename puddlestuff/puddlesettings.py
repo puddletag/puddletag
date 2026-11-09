@@ -687,14 +687,24 @@ class SettingsDialog(QDialog):
     def saveSettings(self):
         for z in self._widgets.values():
             try:
+                if hasattr(z[1], 'validateSettings'):
+                    z[1].validateSettings(z[2])
+            except SettingsError as e:
+                self._warn(z[0], e)
+                return
+        for z in self._widgets.values():
+            try:
                 z[1].applySettings(z[2])
             except SettingsError as e:
-                QMessageBox.warning(self, 'puddletag',
-                                    translate('Settings',
-                                              "An error occurred while saving the settings of <b>{}</b>: {}"
-                                              ).format(z[0], str(e)))
+                self._warn(z[0], e)
                 return
         self.close()
+
+    def _warn(self, title, error):
+        QMessageBox.warning(self, 'puddletag',
+                            translate('Settings',
+                                      "An error occurred while saving the settings of <b>{}</b>: {}"
+                                      ).format(title, str(error)))
 
 
 if __name__ == "__main__":

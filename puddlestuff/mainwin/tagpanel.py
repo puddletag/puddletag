@@ -477,16 +477,21 @@ class SettingsWin(QWidget):
             for z in d[row]:
                 self._table.add(z + (str(row),))
 
+    def validateSettings(self, control=None):
+        for row in self._table.rows:
+            try:
+                int(self._table.texts(row)[2])
+            except ValueError:
+                raise SettingsError(translate('Tag Panel Settings',
+                                              'All row numbers must be integers.'))
+
     def applySettings(self, control=None):
+        self.validateSettings(control)
         texts = self._table.texts
         d = {}
         for row in self._table.rows:
             l = texts(row)
-            try:
-                l[2] = int(l[2])
-            except ValueError:
-                raise SettingsError(translate('Tag Panel Settings',
-                                              'All row numbers must be integers.'))
+            l[2] = int(l[2])
             try:
                 d[l[2]].append(l[:-1])
             except KeyError:
