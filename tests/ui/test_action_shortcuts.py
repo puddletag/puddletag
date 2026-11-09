@@ -4,14 +4,19 @@ Actions menu, and the key runs them on the selected files. Edit
 Shortcuts, the same button's menu, changes or removes them. Synthetic
 files and tags.
 """
+import os
+import shutil
+
 import pytest
-from PyQt6.QtCore import Qt, QTimer
-from PyQt6.QtWidgets import (QApplication, QMenu, QPushButton, QStyle, QStyleOptionViewItem,
+from PyQt6.QtCore import Qt, QTimer, QTranslator
+from PyQt6.QtWidgets import (QApplication, QLabel, QMenu, QPushButton, QStyle, QStyleOptionViewItem,
                              QToolButton)
 
-from puddlestuff import action_shortcuts, audioinfo
+from puddlestuff import action_shortcuts, audioinfo, constants
 from puddlestuff.actiondlg import (ActionWindow, CreateAction, CreateFunction, ShortcutDialog,
                                    ShortcutName)
+from puddlestuff.puddleobjects import PuddleConfig
+from puddlestuff.shortcutsettings import ActionEditorWidget
 
 pytestmark = pytest.mark.ui
 
@@ -548,3 +553,333 @@ def test_eleven_shortcuts_keep_their_keys(loaded, mainwin, user, qtbot, monkeypa
     user.click(button(editor, 'OK'))
     close(user, window)
     assert dict(shortcuts_on_menu(mainwin)) == expected
+
+
+def add_shortcut(user, qtbot, editor, button_tip='Add'):
+    """Clicks one of Edit Shortcuts' list buttons (Add, Duplicate, Edit) and returns the
+    window it opens."""
+    user.click(tool_button(editor, button_tip))
+    qtbot.waitUntil(lambda: shown(action_shortcuts.Editor) is not None)
+    dialog = shown(action_shortcuts.Editor)
+    user.activate(dialog)
+    return dialog
+
+
+def name_it(user, dialog, name):
+    user.click(dialog._name)
+    user.press(Key.Key_A, Ctrl)
+    user.type(name)
+
+
+def pick_action(user, dialog, name):
+    """Double-clicks the action in the window's left list, which adds it to the right."""
+    listbox = dialog._actionList
+    [item] = listbox.findItems(name, Qt.MatchFlag.MatchExactly)
+    user.double_click(listbox.viewport(), listbox.visualItemRect(item).center())
+
+
+def saved_shortcut(section):
+    """A shortcut saved in the actions folder's action_shortcuts file."""
+    cparser = PuddleConfig(action_shortcuts.FILENAME)
+    return cparser.get(section, 'name', None), cparser.get(section, 'filenames', None)
+
+
+CASE_CONVERSION = os.path.join(constants.ACTIONDIR, 'caseconversion.action')
+
+
+class SyntheticTranslation(QTranslator):
+    def __init__(self, texts):
+        super().__init__()
+        self._texts = texts
+
+    def translate(self, context, source, disambiguation=None, n=-1):
+        return self._texts.get((context, source))
+
+
+def test_add_by_double_click(loaded, mainwin, user, qtbot, monkeypatch):
+    # "I recommend you assign shortcuts to your favourite actions like Ctrl+1,
+    # Ctrl+2 etc. Use the Assign Shortcut button on the Actions Dialog."
+    # (tut3.txt:97-99). The docs don't say how Edit Shortcuts' Add works; this
+    # is what puddletag does: an action double-clicked in the list on the left
+    # is added to the shortcut. The name and Ctrl+2 are synthetic.
+    table, paths = loaded
+    window = open_actions(user, qtbot)
+    check(user, window, 'Case Conversion')
+    editor = edit_shortcuts(user, qtbot, window)
+    dialog = add_shortcut(user, qtbot, editor)
+    assert dialog.windowTitle() == 'Add Shortcut'
+    name_it(user, dialog, 'Title Case')
+    pick_action(user, dialog, 'Case Conversion')
+    assert dialog._newActionList.count() == 1
+    user.click(dialog._shortcut)
+    user.press(Key.Key_2, Ctrl)
+    user.click(dialog._ok)
+    user.activate(editor)
+    user.click(button(editor, 'OK'))
+    close(user, window)
+    assert shortcuts_on_menu(mainwin) == [('Title Case', 'Ctrl+2')]
+    user.press(Key.Key_2, Ctrl)
+    written(qtbot, paths[0], mixed(1))
+    assert in_files(paths) == [mixed(1), tags(2)]
+    assert saved_shortcut('Shortcut0') == ('Title Case', [CASE_CONVERSION])
+
+
+def test_add_by_the_add_button(loaded, mainwin, user, qtbot, monkeypatch):
+    # As double-clicking (tut3.txt:97-99): the Add window's own Add button
+    # adds the selected action. The name and Ctrl+2 are synthetic.
+    table, paths = loaded
+    window = open_actions(user, qtbot)
+    check(user, window, 'Case Conversion')
+    editor = edit_shortcuts(user, qtbot, window)
+    dialog = add_shortcut(user, qtbot, editor)
+    name_it(user, dialog, 'Title Case')
+    [item] = dialog._actionList.findItems('Case Conversion', Qt.MatchFlag.MatchExactly)
+    click_row(user, dialog._actionList, dialog._actionList.row(item))
+    user.click(tool_button(dialog, 'Add'))
+    assert dialog._newActionList.count() == 1
+    user.click(dialog._shortcut)
+    user.press(Key.Key_2, Ctrl)
+    user.click(dialog._ok)
+    user.activate(editor)
+    user.click(button(editor, 'OK'))
+    close(user, window)
+    assert shortcuts_on_menu(mainwin) == [('Title Case', 'Ctrl+2')]
+    user.press(Key.Key_2, Ctrl)
+    written(qtbot, paths[0], mixed(1))
+    assert in_files(paths) == [mixed(1), tags(2)]
+
+
+def test_duplicate(loaded, mainwin, user, qtbot, monkeypatch):
+    # The docs don't say; this is what puddletag does: Duplicate opens the
+    # selected shortcut's actions under its name, with no key, and OK stays
+    # disabled until the name is a new one. The name and Ctrl+2 are synthetic.
+    table, paths = loaded
+    window = open_actions(user, qtbot)
+    check(user, window, 'Case Conversion')
+    assign(user, monkeypatch, window, pressing(user, Key.Key_1))
+    editor = edit_shortcuts(user, qtbot, window)
+    click_row(user, editor._listbox, 0)
+    dialog = add_shortcut(user, qtbot, editor, 'Duplicate')
+    assert dialog.windowTitle() == 'Duplicate Shortcut'
+    assert dialog._name.text() == 'Case Conversion'
+    assert dialog._ok.isEnabled() is False
+    assert [dialog._newActionList.item(i).text() for i in range(dialog._newActionList.count())] \
+        == ['Case Conversion']
+    assert dialog._shortcut.text() == ''
+    name_it(user, dialog, 'Case Copy')
+    user.click(dialog._shortcut)
+    user.press(Key.Key_2, Ctrl)
+    user.click(dialog._ok)
+    user.activate(editor)
+    user.click(button(editor, 'OK'))
+    close(user, window)
+    assert shortcuts_on_menu(mainwin) == [('Case Conversion', 'Ctrl+1'), ('Case Copy', 'Ctrl+2')]
+    user.press(Key.Key_2, Ctrl)
+    written(qtbot, paths[0], mixed(1))
+    assert in_files(paths) == [mixed(1), tags(2)]
+
+
+def test_edit_with_nothing_selected_opens_nothing(loaded, mainwin, user, qtbot, monkeypatch):
+    # The docs don't say; this is what puddletag does: Edit with no shortcut
+    # selected opens no window.
+    table, paths = loaded
+    window = open_actions(user, qtbot)
+    check(user, window, 'Case Conversion')
+    assign(user, monkeypatch, window, pressing(user, Key.Key_1))
+    editor = edit_shortcuts(user, qtbot, window)
+    assert editor._listbox.selectedItems() == []
+    edit = tool_button(editor, 'Edit')
+    assert edit.isEnabled()
+    user.click(edit)
+    qtbot.wait(300)
+    assert shown(action_shortcuts.Editor) is None
+    user.click(button(editor, 'OK'))
+    close(user, window)
+
+
+def test_ok_disabled_for_an_empty_or_taken_name(loaded, mainwin, user, qtbot, monkeypatch):
+    # The docs don't say; this is what puddletag does: OK stays disabled with
+    # no name or a name another shortcut has, and a new name enables it.
+    table, paths = loaded
+    window = open_actions(user, qtbot)
+    check(user, window, 'Case Conversion')
+    assign(user, monkeypatch, window, pressing(user, Key.Key_1))
+    editor = edit_shortcuts(user, qtbot, window)
+    dialog = add_shortcut(user, qtbot, editor)
+    seen = []
+    user.click(dialog._name)
+    user.press(Key.Key_A, Ctrl)
+    user.press(Key.Key_Backspace)
+    seen.append((dialog._name.text(), dialog._ok.isEnabled()))
+    user.type('Case Conversion')
+    seen.append((dialog._name.text(), dialog._ok.isEnabled()))
+    user.press(Key.Key_A, Ctrl)
+    user.type('Title Case')
+    seen.append((dialog._name.text(), dialog._ok.isEnabled()))
+    user.click(button(dialog, 'Cancel'))
+    user.activate(editor)
+    user.click(button(editor, 'OK'))
+    close(user, window)
+    assert seen == [('', False), ('Case Conversion', False), ('Title Case', True)]
+
+
+@pytest.mark.xfail(strict=True, reason='Add offers the name Name again and its OK takes it')
+def test_offered_name_already_taken_is_refused(loaded, mainwin, user, qtbot, monkeypatch):
+    # The docs don't say; this is what puddletag should do: Add offers the
+    # name "Name"; once a shortcut has it, the next Add offers it again with
+    # OK disabled, as for any other name another shortcut has.
+    table, paths = loaded
+    window = open_actions(user, qtbot)
+    check(user, window, 'Case Conversion')
+    editor = edit_shortcuts(user, qtbot, window)
+    dialog = add_shortcut(user, qtbot, editor)
+    user.click(dialog._ok)
+    user.activate(editor)
+    dialog = add_shortcut(user, qtbot, editor)
+    offered = (dialog._name.text(), dialog._ok.isEnabled())
+    user.click(button(dialog, 'Cancel'))
+    user.activate(editor)
+    user.click(button(editor, 'OK'))
+    close(user, window)
+    assert offered == ('Name', False)
+
+
+def test_missing_actions_folder(loaded, mainwin, user, qtbot, monkeypatch):
+    # The docs don't say; this is what puddletag does: with the actions folder
+    # deleted while it runs, Edit Shortcuts opens with no actions to pick, and
+    # still adds a shortcut and saves it, which brings the folder back. The
+    # name is synthetic.
+    table, paths = loaded
+    window = open_actions(user, qtbot)
+    check(user, window, 'Case Conversion')
+    shutil.rmtree(constants.ACTIONDIR)
+    editor = edit_shortcuts(user, qtbot, window)
+    dialog = add_shortcut(user, qtbot, editor)
+    assert dialog._actionList.count() == 0
+    name_it(user, dialog, 'Nothing')
+    user.click(dialog._ok)
+    user.activate(editor)
+    user.click(button(editor, 'OK'))
+    close(user, window)
+    assert shortcuts_on_menu(mainwin) == [('Nothing', '')]
+    assert os.path.isfile(action_shortcuts.FILENAME)
+
+
+@pytest.mark.xfail(strict=True, reason='Edit Shortcuts has no window title')
+def test_edit_shortcuts_window_title_is_translated(loaded, mainwin, user, qtbot, monkeypatch):
+    # translate.txt: puddletag's texts can be translated. The translation is
+    # synthetic. It is installed after the Actions window opens: the Assign
+    # Shortcut menu's item has the same context and text.
+    table, paths = loaded
+    window = open_actions(user, qtbot)
+    check(user, window, 'Case Conversion')
+    translator = SyntheticTranslation({('Actions', 'Edit Shortcuts'): 'Synthetic Edit Shortcuts'})
+    QApplication.installTranslator(translator)
+    try:
+        editor = edit_shortcuts(user, qtbot, window)
+        title = editor.windowTitle()
+    finally:
+        QApplication.removeTranslator(translator)
+    user.click(button(editor, 'OK'))
+    close(user, window)
+    assert title == 'Synthetic Edit Shortcuts'
+
+
+@pytest.mark.xfail(strict=True, reason="The Add Shortcut window's strings are not translated")
+def test_add_shortcut_window_strings_are_translated(loaded, mainwin, user, qtbot, monkeypatch):
+    # translate.txt: puddletag's texts can be translated. The translations are
+    # synthetic.
+    table, paths = loaded
+    window = open_actions(user, qtbot)
+    check(user, window, 'Case Conversion')
+    editor = edit_shortcuts(user, qtbot, window)
+    translator = SyntheticTranslation({('Shortcuts', 'Add Shortcut'): 'Synthetic Add',
+                                       ('Shortcuts', 'Shortcut &Name: '): 'Synthetic &Name'})
+    QApplication.installTranslator(translator)
+    try:
+        dialog = add_shortcut(user, qtbot, editor)
+        title = dialog.windowTitle()
+        labels = [label.text() for label in dialog.findChildren(QLabel) if label.buddy() is dialog._name]
+    finally:
+        QApplication.removeTranslator(translator)
+    user.click(button(dialog, 'Cancel'))
+    user.activate(editor)
+    user.click(button(editor, 'OK'))
+    close(user, window)
+    assert title == 'Synthetic Add'
+    assert labels == ['Synthetic &Name']
+
+
+@pytest.mark.xfail(strict=True, reason="The key fields check only a command's first key: Paste's Shift+Ins is taken")
+def test_second_key_of_a_command_is_refused(loaded, qtbot, user, monkeypatch, mainwin):
+    # The docs don't say; this is what puddletag should do: a key another
+    # command has (Paste's Shift+Ins, from data/shortcuts) is shown but OK
+    # stays disabled, as for the command's first key.
+    table, paths = loaded
+    window = open_actions(user, qtbot)
+    check(user, window, 'Case Conversion')
+    refused = []
+
+    def steps(dialog):
+        ok = button(dialog, 'OK')
+        user.press(Key.Key_Insert, Qt.KeyboardModifier.ShiftModifier)
+        refused.append((dialog._text.text(), ok.isEnabled()))
+        user.press(Key.Key_1, Ctrl)
+        user.click(ok)
+
+    assign(user, monkeypatch, window, steps)
+    close(user, window)
+
+    assert refused == [('Shift+Ins', False)]
+
+
+@pytest.mark.xfail(strict=True, reason="An action shortcut named like the Filter window's toggle shares its saved key")
+def test_name_a_command_has_is_refused(loaded, qtbot, user, monkeypatch, mainwin):
+    # The docs don't say; this is what puddletag should do: the name of a
+    # command (the Filter window's toggle, "Filter") leaves OK disabled, as
+    # the name another action shortcut has does.
+    table, paths = loaded
+    window = open_actions(user, qtbot)
+    check(user, window, 'Case Conversion')
+    offered = []
+
+    def steps(dialog):
+        user.press(Key.Key_A, Ctrl)
+        user.type('Filter')
+        offered.append((dialog._text.text(), dialog._ok.isEnabled()))
+        user.press(Key.Key_A, Ctrl)
+        user.type('Filter Case')
+        offered.append((dialog._text.text(), dialog._ok.isEnabled()))
+        user.click(dialog._ok)
+
+    answer(monkeypatch, user, ShortcutName, steps)
+    answer(monkeypatch, user, ShortcutDialog, pressing(user, Key.Key_1))
+    user.click(window.shortcutButton)
+    close(user, window)
+
+    assert offered == [('Filter', False), ('Filter Case', True)]
+
+
+@pytest.mark.xfail(strict=True, reason="OK on Preferences fails when Assign Shortcut added a command "
+                                       "while it was open")
+def test_preferences_ok_after_a_shortcut_assigned_meanwhile(loaded, mainwin, user, qtbot, monkeypatch):
+    # "I recommend you assign shortcuts to your favourite actions like Ctrl+1, Ctrl+2
+    # etc. Use the Assign Shortcut button on the Actions Dialog." (tut3.txt:97-99);
+    # "Just double-click on the desired shortcut in the shortcut column and enter the
+    # desired shortcut." (preferences.txt:154). Ctrl+1 and Ctrl+L are synthetic.
+    prefs = user.open_preferences('Shortcuts')
+    table = prefs.stack.currentWidget().actionTable
+    [row] = [r for r in range(table.rowCount()) if table.item(r, 0).text() == '&Preferences']
+    cell = table.item(row, 1)
+    table.scrollToItem(cell)
+    user.double_click(table.viewport(), table.visualItemRect(cell).center())
+    qtbot.waitUntil(lambda: isinstance(QApplication.focusWidget(), ActionEditorWidget))
+    user.press(Key.Key_L, Ctrl)
+    assigned(user, qtbot, monkeypatch)
+    user.activate(prefs)
+    user.close_preferences(prefs)
+    assert user.action('&Preferences').shortcut().toString() == 'Ctrl+L'
+    assert shortcuts_on_menu(mainwin) == [('Case Conversion', 'Ctrl+1')]
+    saved = PuddleConfig(os.path.join(constants.CONFIGDIR, 'user_shortcuts'))
+    assert saved.get('shortcuts', '&Preferences', None) == 'Ctrl+L'
+    assert saved.get('shortcuts', 'Case Conversion', None) == 'Ctrl+1'
