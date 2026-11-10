@@ -3,6 +3,7 @@ in the main table ends in (update, then save: puddlestuff/util.py write)
 and read back with mutagen."""
 import mutagen.mp4
 import pytest
+from mutagen.mp4 import AtomDataType, MP4FreeForm
 
 from puddlestuff import audioinfo
 from puddlestuff.audioinfo.util import to_string
@@ -255,3 +256,118 @@ def test_freeform_name_beyond_latin1(make_audio):
     assert dict(mutagen.mp4.MP4(path).tags) == {'\xa9nam': ['Song']}
     atoms, tag = save(path, {'título': ['Latin-1']})
     assert atoms['----:com.apple.iTunes:título'] == [b'Latin-1']
+
+
+def add_atoms(path, atoms):
+    audio = mutagen.mp4.MP4(path)
+    audio.update(atoms)
+    audio.save()
+
+
+# Synthetic data that isn't UTF-8, as a program storing binary data writes it.
+BINARY = {'----:com.apple.iTunes:BIN': [MP4FreeForm(b'\xff\xfe\x00', AtomDataType.IMPLICIT)]}
+
+
+@pytest.mark.xfail(strict=True, reason="an edit deletes a freeform atom whose data isn't UTF-8")
+def test_save_keeps_a_freeform_atom_that_is_not_text(make_audio):
+    # news.txt: "There was a pretty nasty bug where puddletag would remove any
+    # unsupported tags. Sorry about that, hopefully you haven't lost any
+    # priceless info because of it." Atom and data are synthetic.
+    path = make_audio('song.m4a', title='Before')
+    add_atoms(path, BINARY)
+    tag = audioinfo.Tag(str(path))
+    assert 'BIN' not in audioinfo.usertags(tag)
+
+    tag.update({'title': ['After']})
+    tag.save()
+
+    saved = mutagen.mp4.MP4(path).tags
+    assert ([(bytes(v), v.dataformat) for v in saved['----:com.apple.iTunes:BIN']],
+            saved['\xa9nam']) == ([(b'\xff\xfe\x00', AtomDataType.IMPLICIT)], ['After'])
+
+
+SAME_NAME = {'----:com.apple.iTunes:FOO': [b'apple'], '----:org.example:FOO': [b'other']}
+
+
+@pytest.mark.xfail(strict=True, reason='an edit deletes one of two freeform atoms of the same name')
+def test_save_keeps_freeform_atoms_of_the_same_name(make_audio):
+    # news.txt: "There was a pretty nasty bug where puddletag would remove any
+    # unsupported tags." The maintainer decided on 2026-11-10 that of several
+    # atoms of one name puddletag shows the com.apple.iTunes one (the mean it
+    # writes new fields under) and keeps the others as they are, not shown.
+    # Synthetic values.
+    path = make_audio('song.m4a', title='Before')
+    add_atoms(path, SAME_NAME)
+    tag = audioinfo.Tag(str(path))
+    tag.update({'title': ['After']})
+    tag.save()
+
+    saved = mutagen.mp4.MP4(path).tags
+    assert (saved['----:com.apple.iTunes:FOO'], saved['----:org.example:FOO']) == ([b'apple'], [b'other'])
+    assert audioinfo.Tag(str(path))['FOO'] == ['apple']
+
+
+@pytest.mark.xfail(strict=True, reason='an edit deletes one of two freeform atoms of the same name')
+def test_edit_of_a_freeform_field_sharing_its_name_sticks(make_audio):
+    # The maintainer decided on 2026-11-10 that the com.apple.iTunes atom is
+    # the one shown and edited, and the other atoms of the name stay as they
+    # are, whatever order the file keeps them in. Synthetic values.
+    path = make_audio('song.m4a', title='Before')
+    add_atoms(path, SAME_NAME)
+    tag = audioinfo.Tag(str(path))
+    tag.update({'FOO': ['New']})
+    tag.save()
+
+    def check():
+        saved = mutagen.mp4.MP4(path).tags
+        assert audioinfo.Tag(str(path))['FOO'] == ['New']
+        assert (saved['----:com.apple.iTunes:FOO'], saved['----:org.example:FOO']) == ([b'New'], [b'other'])
+
+    check()
+    tag = audioinfo.Tag(str(path))
+    tag.update({'title': ['After']})
+    tag.save()
+    check()
+
+
+@pytest.mark.xfail(strict=True, reason='an edit deletes one of two freeform atoms of the same name')
+def test_freeform_atoms_of_the_same_name_without_the_itunes_one(make_audio):
+    # The maintainer decided on 2026-11-10 that without a com.apple.iTunes
+    # atom puddletag shows the first by atom name and keeps the other, not
+    # shown. Synthetic values.
+    path = make_audio('song.m4a', title='Before')
+    add_atoms(path, {'----:org.a:FOO': [b'a'], '----:org.b:FOO': [b'b']})
+    tag = audioinfo.Tag(str(path))
+    tag.update({'title': ['After']})
+    tag.save()
+
+    saved = mutagen.mp4.MP4(path).tags
+    assert (saved['----:org.a:FOO'], saved['----:org.b:FOO']) == ([b'a'], [b'b'])
+    assert audioinfo.Tag(str(path))['FOO'] == ['a']
+
+
+@pytest.mark.xfail(strict=True, reason="an edit deletes a freeform atom whose data isn't UTF-8")
+def test_emptied_freeform_field_still_removed(make_audio):
+    # Emptying a field removes its atom, and the atoms puddletag doesn't show
+    # stay (news.txt: "would remove any unsupported tags. Sorry about that").
+    # Atoms are synthetic.
+    path = make_audio('song.m4a', title='Before')
+    add_atoms(path, dict(BINARY, **{'----:com.apple.iTunes:MOOD': [b'Calm']}))
+    tag = audioinfo.Tag(str(path))
+    tag.update({'MOOD': []})
+    tag.save()
+
+    assert sorted(mutagen.mp4.MP4(path).tags.keys()) == ['----:com.apple.iTunes:BIN', '\xa9nam']
+
+
+def test_remove_tag_removes_atoms_puddletag_does_not_show(make_audio):
+    # menus.txt, Remove Tag: "Removes the tags of selected files. Note that
+    # although this operation can be undone, the tag is not restored as it was
+    # before: a new one is created, and only supported fields are restored."
+    # The atom is synthetic.
+    path = make_audio('song.m4a', title='Before')
+    add_atoms(path, BINARY)
+
+    audioinfo.Tag(str(path)).delete()
+
+    assert not mutagen.mp4.MP4(path).tags
