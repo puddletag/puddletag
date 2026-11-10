@@ -1,14 +1,13 @@
 # -*- coding: utf-8 -*-
 import os
-import sys
 from copy import copy, deepcopy
 from functools import partial
 
 from PyQt6.QtCore import Qt, pyqtSignal
 from PyQt6.QtGui import QAction
-from PyQt6.QtWidgets import QAbstractItemView, QApplication, QCheckBox, QComboBox, QCompleter, \
+from PyQt6.QtWidgets import QAbstractItemView, QCheckBox, QComboBox, QCompleter, \
     QDialog, QFrame, QGridLayout, QInputDialog, QLabel, QLineEdit, QListWidgetItem, QMenu, QMessageBox, \
-    QScrollArea, QSizePolicy, QSpinBox, QStackedWidget, QToolButton, QVBoxLayout, QWidget
+    QScrollArea, QSizePolicy, QStackedWidget, QToolButton, QVBoxLayout, QWidget
 from pyparsing import delimited_list, alphanums, Combine, Word, QuotedString
 
 from . import findfunc, functions
@@ -278,10 +277,7 @@ class FunctionDialog(QWidget):
                     elif (method() == Qt.CheckState.PartiallyChecked) or (method() == Qt.CheckState.Unchecked):
                         newargs.append(False)
                 else:
-                    if isinstance(method(), int):
-                        newargs.append(method())
-                    else:
-                        newargs.append(str(method()))
+                    newargs.append(str(method()))
             [z.save() for z in self.textcombos]
         self.func.setArgs(newargs)
 
@@ -376,18 +372,11 @@ class FunctionDialog(QWidget):
             self.updateExample.emit(val)
 
     def _sanitize(self, ctype, value):
-        if ctype in ['combo', 'text']:
-            return value
-        elif ctype == 'check':
+        if ctype == 'check':
             if value is True or value == 'True':
                 return True
             else:
                 return False
-        elif ctype == 'spinbox':
-            try:
-                return int(value)
-            except (TypeError, ValueError):
-                return 0
 
     def setArguments(self, fields=None, args=None):
         if fields is not None:
@@ -419,8 +408,6 @@ class FunctionDialog(QWidget):
                 control.setEditText(argument)
             elif isinstance(control, QCheckBox):
                 control.setChecked(self._sanitize('check', argument))
-            elif isinstance(control, QSpinBox):
-                control.setValue(self._sanitize('spinbox', argument))
 
 
 class CreateFunction(QDialog):
@@ -953,12 +940,9 @@ class ActionWindow(QDialog):
         else:
             self._examplelabel.hide()
 
-    def saveMacro(self, macro, filename=None):
-        cparser = PuddleConfig()
-        if filename is None and macro.filename:
-            macro.save()
-        elif filename:
-            macro.filename = filename
+    def saveMacro(self, macro):
+        if macro.filename:
+            filename = macro.filename
             macro.save()
         else:
             name = macro.name
@@ -1101,12 +1085,3 @@ class ActionWindow(QDialog):
     def shortcutNames(self):
         from .action_shortcuts import load_settings
         return [name for name, filename in load_settings()[1]]
-
-
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    app.setOrganizationName("Puddle Inc.")
-    app.setApplicationName("puddletag")
-    qb = ActionWindow([('Path', '__path'), ('Artist', 'artist'), ('Title', 'title'), ('Album', 'album'), ('Track', 'track'), ('Length', '__length'), ('Year', 'date')])
-    qb.show()
-    app.exec()
