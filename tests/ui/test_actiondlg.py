@@ -414,7 +414,6 @@ class SyntheticTranslation(QTranslator):
 
 
 @pytest.mark.parametrize('kind', ['window', 'dock'])
-@pytest.mark.xfail(strict=True, reason='Edit and Duplicate are enabled with no action selected, and raise KeyError -1')
 def test_edit_and_duplicate_need_a_selected_action(kind, loaded, mainwin, user, qtbot, dialogs):
     # The docs don't say; with no action selected there is nothing to edit,
     # duplicate, remove or move, so those buttons are off (Edit used to raise

@@ -795,6 +795,7 @@ class ActionWindow(QDialog):
         self.grid.addLayout(self.okcancel, 2, 0, 1, 2)
         self.updateExample()
         self.enableOK(None)
+        self.enableListButtons(self.listbox.currentRow())
 
     def createShortcut(self):
         macros = self.checked()
