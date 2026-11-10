@@ -1091,7 +1091,9 @@ def tag_factory(id3_filetype):
             except AttributeError:
                 self.__tags['__tag_read'] = ''
             self.mut_obj = audio
-            self._originaltags = list(audio.keys())
+            # A frame whose values another frame shows (TXXX:YEAR, under
+            # year) is shown too.
+            self._originaltags = [key for key, frame in audio.items() if frame.__class__ in frames]
             self.update_tag_list()
             return self
 
@@ -1108,14 +1110,10 @@ def tag_factory(id3_filetype):
             audio = self.mut_obj
             util.MockTag.save(self)
 
-            userkeys = list(usertags(self.__tags).keys())
-            frames = []
-            [frames.append(frame) if not hasattr(frame, 'frames') else
-             frames.extend(frame.frames) for key, frame in self.__tags.items()
-             if key in userkeys]
-            hashes = dict([(frame.HashKey, frame) for frame in frames])
+            hashes = self._shown_frames()
+            # The frames it doesn't show, chapters or PRIV, stay.
             toremove = [z for z in self._originaltags if z in audio
-                        and not (z in hashes or z.startswith('APIC'))]
+                        and z not in hashes and not z.startswith('APIC')]
             audio.update(hashes)
 
             old_apics = [z for z in audio if z.startswith('APIC')]
@@ -1173,7 +1171,15 @@ def tag_factory(id3_filetype):
 
             self.__tags['__tag_read'] = 'ID3v2.4' if v2 == 4 else 'ID3v2.3'
             self.update_tag_list()
-            self._originaltags = list(audio.keys())
+            self._originaltags = list(hashes)
+
+        def _shown_frames(self):
+            """The frames of the fields puddletag shows, by hash key: the only
+            ones a save may remove, when their field is gone."""
+            frames = []
+            for frame in usertags(self.__tags).values():
+                frames.extend(getattr(frame, 'frames', [frame]))
+            return dict((frame.HashKey, frame) for frame in frames)
 
         def set_fundamentals(self, tags, mut_obj, images=None):
             self.__tags = tags

@@ -352,7 +352,6 @@ def test_filename_drops_reserved_characters(user, loaded, qtbot):
     assert table.model().data(user.cell(0, '__filename')) == new.name
 
 
-@pytest.mark.xfail(strict=True, reason="an edit deletes the frames puddletag doesn't list")
 def test_edit_keeps_frames_puddletag_does_not_list(mainwin, make_audio, tmp_path, qtbot, user):
     # news.txt: "There was a pretty nasty bug where puddletag would remove
     # any unsupported tags." Decided on 2026-11-10: what puddletag doesn't

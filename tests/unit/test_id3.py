@@ -427,7 +427,6 @@ def add_unlisted_frames(path):
     audio.save()
 
 
-@pytest.mark.xfail(strict=True, reason="an edit deletes the frames puddletag doesn't list")
 @pytest.mark.parametrize('v2', [3, 4])
 @pytest.mark.parametrize('ext', ID3_FORMATS)
 def test_save_keeps_frames_puddletag_does_not_list(make_audio, ext, v2):
@@ -443,7 +442,6 @@ def test_save_keeps_frames_puddletag_does_not_list(make_audio, ext, v2):
             frames.version[:2]) == (sorted(UNLISTED + ['TIT2']), ['After'], ['Intro'], (2, v2))
 
 
-@pytest.mark.xfail(strict=True, reason="an edit deletes the frames puddletag doesn't list")
 @pytest.mark.parametrize('ext', ID3_FORMATS)
 def test_emptied_field_still_removed(make_audio, ext):
     # tut1.txt: "To remove a field, change the text to <blank> and the field'll
