@@ -710,6 +710,12 @@ class CreateAction(QDialog):
         self.close()
 
 
+def has_file_name(name):
+    """False if nothing is left of name once the characters a file name can't
+    hold, dots and spaces are dropped."""
+    return bool(''.join(c for c in name if c not in '/\\*?"|:').strip(' .'))
+
+
 class ActionWindow(QDialog):
     """Just a dialog that allows you to add, remove and edit actions
     On clicking OK, a signal "donewithmyshit" is emitted.
@@ -864,12 +870,25 @@ class ActionWindow(QDialog):
             self.okcancel.okButton.setEnabled(False)
             self.shortcutButton.setEnabled(False)
 
+    def nameRefusal(self):
+        return translate('Actions', "An action's name can't be only spaces, dots or the characters / \\ * ? \" | :")
+
     def renameAction(self, item):
         name = str(item.text())
         names = [m.name for m in self.macros.values()]
         row = self.listbox.row(item)
 
-        if name not in names:
+        if name == self.macros[row].name:
+            return
+        refusal = None
+        if not name:
+            refusal = translate('Actions', 'An action needs a name.')
+        elif not has_file_name(name):
+            refusal = self.nameRefusal()
+        elif name in names:
+            refusal = translate('Actions', 'An action named <b>{}</b> already exists.').format(name)
+
+        if refusal is None:
             macro = self.macros[row]
             macro.name = name
             self.saveMacro(macro)
@@ -877,6 +896,7 @@ class ActionWindow(QDialog):
             self.listbox.blockSignals(True)
             item.setText(self.macros[row].name)
             self.listbox.blockSignals(False)
+            QMessageBox.warning(self, 'puddletag', refusal)
 
     def loadMacros(self):
         from glob import glob
@@ -943,7 +963,7 @@ class ActionWindow(QDialog):
             macro.save()
         else:
             name = macro.name
-            filename = os.path.join(ACTIONDIR, safe_name(name) + '.action')
+            filename = os.path.join(ACTIONDIR, safe_name(name).lstrip(' .') + '.action')
             base = os.path.splitext(filename)[0]
             i = 0
             while os.path.exists(filename):
@@ -960,6 +980,9 @@ class ActionWindow(QDialog):
                                           QLineEdit.EchoMode.Normal)
 
         if (ok is True) and text:
+            if not has_file_name(text):
+                QMessageBox.warning(self, 'puddletag', self.nameRefusal())
+                return
             item = QListWidgetItem(text)
             item.setCheckState(Qt.CheckState.Unchecked)
             item.setFlags(item.flags() | Qt.ItemFlag.ItemIsEditable)
@@ -1048,6 +1071,9 @@ class ActionWindow(QDialog):
                                           translate('Actions', "Enter a name for the new action."),
                                           QLineEdit.EchoMode.Normal)
         if not (ok and text):
+            return
+        if not has_file_name(text):
+            QMessageBox.warning(self, 'puddletag', self.nameRefusal())
             return
 
         name = str(text)

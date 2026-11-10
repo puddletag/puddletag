@@ -465,7 +465,6 @@ def test_remove_two_actions_then_edit(loaded, user, qtbot):
     close_window(user, qtbot, window)
 
 
-@pytest.mark.xfail(strict=True, reason='An empty action name is saved')
 def test_rename_to_an_empty_name_is_refused(loaded, user, qtbot, dialogs):
     # The docs don't say; an action with no name can't be told apart in the
     # list, so the old name comes back with a warning.
@@ -481,7 +480,6 @@ def test_rename_to_an_empty_name_is_refused(loaded, user, qtbot, dialogs):
     close_window(user, qtbot, window)
 
 
-@pytest.mark.xfail(strict=True, reason='Renaming to a taken name is undone without a word')
 def test_rename_to_a_taken_name_says_so(loaded, user, qtbot, dialogs):
     # The docs don't say; two actions can't share a name, and the program
     # says why the old name came back.
@@ -498,7 +496,6 @@ def test_rename_to_a_taken_name_says_so(loaded, user, qtbot, dialogs):
     close_window(user, qtbot, window)
 
 
-@pytest.mark.xfail(strict=True, reason='A name with nothing left for a file name is accepted')
 @pytest.mark.parametrize('how', ['add', 'duplicate', 'rename'])
 def test_name_with_nothing_for_a_file_name_is_refused(how, loaded, user, qtbot, dialogs):
     # The docs don't say; the name '***' is synthetic. The name is the action's
@@ -521,7 +518,6 @@ def test_name_with_nothing_for_a_file_name_is_refused(how, loaded, user, qtbot, 
     close_window(user, qtbot, window)
 
 
-@pytest.mark.xfail(strict=True, reason='An action named with a leading dot is saved as a hidden file and gone on reopen')
 def test_name_starting_with_a_dot_kept_on_reopen(loaded, user, qtbot, dialogs):
     # The docs don't say; the name '.mp3 fix' is synthetic. An action must
     # still be listed after the window is reopened.
