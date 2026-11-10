@@ -289,6 +289,9 @@ def winsettings(name, dialog, settings=_getSettings()):
             cevent(event)
 
     setattr(dialog, 'closeEvent', closeEvent)
+    if isinstance(dialog, QDialog):
+        # Esc and accept() hide a dialog without a close event.
+        dialog.finished.connect(lambda *args: savewinsize(name, dialog))
 
 
 # Next three functions from beets: http://code.google.com/p/beets

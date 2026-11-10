@@ -940,13 +940,7 @@ WINDOWS = pytest.mark.parametrize(
     'open_window', [open_edit_action, open_import], ids=['Edit Action', 'Import tags from text'])
 
 
-CANCEL_WINDOWS = pytest.mark.parametrize('open_window', [
-    pytest.param(open_edit_action, id='Edit Action', marks=pytest.mark.xfail(
-        strict=True, reason='Cancel in Edit Action saves no window size')),
-    pytest.param(open_import, id='Import tags from text')])
-
-
-@CANCEL_WINDOWS
+@WINDOWS
 def test_window_keeps_its_size(loaded, user, qtbot, open_window):
     # #379: "Instead of maximizing, just enlarge them. If they are enlarged,
     # but not maximized, puddletag correctly preserves their size".
@@ -960,7 +954,7 @@ def test_window_keeps_its_size(loaded, user, qtbot, open_window):
     leave(user, qtbot, window, click_cancel(user))
 
 
-@CANCEL_WINDOWS
+@WINDOWS
 def test_maximized_window_reopens_maximized(loaded, user, qtbot, open_window):
     # #379: "The size (maximized) should be preserved".
     window = open_window(user, qtbot)
@@ -973,7 +967,6 @@ def test_maximized_window_reopens_maximized(loaded, user, qtbot, open_window):
     leave(user, qtbot, window, click_cancel(user))
 
 
-@pytest.mark.xfail(strict=True, reason='Esc saves no window size')
 @WINDOWS
 def test_escape_keeps_the_window_size(loaded, user, qtbot, open_window):
     # As #379's enlarged window, closed with Esc: it comes back as it was
