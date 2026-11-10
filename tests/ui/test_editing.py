@@ -5,7 +5,9 @@ file. Synthetic files.
 """
 import os
 
+import mutagen.id3
 import pytest
+from mutagen.id3 import CHAP, CTOC, CTOCFlags, PRIV, TIT2
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QAbstractItemView, QApplication, QMessageBox
 
@@ -348,3 +350,32 @@ def test_filename_drops_reserved_characters(user, loaded, qtbot):
     assert sorted(os.listdir(paths[0].parent)) == sorted(['02.mp3', '03.mp3', new.name])
     assert table.model().taginfo[0].filepath == str(new)
     assert table.model().data(user.cell(0, '__filename')) == new.name
+
+
+@pytest.mark.xfail(strict=True, reason="an edit deletes the frames puddletag doesn't list")
+def test_edit_keeps_frames_puddletag_does_not_list(mainwin, make_audio, tmp_path, qtbot, user):
+    # news.txt: "There was a pretty nasty bug where puddletag would remove
+    # any unsupported tags." Decided on 2026-11-10: what puddletag doesn't
+    # show is kept when it saves. A chapter, its table of contents and a
+    # private frame, as podcast tools and Picard write them. Synthetic values.
+    music = tmp_path / 'music'
+    path = make_audio('01.mp3', music, artist='Artist 1', title='Title 1')
+    tag = mutagen.id3.ID3(str(path))
+    tag.add(CHAP(element_id='c1', start_time=0, end_time=500, sub_frames=[TIT2(encoding=3, text=['Intro'])]))
+    tag.add(CTOC(element_id='toc', flags=CTOCFlags.TOP_LEVEL | CTOCFlags.ORDERED, child_element_ids=['c1'],
+                 sub_frames=[]))
+    tag.add(PRIV(owner='example.org', data=b'private'))
+    tag.save()
+    mainwin.openDir(str(music), False)
+    table = mainwin._table
+    qtbot.waitUntil(lambda: table.model().rowCount() == 1)
+    user.activate()
+    table.setFocus()
+
+    edit(user, user.cell(0, 'title'), 'New')
+    user.press(Key.Key_Return)
+    written(qtbot, path, 'title', ['New'])
+
+    assert sorted(mutagen.id3.ID3(str(path)).keys()) == [
+        'CHAP:c1', 'CTOC:toc', 'PRIV:example.org:private', 'TIT2', 'TPE1']
+    assert in_table(table) == [{'artist': ['Artist 1'], 'title': ['New']}]

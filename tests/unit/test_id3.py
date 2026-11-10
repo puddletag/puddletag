@@ -1,10 +1,11 @@
 """ID3 tags (puddlestuff/audioinfo/id3.py), saved with the two calls an edit
 in the main table ends in (update, then save: puddlestuff/util.py write)
 and read back with mutagen."""
+import mutagen
 import mutagen.id3
 import mutagen.mp4
 import pytest
-from mutagen.id3 import Encoding, PictureType
+from mutagen.id3 import CHAP, CTOC, CTOCFlags, Encoding, GEOB, GRP1, PRIV, PictureType, SYLT, TIT2
 
 from puddlestuff import audioinfo
 from puddlestuff.audioinfo.util import to_string
@@ -403,3 +404,65 @@ def test_saving_again_keeps_one_tag(make_audio, v2):
     size = sum(b << shift for b, shift in zip(data[6:10], (21, 14, 7, 0)))  # synchsafe
     assert (data[:4], data.count(b'ID3'), data[10 + size:10 + size + 1], data.count(b'TAG'), data[-128:-125]) == (
         b'ID3' + bytes([v2]), 1, b'\xff', 1, b'TAG')
+
+
+# Frames id3.txt doesn't list, as other programs write them: a chapter and
+# its table of contents, a private frame, an object, synced lyrics and
+# iTunes' grouping. Synthetic values.
+UNLISTED = ['CHAP:c1', 'CTOC:toc', 'GEOB:d', 'GRP1', 'PRIV:example.org:private', 'SYLT::eng']
+
+
+def add_unlisted_frames(path):
+    audio = mutagen.File(path)
+    audio.tags.add(CHAP(element_id='c1', start_time=0, end_time=500,
+                        sub_frames=[TIT2(encoding=Encoding.UTF8, text=['Intro'])]))
+    audio.tags.add(CTOC(element_id='toc', flags=CTOCFlags.TOP_LEVEL | CTOCFlags.ORDERED,
+                        child_element_ids=['c1'], sub_frames=[]))
+    audio.tags.add(GEOB(encoding=Encoding.UTF8, mime='application/octet-stream', filename='a.bin',
+                        desc='d', data=b'xyz'))
+    audio.tags.add(GRP1(encoding=Encoding.UTF8, text=['Group']))
+    audio.tags.add(PRIV(owner='example.org', data=b'private'))
+    audio.tags.add(SYLT(encoding=Encoding.UTF8, lang='eng', format=2, type=1, desc='',
+                        text=[('la', 0), ('la', 500)]))
+    audio.save()
+
+
+@pytest.mark.xfail(strict=True, reason="an edit deletes the frames puddletag doesn't list")
+@pytest.mark.parametrize('v2', [3, 4])
+@pytest.mark.parametrize('ext', ID3_FORMATS)
+def test_save_keeps_frames_puddletag_does_not_list(make_audio, ext, v2):
+    # news.txt: "There was a pretty nasty bug where puddletag would remove
+    # any unsupported tags. Sorry about that, hopefully you haven't lost any
+    # priceless info because of it." The maintainer decided (2026-11-10)
+    # that a save keeps the frames puddletag doesn't show. Synthetic frames.
+    path = make_audio('song.' + ext, title='Before')
+    add_unlisted_frames(path)
+    save(path, {'title': ['After']}, v2=v2)
+    frames = id3_frames(path, translate=False)
+    assert (sorted(frames.keys()), frames['TIT2'].text, frames['CHAP:c1'].sub_frames['TIT2'].text,
+            frames.version[:2]) == (sorted(UNLISTED + ['TIT2']), ['After'], ['Intro'], (2, v2))
+
+
+@pytest.mark.xfail(strict=True, reason="an edit deletes the frames puddletag doesn't list")
+@pytest.mark.parametrize('ext', ID3_FORMATS)
+def test_emptied_field_still_removed(make_audio, ext):
+    # tut1.txt: "To remove a field, change the text to <blank> and the field'll
+    # be removed upon saving". The maintainer decided (2026-11-10) that only
+    # the field goes: the frames puddletag doesn't show stay. Synthetic
+    # frames.
+    path = make_audio('song.' + ext, title='Before', artist='Artist')
+    save(path, {'comment': ['Hi'], 'mine': ['x']})
+    add_unlisted_frames(path)
+    frames, tag = save(path, {'artist': [], 'comment': [], 'mine': []})
+    assert (sorted(frames.keys()), audioinfo.usertags(tag)) == (sorted(UNLISTED + ['TIT2']), {'title': ['Before']})
+
+
+@pytest.mark.parametrize('ext', ID3_FORMATS)
+def test_remove_tag_removes_unlisted_frames(make_audio, ext):
+    # menus.txt, Remove Tag: "Removes the tags of selected files." The
+    # maintainer decided (2026-11-10) that it still removes everything, the
+    # frames puddletag doesn't show included. Synthetic frames.
+    path = make_audio('song.' + ext, title='Before')
+    add_unlisted_frames(path)
+    audioinfo.Tag(str(path)).delete()
+    assert not id3_frames(path)
