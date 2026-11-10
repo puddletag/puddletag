@@ -797,8 +797,6 @@ def test_action_holding_autonumbering(loaded, user, qtbot):
     close_window(user, qtbot, window)
 
 
-@pytest.mark.xfail(strict=True, reason="OK in the Functions window with a plugin's function raises TypeError: "
-                   "the function itself, not its name, is saved as the last one used")
 def test_plugin_function_with_a_check_box(loaded, user, qtbot, monkeypatch):
     # Synthetic plugin function: the docs are silent on check box arguments.
     from puddlestuff import functions

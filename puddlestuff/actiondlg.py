@@ -557,7 +557,9 @@ class CreateFunction(QDialog):
             return
 
         try:
-            index = self.realfuncs.index(func_name)
+            # A plugin's function is in realfuncs as itself, not by its key.
+            func = functions.functions.get(func_name)
+            index = self.realfuncs.index(func if isinstance(func, PluginFunction) else func_name)
             self.createWindow(index)
             self.functions.setCurrentIndex(index)
         except ValueError:
@@ -566,6 +568,8 @@ class CreateFunction(QDialog):
     def saveSettings(self):
         cparser = PuddleConfig()
         funcname = self.realfuncs[self.functions.currentIndex()]
+        if isinstance(funcname, PluginFunction):
+            funcname = next(key for key, func in functions.functions.items() if func is funcname)
         cparser.set('functions', 'last_used', funcname)
 
     def updateExample(self, text):
