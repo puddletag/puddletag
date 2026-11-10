@@ -561,7 +561,6 @@ def test_duplicate_window_title_is_translated(loaded, user, qtbot, dialogs):
     close_window(user, qtbot, window)
 
 
-@pytest.mark.xfail(strict=True, reason='Esc forgets the new order; Cancel keeps it')
 def test_escape_keeps_the_action_order(loaded, user, qtbot):
     # The docs don't say; Cancel keeps the new order, so Esc and the close
     # button do too.

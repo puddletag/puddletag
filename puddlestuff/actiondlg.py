@@ -802,6 +802,7 @@ class ActionWindow(QDialog):
         self.updateExample()
         self.enableOK(None)
         self.enableListButtons(self.listbox.currentRow())
+        self.finished.connect(self.saveOrder)
 
     def createShortcut(self):
         macros = self.checked()
