@@ -111,7 +111,6 @@ def picture_comment():
     return ('METADATA_BLOCK_PICTURE', base64.b64encode(picture.write()).decode('ascii'))
 
 
-@pytest.mark.xfail(strict=True, reason='a save writes the comments in another order')
 def test_save_keeps_the_order_of_comments(vorbis_file):
     # No docs say what order the comments take. #611 ("Tags written out of
     # order") and #1072 (an Opus file's chapters, whose titles ffprobe no
@@ -123,7 +122,6 @@ def test_save_keeps_the_order_of_comments(vorbis_file):
     assert comments(vorbis_file) == [('TITLE', 'After')] + CHAPTERS[1:]
 
 
-@pytest.mark.xfail(strict=True, reason='a save writes the comments in another order')
 def test_new_fields_go_after_the_file_s(vorbis_file):
     # Decided 2026-11-10: the fields an edit adds go after the file's
     # comments (no docs say where they go).
@@ -132,7 +130,6 @@ def test_new_fields_go_after_the_file_s(vorbis_file):
     assert comments(vorbis_file) == [('TITLE', 'After')] + CHAPTERS[1:] + [('ALBUM', 'New')]
 
 
-@pytest.mark.xfail(strict=True, reason='a save writes the comments in another order')
 def test_removed_field_leaves_the_others_in_order(vorbis_file):
     # Decided 2026-11-10: a save keeps the file's order, so emptying a field
     # leaves the others where they were.
@@ -141,7 +138,6 @@ def test_removed_field_leaves_the_others_in_order(vorbis_file):
     assert comments(vorbis_file) == [pair for pair in CHAPTERS if pair[0] != 'CHAPTER001NAME']
 
 
-@pytest.mark.xfail(strict=True, reason='a save writes the comments in another order')
 @pytest.mark.parametrize('ext', ['ogg', 'opus'])
 def test_cover_keeps_its_place(make_audio, ext):
     # Decided 2026-11-10: a save keeps the file's order, the cover's comment
@@ -156,7 +152,6 @@ def test_cover_keeps_its_place(make_audio, ext):
     assert audioinfo.Tag(str(path))['__image'][0]['data'] == b'\xff\xd8\xff\xd9'
 
 
-@pytest.mark.xfail(strict=True, reason="an edit deletes a FLAC file's picture comment")
 def test_flac_keeps_a_picture_comment(make_audio):
     # news.txt:1056: "There was a pretty nasty bug where puddletag would
     # remove any unsupported tags. Sorry about that, hopefully you haven't
@@ -183,7 +178,6 @@ def test_remove_tag_removes_a_flac_picture_comment(make_audio):
     assert audio.pictures == []
 
 
-@pytest.mark.xfail(strict=True, reason='a save writes the comments in another order')
 def test_chapter_titles_still_read_by_ffprobe(make_audio):
     # #1072: "chapter entries are destroyed" after an edit. ffmpeg reads a
     # chapter's NAME only after the chapter, so a save that moves them apart

@@ -238,11 +238,21 @@ def vorbis_tag(base, name):
                 if base == FLAC:
                     audio.clear_pictures()
 
+            if base == FLAC and COVER_KEY in case:
+                # Not shown (the picture blocks are): kept as it is.
+                newtag[case[COVER_KEY]] = audio[COVER_KEY]
+
+            # The file's order: ffmpeg reads a chapter's NAME only after the
+            # chapter (#1072). New keys go last.
+            position = {}
+            for index, (key, value) in enumerate(audio.tags):
+                position.setdefault(key.lower(), index)
             saved = set(key.lower() for key in newtag)
             toremove = [z for z in audio if z.lower() not in saved]
             for z in toremove:
                 del (audio[z])
-            audio.update(newtag)
+            for key in sorted(newtag, key=lambda key: position.get(key.lower(), len(position))):
+                audio[key] = newtag[key]
             audio.save()
 
         def set_fundamentals(self, tags, mut_obj, images=None):
