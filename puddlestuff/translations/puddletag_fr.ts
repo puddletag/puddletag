@@ -165,43 +165,43 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
   <context>
     <name>Actions</name>
     <message>
-      <location filename="../actiondlg.py" line="760" />
+      <location filename="../actiondlg.py" line="751" />
       <location filename="../action_shortcuts.py" line="265" />
       <source>Edit Shortcuts</source>
       <translation>Modifier les raccourcis</translation>
     </message>
     <message>
-      <location filename="../actiondlg.py" line="102" />
+      <location filename="../actiondlg.py" line="101" />
       <source>Enter a name for the shortcut.</source>
       <translation>Entrez un nom pour le raccourci.</translation>
     </message>
     <message>
-      <location filename="../actiondlg.py" line="540" />
+      <location filename="../actiondlg.py" line="524" />
       <source>Error: Using &lt;b&gt;__selected&lt;/b&gt; in Actions is not allowed.</source>
       <translation>Erreur: Utiliser &lt;b&gt;__selected&lt;/b&gt; dans les Actions n'est pas possible.</translation>
     </message>
     <message>
-      <location filename="../actiondlg.py" line="546" />
+      <location filename="../actiondlg.py" line="530" />
       <source>Please enter some fields to write to.</source>
       <translation>Merci d'indiquer quelques champs à écrire.</translation>
     </message>
     <message>
-      <location filename="../actiondlg.py" line="587" />
+      <location filename="../actiondlg.py" line="572" />
       <source>Modify Action</source>
       <translation>Modifier l'action</translation>
     </message>
     <message>
-      <location filename="../actiondlg.py" line="726" />
+      <location filename="../actiondlg.py" line="717" />
       <source>Actions</source>
       <translation>Actions</translation>
     </message>
     <message>
-      <location filename="../actiondlg.py" line="752" />
+      <location filename="../actiondlg.py" line="743" />
       <source>Assign &amp;Shortcut</source>
       <translation>&amp;Affecter le raccourci</translation>
     </message>
     <message>
-      <location filename="../actiondlg.py" line="755" />
+      <location filename="../actiondlg.py" line="746" />
       <source>&lt;p&gt;Creates a
             shortcut for the checked actions on the Actions menu.
             Use Edit Shortcuts (found by pressing down on this button)
@@ -212,28 +212,48 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
             pour modifier les raccourcis après coup.&lt;/p&gt;</translation>
     </message>
     <message>
-      <location filename="../actiondlg.py" line="963" />
+      <location filename="../actiondlg.py" line="860" />
+      <source>An action's name can't be only spaces, dots or the characters / \ * ? " | :</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../actiondlg.py" line="871" />
+      <source>An action needs a name.</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../actiondlg.py" line="875" />
+      <source>An action named &lt;b&gt;{}&lt;/b&gt; already exists.</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../actiondlg.py" line="933" />
       <source>New Action</source>
       <translation>Nouvelle action</translation>
     </message>
     <message>
-      <location filename="../actiondlg.py" line="1053" />
-      <location filename="../actiondlg.py" line="964" />
+      <location filename="../actiondlg.py" line="1026" />
+      <location filename="../actiondlg.py" line="934" />
       <source>Enter a name for the new action.</source>
       <translation>Entrez un nom pour la nouvelle action.</translation>
     </message>
     <message>
-      <location filename="../actiondlg.py" line="975" />
+      <location filename="../actiondlg.py" line="948" />
       <source>Add Action: </source>
       <translation>Ajouter action: </translation>
     </message>
     <message>
-      <location filename="../actiondlg.py" line="993" />
+      <location filename="../actiondlg.py" line="966" />
       <source>Edit Action: </source>
       <translation>Modifier l'action: </translation>
     </message>
     <message>
-      <location filename="../actiondlg.py" line="1063" />
+      <location filename="../actiondlg.py" line="1025" />
+      <source>Copy {} action</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../actiondlg.py" line="1039" />
       <source>Edit Action: {}</source>
       <translation>Modifier l'action: {}</translation>
     </message>
@@ -249,83 +269,83 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
   <context>
     <name>Artwork</name>
     <message>
-      <location filename="../puddleobjects.py" line="1994" />
-      <location filename="../puddleobjects.py" line="1619" />
+      <location filename="../puddleobjects.py" line="2003" />
+      <location filename="../puddleobjects.py" line="1628" />
       <source>Enter a description</source>
       <translation>Entrez une description</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1624" />
+      <location filename="../puddleobjects.py" line="1633" />
       <source>&lt;p&gt;Enter a description for the current cover.&lt;/p&gt;&lt;p&gt;For ID3 tags the description has to be different for each cover as per the ID3 spec. If they don't differ then spaces are appended to the description when the tag is saved.&lt;/p&gt;</source>
       <translation>&lt;p&gt;Entrez une description pour l'image séleectionnée.&lt;/p&gt;&lt;p&gt;Pour les tags ID3 la description doit être différente pour chaque pochette. Sinon des espaces seront ajoutés au moment de sauvegarder.&lt;/p&gt;</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1634" />
+      <location filename="../puddleobjects.py" line="1643" />
       <source>&amp;Description</source>
       <translation>&amp;Description</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1642" />
+      <location filename="../puddleobjects.py" line="1651" />
       <source>&amp;Type</source>
       <translation>&amp;Type</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1654" />
+      <location filename="../puddleobjects.py" line="1663" />
       <source>&lt;p&gt;Select a cover type for the artwork.&lt;/p&gt;</source>
       <translation>&lt;p&gt;Sélectionnez un type d'image.&lt;/p&gt;</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1746" />
+      <location filename="../puddleobjects.py" line="1755" />
       <source>&amp;Save cover to file</source>
       <translation>Enregistrer dans un &amp;fichier</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1749" />
+      <location filename="../puddleobjects.py" line="1758" />
       <source>&amp;Add cover</source>
       <translation>&amp;Ajouter une image</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1752" />
+      <location filename="../puddleobjects.py" line="1761" />
       <source>C&amp;opy cover</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1755" />
+      <location filename="../puddleobjects.py" line="1764" />
       <source>&amp;Paste cover</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1758" />
+      <location filename="../puddleobjects.py" line="1767" />
       <source>&amp;Remove cover</source>
       <translation>&amp;Enlever l'image</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1761" />
+      <location filename="../puddleobjects.py" line="1770" />
       <source>&amp;Change cover</source>
       <translation>&amp;Changer l'image</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1828" />
+      <location filename="../puddleobjects.py" line="1837" />
       <source>Select Image...</source>
       <translation>Sélectionner une image...</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1829" />
+      <location filename="../puddleobjects.py" line="1838" />
       <source>JPEG &amp; PNG Images (*.jpg *.jpeg *.png);;JPEG Images (*.jpg *.jpeg);;PNG Images (*.png);;All Files(*.*)</source>
       <translation>Images JPEG &amp; PNG (*.jpg *.jpeg *.png);;Images JPEG (*.jpg *.jpeg);;Images PNG (*.png);;All Files(*.*)</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="2042" />
+      <location filename="../puddleobjects.py" line="2051" />
       <source>Save artwork as...</source>
       <translation>Sauver l'image sous ...</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="2044" />
+      <location filename="../puddleobjects.py" line="2053" />
       <source>JPEG Images (*.jpg);;PNG Images (*.png);;All Files(*.*)</source>
       <translation>Images JPEG (*.jpg);;Images PNG (*.png);;Tous les Fichiers(*.*)</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="2054" />
+      <location filename="../puddleobjects.py" line="2063" />
       <source>Writing to &lt;b&gt;{}&lt;/b&gt; failed.</source>
       <translation>Ecriture de &lt;b&gt;{}&lt;/b&gt; échouée.</translation>
     </message>
@@ -343,7 +363,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
       <translation>Pas d'images</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1590" />
+      <location filename="../puddleobjects.py" line="1599" />
       <source>{}/{}</source>
       <translation>{}/{}</translation>
     </message>
@@ -535,7 +555,7 @@ Double cliquer pour changer la couleur&lt;/p&gt;</translation>
       <translation>&amp;Sélectionner des colonnes</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="991" />
+      <location filename="../puddleobjects.py" line="1000" />
       <source>Title</source>
       <translation>Titre</translation>
     </message>
@@ -543,7 +563,7 @@ Double cliquer pour changer la couleur&lt;/p&gt;</translation>
   <context>
     <name>Combo Box</name>
     <message>
-      <location filename="../puddleobjects.py" line="2309" />
+      <location filename="../puddleobjects.py" line="2318" />
       <source>Remove current item.</source>
       <translation>Retirer l'élément.</translation>
     </message>
@@ -878,8 +898,8 @@ Double cliquer pour changer la couleur&lt;/p&gt;</translation>
     </message>
     <message>
       <location filename="../musiclib.py" line="216" />
-      <location filename="../puddleobjects.py" line="2053" />
-      <location filename="../puddleobjects.py" line="507" />
+      <location filename="../puddleobjects.py" line="2062" />
+      <location filename="../puddleobjects.py" line="510" />
       <location filename="../tagmodel.py" line="2212" />
       <location filename="../tagmodel.py" line="2206" />
       <location filename="../puddletag.py" line="561" />
@@ -921,7 +941,7 @@ Double cliquer pour changer la couleur&lt;/p&gt;</translation>
       <translation>{} images</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1437" />
+      <location filename="../puddleobjects.py" line="1446" />
       <location filename="../helperwin.py" line="1203" />
       <source>OK</source>
       <translation>OK</translation>
@@ -953,25 +973,25 @@ Double cliquer pour changer la couleur&lt;/p&gt;</translation>
       <translation>Chargement </translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="508" />
+      <location filename="../puddleobjects.py" line="511" />
       <source>&lt;br /&gt; Do you want to continue?</source>
       <translation>&lt;br /&gt; Voulez-vous continuer ?</translation>
     </message>
     <message>
       <location filename="../mainwin/tagpanel.py" line="430" />
-      <location filename="../puddleobjects.py" line="993" />
+      <location filename="../puddleobjects.py" line="1002" />
       <source>Field</source>
       <translation>Champ</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="2236" />
-      <location filename="../puddleobjects.py" line="1438" />
+      <location filename="../puddleobjects.py" line="2245" />
+      <location filename="../puddleobjects.py" line="1447" />
       <source>Cancel</source>
       <translation>Annuler</translation>
     </message>
     <message>
       <location filename="../mainwin/tagsources.py" line="146" />
-      <location filename="../actiondlg.py" line="217" />
+      <location filename="../actiondlg.py" line="216" />
       <source>&amp;Fields</source>
       <translation>&amp;Champs</translation>
     </message>
@@ -1101,7 +1121,7 @@ Double cliquer pour changer la couleur&lt;/p&gt;</translation>
       <translation>Actions</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="2178" />
+      <location filename="../puddleobjects.py" line="2187" />
       <source>Album Art</source>
       <translation>Pochettes</translation>
     </message>
@@ -1943,7 +1963,7 @@ Double cliquer pour changer la couleur&lt;/p&gt;</translation>
   <context>
     <name>Functions Dialog</name>
     <message>
-      <location filename="../actiondlg.py" line="27" />
+      <location filename="../actiondlg.py" line="26" />
       <source>&lt;p&gt;Fields that will
                            get written to.&lt;/p&gt;
                        
@@ -1962,22 +1982,17 @@ Double cliquer pour changer la couleur&lt;/p&gt;</translation>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../actiondlg.py" line="48" />
+      <location filename="../actiondlg.py" line="47" />
       <source>&lt;b&gt;No change.&lt;/b&gt;</source>
       <translation>&lt;b&gt;Aucun changement .&lt;/b&gt;</translation>
     </message>
     <message>
-      <location filename="../actiondlg.py" line="364" />
-      <source>No preview for is shown for this function.</source>
+      <location filename="../actiondlg.py" line="360" />
+      <source>No preview is shown for this function.</source>
       <translation>Pas de prévisualisation pour cette fonction.</translation>
     </message>
     <message>
-      <location filename="../actiondlg.py" line="379" />
-      <source>&lt;b&gt;No change&lt;/b&gt;</source>
-      <translation>&lt;b&gt;Aucun changement &lt;/b&gt;</translation>
-    </message>
-    <message>
-      <location filename="../actiondlg.py" line="440" />
+      <location filename="../actiondlg.py" line="424" />
       <source>Functions</source>
       <translation>Fonctions</translation>
     </message>
@@ -2061,52 +2076,52 @@ Double cliquer pour changer la couleur&lt;/p&gt;</translation>
   <context>
     <name>List Buttons</name>
     <message>
-      <location filename="../puddleobjects.py" line="1277" />
+      <location filename="../puddleobjects.py" line="1286" />
       <source>Add</source>
       <translation>Ajouter</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1280" />
+      <location filename="../puddleobjects.py" line="1289" />
       <source>Remove</source>
       <translation>Enlever</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1284" />
+      <location filename="../puddleobjects.py" line="1293" />
       <source>Move Up</source>
       <translation>Monter</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1287" />
+      <location filename="../puddleobjects.py" line="1296" />
       <source>Move Down</source>
       <translation>Descendre</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1290" />
+      <location filename="../puddleobjects.py" line="1299" />
       <source>Edit</source>
       <translation>Modifier</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1293" />
+      <location filename="../puddleobjects.py" line="1302" />
       <source>Duplicate</source>
       <translation>Dupliquer</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1295" />
+      <location filename="../puddleobjects.py" line="1304" />
       <source>Copy to clipboard</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1297" />
+      <location filename="../puddleobjects.py" line="1306" />
       <source>Paste from clipboard</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1358" />
+      <location filename="../puddleobjects.py" line="1367" />
       <source>&amp;&gt;&gt;</source>
       <translation />
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1359" />
+      <location filename="../puddleobjects.py" line="1368" />
       <source>&amp;&lt;&lt;</source>
       <translation />
     </message>
@@ -3462,12 +3477,12 @@ Par exemple, mettons que vous avez deux Sources. La première renvoie &lt;b&gt;a
   <context>
     <name>Progress Dialog</name>
     <message>
-      <location filename="../puddleobjects.py" line="2216" />
+      <location filename="../puddleobjects.py" line="2225" />
       <source>Please Wait...</source>
       <translation>Veuillez patienter...</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="2217" />
+      <location filename="../puddleobjects.py" line="2226" />
       <source>{}{} of {}...</source>
       <translation>{}{} sur {}...</translation>
     </message>
@@ -3589,18 +3604,23 @@ Par exemple, mettons que vous avez deux Sources. La première renvoie &lt;b&gt;a
   <context>
     <name>Shortcut Editor</name>
     <message>
-      <location filename="../actiondlg.py" line="62" />
+      <location filename="../actiondlg.py" line="61" />
       <source>Enter a key sequence for the shortcut.</source>
       <translation>Entrez une séquence pour le raccourci.</translation>
     </message>
     <message>
-      <location filename="../actiondlg.py" line="66" />
+      <location filename="../actiondlg.py" line="65" />
       <source>&amp;Don't assign keyboard shortcut.</source>
       <translation>Ne &amp;pas affecter de raccourci clavier.</translation>
     </message>
   </context>
   <context>
     <name>Shortcut Settings</name>
+    <message>
+      <location filename="../tagmodel.py" line="354" />
+      <source>File Properties</source>
+      <translation>Propriétés du fichier</translation>
+    </message>
     <message>
       <location filename="../shortcutsettings.py" line="191" />
       <source>&lt;b&gt;Double click a cell in the Shortcut Column to &lt;br /&gt;modify the key sequence.&lt;/b&gt;</source>
@@ -3620,11 +3640,6 @@ Par exemple, mettons que vous avez deux Sources. La première renvoie &lt;b&gt;a
       <location filename="../shortcutsettings.py" line="286" />
       <source>{key} moved from {old} to {new}.</source>
       <translation type="unfinished" />
-    </message>
-    <message>
-      <location filename="../tagmodel.py" line="354" />
-      <source>File Properties</source>
-      <translation>Propriétés du fichier</translation>
     </message>
   </context>
   <context>
