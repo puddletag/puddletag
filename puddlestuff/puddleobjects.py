@@ -774,9 +774,9 @@ def settaglist(tags):
     f.close()
 
 
-def load_actions():
-    from . import findfunc
-
+def action_files():
+    """Returns the paths of the action files, in the order the user keeps
+    them. On the first run, copies the default actions into ACTIONDIR."""
     cparser = PuddleConfig()
     set_value = partial(cparser.set, 'puddleactions')
     get_value = partial(cparser.get, 'puddleactions')
@@ -802,8 +802,14 @@ def load_actions():
 
     files = [z for z in order if z in files] + \
             [z for z in files if z not in order]
+    return files
+
+
+def load_actions():
+    from . import findfunc
 
     funcs = []
+    files = action_files()
     for f in files:
         action = findfunc.load_macro_info(f)
         funcs.append([action[0], action[1], f])

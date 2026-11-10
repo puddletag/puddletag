@@ -15,7 +15,7 @@ from . import functions_dialogs
 from .audioinfo import INFOTAGS, READONLY
 from .constants import ACTIONDIR, CHECKBOX, COMBO, CONFIGDIR, TEXT
 from .findfunc import Function, apply_macros, apply_actions, Macro
-from .puddleobjects import (ListBox, OKCancel, ListButtons, winsettings, gettaglist, settaglist, safe_name, open_resourcefile)
+from .puddleobjects import (ListBox, OKCancel, ListButtons, winsettings, gettaglist, settaglist, safe_name, action_files)
 from .puddleobjects import PuddleConfig, PuddleCombo
 from .puddleobjects import ShortcutEditor
 from .util import (PluginFunction, translate, pprint_tag)
@@ -885,35 +885,7 @@ class ActionWindow(QDialog):
             QMessageBox.warning(self, 'puddletag', refusal)
 
     def loadMacros(self):
-        from glob import glob
-
-        cparser = PuddleConfig()
-        set_value = partial(cparser.set, 'puddleactions')
-        get_value = partial(cparser.get, 'puddleactions')
-
-        firstrun = get_value('firstrun', True)
-        set_value('firstrun', False)
-        order = get_value('order', [])
-
-        os.makedirs(ACTIONDIR, exist_ok=True)
-
-        files = sorted(glob(os.path.join(ACTIONDIR, '*.action')))
-        if firstrun and not files:
-            filenames = ['data:./caseconversion.action', 'data:./standard.action']
-            files = list(map(open_resourcefile, filenames))
-            set_value('firstrun', False)
-
-            for fileobj, filename in zip(files, filenames):
-                filename = os.path.join(ACTIONDIR, filename.rsplit('/', maxsplit=1)[1])
-                f = open(filename, 'w')
-                f.write(fileobj.read())
-                f.close()
-            files = sorted(glob(os.path.join(ACTIONDIR, '*.action')))
-
-        files = [z for z in order if z in files] + \
-                [z for z in files if z not in order]
-
-        return dict((i, Macro(f)) for i, f in enumerate(files))
+        return dict(enumerate(Macro(f) for f in action_files()))
 
     def updateExample(self, *args):
         if self.example is None:
