@@ -415,7 +415,6 @@ class Tag(util.MockTag):
                 else:
                     field = key[key.find(':', key.find(':') + 1) + 1:]
 
-                    self.__freeform[field] = key
                     try:
                         field_value = []
                         for v in audio[key]:
@@ -425,9 +424,20 @@ class Tag(util.MockTag):
                                 field_value.append(v)
                             else:
                                 field_value.append(str(v))
-                        tags[field] = field_value
                     except UnicodeDecodeError:
-                        self.__errors.add(field)
+                        self.__errors.add(key)  # not text: kept as it is, not shown
+                        continue
+                    if field in self.__freeform:
+                        # Of atoms sharing a name the same one always shows,
+                        # whatever order a save leaves them in; the rest are
+                        # kept untouched.
+                        old = self.__freeform[field]
+                        winner = min(old, key, key=lambda k: (not k.startswith('----:com.apple.iTunes:'), k))
+                        self.__errors.add(old if winner == key else key)
+                        if winner != key:
+                            continue
+                    self.__freeform[field] = key
+                    tags[field] = field_value
 
         for k, v in list(tags.items()):
             if not v and v is not False:  # a flag that's off reads No

@@ -268,7 +268,6 @@ def add_atoms(path, atoms):
 BINARY = {'----:com.apple.iTunes:BIN': [MP4FreeForm(b'\xff\xfe\x00', AtomDataType.IMPLICIT)]}
 
 
-@pytest.mark.xfail(strict=True, reason="an edit deletes a freeform atom whose data isn't UTF-8")
 def test_save_keeps_a_freeform_atom_that_is_not_text(make_audio):
     # news.txt: "There was a pretty nasty bug where puddletag would remove any
     # unsupported tags. Sorry about that, hopefully you haven't lost any
@@ -289,7 +288,6 @@ def test_save_keeps_a_freeform_atom_that_is_not_text(make_audio):
 SAME_NAME = {'----:com.apple.iTunes:FOO': [b'apple'], '----:org.example:FOO': [b'other']}
 
 
-@pytest.mark.xfail(strict=True, reason='an edit deletes one of two freeform atoms of the same name')
 def test_save_keeps_freeform_atoms_of_the_same_name(make_audio):
     # news.txt: "There was a pretty nasty bug where puddletag would remove any
     # unsupported tags." The maintainer decided on 2026-11-10 that of several
@@ -307,7 +305,6 @@ def test_save_keeps_freeform_atoms_of_the_same_name(make_audio):
     assert audioinfo.Tag(str(path))['FOO'] == ['apple']
 
 
-@pytest.mark.xfail(strict=True, reason='an edit deletes one of two freeform atoms of the same name')
 def test_edit_of_a_freeform_field_sharing_its_name_sticks(make_audio):
     # The maintainer decided on 2026-11-10 that the com.apple.iTunes atom is
     # the one shown and edited, and the other atoms of the name stay as they
@@ -330,7 +327,6 @@ def test_edit_of_a_freeform_field_sharing_its_name_sticks(make_audio):
     check()
 
 
-@pytest.mark.xfail(strict=True, reason='an edit deletes one of two freeform atoms of the same name')
 def test_freeform_atoms_of_the_same_name_without_the_itunes_one(make_audio):
     # The maintainer decided on 2026-11-10 that without a com.apple.iTunes
     # atom puddletag shows the first by atom name and keeps the other, not
@@ -346,7 +342,6 @@ def test_freeform_atoms_of_the_same_name_without_the_itunes_one(make_audio):
     assert audioinfo.Tag(str(path))['FOO'] == ['a']
 
 
-@pytest.mark.xfail(strict=True, reason="an edit deletes a freeform atom whose data isn't UTF-8")
 def test_emptied_freeform_field_still_removed(make_audio):
     # Emptying a field removes its atom, and the atoms puddletag doesn't show
     # stay (news.txt: "would remove any unsupported tags. Sorry about that").
