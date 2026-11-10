@@ -1067,7 +1067,7 @@ class ActionWindow(QDialog):
         oldname = self.macros[row].name
 
         (text, ok) = QInputDialog.getText(self,
-                                          translate('Actions', "Copy %s action" % oldname),
+                                          translate('Actions', "Copy {} action").format(oldname),
                                           translate('Actions', "Enter a name for the new action."),
                                           QLineEdit.EchoMode.Normal)
         if not (ok and text):

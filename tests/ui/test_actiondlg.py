@@ -544,7 +544,6 @@ def test_name_starting_with_a_dot_kept_on_reopen(loaded, user, qtbot, dialogs):
     close_window(user, qtbot, window)
 
 
-@pytest.mark.xfail(strict=True, reason="Duplicate's title is formatted before it is translated")
 def test_duplicate_window_title_is_translated(loaded, user, qtbot, dialogs):
     # "puddletag's texts can be translated" (translate.txt). The translation
     # is synthetic.
