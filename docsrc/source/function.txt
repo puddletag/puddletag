@@ -200,7 +200,7 @@ Description
 
 Loads the artwork in filenames to the specified file.
 
-Filenames are a colon-separated list of shell-style wildcards, eg. **\*.jpg;\*.png**. Or just something like **folder.jpg**. The files will be loaded in order and the images.
+Filenames are a semicolon-separated list of shell-style wildcards, eg. **\*.jpg;\*.png**. Or just something like **folder.jpg**. The files will be loaded in order and the images.
 
 Default description can be any pattern, eg. **%artist%**.
 
