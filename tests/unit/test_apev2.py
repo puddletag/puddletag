@@ -9,6 +9,7 @@ keep them as Disc and Album Artist (foobar2000, Winamp), or AlbumArtist
 Synthetic files and values.
 """
 import mutagen.apev2
+import mutagen.id3
 import pytest
 
 from puddlestuff import audioinfo
@@ -126,3 +127,37 @@ def test_old_names_still_write(make_audio, mapping, ext):
     tag.save()
     assert audioinfo.usertags(audioinfo.Tag(str(path))) == {
         'title': ['Song'], 'discnumber': ['1/2'], 'albumartist': ['Band']}
+
+
+@pytest.mark.parametrize('ext', APE_FORMATS)
+def test_save_keeps_an_external_item(make_audio, ext):
+    # news.txt: "There was a pretty nasty bug where puddletag would remove any
+    # unsupported tags." An external (link) item isn't shown as a field, and an
+    # edit keeps it. Synthetic values.
+    path = make_audio('song.' + ext, title='Before')
+    ape = mutagen.apev2.APEv2(str(path))
+    ape['Link'] = mutagen.apev2.APEValue('http://example.org/', mutagen.apev2.EXTERNAL)
+    ape.save()
+    tag = audioinfo.Tag(str(path))
+    tag.update({'title': ['After']})
+    tag.save()
+    saved = mutagen.apev2.APEv2(str(path))
+    assert (saved['Link'].kind, str(saved['Link']), 'link' in audioinfo.usertags(audioinfo.Tag(str(path)))) == (
+        mutagen.apev2.EXTERNAL, 'http://example.org/', False)
+
+
+def test_id3_edit_keeps_an_mp3_s_apev2_tag(make_audio):
+    # news.txt: "There was a pretty nasty bug where puddletag would remove any
+    # unsupported tags." An MP3 can carry an APEv2 tag besides its ID3 one, and
+    # puddletag edits only the ID3 tag: the APEv2 one stays as it was.
+    # Synthetic values.
+    path = make_audio('song.mp3', title='T')
+    ape = mutagen.apev2.APEv2()
+    ape['Title'] = 'Ape'
+    ape['Custom'] = 'x'
+    ape.save(str(path))
+    tag = audioinfo.Tag(str(path))
+    tag.update({'title': ['B']})
+    tag.save()
+    assert stored(path) == {'Custom': 'x', 'Title': 'Ape'}
+    assert mutagen.id3.ID3(str(path))['TIT2'].text == ['B']
