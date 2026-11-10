@@ -444,8 +444,6 @@ def test_edit_and_duplicate_need_a_selected_action(kind, loaded, mainwin, user, 
     assert buttons.duplicateButton.isEnabled()
 
 
-@pytest.mark.xfail(strict=True, reason="Removing two actions at once leaves the second one's entry behind, "
-                                       "so Edit opens the wrong action")
 def test_remove_two_actions_then_edit(loaded, user, qtbot):
     # The docs don't say; removing two actions at once must leave the list and
     # the actions it stands for in step. The three actions are synthetic.

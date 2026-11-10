@@ -834,7 +834,6 @@ class ActionWindow(QDialog):
         self.listbox.moveDown(self.macros)
 
     def remove(self):
-        cparser = PuddleConfig()
         listbox = self.listbox
         rows = sorted([listbox.row(item) for item in
                        listbox.selectedItems()])
@@ -842,16 +841,11 @@ class ActionWindow(QDialog):
         for row in rows:
             filename = self.macros[row].filename
             os.rename(filename, filename + '.deleted')
-        self.listbox.removeSelected(self.macros)
+        for row in reversed(rows):
+            listbox.takeItem(row)
 
-        macros = {}
-        for i, key in enumerate(self.macros):
-            macros[i] = self.macros[key]
-
-        macros = self.macros
-
-        self.macros = dict((i, macros[k]) for i, k in
-                           enumerate(sorted(macros)))
+        self.macros = dict(enumerate(m for row, m in sorted(self.macros.items())
+                                     if row not in rows))
 
     def enableListButtons(self, val):
         if val == -1:
