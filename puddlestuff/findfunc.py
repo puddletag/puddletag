@@ -686,8 +686,8 @@ def runQuickAction(funcs, audio, state, tag):
 
 
 def save_macro(filename, name, funcs):
-    f = open(filename, 'w')
-    f.close()
+    with open(filename, 'w') as f:
+        f.write('{}')
     cparser = PuddleConfig(filename)
     cparser.set('info', 'name', name)
     set_value = lambda i, key, value: cparser.set('Func%d' % i, key, value)

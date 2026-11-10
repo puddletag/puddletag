@@ -1012,7 +1012,6 @@ def test_functions_window_says_when_a_function_has_no_preview(loaded, user, qtbo
     user.activate()
 
 
-@pytest.mark.xfail(strict=True, reason='Saving a new action prints "Error parsing config file"')
 def test_add_action_prints_no_parse_error(loaded, user, qtbot, dialogs, capsys):
     # Synthetic: the docs are silent on the program's console output.
     window = open_actions(user, qtbot)
