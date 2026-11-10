@@ -756,7 +756,8 @@ Match &Case, check"""
     if not regex:
         return text
 
-    if m_text is None:
+    multiple = m_text is not None
+    if not multiple:
         m_text = [text]
 
     if not check_truth(matchcase):
@@ -784,7 +785,14 @@ Match &Case, check"""
         except re.error as e:
             raise findfunc.FuncError(str(e))
 
-    return "\\".join(replace_matches(z) for z in m_text)
+    if not multiple:
+        return replace_matches(text)
+    # Values that became equal merge, as in Replace.
+    values = []
+    for value in map(replace_matches, m_text):
+        if value not in values:
+            values.append(value)
+    return values
 
 
 replace_regex = replaceWithReg

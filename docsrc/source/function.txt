@@ -300,7 +300,7 @@ Arguments
 Description
 ^^^^^^^^^^^
 
-Matches a regular expression. Groups can then be retrieved using $group_number (counting starts from one) eg $2. $0 is the whole match, and so is $1 when the expression has no groups.
+Matches a regular expression. Groups can then be retrieved using $group_number (counting starts from one) eg $2. $0 is the whole match, and so is $1 when the expression has no groups. Each value of a multi-valued field is replaced on its own.
 
 Examples
 ^^^^^^^^

@@ -867,7 +867,6 @@ def test_wheel_scrolls_a_wide_preview_sideways(mainwin, make_audio, tmp_path, qt
     ('B', 'C', ['A', 'C']),
     ('zzz', '', ['A', 'B']),
 ], ids=['values become equal', 'match', 'no match'])
-@pytest.mark.xfail(strict=True, reason='Replace with RegExp joins a multi-valued field into one value (#642)')
 def test_replace_with_regexp_keeps_multiple_values(mainwin, make_audio, tmp_path, qtbot, user,
                                                     regexp, replacement, expected):
     path = make_audio('01.mp3', tmp_path / 'multi', artist=['A', 'B'], title='title 1')
