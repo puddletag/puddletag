@@ -362,7 +362,7 @@ class FunctionDialog(QWidget):
                 if self.func.function in functions.no_preview:
                     self.updateExample.emit(
                         translate('Functions Dialog',
-                                  'No preview for is shown for this function.'))
+                                  'No preview is shown for this function.'))
                     return
                 fields = findfunc.parse_field_list(self.func.tag, audio,
                                                    self._selectedFields)
@@ -373,10 +373,7 @@ class FunctionDialog(QWidget):
                 val = apply_actions([self.func], audio, state, fields)
             except findfunc.ParseError as e:
                 val = '<b>%s</b>' % (e.message)
-            if val is not None:
-                self.updateExample.emit(val)
-            else:
-                self.updateExample.emit(translate('Functions Dialog', '<b>No change</b>'))
+            self.updateExample.emit(val)
 
     def _sanitize(self, ctype, value):
         if ctype in ['combo', 'text']:
@@ -573,10 +570,7 @@ class CreateFunction(QDialog):
         cparser.set('functions', 'last_used', funcname)
 
     def updateExample(self, text):
-        if not text:
-            self.exlabel.setText('')
-        else:
-            self.exlabel.setText(displaytags(text))
+        self.exlabel.setText(displaytags(text))
 
 
 class CreateAction(QDialog):

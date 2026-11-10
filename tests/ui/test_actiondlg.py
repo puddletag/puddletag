@@ -981,7 +981,6 @@ def test_escape_keeps_the_window_size(loaded, user, qtbot, open_window):
     leave(user, qtbot, window, click_cancel(user))
 
 
-@pytest.mark.xfail(strict=True, reason='The Functions window shows an empty preview when nothing changes')
 def test_functions_preview_no_change(loaded, user, qtbot):
     # Synthetic: the docs are silent on the preview of a function that changes
     # nothing; Edit Action shows "No change." for it. The files have no genre.
@@ -1001,7 +1000,6 @@ def test_functions_preview_no_change(loaded, user, qtbot):
     assert in_table(table) == [tags(1), tags(2)]
 
 
-@pytest.mark.xfail(strict=True, reason='The message has a stray "for"')
 def test_functions_window_says_when_a_function_has_no_preview(loaded, user, qtbot):
     # function.txt:8 lists Autonumbering. Synthetic: the docs are silent on the
     # preview of a function that can't show one.
