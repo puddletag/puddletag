@@ -52,11 +52,33 @@ def test_tag_lists_every_tag(make_audio, kind, tags):
 @pytest.mark.parametrize('kind, tag, values', [
     ('mp3', 'APEv2', {'title': ['APE title'], 'artist': ['APE artist'], 'album': ['APE album']}),
     ('mp3', 'ID3v1.1', {'title': ['ID3 title'], 'artist': ['ID3 artist']}),
+    ('mp3', 'ID3v2.4', {'title': ['ID3 title'], 'artist': ['ID3 artist']}),
     ('flac', 'ID3v2.4', {'title': ['ID3 title'], 'artist': ['ID3 artist', 'ID3 other'], 'album': ['ID3 album']}),
-], ids=['mp3-APEv2', 'mp3-ID3v1.1', 'flac-ID3v2.4'])
+], ids=['mp3-APEv2', 'mp3-ID3v1.1', 'mp3-ID3v2.4', 'flac-ID3v2.4'])
 def test_stored_tags(make_audio, kind, tag, values):
     # tags.txt and id3.txt name the fields: TIT2 is title, and so on.
     assert dict(tag_versions.tag_values(str(FILES[kind](make_audio)), tag)) == values
+
+
+def test_remove_tag_leaves_the_apev2_tag(make_audio):
+    # menus.txt, Remove Tag: "For MP3, AIFF, DSF and DSDIFF files those are
+    # the ID3 tags (ID3v2 and ID3v1); an APEv2 tag in an MP3 stays".
+    path = mp3_with_apev2(make_audio)
+    audioinfo.Tag(str(path)).delete()
+    assert tag_versions.tags_in_file(str(path)) == ['APEv2']
+    assert dict(tag_versions.tag_values(str(path), 'APEv2')) == {
+        'album': ['APE album'], 'artist': ['APE artist'], 'title': ['APE title']}
+    assert audioinfo.Tag(str(path))['__tag'] == 'APEv2'
+
+
+def test_broken_id3v2_header(make_audio):
+    # tags.txt: "Comma-Separated list of tags found in file". Synthetic: an
+    # ID3v2.4 header whose size isn't synchsafe is still listed, and has no values.
+    path = make_audio('song.mp3', title='Song')
+    data = path.read_bytes()
+    path.write_bytes(data[:3] + b'\x04\x00\xff\xff\xff\xff' + data[9:])
+    assert tag_versions.tags_in_file(str(path)) == ['ID3v2.4']
+    assert tag_versions.tag_values(str(path), 'ID3v2.4') is None
 
 
 def update_from_tag(path, fields, tag_type):

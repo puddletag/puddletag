@@ -19,6 +19,14 @@ def test_tags_in_file_small_file(tmp_path, tail, tags):
     assert tag_versions.tags_in_file(str(fn)) == tags
 
 
+def test_tags_in_file_small_file_with_id3v2_and_apev2(tmp_path):
+    # Shorter than the 160 bytes read from its end: both tags are still found
+    # (synthetic: an ID3v2.4 header, padding and an APEv2 footer marker).
+    fn = tmp_path / "short.mp3"
+    fn.write_bytes(b"ID3\x04\x00" + b"\0" * 50 + b"APETAGEX")
+    assert tag_versions.tags_in_file(str(fn)) == ["ID3v2.4", "APEv2"]
+
+
 def test_tags_in_file_id3v1_only(tmp_path):
     fn = str(tmp_path / "v1.mp3")
     with open(fn, "wb") as f:

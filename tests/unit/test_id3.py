@@ -464,3 +464,100 @@ def test_remove_tag_removes_unlisted_frames(make_audio, ext):
     add_unlisted_frames(path)
     audioinfo.Tag(str(path)).delete()
     assert not id3_frames(path)
+
+
+def add_frames(path, *frames):
+    """Frames as other programs write them, added with mutagen."""
+    audio = mutagen.File(path)
+    for frame in frames:
+        audio.tags.add(frame)
+    audio.save()
+
+
+def test_paired_frame_item_without_a_role(id3_file):
+    # id3.txt, Paired Frames: "Items in a pair are separated with a colon (:),
+    # with pairs separated by a semi-colon(;)". A name with no role keeps an
+    # empty one. Synthetic names.
+    frames, tag = save(id3_file, {'involvedpeople': ['Bob;Ann:Piano']})
+    assert frames['TIPL'].people == [['Bob', ''], ['Ann', 'Piano']]
+    assert tag['involvedpeople'] == ['Bob:;Ann:Piano']
+
+
+@pytest.mark.parametrize('ext', ID3_FORMATS)
+@pytest.mark.parametrize('field, value', [
+    # id3.txt: PCNT "stores the number of times the file has been played".
+    ('playcount', 'abc'),
+    # POPM: "an email, rating and playcount separated by a colon".
+    ('popularimeter', 'a@b:x:1'),
+    # RVA2: "Values are of the forme channel:gain:peak". Synthetic values.
+    ('rgain:track', 'x'),
+])
+def test_values_that_are_not_saved(make_audio, ext, field, value):
+    path = make_audio('song.' + ext, title='Song')
+    frames, tag = save(path, {field: [value]})
+    assert sorted(frames.keys()) == ['TIT2']
+    assert field not in tag
+
+
+@pytest.mark.parametrize('ext', ID3_FORMATS)
+def test_bad_value_keeps_the_frame(make_audio, ext):
+    # id3.txt: POPM "an email, rating and playcount separated by a colon";
+    # RVA2 "Values are of the forme channel:gain:peak". A value that isn't
+    # in that form changes nothing. Synthetic frames and values.
+    path = make_audio('song.' + ext, title='Song')
+    add_frames(path, mutagen.id3.POPM(email='a@b', rating=5, count=2),
+               mutagen.id3.RVA2(desc='track', channel=1, gain=-1.0, peak=0.5))
+    frames, tag = save(path, {'popularimeter': ['zzz'], 'rgain:track': ['y']})
+    assert [(p.email, p.rating, p.count) for p in frames.getall('POPM')] == [('a@b', 5, 2)]
+    assert (frames['RVA2:track'].channel, frames['RVA2:track'].gain) == (1, -1.0)
+
+
+@pytest.mark.parametrize('ext', ID3_FORMATS)
+def test_editing_existing_frames(make_audio, ext):
+    # id3.txt: POPM "an email, rating and playcount separated by a colon";
+    # UFID "Only values that can be decoded to UTF-8 will be editable"; RVA2
+    # "Values are of the forme channel:gain:peak"; USLT
+    # "Language|Description|Lyrics". Frames written by another program, then
+    # edited. Synthetic values.
+    path = make_audio('song.' + ext, title='Song')
+    add_frames(path, mutagen.id3.POPM(email='a@b', rating=5, count=2),
+               mutagen.id3.UFID(owner='x.org', data=b'old'),
+               mutagen.id3.RVA2(desc='track', channel=1, gain=-1.0, peak=0.5),
+               mutagen.id3.USLT(encoding=3, lang='eng', desc='d', text='old'))
+    frames, tag = save(path, {'popularimeter': ['c@d:6:3', 'e@f:7:4'], 'rgain:track': ['2:-3:0.25'],
+                              'ufid:x.org': ['new'], 'unsyncedlyrics': ['fra|x|neu']})
+    assert sorted((p.email, p.rating, p.count) for p in frames.getall('POPM')) == [('c@d', 6, 3), ('e@f', 7, 4)]
+    assert frames['UFID:x.org'].data == b'new'
+    rva2 = frames['RVA2:track']
+    assert (rva2.channel, rva2.gain) == (2, -3.0)
+    assert rva2.peak == pytest.approx(0.25)
+    assert [(u.lang, u.desc, u.text) for u in frames.getall('USLT')] == [('fra', 'x', 'neu')]
+    assert tag['popularimeter'] == ['c@d:6:3', 'e@f:7:4']
+    assert tag['ufid:x.org'] == ['new']
+    assert tag['unsyncedlyrics'] == ['fra|x|neu']
+
+
+def test_lyrics_without_text(id3_file):
+    # id3.txt: USLT "Language|Description|Lyrics"; the lyrics may be empty.
+    # Synthetic values.
+    frames, tag = save(id3_file, {'unsyncedlyrics': ['eng|d|']})
+    assert [(u.lang, u.desc, u.text) for u in frames.getall('USLT')] == [('eng', 'd', '')]
+    assert tag['unsyncedlyrics'] == ['eng|d|']
+
+
+def test_cover_without_a_mime_type(id3_file):
+    # tags.txt, Cover Art: "Cover art can be accessed using the __image
+    # field". Synthetic image data: a PNG's signature.
+    png = b'\x89PNG\r\n\x1a\n' + b'\0' * 8
+    frames, tag = save(id3_file, {'__image': [{'data': png}]})
+    assert [(a.mime, a.type, a.desc) for a in frames.getall('APIC')] == [
+        ('image/png', PictureType.COVER_FRONT, '')]
+
+
+@pytest.mark.parametrize('ext', ID3_FORMATS)
+def test_total_needs_a_track_total(make_audio, ext):
+    # tags.txt, __total: "If the track field is of track/numtracks format,
+    # returns numtracks." Synthetic tracks.
+    with_total = audioinfo.Tag(str(make_audio('with.' + ext, title='Song', tracknumber='3/12')))
+    without = audioinfo.Tag(str(make_audio('without.' + ext, title='Song')))
+    assert ('__total' in with_total, with_total['__total'], '__total' in without) == (True, '12', False)
