@@ -708,3 +708,27 @@ def test_save_after_a_rename(make_audio, ext):
     tag.update({'title': ['After']})
     tag.save(v2=4)
     assert (audioinfo.Tag(str(new))['title'], path.exists()) == (['After'], False)
+
+
+@pytest.mark.xfail(strict=True, reason="a GRP1 frame isn't shown as the itunesgrouping field")
+@pytest.mark.parametrize('ext', ID3_FORMATS)
+def test_itunes_grouping_is_shown_and_kept(make_audio, ext):
+    # id3.txt's table: "itunesgrouping  GRP1". iTunes writes its grouping to
+    # GRP1 (#1056). Synthetic value.
+    path = make_audio('song.' + ext, title='Song')
+    add_frames(path, GRP1(encoding=Encoding.UTF8, text=['Group']))
+    assert audioinfo.Tag(str(path))['itunesgrouping'] == ['Group']
+    frames, tag = save(path, {'title': ['After']})
+    assert (frames['GRP1'].text, tag['itunesgrouping'], tag['title']) == (['Group'], ['Group'], ['After'])
+
+
+@pytest.mark.xfail(strict=True, reason="itunesgrouping is written to a TXXX frame, not GRP1")
+@pytest.mark.parametrize('ext', ID3_FORMATS)
+def test_itunes_grouping_writes_grp1_only(make_audio, ext):
+    # id3.txt's table: "grouping  TIT1" and "itunesgrouping  GRP1": each field
+    # has its own frame (#1056). Synthetic values.
+    path = make_audio('song.' + ext, title='Song')
+    frames, tag = save(path, {'itunesgrouping': ['Group']})
+    assert (frames['GRP1'].text, 'TIT1' in frames, tag['itunesgrouping']) == (['Group'], False, ['Group'])
+    frames, tag = save(path, {'grouping': ['Other']})
+    assert (frames['TIT1'].text, frames['GRP1'].text, tag['grouping']) == (['Other'], ['Group'], ['Other'])
