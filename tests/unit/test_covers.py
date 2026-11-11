@@ -461,7 +461,6 @@ def test_same_picture_exported_once(make_audio):
     assert pictures(paths[0].parent) == {'folder.png': FRONT['data'], 'folder_1.png': EXAMPLE[1]['data']}
 
 
-@pytest.mark.xfail(strict=True, raises=TypeError, reason='an empty pattern raises TypeError')
 def test_artwork_export_with_an_empty_pattern(make_audio):
     # "Saves all artwork found in an audio file using the desired
     # **Pattern**." An empty pattern names no file, so nothing is saved and
@@ -539,7 +538,6 @@ def test_file_matched_twice_loaded_once(make_audio):
     assert [cover['data'] for cover in changes['__image']] == [FRONT['data']]
 
 
-@pytest.mark.xfail(strict=True, reason="every picture that isn't PNG is saved as .jpg")
 def test_artwork_exported_with_its_own_extension(make_audio):
     # "Saves all artwork found in an audio file using the desired
     # **Pattern**. Extensions are added automatically." A GIF is saved as a

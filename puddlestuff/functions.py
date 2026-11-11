@@ -882,15 +882,18 @@ def save_artwork(m_tags, pattern, r_tags, state=None, write=True):
             if not mime:
                 continue
 
-        extension = '.png' if 'png' in mime.lower() else '.jpg'
+        extension = '.jpg'
+        for form in 'gif', 'png':
+            if form in mime.lower():
+                extension = '.' + form
 
         new_state['img_mime'] = mime
         new_state['img_counter'] = str(i + 1)
         fn = tag_to_filename(pattern, m_tags, r_tags,
-                             False, new_state) + extension
-
+                             False, new_state)
         if not fn:
             continue
+        fn += extension
 
         if data not in state['artwork_data']:
             state['artwork_data'].add(data)
