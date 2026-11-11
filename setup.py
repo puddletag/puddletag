@@ -47,7 +47,7 @@ setup(
                  'Topic :: Multimedia :: Sound/Audio :: Editors',
                  ],
     scripts=['puddletag'],
-    python_requires=">=3.13",
+    python_requires=">=3.14",
     install_requires=_runtime_dependencies(),
     data_files=[('share/pixmaps/', ['puddletag.png', ]),
                 ('share/applications/', ['puddletag.desktop', ]),
