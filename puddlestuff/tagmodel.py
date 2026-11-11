@@ -305,6 +305,7 @@ def model_tag(model, base=audioinfo.AbstractTag):
             else:
                 return
 
+            typed = self.preview.get(changed_key)
             # clear all file fields from the preview
             for k in FILETAGS:
                 if k in self.preview:
@@ -313,6 +314,9 @@ def model_tag(model, base=audioinfo.AbstractTag):
             for k, v in get_filename_tags(filepath).items():
                 if self[k] != v:
                     self.preview[k] = v
+            # a value set back to the file's own stays, to be shown in italics
+            if typed is not None and changed_key not in self.preview:
+                self.preview[changed_key] = typed
 
         def update(self, dictionary=None):
             if not dictionary:

@@ -522,7 +522,6 @@ def test_undo_of_a_field_the_file_lacks(mainwin, user, loaded, qtbot):
     assert 'comment' not in in_file(paths[0])
 
 
-@pytest.mark.xfail(strict=True, reason="a file name set back shows plain, not in italics")
 def test_filename_set_back(mainwin, user, loaded, qtbot):
     # "Values that you've changed, but are the same as the underlying value
     # will be shown in italics." (menus.txt)
