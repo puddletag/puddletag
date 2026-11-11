@@ -778,7 +778,6 @@ def test_header_sorts_numbers_by_value(user, mainwin, make_audio, tmp_path, qtbo
     untouched(before)
 
 
-@pytest.mark.xfail(strict=True, reason='Length sorts as text: 01:04:17 before 01:18 (#465)')
 def test_header_sorts_length_by_time(user, mainwin, make_audio, tmp_path, qtbot):
     # "The length of the file in MM:SS format, or HH:MM:SS from an hour on,
     # e.g. 03:25 or 01:02:05." (tags.txt) The docs don't say how it sorts;
@@ -797,7 +796,6 @@ def test_header_sorts_length_by_time(user, mainwin, make_audio, tmp_path, qtbot)
     untouched(before)
 
 
-@pytest.mark.xfail(strict=True, reason='Size sorts as text: 1.26 MB before 16 KB')
 def test_header_sorts_file_size_by_bytes(user, mainwin, make_audio, tmp_path, qtbot):
     # "The file's size in human-readable format" (__file_size) and "The size
     # of the file in bytes." (__size) (tags.txt). The docs don't say how it
@@ -814,7 +812,6 @@ def test_header_sorts_file_size_by_bytes(user, mainwin, make_audio, tmp_path, qt
     untouched(before)
 
 
-@pytest.mark.xfail(strict=True, reason='sorting __frequency_num raises TypeError')
 def test_header_sorts_a_number_column(user, mainwin, make_audio, tmp_path, qtbot):
     # "The sample rate of the file in kHz, as a number: 44.1 for '44.1 kHz'."
     # (tags.txt, __frequency_num) The docs don't say how it sorts; numbers

@@ -38,6 +38,18 @@ from .audio_filter import parse as filter_audio
 
 the_break = False
 
+# File-info fields shown in mixed units, and the field holding the value they show.
+_SORT_FIELDS = {'__file_size': '__size', '__length': '__length_seconds'}
+
+
+def sort_key(field):
+    field = _SORT_FIELDS.get(field, field)
+
+    def key(audio):
+        value = audio.get(field, '')
+        return natural_sort_key(value if isinstance(value, (list, str)) else str(value))
+    return key
+
 status = {}
 
 LIBRARY = '__library'
@@ -650,7 +662,7 @@ class TagModel(QAbstractTableModel):
             self._filtered = []
             if hidden:
                 for field in self.sortFields:
-                    self.taginfo.sort(key=lambda a: natural_sort_key(a.get(field, '')), reverse=self.reverseSort)
+                    self.taginfo.sort(key=sort_key(field), reverse=self.reverseSort)
             taginfo = self.taginfo
             if not pattern:
                 return
@@ -866,8 +878,7 @@ class TagModel(QAbstractTableModel):
 
         if append:
             for field in self.sortFields:
-                getter = lambda audio: audio.get(field, '')
-                taginfo.sort(key=lambda a: natural_sort_key(a.get(field, '')), reverse=self.reverseSort)
+                taginfo.sort(key=sort_key(field), reverse=self.reverseSort)
 
             loaded_filenames = set(z.filepath for z in self.taginfo + self._filtered)
             new_tags = [z for z in taginfo if z.filepath not in loaded_filenames]
@@ -1193,12 +1204,12 @@ class TagModel(QAbstractTableModel):
         with self.reset_context():
             if files and rows:
                 for field in fields:
-                    files.sort(key=lambda a: natural_sort_key(a.get(field, '')), reverse=reverse)
+                    files.sort(key=sort_key(field), reverse=reverse)
                 for index, row in enumerate(rows):
                     self.taginfo[row] = files[index]
             else:
                 for field in fields:
-                    self.taginfo.sort(key=lambda a: natural_sort_key(a.get(field, '')), reverse=reverse)
+                    self.taginfo.sort(key=sort_key(field), reverse=reverse)
 
             self.reverseSort = reverse
             self.sortFields = fields
