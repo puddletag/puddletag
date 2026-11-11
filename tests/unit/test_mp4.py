@@ -494,10 +494,8 @@ def test_total_is_there_with_a_track(make_audio):
 
 
 @pytest.mark.parametrize('field, total, atom', [
-    pytest.param('totaltracks', '12', 'trkn', marks=pytest.mark.xfail(
-        strict=True, reason='a total alone shows track 0'), id='tracks'),
-    pytest.param('totaldiscs', '2', 'disk', marks=pytest.mark.xfail(
-        strict=True, reason='a total alone shows disc 0'), id='discs'),
+    pytest.param('totaltracks', '12', 'trkn', id='tracks'),
+    pytest.param('totaldiscs', '2', 'disk', id='discs'),
 ])
 def test_total_alone_shows_no_track(make_audio, field, total, atom):
     # "track and totaltracks share the trkn atom ... each a whole number":
@@ -508,7 +506,6 @@ def test_total_alone_shows_no_track(make_audio, field, total, atom):
     assert (number in tag, tag[field]) == (False, [total])
 
 
-@pytest.mark.xfail(strict=True, reason='a total of 0 is shown')
 def test_number_without_a_total_shows_no_total(make_audio):
     # "track and totaltracks share the trkn atom ... each a whole number":
     # MP4 stores a missing total as 0, and a save keeps it. Synthetic values.

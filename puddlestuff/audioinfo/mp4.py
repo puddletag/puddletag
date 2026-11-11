@@ -400,16 +400,16 @@ class Tag(util.MockTag):
             # I want 'trkn', to split into track and totaltracks, like Mp3tag.
             if 'trkn' in keys:
                 tags['track'] = convert('track',
-                                        [z[0] for z in audio['trkn']])
+                                        [z[0] for z in audio['trkn'] if z[0]])
                 tags['totaltracks'] = convert('totaltracks',
-                                              [z[1] for z in audio['trkn']])
+                                              [z[1] for z in audio['trkn'] if z[1]])
                 keys.remove('trkn')
 
             # Same as above
             if 'disk' in keys:
-                tags['discnumber'] = convert('discnumber', [z[0] for z in audio['disk']])
+                tags['discnumber'] = convert('discnumber', [z[0] for z in audio['disk'] if z[0]])
                 tags['totaldiscs'] = convert('totaldiscs',
-                                             [z[1] for z in audio['disk']])
+                                             [z[1] for z in audio['disk'] if z[1]])
                 keys.remove('disk')
 
             for key in keys:
