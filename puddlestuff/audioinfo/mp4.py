@@ -1,6 +1,6 @@
 from copy import deepcopy
 
-from mutagen.mp4 import MP4, MP4Cover
+from mutagen.mp4 import AtomDataType, MP4, MP4Cover
 
 from . import tag_versions, util
 from .util import (usertags, isempty,
@@ -60,6 +60,9 @@ TAGS = {
     'xid ': 'itunesxid',
     '\xa9pub': 'itunespublisher',
 }
+
+# The data types of a freeform atom that holds text.
+TEXT_FORMATS = (AtomDataType.IMPLICIT, AtomDataType.UTF8)
 
 REVTAGS = dict([reversed(z) for z in TAGS.items()])
 
@@ -415,6 +418,9 @@ class Tag(util.MockTag):
                 else:
                     field = key[key.find(':', key.find(':') + 1) + 1:]
 
+                    if any(getattr(v, 'dataformat', AtomDataType.UTF8) not in TEXT_FORMATS for v in audio[key]):
+                        self.__errors.add(key)  # a number or image: kept as it is, not shown
+                        continue
                     try:
                         field_value = []
                         for v in audio[key]:

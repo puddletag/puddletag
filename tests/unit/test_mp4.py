@@ -438,7 +438,6 @@ def test_number_field_given_text_keeps_its_value(make_audio, field, first, bad, 
     assert (atoms[atom], tag[field]) == (stored, shown)
 
 
-@pytest.mark.xfail(strict=True, reason='a freeform atom holding a number is shown and saved as text')
 def test_number_freeform_atom(make_audio):
     # news.txt: "There was a pretty nasty bug where puddletag would remove any
     # unsupported tags"; tags.txt: "Any MP4 atoms not in this list will be
