@@ -561,3 +561,57 @@ def test_total_needs_a_track_total(make_audio, ext):
     with_total = audioinfo.Tag(str(make_audio('with.' + ext, title='Song', tracknumber='3/12')))
     without = audioinfo.Tag(str(make_audio('without.' + ext, title='Song')))
     assert ('__total' in with_total, with_total['__total'], '__total' in without) == (True, '12', False)
+
+
+@pytest.mark.xfail(strict=True, raises=TypeError, reason='the field raises TypeError instead of becoming a TXXX')
+def test_lyrics_field_named_with_a_language(id3_file):
+    # "Any unknown field is assumed to be a user-defined field. Therefore
+    # writing to the field 'mytag' will write to the ID3 tag frame
+    # TXXX:mytag." id3.txt names only the field unsyncedlyrics for USLT.
+    # Synthetic value.
+    frames, tag = save(id3_file, {'unsyncedlyrics:eng': ['eng|d|t']})
+    assert (frames['TXXX:unsyncedlyrics:eng'].text, frames.getall('USLT'), tag['unsyncedlyrics:eng']) == (
+        ['eng|d|t'], [], ['eng|d|t'])
+
+
+@pytest.mark.xfail(strict=True, reason='a bar in the lyrics is lost')
+@pytest.mark.parametrize('value, text', [('eng|d|a|b', 'a|b'), ('eng|d|a|b|c', 'a|b|c')])
+def test_lyrics_keep_their_bars(id3_file, value, text):
+    # "Values should take the form Language|Description|Lyrics": whatever
+    # follows the second bar is the lyrics. Synthetic values.
+    frames, tag = save(id3_file, {'unsyncedlyrics': [value]})
+    assert ([(u.lang, u.desc, u.text) for u in frames.getall('USLT')], tag['unsyncedlyrics']) == (
+        [('eng', 'd', text)], [f'eng|d|{text}'])
+
+
+@pytest.mark.xfail(strict=True, reason='a save deletes the UFID puddletag does not show')
+@pytest.mark.parametrize('ext', ID3_FORMATS)
+def test_undecodable_ufid_is_kept(make_audio, ext):
+    # "Only values that can be decoded to UTF-8 will be editable". The
+    # maintainer decided (2026-11-10) that a save keeps the frames
+    # puddletag doesn't show. Synthetic frame.
+    path = make_audio('song.' + ext, title='Song')
+    add_frames(path, mutagen.id3.UFID(owner='example.org', data=b'\xff\xfe\x00'))
+    frames, tag = save(path, {'title': ['After']})
+    assert (frames['UFID:example.org'].data, 'ufid:example.org' in tag) == (b'\xff\xfe\x00', False)
+
+
+@pytest.mark.xfail(strict=True, reason='a save deletes the comment puddletag does not show')
+@pytest.mark.parametrize('ext', ID3_FORMATS)
+def test_comments_in_two_languages_are_kept(make_audio, ext):
+    # "storing different comment frames requires a different description for
+    # each frame". The maintainer decided (2026-11-10) that a save keeps the
+    # frames puddletag doesn't show. Synthetic frames.
+    path = make_audio('song.' + ext, title='Song')
+    add_frames(path, mutagen.id3.COMM(encoding=3, lang='eng', desc='x', text='English'),
+               mutagen.id3.COMM(encoding=3, lang='fra', desc='x', text='French'))
+    frames, tag = save(path, {'title': ['After']})
+    assert sorted((c.lang, c.text) for c in frames.getall('COMM:x')) == [('eng', ['English']), ('fra', ['French'])]
+
+
+@pytest.mark.xfail(strict=True, reason='the value is a string, not a list')
+def test_replaygain_value_is_a_list(id3_file):
+    # A field maps to a list of strings (audioinfo's contract). Synthetic
+    # value.
+    frames, tag = save(id3_file, {'rgain:track': ['1:-6.5:0.5']})
+    assert isinstance(tag['rgain:track'], list)
