@@ -115,6 +115,26 @@ def test_deleted_file(user, loaded, qtbot, dialogs):
     assert not user.action('&Undo').isEnabled()
 
 
+def test_file_no_longer_loaded(user, loaded, qtbot, dialogs, tmp_path):
+    # "the undo history is cleared when a new folder is imported using Open
+    # Folder, by Refresh and by Unload Everything (but not by Add Folder)"
+    # (menus.txt). Skipping a file that is gone: the docs don't say; this is
+    # what puddletag does. The file is deleted behind its back, as a file
+    # manager would (synthetic).
+    table, paths = loaded
+    edit_all(user, qtbot, 'Same', paths)
+    paths[1].unlink()
+    dialogs.answer('QFileDialog.getExistingDirectory', str(tmp_path))
+    user.click_menu('&Add Folder')
+    qtbot.waitUntil(lambda: table.model().rowCount() == 2)
+    user.activate()
+    user.click_toolbar('&Undo')
+    assert [in_file(p)['title'] for p in (paths[0], paths[2])] == [['Title 1'], ['Title 3']]
+    assert titles(table) == {str(paths[0]): ['Title 1'], str(paths[2]): ['Title 3']}
+    assert [name for name, args, kwargs in dialogs.calls] == ['QFileDialog.getExistingDirectory']
+    assert not user.action('&Undo').isEnabled()
+
+
 def test_unload_everything_clears_the_history(user, loaded, qtbot):
     # "the undo history is cleared when a new folder is imported using Open
     # Folder, by Refresh and by Unload Everything" (menus.txt)

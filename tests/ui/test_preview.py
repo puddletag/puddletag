@@ -408,3 +408,150 @@ def test_one_undo_takes_back_write_previews(mainwin, user, loaded, qtbot):
     user.press(Key.Key_Z, Ctrl)
     assert titles_in_files(paths) == [['Title 1'], ['Title 2'], ['Title 3']]
     assert not undo_enabled(user)
+
+
+def on_disk(tmp_path):
+    return sorted(str(p.relative_to(tmp_path)) for p in tmp_path.rglob('*'))
+
+
+ORIGINAL = ['music', 'music/01.mp3', 'music/02.mp3', 'music/03.mp3']
+
+
+def test_filename_edit_is_shown_not_written(mainwin, user, loaded, qtbot, tmp_path):
+    # "When enabled any changes you make will not get written. Instead any
+    # values you change that differ from the original will be shown as
+    # emboldened text in the File-View" (menus.txt), also for the Filename
+    # cell, which renames the file when Preview Mode is off.
+    table, paths = loaded
+    toggle(user)
+    edit(user, qtbot, 0, '__filename', 'new.mp3')
+    assert shown(user, 0, '__filename') == ('new.mp3', 'bold')
+    assert on_disk(tmp_path) == ORIGINAL
+    assert undo_enabled(user)
+
+
+# "If preview mode has been enabled and some changes were made, they'll get
+# written to the files, and Preview Mode is disabled. A single Undo then
+# undoes the whole write." (menus.txt) "Editing a Dirname cell renames the
+# file's folder, and every file in it moves along. Editing an Extension cell
+# renames the file with that extension" (tut3.txt)
+
+RENAMES = {
+    'Filename': ('__filename', 'new.mp3', [], [('__filename', 'new.mp3')],
+                 ['music', 'music/02.mp3', 'music/03.mp3', 'music/new.mp3']),
+    'Extension': ('__ext', 'ogg', [('Extension', '__ext')], [('__filename', '01.ogg'), ('__ext', 'ogg')],
+                  ['music', 'music/01.ogg', 'music/02.mp3', 'music/03.mp3']),
+    'Dirname': ('__dirname', 'Other', [('Dirname', '__dirname')], [('__dirname', 'Other'), ('__dirpath', 'Other')],
+                ['Other', 'Other/01.mp3', 'Other/02.mp3', 'Other/03.mp3']),
+}
+
+
+@pytest.mark.parametrize('field, text, columns, bold, expected', RENAMES.values(), ids=RENAMES.keys())
+def test_write_previews_renames(mainwin, user, loaded, qtbot, tmp_path, field, text, columns, bold, expected):
+    table, paths = loaded
+    table.setHeaderTags(table.model().headerdata + columns)
+    toggle(user)
+    edit(user, qtbot, 0, field, text)
+    new_name = {'__filename': 'new.mp3', '__ext': '01.ogg', '__dirname': '01.mp3'}[field]
+    new_folder = tmp_path / ('Other' if field == '__dirname' else 'music')
+    # The folder's full path is shown for Dirname
+    bold = [(name, str(tmp_path / value) if name == '__dirpath' else value) for name, value in bold]
+    assert [shown(user, 0, name) for name, value in bold] == [(value, 'bold') for name, value in bold]
+    assert on_disk(tmp_path) == ORIGINAL
+    user.press(Key.Key_W, Ctrl)
+    qtbot.waitUntil(lambda: on_disk(tmp_path) == expected)
+    user.activate()
+    assert not preview_mode(mainwin)
+    rows = [audio.filepath for audio in table.model().taginfo]
+    if field == '__dirname':
+        assert rows == [str(new_folder / name) for name in ('01.mp3', '02.mp3', '03.mp3')]
+    else:
+        assert rows[0] == str(new_folder / new_name)
+    user.click_toolbar('&Undo')
+    qtbot.waitUntil(lambda: on_disk(tmp_path) == ORIGINAL)
+    assert [audio.filepath for audio in table.model().taginfo] == [str(p) for p in paths]
+    assert not undo_enabled(user)
+
+
+def test_dirpath_typing_dropped_in_preview_mode(mainwin, user, loaded, qtbot):
+    # "Some cells show file information that can't be changed, such as
+    # Length, Bitrate and Dirpath: what you type in them is dropped."
+    table, paths = loaded
+    toggle(user)
+    user.double_click_cell(user.cell(0, '__dirpath'))
+    QApplication.focusWidget().selectAll()
+    user.type('/elsewhere')
+    user.press(Key.Key_Return)
+    qtbot.waitUntil(lambda: table.indexWidget(user.cell(1, '__dirpath')) is not None)
+    user.press(Key.Key_Escape)
+    assert shown(user, 0, '__dirpath') == (str(paths[0].parent), 'plain')
+    assert table.model().taginfo[0].preview == {}
+    assert not undo_enabled(user)
+
+
+def test_tag_to_file_in_preview_mode(mainwin, user, loaded, qtbot, tmp_path):
+    # "When enabled any changes you make will not get written. Instead any
+    # values you change that differ from the original will be shown as
+    # emboldened text in the File-View" (menus.txt): the new file name is
+    # one of those changes.
+    table, paths = loaded
+    toggle(user)
+    user.click_cell(user.cell(0, 'title'))
+    user.press(Key.Key_F8)
+    user.type('%title%')
+    user.press(Key.Key_F8)
+    user.press(Key.Key_F, Ctrl)
+    qtbot.waitUntil(lambda: shown(user, 0, '__filename')[0] == 'Title 1.mp3')
+    assert shown(user, 0, '__filename') == ('Title 1.mp3', 'bold')
+    assert on_disk(tmp_path) == ORIGINAL
+    user.press(Key.Key_W, Ctrl)
+    qtbot.waitUntil(lambda: 'music/Title 1.mp3' in on_disk(tmp_path))
+
+
+def test_undo_of_a_field_the_file_lacks(mainwin, user, loaded, qtbot):
+    # "In Preview Mode, Undo undoes the changes made to the previews, one at
+    # a time." No file has a comment.
+    table, paths = loaded
+    toggle(user)
+    edit(user, qtbot, 0, 'comment', 'Note')
+    assert shown(user, 0, 'comment') == ('Note', 'bold')
+    user.activate()
+    user.press(Key.Key_Z, Ctrl)
+    assert table.model().data(user.cell(0, 'comment')) is None
+    assert table.model().taginfo[0].preview == {}
+    assert 'comment' not in in_file(paths[0])
+
+
+@pytest.mark.xfail(strict=True, reason="a file name set back shows plain, not in italics")
+def test_filename_set_back(mainwin, user, loaded, qtbot):
+    # "Values that you've changed, but are the same as the underlying value
+    # will be shown in italics." (menus.txt)
+    table, paths = loaded
+    toggle(user)
+    edit(user, qtbot, 0, '__filename', 'new.mp3')
+    user.activate()
+    table.setFocus()
+    edit(user, qtbot, 0, '__filename', '01.mp3')
+    assert shown(user, 0, '__filename') == ('01.mp3', 'italic')
+
+
+@pytest.mark.xfail(strict=True, reason="emptying a changed cell in Preview Mode brings back the file's value")
+def test_emptying_a_changed_cell_previews_the_removal(mainwin, user, loaded, qtbot):
+    # "Empty a cell to remove that field from the file." (tut3.txt) In
+    # Preview Mode the removal is shown in bold until it is written
+    # (menus.txt).
+    table, paths = loaded
+    toggle(user)
+    edit(user, qtbot, 1, 'title', 'New')
+    user.activate()
+    table.setFocus()
+    user.double_click_cell(user.cell(1, 'title'))
+    QApplication.focusWidget().selectAll()
+    user.press(Key.Key_Delete)
+    user.press(Key.Key_Return)
+    qtbot.waitUntil(lambda: shown(user, 1, 'title')[0] in ('', 'Title 2'))
+    user.press(Key.Key_Escape)
+    assert shown(user, 1, 'title') == ('', 'bold')
+    user.activate()
+    user.press(Key.Key_W, Ctrl)
+    qtbot.waitUntil(lambda: 'title' not in in_file(paths[1]))

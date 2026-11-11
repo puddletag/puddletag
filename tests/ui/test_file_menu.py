@@ -844,6 +844,21 @@ def test_play_missing_player(loaded, mainwin, qtbot, user, tmp_path, dialogs):
     assert missing in dialogs.calls[-1][1][2]
 
 
+def test_play_player_that_cannot_run(loaded, mainwin, qtbot, user, tmp_path, dialogs):
+    # Docs-silent: a player that exists but isn't executable is reported.
+    table, paths = loaded
+    program = player(tmp_path)
+    program.chmod(0o644)
+    set_player(mainwin, qtbot, user, str(program))
+    dialogs.answer('QMessageBox.critical', QMessageBox.StandardButton.Ok)
+    user.click_cell(user.cell(0, 'title'))
+    user.press(Key.Key_P, Ctrl)
+    qtbot.waitUntil(lambda: not dialogs.unused_answers())
+    assert dialogs.calls[-1][1][2] == (
+        'An error occurred while trying to play the selected files: <b>Permission denied</b><br />'
+        f'Does the music player you defined (<b>{program}</b>) exist?')
+
+
 @pytest.mark.parametrize('run', EXIT.values(), ids=EXIT.keys())
 def test_exit(run, loaded, mainwin, qtbot, user):
     # menus.txt: "Closes puddletag."

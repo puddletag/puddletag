@@ -17,6 +17,7 @@ pytestmark = pytest.mark.ui
 
 Key = Qt.Key
 Ctrl = Qt.KeyboardModifier.ControlModifier
+Keypad = Qt.KeyboardModifier.KeypadModifier
 Shift = Qt.KeyboardModifier.ShiftModifier
 
 
@@ -189,7 +190,9 @@ def test_multiple_values(user, loaded, qtbot):
     (Key.Key_Return, Shift, 0, 'title'),
     (Key.Key_Tab, None, 1, 'album'),
     (Key.Key_Backtab, Shift, 1, 'artist'),
-], ids=['Enter', 'Shift+Enter', 'Tab', 'Shift+Tab'])
+    (Key.Key_Enter, Keypad, 2, 'title'),
+    (Key.Key_Enter, Shift | Keypad, 0, 'title'),
+], ids=['Enter', 'Shift+Enter', 'Tab', 'Shift+Tab', 'keypad Enter', 'keypad Shift+Enter'])
 def test_next_cell_opens(user, loaded, qtbot, key, modifier, row, field):
     table, paths = loaded
     edit(user, user.cell(1, 'title'), 'New')

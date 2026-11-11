@@ -431,6 +431,28 @@ def test_ctrl_shift_home_selects_to_the_first_row(user, four):
     untouched(before)
 
 
+def test_ctrl_space_toggles_the_cell_without_editing(user, loaded):
+    # The docs don't say; this is what puddletag does: Ctrl+Space toggles the
+    # current cell's selection and opens no editor.
+    table, before = loaded
+    user.click_cell(user.cell(1, 'title'))
+    user.press(Key.Key_Space, Ctrl)
+    assert QApplication.focusWidget() is table
+    assert selected_cells(table) == []
+    untouched(before)
+
+
+def test_shift_space_opens_no_editor(user, loaded):
+    # The docs don't say; this is what puddletag does: Shift+Space opens no
+    # editor and keeps the clicked cell selected.
+    table, before = loaded
+    user.click_cell(user.cell(1, 'title'))
+    user.press(Key.Key_Space, Shift)
+    assert QApplication.focusWidget() is table
+    assert selected_cells(table) == [(1, 'title')]
+    untouched(before)
+
+
 @pytest.fixture
 def music(mainwin, make_audio, tmp_path, qtbot, user):
     folder = tmp_path / 'music'
@@ -753,6 +775,57 @@ def test_header_sorts_numbers_by_value(user, mainwin, make_audio, tmp_path, qtbo
     before = stamps(paths)
     click_header(user, 'track')
     assert names(table) == ['c.mp3', 'b.mp3', 'a.mp3']
+    untouched(before)
+
+
+@pytest.mark.xfail(strict=True, reason='Length sorts as text: 01:04:17 before 01:18 (#465)')
+def test_header_sorts_length_by_time(user, mainwin, make_audio, tmp_path, qtbot):
+    # "The length of the file in MM:SS format, or HH:MM:SS from an hour on,
+    # e.g. 03:25 or 01:02:05." (tags.txt) The docs don't say how it sorts;
+    # #465: "I think it should compare as a numeric value, not a string
+    # value." So 01:18 comes before 09:59 and 01:04:17.
+    music = tmp_path / 'music'
+    paths = [make_audio(f'{name}.flac', music, seconds=seconds, title=name)
+             for name, seconds in [('a', 78), ('b', 3857), ('c', 599)]]
+    table = load(mainwin, qtbot, user, music)
+    before = stamps(paths)
+    click_header(user, '__length')
+    assert [audio['__length'] for audio in table.model().taginfo] == ['01:18', '09:59', '01:04:17']
+    assert names(table) == ['a.flac', 'c.flac', 'b.flac']
+    click_header(user, '__length')
+    assert names(table) == ['b.flac', 'c.flac', 'a.flac']
+    untouched(before)
+
+
+@pytest.mark.xfail(strict=True, reason='Size sorts as text: 1.26 MB before 16 KB')
+def test_header_sorts_file_size_by_bytes(user, mainwin, make_audio, tmp_path, qtbot):
+    # "The file's size in human-readable format" (__file_size) and "The size
+    # of the file in bytes." (__size) (tags.txt). The docs don't say how it
+    # sorts; a size column should go by bytes, so 16 KB comes before 1.26 MB.
+    music = tmp_path / 'music'
+    paths = [make_audio('a.aiff', music, seconds=15),
+             make_audio('b.aiff', music, seconds=2),
+             make_audio('c.flac', music, seconds=1)]
+    table = load(mainwin, qtbot, user, music)
+    table.setHeaderTags(table.model().headerdata + [('Size', '__file_size')])
+    before = stamps(paths)
+    click_header(user, '__file_size')
+    assert names(table) == [p.name for p in sorted(paths, key=lambda p: p.stat().st_size)]
+    untouched(before)
+
+
+@pytest.mark.xfail(strict=True, reason='sorting __frequency_num raises TypeError')
+def test_header_sorts_a_number_column(user, mainwin, make_audio, tmp_path, qtbot):
+    # "The sample rate of the file in kHz, as a number: 44.1 for '44.1 kHz'."
+    # (tags.txt, __frequency_num) The docs don't say how it sorts; numbers
+    # sort by value, so 44.1 comes before 48.0.
+    music = tmp_path / 'music'
+    paths = [make_audio('a.opus', music, title='a'), make_audio('b.mp3', music, title='b')]
+    table = load(mainwin, qtbot, user, music)
+    table.setHeaderTags(table.model().headerdata + [('Rate', '__frequency_num')])
+    before = stamps(paths)
+    click_header(user, '__frequency_num')
+    assert names(table) == ['b.mp3', 'a.opus']
     untouched(before)
 
 

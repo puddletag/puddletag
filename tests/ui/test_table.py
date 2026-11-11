@@ -10,9 +10,11 @@ from pathlib import Path
 
 import pytest
 from PyQt6.QtCore import QEvent, QMimeData, QPoint, QPointF, Qt, QTimer, QUrl
-from PyQt6.QtGui import QDragEnterEvent, QDragMoveEvent, QDropEvent, QHelpEvent
+from PyQt6.QtGui import (QDragEnterEvent, QDragMoveEvent, QDropEvent, QFontMetrics, QHelpEvent,
+                         QWheelEvent)
 from PyQt6.QtWidgets import (QApplication, QCheckBox, QLabel, QMenu, QMessageBox,
-                             QStyle, QStyleOptionButton, QStyleOptionViewItem, QToolTip)
+                             QStyle, QStyleOptionButton, QStyleOptionViewItem, QToolButton,
+                             QToolTip)
 
 from puddlestuff import audioinfo
 from puddlestuff.tagmodel import ColumnSettings
@@ -285,6 +287,23 @@ def test_tooltip_in_preview_mode_with_the_stored_value(mainwin, qtbot, user, mus
     assert audioinfo.Tag(str(paths[0]))['title'] == ['one']
 
 
+# preferences.txt: "When in Preview Mode the tooltip will show both the
+# Preview and value as stored in the file, when they differ." The docs don't
+# say what the stored value of a field the file lacks reads; this is what
+# puddletag does.
+def test_tooltip_of_a_field_the_file_lacks(mainwin, qtbot, user, music):
+    table, paths = music
+    user.press(Key.Key_P, Ctrl | Shift)
+    assert table.model().previewMode
+    user.double_click_cell(user.cell(0, 'comment'))
+    user.type('note')
+    user.press(Key.Key_Return)
+    qtbot.waitUntil(lambda: table.model().taginfo[0].get('comment') == ['note'])
+    user.press(Key.Key_Escape)
+    assert hover(qtbot, table, user.cell(0, 'comment')) == 'Preview: note\nReal: <blank>'
+    assert 'comment' not in audioinfo.Tag(str(paths[0]))
+
+
 # preferences.txt: "Uncheck this box to disable it."
 def test_tooltips_turned_off(mainwin, qtbot, user, music):
     table, paths = music
@@ -353,6 +372,68 @@ def test_select_columns_changes_a_columns_field(mainwin, qtbot, user, music):
     untouched(before)
 
 
+def tool_button(window, tip):
+    [button] = [b for b in window.findChildren(QToolButton) if b.toolTip() == tip]
+    return button
+
+
+def test_select_columns_add(mainwin, qtbot, user, music):
+    # preferences.txt, Columns: "Add appends an empty column." It's checked,
+    # and the Title box has the focus.
+    table, paths = music
+    before = stamps(paths)
+    window = select_columns(mainwin, qtbot, user)
+    user.click(tool_button(window, 'Add'))
+    user.type('Composer')
+    replace_text(user, window.tag.lineEdit(), 'composer')
+    click_ok(qtbot, user, window)
+    assert shown(table) == COLUMNS + ['composer']
+    assert titles(table)[-1] == 'Composer'
+    assert table.model().data(user.cell(0, 'composer')) == 'Composer A'
+    untouched(before)
+
+
+def test_select_columns_duplicate(mainwin, qtbot, user, music):
+    # preferences.txt, Columns: "Duplicate appends a copy of the selected
+    # column, ticked or not as the original; the file-view shows it once its
+    # Title or Field differs from the original's." A copy whose Title and
+    # Field both match another column isn't shown.
+    table, paths = music
+    before = stamps(paths)
+    window = select_columns(mainwin, qtbot, user)
+    click_column_title(user, window, 'Title')
+    user.click(tool_button(window, 'Duplicate'))
+    # The copy is the selected item.
+    replace_text(user, window.textname, 'Title 2')
+    click_ok(qtbot, user, window)
+    assert shown(table) == COLUMNS + ['title']
+    assert titles(table)[-1] == 'Title 2'
+    first, last = [c for c in visual_columns(table) if fields(table)[c] == 'title']
+    model = table.model()
+    assert [model.data(model.index(0, c)) for c in (first, last)] == ['one', 'one']
+    untouched(before)
+
+
+def test_select_columns_duplicate_keeps_the_check_box(mainwin, qtbot, user, music):
+    # preferences.txt, Columns: "Duplicate appends a copy of the selected
+    # column, ticked or not as the original; the file-view shows it once its
+    # Title or Field differs from the original's." A ticked copy would show
+    # Album again.
+    table, paths = music
+    before = stamps(paths)
+    window = select_columns(mainwin, qtbot, user)
+    click_check_box(user, window, 'Album')
+    click_column_title(user, window, 'Album')
+    user.click(tool_button(window, 'Duplicate'))
+    replace_text(user, window.textname, 'Album 2')
+    click_ok(qtbot, user, window)
+    assert shown(table) == [f for f in COLUMNS if f != 'album']
+    window = select_columns(mainwin, qtbot, user)
+    assert column_item(window, 'Album 2').checkState() == Qt.CheckState.Unchecked
+    window.close()
+    untouched(before)
+
+
 def test_hidden_column_stays_hidden_after_a_restart(mainwin, qtbot, user, music, restart):
     # The docs don't cover keeping columns across sessions (synthetic
     # expectation: preferences.txt: "Any unchecked columns will not be
@@ -413,6 +494,97 @@ def test_moved_column_stays_after_a_restart(mainwin, qtbot, user, music, restart
     qtbot.waitUntil(lambda: win._table.model().rowCount() == 3)
     # The restarted table works.
     assert win._table.model().taginfo[0]['title'] == ['one']
+
+
+AUTORESIZE = 'Automatically resize columns to contents'
+
+
+def title_width(table):
+    return table.horizontalHeader().sectionSize(fields(table).index('title'))
+
+
+@pytest.fixture
+def long_title(make_audio, tmp_path):
+    """A folder with one MP3 whose title is 80 characters long. Synthetic."""
+    folder = tmp_path / 'long'
+    make_audio('01.mp3', folder, title='x' * 80)
+    return folder
+
+
+# preferences.txt: "If checked, the columns will be resized to the so that
+# all text is visible upon loading folders. They will not be resize during
+# editing."
+def test_autoresize_on_loading(mainwin, qtbot, user, long_title):
+    table = mainwin._table
+    set_preference(mainwin, qtbot, user, AUTORESIZE, True)
+    load(mainwin, qtbot, user, long_title)
+    assert title_width(table) >= QFontMetrics(table.font()).horizontalAdvance('x' * 80)
+
+
+# preferences.txt: "... They will not be resize during editing."
+def test_autoresize_not_while_editing(mainwin, qtbot, user, long_title):
+    table = mainwin._table
+    set_preference(mainwin, qtbot, user, AUTORESIZE, True)
+    load(mainwin, qtbot, user, long_title)
+    width = title_width(table)
+    edit_title(qtbot, user, table, 'y' * 160)
+    assert title_width(table) == width
+
+
+# preferences.txt: "If checked, the columns will be resized ..." Unchecked
+# again, loading leaves the width alone, also after the box was OKed checked
+# twice.
+def test_autoresize_turned_off(mainwin, qtbot, user, long_title):
+    table = mainwin._table
+    set_preference(mainwin, qtbot, user, AUTORESIZE, True)
+    set_preference(mainwin, qtbot, user, AUTORESIZE, True)
+    set_preference(mainwin, qtbot, user, AUTORESIZE, False)
+    load(mainwin, qtbot, user, long_title)
+    assert title_width(table) < QFontMetrics(table.font()).horizontalAdvance('x' * 80)
+
+
+@pytest.fixture
+def five(mainwin, make_audio, tmp_path, qtbot, user):
+    """Five synthetic MP3s in one folder, loaded."""
+    folder = tmp_path / 'five'
+    for n in range(5):
+        make_audio(f'{n:02}.mp3', folder, title=f't{n}')
+    return load(mainwin, qtbot, user, folder)
+
+
+def drag_row_border(qtbot, table):
+    """Drags the bottom border of row 0 down 15 pixels, as a user resizes
+    a row. Returns the height the rows should have."""
+    header = table.verticalHeader()
+    old = header.sectionSize(0)
+    x = header.width() // 2
+    y = header.sectionViewportPosition(0) + old - 1
+    qtbot.mousePress(header.viewport(), LEFT, pos=QPoint(x, y))
+    qtbot.mouseMove(header.viewport(), QPoint(x, y + 15))
+    qtbot.mouseRelease(header.viewport(), LEFT, pos=QPoint(x, y + 15))
+    return old + 15
+
+
+# The docs don't say; the program means every row to take the new height.
+@pytest.mark.xfail(strict=True, reason='only the dragged row and the next take the new height')
+def test_dragging_a_row_border_sets_every_row(qtbot, five):
+    table = five
+    height = drag_row_border(qtbot, table)
+    assert [table.rowHeight(row) for row in range(5)] == [height] * 5
+
+
+def test_row_height_after_a_restart(qtbot, five, restart):
+    # The docs don't say; this is what puddletag does: the dragged height
+    # is saved and every row has it at the next start.
+    table = five
+    folder = Path(table.model().taginfo[0]['__path']).parent
+    height = drag_row_border(qtbot, table)
+
+    win = restart()
+
+    win.openDir(str(folder), False)
+    qtbot.waitUntil(lambda: win._table.model().rowCount() == 5)
+    assert [win._table.rowHeight(row) for row in range(5)] == [height] * 5
 
 
 @pytest.fixture
@@ -616,6 +788,22 @@ def test_page_up_skips_no_row(user, sixty):
     user.click_cell(table.model().index(top, 2))
     user.press(Key.Key_PageUp)
     assert fully_shown(table)[1] == top - 1
+
+
+def test_wheel_scrolls_sideways_when_every_row_fits(user, music):
+    # The docs don't say; this is what puddletag does: with every row shown
+    # and the columns wider than the table, a vertical wheel notch scrolls
+    # sideways, 120 // 5 pixels.
+    table, paths = music
+    h, v = table.horizontalScrollBar(), table.verticalScrollBar()
+    assert h.isVisible() and not v.isVisible()
+    # qtbot can't make a QWheelEvent, so it goes straight to the viewport,
+    # as drop's events do.
+    pos = QPointF(table.viewport().rect().center())
+    QApplication.sendEvent(table.viewport(), QWheelEvent(
+        pos, QPointF(table.viewport().mapToGlobal(pos.toPoint())), QPoint(0, 0), QPoint(0, -120),
+        Qt.MouseButton.NoButton, NO_MODIFIER, Qt.ScrollPhase.NoScrollPhase, False))
+    assert h.value() == 24
 
 
 GET_DIRECTORY = 'QFileDialog.getExistingDirectory'
