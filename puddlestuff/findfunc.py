@@ -53,25 +53,17 @@ from .functions import functions
 
 
 def arglen_error(e, passed, function, to_raise=True):
-    varnames = function.__code__.co_varnames[:function.__code__.co_argcount]
-    args_len = len(passed)
-    param_len = len(varnames)
-    message = None
-    if args_len > param_len:
-        message = translate('Functions',
-                            "At most {} arguments expected. {} given.")
-    elif args_len < param_len:
-        default_len = len(function.__defaults__) if \
-            function.__defaults__ else 0
-        if args_len < (param_len - default_len):
-            message = translate('Functions',
-                                "At least {} arguments expected. {} given.")
-    else:
+    # Only the parameters a user types count, not the ones the program fills.
+    allnames = function.__code__.co_varnames[:function.__code__.co_argcount]
+    default_len = len(function.__defaults__) if function.__defaults__ else 0
+    optional = allnames[len(allnames) - default_len:]
+    minimum = len([v for v in allnames if v not in KEYWORD_ARGS and v not in optional])
+    args_len = len([k for k in passed if k not in KEYWORD_ARGS])
+    if args_len >= minimum:
         raise e
-    if message is not None:
-        message = message.format(str(param_len), str(args_len))
-    else:
-        raise e
+    message = translate('Functions',
+                        "At least {} arguments expected. {} given.")
+    message = message.format(str(minimum), str(args_len))
     if to_raise:
         raise ParseError(message)
     else:

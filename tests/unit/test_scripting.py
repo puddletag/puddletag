@@ -573,21 +573,11 @@ def test_infinity_and_nan_are_not_numbers(script, name, argument):
         run(script, artist=['A'])
 
 
-COUNTS_UNTYPED_PARAMETERS = pytest.mark.xfail(
-    strict=True, reason='counts parameters the user never types')
-
-
 @pytest.mark.parametrize('script, message', [
     ('$add(1)', 'SYNTAX ERROR in $add: At least 2 arguments expected. 1 given.'),
-    pytest.param(
-        '$meta()', 'SYNTAX ERROR in $meta: At least 1 arguments expected. 0 given.',
-        marks=COUNTS_UNTYPED_PARAMETERS),
-    pytest.param(
-        '$num()', 'SYNTAX ERROR in $num: At least 2 arguments expected. 0 given.',
-        marks=COUNTS_UNTYPED_PARAMETERS),
-    pytest.param(
-        '$replace(abc)', 'SYNTAX ERROR in $replace: At least 3 arguments expected. 1 given.',
-        marks=COUNTS_UNTYPED_PARAMETERS),
+    ('$meta()', 'SYNTAX ERROR in $meta: At least 1 arguments expected. 0 given.'),
+    ('$num()', 'SYNTAX ERROR in $num: At least 2 arguments expected. 0 given.'),
+    ('$replace(abc)', 'SYNTAX ERROR in $replace: At least 3 arguments expected. 1 given.'),
     ('$upper()', 'SYNTAX ERROR in $upper: At least 1 arguments expected. 0 given.'),
 ])
 def test_too_few_arguments(script, message):
