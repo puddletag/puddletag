@@ -1,11 +1,7 @@
 from copy import deepcopy
 
+from mutagen.oggopus import OggOpus
 from mutagen.oggvorbis import OggVorbis
-
-try:
-    from mutagen.oggopus import OggOpus
-except ImportError:
-    OggOpus = None
 
 from mutagen.flac import Picture, FLAC
 import base64
@@ -182,8 +178,6 @@ def vorbis_tag(base, name):
             returns self if successful, None otherwise."""
             self.__images = []
             tags, audio = self.load(filename, base)
-            if audio is None:
-                return
 
             if audio.tags is not None and audio.tags.vendor:
                 tags['__vendorstring'] = audio.tags.vendor
@@ -292,22 +286,21 @@ class Ogg_Tag(vorbis_tag(OggVorbis, 'Ogg Vorbis')):
         return [('File', fileinfo), ('Ogg Info', ogginfo)]
 
 
-if OggOpus:
-    class Opus_Tag(vorbis_tag(OggOpus, 'Ogg Opus')):
-        @property
-        def info(self):
-            info = self.mut_obj.info
-            fileinfo = [
-                ('Path', self[PATH]),
-                ('Size', str_filesize(int(self.size))),
-                ('Filename', self[FILENAME]),
-                ('Modified', self.modified)]
+class Opus_Tag(vorbis_tag(OggOpus, 'Ogg Opus')):
+    @property
+    def info(self):
+        info = self.mut_obj.info
+        fileinfo = [
+            ('Path', self[PATH]),
+            ('Size', str_filesize(int(self.size))),
+            ('Filename', self[FILENAME]),
+            ('Modified', self.modified)]
 
-            ogginfo = [('Bitrate', self.bitrate),
-                       ('Frequency', self.frequency),
-                       ('Channels', str(info.channels)),
-                       ('Length', self.length)]
-            return [('File', fileinfo), ('Opus Info', ogginfo)]
+        ogginfo = [('Bitrate', self.bitrate),
+                   ('Frequency', self.frequency),
+                   ('Channels', str(info.channels)),
+                   ('Length', self.length)]
+        return [('File', fileinfo), ('Opus Info', ogginfo)]
 
 
 class FLAC_Tag(vorbis_tag(FLAC, 'FLAC')):
@@ -327,13 +320,9 @@ class FLAC_Tag(vorbis_tag(FLAC, 'FLAC')):
         return [('File', fileinfo), ('FLAC Info', ogginfo)]
 
 
-filetypes = []
-
-if OggOpus:
-    filetypes.append((OggOpus, Opus_Tag, 'VorbisComment', 'opus.ogg'))
-    filetypes.append((OggOpus, Opus_Tag, 'VorbisComment', 'opus'))
-
-filetypes.extend([
+filetypes = [
+    (OggOpus, Opus_Tag, 'VorbisComment', 'opus.ogg'),
+    (OggOpus, Opus_Tag, 'VorbisComment', 'opus'),
     (OggVorbis, Ogg_Tag, 'VorbisComment', 'ogg'),
-    (FLAC, FLAC_Tag, 'VorbisComment', 'flac')]
-)
+    (FLAC, FLAC_Tag, 'VorbisComment', 'flac'),
+]

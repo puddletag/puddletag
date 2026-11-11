@@ -1,6 +1,6 @@
 from copy import deepcopy
 
-from mutagen.apev2 import APEv2File, APEValue, BINARY, APENoHeaderError, TEXT
+from mutagen.apev2 import APEv2File, APEValue, BINARY, TEXT
 from mutagen.monkeysaudio import MonkeysAudio, MonkeysAudioHeaderError
 from mutagen.musepack import Musepack, MusepackHeaderError
 from mutagen.wavpack import WavPack, WavPackHeaderError
@@ -153,9 +153,7 @@ def get_class(mutagen_file, filetype, attrib_fields, header_error=None):
                 return
 
             if key.startswith('__'):
-                if key == '__image':
-                    self.images = value
-                elif key == '__total':
+                if key == '__total':
                     set_total(self, value)
                 elif key in fn_hash:
                     setattr(self, fn_hash[key], value)
@@ -207,13 +205,6 @@ def get_class(mutagen_file, filetype, attrib_fields, header_error=None):
                 tags, audio = self.load(filename, mutagen_file)
             except no_header:  # Try loading just APEv2
                 tags, audio = self.load(filename, APEv2File)
-            except APENoHeaderError:
-                audio = mutagen_file()
-                tags, audio = self.load(filename, None)
-                audio.filename = tags['__filepath']
-
-            if audio is None:
-                return
 
             images = []
             for key in audio:
@@ -256,10 +247,7 @@ def get_class(mutagen_file, filetype, attrib_fields, header_error=None):
                 key = case.get(field.lower(), new_key(field))
                 if not valid_key(key):
                     raise FieldNameError(field, 'APEv2', self.filepath)
-                try:
-                    newtag[key] = value
-                except AttributeError:
-                    pass
+                newtag[key] = value
             saved = set(key.lower() for key in newtag)
             # Binary items other than the two covers don't show (foobar2000's
             # Artist Picture, Mp3tag's Cover Art (Artist)), so are kept.

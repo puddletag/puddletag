@@ -100,28 +100,12 @@ def setbool(value):
 def settext(text):
     if isinstance(text, str):
         return [str(text)]
-    elif isinstance(text, str):
-        return [text]
     else:
         return [str(z) for z in text]
 
 
 def gettext(value):
     return value
-
-
-def settuple(value):
-    temp = []
-    for tup in value:
-        if isinstance(tup, str):
-            values = [z.strip() for z in tup.split('/')]
-            try:
-                temp.append(tuple([int(z) for z in values][:2]))
-            except (TypeError, IndexError):
-                continue
-        else:
-            temp.append(tup)
-    return temp
 
 
 # The number fields whose total MP4 keeps in the same atom.
@@ -131,10 +115,6 @@ TOTALS = {'discnumber': 'totaldiscs', 'track': 'totaltracks'}
 # them still sets these.
 OLD_NAMES = {'artistsortorder': 'performersortorder', 'composersortorder': 'itunescomposersortorder',
              'disc': 'discnumber', 'lyrics': 'unsyncedlyrics', 'partofcompilation': 'itunescompilationflag'}
-
-
-def gettuple(value):
-    return [str(track) + '/' + str(total) for track, total in value]
 
 
 def getint(value):
@@ -210,10 +190,7 @@ FORMAT_MIMES = {format: mime for mime, format in MIME_FORMATS.items()}
 
 
 def bin_to_pic(cover):
-    try:
-        format = cover.imageformat
-    except AttributeError:
-        format = cover.format
+    format = cover.imageformat
     # mutagen reads any type but PNG as JPEG, so GIF and BMP are told by their data.
     mime = get_mime(cover)
     if mime not in MIME_FORMATS or format == MP4Cover.FORMAT_PNG:
@@ -381,9 +358,6 @@ class Tag(util.MockTag):
 
         tags, audio = self.load(filename, MP4)
         self.images = []
-
-        if audio is None:
-            return
 
         revmap, mapping = self.revmapping, self.mapping
         self.revmapping, self.mapping = {}, {}

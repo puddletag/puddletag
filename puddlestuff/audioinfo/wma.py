@@ -201,8 +201,7 @@ class Tag(util.MockTag):
             elif key in fn_hash:
                 setattr(self, fn_hash[key], value)
             elif key == '__total' and 'track' in self:
-                if set_total(self, value):
-                    return
+                set_total(self, value)
             return
         elif isempty(value):
             if key in self:
@@ -252,8 +251,6 @@ class Tag(util.MockTag):
 
         self.images = None
         tags, audio = self.load(filename, ASF)
-        if audio is None:
-            return
 
         for name, values in audio.tags.items():
             if name in FLAGS:
@@ -281,8 +278,6 @@ class Tag(util.MockTag):
         to self.filename if no filename is specified."""
         filepath = self.filepath
 
-        if self.mut_obj.tags is None:
-            self.mut_obj.add_tags()
         if filepath != self.mut_obj.filename:
             self.mut_obj.filename = filepath
         audio = self.mut_obj
