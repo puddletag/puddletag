@@ -35,6 +35,7 @@ This line is further split into three parts
 
 import decimal
 import math
+import operator
 import os
 import re
 import traceback
@@ -61,6 +62,15 @@ D = decimal.Decimal
 
 def _plain(value):
     return format(value.normalize(), 'f')
+
+
+def _compare(op, text, text1):
+    # As the Filter does: numbers if both are numbers, else text.
+    try:
+        text, text1 = float(text), float(text1)
+    except (TypeError, ValueError):
+        pass
+    return true if op(text, text1) else false
 
 
 def add(text, text1):
@@ -210,37 +220,11 @@ format_value = formatValue
 
 
 def geql(text, text1):
-    try:
-        text = float(text)
-    except (TypeError, ValueError):
-        pass
-
-    try:
-        text1 = float(text1)
-    except (TypeError, ValueError):
-        pass
-
-    if text >= text1:
-        return true
-    else:
-        return false
+    return _compare(operator.ge, text, text1)
 
 
 def grtr(text, text1):
-    try:
-        text = float(text) if text.strip() else 0
-    except (TypeError, ValueError):
-        pass
-
-    try:
-        text1 = float(text1) if text1.strip() else 0
-    except (TypeError, ValueError):
-        pass
-
-    if text > text1:
-        return true
-    else:
-        return false
+    return _compare(operator.gt, text, text1)
 
 
 def to_num(text):
@@ -309,37 +293,11 @@ def len_(text):
 
 
 def leql(text, text1):
-    try:
-        text = float(text)
-    except (TypeError, ValueError):
-        pass
-
-    try:
-        text1 = float(text1)
-    except (TypeError, ValueError):
-        pass
-
-    if text <= text1:
-        return true
-    else:
-        return false
+    return _compare(operator.le, text, text1)
 
 
 def less(text, text1):
-    try:
-        text = float(text)
-    except (TypeError, ValueError):
-        pass
-
-    try:
-        text1 = float(text1)
-    except (TypeError, ValueError):
-        pass
-
-    if text < text1:
-        return true
-    else:
-        return false
+    return _compare(operator.lt, text, text1)
 
 
 def libstuff(dirname):

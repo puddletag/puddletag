@@ -503,20 +503,14 @@ def test_function_error_messages(script, message):
         run(script)
 
 
-NUMBER_AGAINST_TEXT = pytest.mark.xfail(
-    strict=True, raises=TypeError,
-    reason='$geql, $grtr, $leql and $less raise TypeError for a number against text')
-
-
 @pytest.mark.parametrize('script, expected', [
-    pytest.param(truth('$geql(,5)'), 'no', marks=NUMBER_AGAINST_TEXT),
-    pytest.param(truth('$geql(5,abc)'), 'no', marks=NUMBER_AGAINST_TEXT),  # '5' (53) before 'a' (97)
-    pytest.param(truth('$grtr(abc,5)'), 'yes', marks=NUMBER_AGAINST_TEXT),
-    pytest.param(truth('$leql(abc,5)'), 'no', marks=NUMBER_AGAINST_TEXT),
-    pytest.param(truth('$less(,5)'), 'yes', marks=NUMBER_AGAINST_TEXT),
-    pytest.param(truth('$less(abc,5)'), 'no', marks=NUMBER_AGAINST_TEXT),
-    pytest.param(truth('$grtr(,-1)'), 'no', marks=pytest.mark.xfail(
-        strict=True, reason='$grtr counts an empty value as 0')),
+    (truth('$geql(,5)'), 'no'),
+    (truth('$geql(5,abc)'), 'no'),  # '5' (53) before 'a' (97)
+    (truth('$grtr(abc,5)'), 'yes'),
+    (truth('$leql(abc,5)'), 'no'),
+    (truth('$less(,5)'), 'yes'),
+    (truth('$less(abc,5)'), 'no'),
+    (truth('$grtr(,-1)'), 'no'),
 ])
 def test_comparing_a_number_with_text(script, expected):
     # docs: "Returns True if x >= y. False otherwise." and filter.txt's GREATER:
