@@ -612,6 +612,8 @@ def stringtags(tag, leaveNone=False):
             newtag[i] = v[0]
         else:
             newtag[i] = v
+    if '__total' not in newtag and '__total' in tag:
+        newtag['__total'] = to_string(tag['__total'])
     return newtag
 
 

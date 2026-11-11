@@ -224,7 +224,6 @@ def test_empty_wavpack_file(tmp_path):
     assert (tag['__size'], tag['__file_size']) == ('0', '0 B')
 
 
-@pytest.mark.xfail(strict=True, reason='patterns read only the fields keys() lists, which hold no __total')
 @pytest.mark.parametrize('ext', sorted(set(FORMATS) - {'m4a'}))
 def test_total_in_a_pattern(make_audio, tmp_path, ext):
     # "If the track field is of track/numtracks format, returns numtracks."
@@ -232,7 +231,6 @@ def test_total_in_a_pattern(make_audio, tmp_path, ext):
     assert findfunc.parsefunc('%__total%', audioinfo.Tag(str(path))) == '12'
 
 
-@pytest.mark.xfail(strict=True, reason='patterns read only the fields keys() lists, which hold no __total')
 def test_total_in_a_pattern_mp4(make_audio, tmp_path):
     # MP4: "writing track as 3/12 ... sets both" (make_audio can't set an MP4
     # track, so it is written through the tag).

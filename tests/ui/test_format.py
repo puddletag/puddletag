@@ -107,7 +107,6 @@ def test_folder_cells_left_alone(user, loaded, qtbot, tmp_path, monkeypatch):
     assert [audio.dirpath for audio in table.model().taginfo] == [str(music)] * 3
 
 
-@pytest.mark.xfail(strict=True, reason='patterns read only the fields keys() lists, which hold no __total')
 def test_total_in_the_pattern(mainwin, make_audio, tmp_path, qtbot, user):
     # tags.txt: "__total: If the track field is of track/numtracks format,
     # returns numtracks."
