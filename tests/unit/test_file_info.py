@@ -103,10 +103,7 @@ def test_total(make_audio, tmp_path, ext):
     assert audioinfo.Tag(str(path))['track'] == ['3/15']
 
 
-@pytest.mark.parametrize('ext', [
-    pytest.param(ext, marks=pytest.mark.xfail(strict=True, raises=KeyError, reason='writing __total to a file with no track raises KeyError'))
-    if ext != 'wma' else ext
-    for ext in sorted(set(FORMATS) - {'m4a'})])
+@pytest.mark.parametrize('ext', sorted(set(FORMATS) - {'m4a'}))
 def test_total_without_a_track(make_audio, tmp_path, ext):
     # "If the track field is of track/numtracks format, returns numtracks.
     # Can also be written to." Synthetic: the file has no track, so there is

@@ -309,7 +309,7 @@ class Tag(util.MockTag):
                 self.images = value
             if key in FILETAGS:
                 setattr(self, fn_hash[key], value)
-            elif key == '__total':
+            elif key == '__total' and 'track' in self.__tags:
                 self.__tags['totaltracks'] = FUNCS['totaltracks'][1](value)
             return
         elif isempty(value):

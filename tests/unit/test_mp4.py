@@ -477,7 +477,6 @@ def test_freeform_atoms_named_alike(make_audio, atoms, shown, kept):
     assert {atom: saved[atom] for atom in kept} == kept
 
 
-@pytest.mark.xfail(strict=True, reason='a total alone is saved as track 0 of N')
 def test_total_without_a_track(make_audio):
     # "__total: If the track field is of track/numtracks format, returns
     # numtracks. Can also be written to." With no track nothing is written.

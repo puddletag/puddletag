@@ -528,6 +528,8 @@ def setmodtime(fn, atime, mtime):
 
 def set_total(tag, value):
     """If tag['track'] is of format x/y set's y to value."""
+    if 'track' not in tag:
+        return False
     track = to_string(tag['track']).split('/', 1)
 
     if isempty(value) and track:
