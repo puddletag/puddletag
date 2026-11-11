@@ -7,14 +7,13 @@ from copy import deepcopy
 from decimal import Decimal
 from functools import partial
 
-from pyparsing import (CharsNotIn, Combine, Literal, OneOrMore, Optional, ParserElement,
-                       QuotedString, Word, alphanums, alphas, delimited_list, nested_expr,
-                       nums, original_text_for)
+from pyparsing import (CharsNotIn, Combine, DelimitedList, Literal, OneOrMore, ParserElement,
+                       QuotedString, Word, alphanums)
 
 from . import audioinfo
-from .constants import ACTIONDIR, CHECKBOX, SEPARATOR, SPINBOX, SYNTAX_ERROR, SYNTAX_ARG_ERROR
+from .constants import CHECKBOX, SEPARATOR, SPINBOX, SYNTAX_ERROR, SYNTAX_ARG_ERROR
 from .funcprint import pprint
-from .puddleobjects import PuddleConfig, safe_name
+from .puddleobjects import PuddleConfig
 from .util import PluginFunction, translate, to_list, to_string
 
 numtimes = 0
@@ -213,39 +212,6 @@ def load_macro_info(filename):
     return [funcs, name]
 
 
-def load_macro_from_name(name):
-    filename = os.path.join(ACTIONDIR, safe_name(name) + '.action')
-    return Macro(filename)
-
-
-def func_tokens(dictionary, parse_action):
-    func_name = Word(alphas + '_', alphanums + '_')
-
-    func_ident = Combine('$' + func_name.copy()('funcname'))
-    func_tok = func_ident + original_text_for(nested_expr())('args')
-    func_tok.leave_whitespace()
-    func_tok.set_parse_action(parse_action)
-
-    rx_tok = Combine(Literal('$').suppress() + Word(nums)('num'))
-
-    def replace_token(tokens):
-        index = int(tokens.num)
-        return dictionary.get(index, '')
-
-    rx_tok.set_parse_action(replace_token)
-
-    strip = lambda s, l, tok: tok[0].strip()
-    text_tok = CharsNotIn(',').set_parse_action(strip)
-    quote_tok = QuotedString('"')
-
-    if dictionary:
-        arglist = Optional(delimited_list(quote_tok | rx_tok | text_tok))
-    else:
-        arglist = Optional(delimited_list(quote_tok | text_tok))
-
-    return func_tok, arglist, rx_tok
-
-
 def get_function_arguments(funcname, func, arguments, reserved, fmt=True, *dicts):
     varnames = func.__code__.co_varnames[:func.__code__.co_argcount]
 
@@ -311,10 +277,7 @@ def run_format_func(funcname, arguments, m_audio, s_audio=None, extra=None,
 
     # Get function
     try:
-        if isinstance(funcname, str):
-            func = functions[funcname]
-        else:
-            func = funcname
+        func = functions[funcname]
     except KeyError:
         raise ParseError(SYNTAX_ERROR.format(funcname,
                                              translate('Defaults', "function does not exist.")))
@@ -426,11 +389,6 @@ def parsefunc(s, m_audio, s_audio=None, state=None, extra=None, ret_i=False, pat
             if in_func:
                 token.append(c)
             in_quote = not in_quote
-        elif c == '"' and escape and in_func:
-            token.append('\\"')
-            i += 1
-            escape = False
-            continue
         elif escape:
             token.append(c)
             escape = False
@@ -684,12 +642,6 @@ def apply_macros(macros, audio, state, fields=None):
         return apply_actions(actions, audio, state)
 
 
-def runQuickAction(funcs, audio, state, tag):
-    """Same as runAction, except that all funcs are 
-    applied not in the values stored but on audio[tag]."""
-    return apply_macros(funcs, audio, state, tag)
-
-
 def save_macro(filename, name, funcs):
     with open(filename, 'w') as f:
         f.write('{}')
@@ -848,7 +800,7 @@ class Function:
         self.doc = self.function.__doc__.split("\n")
 
         identifier = QuotedString('"') | Combine(Word(alphanums + ' !"#$%&\'()*+-./:;<=>?@[\\]^_`{|}~'))
-        tags = delimited_list(identifier)
+        tags = DelimitedList(identifier)
 
         self.info = [z for z in tags.parse_string(self.doc[0])]
 
@@ -888,10 +840,7 @@ class Function:
             topass = get_function_arguments("", func,
                                             [text] + self.args, reserved, False, *[s_audio, state])
 
-        try:
-            first_arg = [z for z in varnames if z not in reserved][0]
-        except IndexError:
-            return
+        first_arg = [z for z in varnames if z not in reserved][0]
 
         if not first_arg.startswith('m_'):
             text = [to_string(z) for z in to_list(m_text)]
@@ -914,7 +863,7 @@ class Function:
 
     def _getControls(self, index=1):
         identifier = QuotedString('"') | CharsNotIn(',')
-        arglist = delimited_list(identifier)
+        arglist = DelimitedList(identifier)
         docstr = self.doc[1:]
         if index:
             return [(arglist.parse_string(line)[index]).strip()
@@ -929,10 +878,6 @@ class Function:
         self.tag = tag
         self.fields = tag
 
-    def addArg(self, arg):
-        if self.function.__code__.co_argcount > len(self.args) + 1:
-            self.args.append(arg)
-
 
 class Macro(object):
     def __init__(self, filename=None):
@@ -945,12 +890,6 @@ class Macro(object):
 
     def apply_action(self, audio, state=None, fields=None):
         return apply_macros([self], audio, state, fields)
-
-    def copy(self):
-        m = Macro()
-        m.filename = self.filename
-        m.actions = self.actions[::]
-        return m
 
     def load(self, filename):
         self.actions, self.name = load_macro_info(filename)

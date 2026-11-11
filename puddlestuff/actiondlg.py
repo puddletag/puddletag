@@ -8,7 +8,7 @@ from PyQt6.QtGui import QAction
 from PyQt6.QtWidgets import QAbstractItemView, QCheckBox, QComboBox, QCompleter, \
     QDialog, QFrame, QGridLayout, QInputDialog, QLabel, QLineEdit, QListWidgetItem, QMenu, QMessageBox, \
     QScrollArea, QSizePolicy, QStackedWidget, QToolButton, QVBoxLayout, QWidget
-from pyparsing import delimited_list, alphanums, Combine, Word, QuotedString
+from pyparsing import DelimitedList, alphanums, Combine, Word, QuotedString
 
 from . import findfunc, functions
 from . import functions_dialogs
@@ -190,7 +190,7 @@ class FunctionDialog(QWidget):
         QWidget.__init__(self, parent)
         identifier = QuotedString('"') | Combine(Word
                                                  (alphanums + ' !"#$%&\'()*+-./:;<=>?@[\\]^_`{|}~'))
-        tags = delimited_list(identifier)
+        tags = DelimitedList(identifier)
         self.func = Function(funcname)
         docstr = self.func.doc[1:]
         self.vbox = QVBoxLayout()

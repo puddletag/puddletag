@@ -227,25 +227,3 @@ def parse(audio, expr):
         return bool(res)
     except findfunc.ParseError:  # a quoted script with an error
         return False
-
-
-if __name__ == '__main__':
-    audio = audioinfo.Tag('clen.mp3')
-    # parse(audio, "not p")
-    # parse(audio, 'not missing artist')
-    # parse(audio, '7 greater 6')
-    # parse(audio, '%track% greater 14')
-    # parse(audio, '%track% greater "$add($len(%artist%), 50)"')
-    # t = time.time()
-    # parse(audio, '(not missing artist) and (20 greater 19)')
-    # parse(audio, 'not (20 greater 19)')
-    # print time.time() - t
-    # parse(audio, 'not missing artist and 18 greater 19')
-    # parse(audio, 'artist is "Carl Douglas"')
-    # parse(audio, "artist has aarl")
-    # parse(audio, "artist has Carl")
-    import time
-
-    t = time.time()
-    print(audio.filepath)
-    print(parse(audio, '__filename has clen'))
