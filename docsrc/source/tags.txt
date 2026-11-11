@@ -8,7 +8,7 @@ The following fields are common to almost all music files.
 
 .. describe:: __accessed
 
-    The date and time the file was last accessed, in YYYY-MM-DD HH:MM:SS format.
+    The date and time the file was last accessed, in YYYY-MM-DD HH:MM:SS format. The time is in UTC.
 
 .. describe:: __app
 
@@ -28,7 +28,7 @@ The following fields are common to almost all music files.
 
 .. describe:: __created
 
-    The creation date of the file in YYYY-MM-DD HH:MM:SS format.
+    The creation date of the file in YYYY-MM-DD HH:MM:SS format. The time is in UTC.
 
 .. describe:: __dirpath
 
@@ -44,11 +44,11 @@ The following fields are common to almost all music files.
 
 .. describe:: __file_access_date
 
-    The date the file was accessed in YYYY-MM-DD format
+    The date the file was accessed in YYYY-MM-DD format. The date is in UTC.
 
 .. describe:: __file_access_datetime
 
-    The date including the time the file was accessed in YYYY-MM-DD HH:MM:SS format
+    The date including the time the file was accessed in YYYY-MM-DD HH:MM:SS format. The time is in UTC.
 
 .. describe:: __file_access_datetime_raw
 
@@ -56,11 +56,11 @@ The following fields are common to almost all music files.
 
 .. describe:: __file_create_date
 
-    Creation date of the file in YYYY-MM-DD format.
+    Creation date of the file in YYYY-MM-DD format. The date is in UTC.
 
 .. describe:: __file_create_datetime
 
-    File's creation date in YYYY-MM-DD HH:MM:SS format.
+    File's creation date in YYYY-MM-DD HH:MM:SS format. The time is in UTC.
 
 .. describe:: __file_create_datetime_raw
 
@@ -68,11 +68,11 @@ The following fields are common to almost all music files.
 
 .. describe:: __file_mod_date
 
-    Date the file was last modified in YYYY-MM-DD format.
+    Date the file was last modified in YYYY-MM-DD format. The date is in UTC.
 
 .. describe:: __file_mod_datetime
 
-    Time the file was last modified in YYYY-MM-DD HH:MM:SS format.
+    Time the file was last modified in YYYY-MM-DD HH:MM:SS format. The time is in UTC.
 
 .. describe:: __file_mod_datetime_raw
 
@@ -126,6 +126,10 @@ The following fields are common to almost all music files.
 
     Size in bytes of the first cover image in the file.
 
+.. describe:: __image_type
+
+    The type of the first cover image in the file, e.g. Cover (Front).
+
 .. describe:: __length
 
     The length of the file in MM:SS format, or HH:MM:SS from an hour on, e.g. 03:25 or 01:02:05.
@@ -140,7 +144,7 @@ The following fields are common to almost all music files.
 
 .. describe:: __modified
 
-    The last time the file was modified in YYYY-MM-DD HH:MM:SS format .
+    The last time the file was modified in YYYY-MM-DD HH:MM:SS format. The time is in UTC.
 
 .. describe:: __num_images
 
