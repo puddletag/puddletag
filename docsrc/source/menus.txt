@@ -100,7 +100,7 @@ The same rules apply as with Paste, but the pasting isn't restarted for individu
 
 Remove Tag (Ctrl+R)
 ^^^^^^^^^^^^^^^^^^^
-Removes the tags of selected files. Note that although this operation can be undone, the tag is not restored as it was before: a new one is created, and only supported fields are restored.
+Removes the tags of selected files. For MP3, AIFF, DSF and DSDIFF files those are the ID3 tags (ID3v2 and ID3v1); an APEv2 tag in an MP3 stays: **Tag Tools > Remove APEv2 Tag** removes it. Note that although this operation can be undone, the tag is not restored as it was before: a new one is created, and only supported fields are restored.
 
 .. _select_next:
 
@@ -292,11 +292,11 @@ Tag Tools
 
 **Please note that if you delete a tag not considered the 'official' tag (eg. When you delete APEv2 from and mp3 file) there'll be no way to undo that action. Deleting 'official' tags can be undone though. And by undo, I don't mean the tag will be restored as before. A new tag will be created with the fields puddletag remembers.**
 
-Delete APEv2 Tag
+Remove APEv2 Tag
 ^^^^^^^^^^^^^^^^
 Removes the APEv2 Tags in the selected files if present. Undoable for files that use APEv2 as the default tag (ie. Musepack, Wavpack and Monkey's Audio).
 
-Delete All ID3 Tags
+Remove All ID3 Tags
 ^^^^^^^^^^^^^^^^^^^
 Removes any ID3 tags found in the selected files. Undoable for files that use ID3 as the default tag (ie. MP3, AIFF, DSF and DSDIFF).
 
