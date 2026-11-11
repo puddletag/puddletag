@@ -30,6 +30,7 @@ from mutagen.id3 import (
     ID3,
     Frames,
     Frames_2_2,
+    IPLS,
     TextFrame,
 )
 
@@ -75,6 +76,10 @@ def update_to_v23(tags):
     frames = []
     for key in ["TSOP", "TSOA", "TSOT", "TSST"]:
         frames.extend(tags.getall(key))
+    # mutagen builds IPLS from TIPL and TMCL only if there's no IPLS yet
+    if 'IPLS' in tags and 'TMCL' in tags:
+        ipls = tags.pop('IPLS')
+        tags.add(IPLS(encoding=ipls.encoding, people=ipls.people + tags.pop('TMCL').people))
     ID3.update_to_v23(tags)
     for frame in frames:
         tags.add(frame)

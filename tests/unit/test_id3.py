@@ -612,9 +612,7 @@ def test_replaygain_value_is_a_list(id3_file):
     assert isinstance(tag['rgain:track'], list)
 
 
-@pytest.mark.parametrize('ext', [
-    pytest.param(ext, marks=pytest.mark.xfail(strict=True, reason="AIFF, DSF and DSDIFF saves drop them in ID3v2.3"))
-    if ext != 'mp3' else ext for ext in ID3_FORMATS])
+@pytest.mark.parametrize('ext', ID3_FORMATS)
 def test_id3v23_keeps_the_sort_frames(make_audio, ext):
     # id3.txt lists albumsortorder (TSOA), performersortorder (TSOP),
     # setsubtitle (TSST) and titlesortorder (TSOT) and is silent on ID3v2.3;
@@ -640,7 +638,6 @@ def test_id3v23_leaves_out_frames_only_id3v24_has(id3_file):
     assert (sorted(frames.keys()), frames['IPLS'].people) == (['IPLS', 'TIT2'], [['Bob', 'Piano']])
 
 
-@pytest.mark.xfail(strict=True, reason="an ID3v2.3 save drops musiciancredits when involvedpeople is set")
 @pytest.mark.parametrize('ext', ID3_FORMATS)
 def test_id3v23_writes_the_credits_together(make_audio, ext):
     # id3.txt: saving as ID3v2.3 "writes involvedpeople and musiciancredits
@@ -652,7 +649,6 @@ def test_id3v23_writes_the_credits_together(make_audio, ext):
         ['IPLS', 'TIT2'], [['Bob', 'Piano'], ['Ann', 'Drums']], ['Bob:Piano;Ann:Drums'])
 
 
-@pytest.mark.xfail(strict=True, reason="an ID3v2.3 save drops musiciancredits when involvedpeople is set")
 @pytest.mark.parametrize('ext', ID3_FORMATS)
 def test_id3v23_saved_twice_writes_the_credits_once(make_audio, ext):
     # id3.txt: saving as ID3v2.3 "writes involvedpeople and musiciancredits
@@ -667,7 +663,6 @@ def test_id3v23_saved_twice_writes_the_credits_once(make_audio, ext):
         [['Bob', 'Piano'], ['Ann', 'Drums']], ['Bob:Piano'])
 
 
-@pytest.mark.xfail(strict=True, reason="the second lyrics frame stays UTF-16")
 @pytest.mark.parametrize('ext', ID3_FORMATS)
 def test_convert_to_utf8(make_audio, ext):
     # id3.txt: "Text is written as UTF-8 in ID3v2.4 and as UTF-16 in ID3v2.3,

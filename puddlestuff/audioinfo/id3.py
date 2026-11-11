@@ -24,7 +24,7 @@ from mutagen.id3 import (APIC, PairedTextFrame, TextFrame, TimeStampTextFrame,
                          UrlFrame)
 
 from . import util
-from ._compatid3 import CompatID3
+from ._compatid3 import CompatID3, update_to_v23
 
 from .constants import DEFAULT_COVER, MODES
 from .util import (CaselessDict, FILENAME, MockTag, PATH,
@@ -827,7 +827,7 @@ def _save_v23(tags, filename):
     they are, and only update_to_v23 turns TDRC into TYER and so on."""
     converted = type(tags)()
     converted.update(tags)
-    converted.update_to_v23()
+    update_to_v23(converted)
     converted.save(filename, v2_version=3)
 
 
@@ -1189,7 +1189,7 @@ def tag_factory(id3_filetype):
         def to_encoding(self, encoding=UTF8):
             frames = []
             saved = []
-            for frame in self.__tags.values():
+            for frame in self._shown_frames().values():
                 if hasattr(frame, 'encoding'):
                     frames.append((frame, frame.encoding))
                     frame.encoding = encoding
