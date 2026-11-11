@@ -143,7 +143,7 @@ def caps3(text):
     try:
         start = re.search(r"\w", text, re.U).start(0)
     except AttributeError:
-        return
+        return text
     return text[:start] + text[start].upper() + text[start + 1:].lower()
 
 
@@ -627,6 +627,8 @@ def replace(text, word, replaceword, matchcase=False, whole=False, chars=None):
 w&ith:, text
 Match c&ase:, check
 only as &whole word, check'''
+    if not word:
+        return text
     matchcase, whole = check_truth(matchcase), check_truth(whole)
     word = re_escape(word)
 

@@ -519,7 +519,6 @@ def test_comparing_a_number_with_text(script, expected):
     assert run(script) == expected
 
 
-@pytest.mark.xfail(strict=True, reason='$caps3 returns nothing for a text without a letter')
 @pytest.mark.parametrize('text', ['--', '...'])
 def test_caps3_without_a_letter(text):
     # docs: "Capitalizes the first letter of the string and converts the rest
@@ -539,7 +538,6 @@ def test_dialog_function_called_from_a_script(script, expected):
     assert run(script) == expected
 
 
-@pytest.mark.xfail(strict=True, reason='an empty word matches between every character')
 def test_replace_an_empty_word():
     # Docs silent: no word to replace, so the text is kept. Synthetic text.
     assert run('$replace(abc,,x)') == 'abc'
