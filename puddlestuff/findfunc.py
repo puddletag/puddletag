@@ -275,6 +275,8 @@ def get_function_arguments(funcname, func, arguments, reserved, fmt=True, *dicts
         if param.startswith('p_'):
             topass[param] = arg
         elif param.startswith('n_'):
+            if fmt and isinstance(arg, str):
+                arg = replacevars(arg, *dicts)
             try:
                 if not math.isfinite(float(arg)):
                     raise ValueError(arg)

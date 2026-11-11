@@ -629,7 +629,6 @@ def test_backslash_before_percent():
     assert run(r'$upper(a\%artist%)', artist='Bob') == r'A\BOB'
 
 
-@pytest.mark.xfail(strict=True, reason='#612: fields in number arguments')
 @pytest.mark.parametrize('script, expected', [
     ('$mid(%title%,%n%,2)', 'cd'),
     ('$num(%track%,%n%)', '05'),
