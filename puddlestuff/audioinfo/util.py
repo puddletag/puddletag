@@ -196,10 +196,7 @@ def del_deco(func):
 
 def encode_fn(filename):
     """Encode a filename to filesystem encoding."""
-    if isinstance(filename, str):
-        return filename
-    else:
-        return filename.encode(FS_ENC)
+    return filename
 
 
 def getdeco(func):
@@ -494,10 +491,6 @@ def parse_image(image, keys=None):
     return dict((k, _image_defaults[k](image)) for k in keys)
 
 
-def reversedict(d):
-    return dict((v, k) for k, v in d.items())
-
-
 def setdeco(func):
     """Decorates the __setitem__ method of a Tag object using it's mapping.
 
@@ -701,16 +694,10 @@ def unicode_list(value):
         return []
     if isinstance(value, str):
         return [str(value)]
-    elif isinstance(value, str):
-        return [str(value, 'utf8', 'replace')]
     elif isinstance(value, int):
         return [str(value)]
     else:
         return [to_string(v, 'replace') for v in value if v]
-
-
-def writeable(tags):
-    return [z for z in tags if not z.starswith('__') or z.startswith('~')]
 
 
 # The language and description ID3 keeps in front of lyrics ("eng||Lyrics",
@@ -769,20 +756,11 @@ class CaselessDict(dict):
             dict.__delitem__(self, self._keys[low])
         self._keys[low] = key
 
-    def fromkeys(self, iterable, value=None):
-        d = CaselessDict()
-        for k in iterable:
-            d[k] = value
-        return d
-
     def get(self, key, def_val=None):
         if key in self:
             return self[key]
         else:
             return def_val
-
-    def has_key(self, key):
-        return key.lower() in self._keys
 
     def update(self, other):
         for k, v in other.items():
@@ -888,23 +866,12 @@ class MockTag(object):
     def items(self):
         return [(key, self[key]) for key in self]
 
-    def iteritems(self):
-        return ((key, self[key]) for key in self)
-
-    def load(self, filename, filetype=None):
+    def load(self, filename, filetype):
         filename = getfilename(filename)
         self.filepath = filename
-        if filetype is not None:
-            audio = filetype(filename)
-        else:
-            audio = None
+        audio = filetype(filename)
         tags = getinfo(filename)
         return tags, audio
-
-    def real(self, key):
-        if key in self.revmapping:
-            return self.revmapping[key]
-        return key
 
     def save(self):
         if not path.exists(self.filepath):
