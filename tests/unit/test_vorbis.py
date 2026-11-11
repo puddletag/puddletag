@@ -4,6 +4,7 @@ and Opus files, saved with the two calls an edit in the main table ends in
 case, so only the key-case tests compare it. Synthetic files and values.
 """
 import base64
+import copy
 import json
 import os
 import shutil
@@ -14,6 +15,7 @@ import mutagen.flac
 import pytest
 
 from puddlestuff import audioinfo
+from test_covers import FRONT, write
 
 VORBIS_FORMATS = ['flac', 'ogg', 'opus']
 
@@ -194,3 +196,55 @@ def test_chapter_titles_still_read_by_ffprobe(make_audio):
     out = subprocess.run([ffprobe, '-v', 'error', '-show_chapters', '-of', 'json', str(path)],
                          capture_output=True, text=True, check=True).stdout
     assert [c.get('tags', {}).get('title') for c in json.loads(out)['chapters']] == ['One', 'Two']
+
+
+# Cover and file information deleted from a Tag, a number given as a value and
+# clearing a field the file lacks.
+def test_delete_cover_and_file_info(make_audio, vorbis_file):
+    # tags.txt: "__image: Refers to the album art present in the file."
+    # Plugins get these Tag objects and delete the keys from them (the
+    # export_tags plugin restores a tag dict the same way); the file keeps its
+    # length, and the save leaves no picture. Synthetic file and cover.
+    write(vorbis_file, [FRONT])
+    tag = audioinfo.Tag(str(vorbis_file))
+    del tag['__image']
+    del tag['__length']
+    assert (tag.images, tag['__length']) == ([], '00:01')
+    tag.save()
+    audio = mutagen.File(str(vorbis_file))
+    if vorbis_file.suffix == '.flac':
+        assert audio.pictures == []
+    else:
+        assert 'METADATA_BLOCK_PICTURE' not in audio.tags
+    assert audioinfo.Tag(str(vorbis_file))['__length'] == '00:01'
+
+
+def test_a_number_value(vorbis_file):
+    # tags.txt: "VorbisComment: tracknumber shows as track, and date as
+    # year." A plugin may pass an int; the docs don't say, so this is what the
+    # program does. Synthetic value.
+    tag = audioinfo.Tag(str(vorbis_file))
+    tag['year'] = 2001
+    tag.save()
+    assert upper(comments(vorbis_file)) == [('DATE', '2001')]
+
+
+def test_clearing_a_field_the_file_lacks(vorbis_file):
+    # Clearing a field leaves the file without it, whether it had it or not;
+    # before, a field the file lacked raised KeyError. Synthetic title.
+    write_comments(vorbis_file, [('TITLE', 'Song')])
+    save(vorbis_file, {'genre': []})
+    assert comments(vorbis_file) == [('TITLE', 'Song')]
+
+
+@pytest.mark.xfail(strict=True, reason='the copy is the base class: no file information, no info')
+def test_copy_of_a_tag(vorbis_file):
+    # A copy of a tag keeps its kind and its file information, and editing it
+    # leaves the original alone. Actions and tag sources run their functions on
+    # such a copy. Synthetic title.
+    save(vorbis_file, {'title': ['Before']})
+    tag = audioinfo.Tag(str(vorbis_file))
+    twin = copy.deepcopy(tag)
+    twin.update({'title': ['Copy']})
+    assert (tag['title'], twin['title'], type(twin) is type(tag)) == (['Before'], ['Copy'], True)
+    assert twin.info == tag.info

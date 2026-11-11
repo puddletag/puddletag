@@ -8,6 +8,7 @@ Music/Artist/Album (the .ape file only says so in its header).
 import os
 import re
 
+import mutagen
 import pytest
 
 from puddlestuff import audioinfo
@@ -89,16 +90,35 @@ def test_tags(song):
     assert re.fullmatch(r'puddletag v\d+\.\d+.*', song['__app'])  # "puddletag v0.10.4"
 
 
-@pytest.mark.parametrize('ext', ['mp3', 'flac'])
+@pytest.mark.parametrize('ext', sorted(set(FORMATS) - {'m4a'}))
 def test_total(make_audio, tmp_path, ext):
     # "If the track field is of track/numtracks format, returns numtracks.
     # Can also be written to."
     path = make_audio('song.' + ext, tmp_path, tracknumber='3/12')
     tag = audioinfo.Tag(str(path))
+    assert '__total' in tag
     assert tag['__total'] == '12'
     tag.update({'__total': '15'})
     tag.save()
     assert audioinfo.Tag(str(path))['track'] == ['3/15']
+
+
+@pytest.mark.parametrize('ext', [
+    pytest.param(ext, marks=pytest.mark.xfail(strict=True, raises=KeyError, reason='writing __total to a file with no track raises KeyError'))
+    if ext != 'wma' else ext
+    for ext in sorted(set(FORMATS) - {'m4a'})])
+def test_total_without_a_track(make_audio, tmp_path, ext):
+    # "If the track field is of track/numtracks format, returns numtracks.
+    # Can also be written to." Synthetic: the file has no track, so there is
+    # no total to write to.
+    path = make_audio('song.' + ext, tmp_path, title='Song')
+    tag = audioinfo.Tag(str(path))
+    tag.update({'__total': '12'})
+    tag.save()
+    saved = audioinfo.Tag(str(path))
+    assert 'track' not in saved
+    assert '__total' not in saved
+    assert saved['title'] == ['Song']
 
 
 def test_opus_bitrate(make_audio, tmp_path):
@@ -131,3 +151,40 @@ def test_info_without_length(make_audio, tmp_path):
     tag = audioinfo.Tag(str(make_audio('song.mp3', tmp_path, title='Song')))
     del tag.length
     assert 'Length' not in dict(tag.info[1][1])
+
+
+def test_file_name_fields_written(song):
+    # The docs' examples: /media/Multimedia/Music/myfile.mp3 has __filename
+    # myfile.mp3, __dirpath /media/Multimedia/Music, extension mp3...
+    ext = song['__ext']
+    folder = os.path.dirname(song['__path'])
+    song.update({'__filename': 'other.' + ext})
+    assert song['__path'] == os.path.join(folder, 'other.' + ext)
+    assert song['__filename_no_ext'] == 'other'
+    assert song['__ext'] == ext
+
+
+def test_save_after_a_rename(song):
+    # Synthetic: the table renames the file, then points the tag at the new
+    # path and saves (rename_file in puddlestuff/util.py).
+    ext = song['__ext']
+    old = song['__path']
+    new = os.path.join(os.path.dirname(old), 'renamed.' + ext)
+    os.rename(old, new)
+    song.update({'__path': new, 'album': ['A']})
+    song.save()
+    saved = audioinfo.Tag(new)
+    assert (saved['album'], saved['title']) == (['A'], ['Song'])
+
+
+@pytest.mark.parametrize('ext', sorted(FORMATS))
+def test_save_with_no_tags(make_audio, tmp_path, ext):
+    # Synthetic: a file whose tags were all removed by another program still
+    # takes a title.
+    path = make_audio('song.' + ext, tmp_path, title='Song')
+    mutagen.File(path).delete()
+    tag = audioinfo.Tag(str(path))
+    assert audioinfo.usertags(tag) == {}
+    tag.update({'title': ['New']})
+    tag.save()
+    assert audioinfo.Tag(str(path))['title'] == ['New']

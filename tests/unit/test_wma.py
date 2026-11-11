@@ -1,11 +1,14 @@
 """WMA tags (puddlestuff/audioinfo/wma.py), saved with the two calls an edit
 in the main table ends in (update, then save: puddlestuff/util.py write)
 and read back with mutagen. Synthetic files and values."""
+import copy
+
 import mutagen.asf
 import pytest
 from mutagen.asf import ASFBoolAttribute, ASFDWordAttribute
 
 from puddlestuff import audioinfo
+from test_covers import FRONT, stored as cover_stored, write
 
 
 def save(path, fields):
@@ -150,3 +153,58 @@ def test_clearing_a_field_the_file_lacks(make_audio):
     # before, a field the file lacked raised KeyError.
     attributes, tag = save(make_audio('song.wma', title='Song'), {'myfield': [], 'title': []})
     assert stored(attributes) == {}
+
+
+# Copies, deleting file fields and mappings.
+
+@pytest.fixture
+def wma_mapping():
+    """A mapping from a WMA attribute to a field name, as a saved mappings
+    file (Preferences, Mappings) can have; WMA has none by default."""
+    original = audioinfo.mapping
+    audioinfo.setmapping(dict(original, WMA={'MyAttribute': 'writer'}))
+    yield
+    audioinfo.setmapping(dict(original, WMA={}))
+    audioinfo.setmapping(original)
+
+
+def test_copy_of_a_tag(make_audio):
+    # Actions and tag sources run on a copy of the tag; editing it leaves the
+    # file's tag alone, and the copy still shows the file's information.
+    # Synthetic values.
+    tag = save(make_audio('song.wma', title='Before'), {})[1]
+    twin = copy.deepcopy(tag)
+    twin.update({'title': ['Copy']})
+    assert (tag['title'], twin['title']) == (['Before'], ['Copy'])
+    assert (type(twin), twin.filepath, twin.info) == (type(tag), tag.filepath, tag.info)
+
+
+def test_delete_cover_and_file_info(make_audio):
+    # tags.txt: "__image: Refers to the album art present in the file." Deleting
+    # it removes the covers on save; deleting a file field such as __length
+    # does nothing. Plugins get these Tag objects (the export_tags plugin
+    # restores a tag dict the same way). Synthetic file and cover.
+    path = make_audio('song.wma', title='Song')
+    write(path, [FRONT])
+    tag = audioinfo.Tag(str(path))
+    del tag['__image']
+    del tag['__length']
+    assert (tag.images, tag['__length']) == ([], '00:01')
+    tag.save()
+    assert cover_stored(path) == []
+
+
+def test_a_mapped_field(make_audio, wma_mapping):
+    # tags.txt: the MusicBrainz ids "aren't mapped for WMA by default"
+    # ("Except in WMA, they're mappings (Preferences, Mappings)"); a mapping
+    # the user adds still applies: the attribute shows under the field's name
+    # and is saved under its own. Synthetic attribute.
+    path = make_audio('song.wma', title='Song')
+    audio = mutagen.asf.ASF(path)
+    audio['MyAttribute'] = ['Someone']
+    audio.save()
+    tag = audioinfo.Tag(str(path))
+    assert ('writer' in tag, tag['writer']) == (True, ['Someone'])
+    tag.update({'writer': ['Other']})
+    tag.save()
+    assert stored(mutagen.asf.ASF(path).tags) == {'MyAttribute': ['Other'], 'Title': ['Song']}

@@ -1,12 +1,16 @@
 """MP4 tags (puddlestuff/audioinfo/mp4.py), saved with the two calls an edit
 in the main table ends in (update, then save: puddlestuff/util.py write)
 and read back with mutagen."""
+import copy
+import struct
+
 import mutagen.mp4
 import pytest
 from mutagen.mp4 import AtomDataType, MP4FreeForm
 
 from puddlestuff import audioinfo
 from puddlestuff.audioinfo.util import to_string
+from test_covers import FRONT
 
 
 def test_save_keeps_atoms_puddletag_does_not_map(make_audio):
@@ -366,3 +370,196 @@ def test_remove_tag_removes_atoms_puddletag_does_not_show(make_audio):
     audioinfo.Tag(str(path)).delete()
 
     assert not mutagen.mp4.MP4(path).tags
+
+
+# Atoms and tag objects no other test reaches.
+
+@pytest.mark.parametrize('value', ['0', '1', '2'])
+def test_advisory_values(make_audio, value):
+    # "tmpo and the iTunes IDs (akID, atID, cmID, cnID, geID, plID, rtng,
+    # sfID, stik) take whole numbers." #945: the reporter sets clean and
+    # explicit in an ALAC file; make_audio makes AAC, the atom is the same.
+    atoms, tag = save(make_audio('song.m4a'), {'itunesadvisory': [value]})
+    assert (atoms['rtng'], tag['itunesadvisory']) == ([int(value)], [value])
+
+
+def test_number_atom_puddletag_does_not_map_still_shows(make_audio):
+    # tags.txt: "Any MP4 atoms not in this list will be assumed to be freeform
+    # frames"; #374 and #407 raised a traceback in mp4.py on an atom mutagen
+    # keeps as an integer, so the file's own atoms must show by their names
+    # and survive a save. tvsn (TV season) and hdvd (HD flag) with synthetic
+    # values.
+    path = make_audio('song.m4a', title='Before')
+    add_atoms(path, {'hdvd': [1], 'tvsn': [3]})
+    tag = audioinfo.Tag(str(path))
+    assert (tag['tvsn'], tag['hdvd']) == (['3'], ['1'])
+
+    atoms, tag = save(path, {'title': ['After']})
+    assert atoms['tvsn'] == [3]
+
+
+def test_one_string_value(make_audio):
+    # "tmpo ... take[s] whole numbers." A value given as one string, not a
+    # list, as update({'__total': '15'}) passes in test_file_info.py.
+    # Synthetic values.
+    atoms, tag = save(make_audio('song.m4a'), {'title': 'Song', 'bpm': '120'})
+    assert (atoms['\xa9nam'], atoms['tmpo']) == (['Song'], [120])
+
+
+def test_delete_cover_and_file_info(make_audio):
+    # "__image: Refers to the album art present in the file." Plugins get
+    # these Tag objects (the export_tags plugin restores a tag dict the same
+    # way): deleting __image removes the covers on save, deleting __length
+    # does nothing. Synthetic file.
+    path = make_audio('song.m4a', title='Song')
+    atoms, tag = save(path, {'__image': [FRONT]})
+    assert 'covr' in atoms
+
+    del tag['__image']
+    del tag['__length']
+    assert (tag.images, tag['__length']) == ([], '00:01')
+    tag.save()
+    assert 'covr' not in mutagen.mp4.MP4(path).tags
+
+
+# What a value that isn't a number does to a number field.
+
+@pytest.mark.parametrize('field, first, bad, atom, stored, shown', [
+    pytest.param('bpm', ['120'], ['x'], 'tmpo', [120], ['120'], marks=pytest.mark.xfail(
+        strict=True, reason="a value that isn't a number empties the atom")),
+    ('bpm', ['120'], 'x', 'tmpo', [120], ['120']),
+    ('track', ['3/12'], ['a/b'], 'trkn', [(3, 12)], ['3']),
+])
+def test_number_field_given_text_keeps_its_value(make_audio, field, first, bad, atom, stored, shown):
+    # "tmpo and the iTunes IDs ... take whole numbers"; "each a whole number".
+    # Synthetic values.
+    path = make_audio('song.m4a')
+    save(path, {field: first})
+    atoms, tag = save(path, {field: bad})
+    assert (atoms[atom], tag[field]) == (stored, shown)
+
+
+@pytest.mark.xfail(strict=True, reason='a freeform atom holding a number is shown and saved as text')
+def test_number_freeform_atom(make_audio):
+    # news.txt: "There was a pretty nasty bug where puddletag would remove any
+    # unsupported tags"; tags.txt: "Any MP4 atoms not in this list will be
+    # assumed to be freeform frames". An atom that isn't text is kept as it is
+    # and not shown. Atom and data are synthetic.
+    path = make_audio('song.m4a', title='Before')
+    atom = '----:com.apple.iTunes:NUM'
+    add_atoms(path, {atom: [MP4FreeForm(b'\x00\x07', AtomDataType.INTEGER)]})
+    assert 'NUM' not in audioinfo.usertags(audioinfo.Tag(str(path)))
+
+    saved, _ = save(path, {'title': ['After']})
+    assert [(bytes(v), v.dataformat) for v in saved[atom]] == [(b'\x00\x07', AtomDataType.INTEGER)]
+
+
+@pytest.mark.parametrize('atoms, shown, kept', [
+    pytest.param({'----:com.apple.iTunes:FOO': [b'upper'], '----:com.apple.iTunes:foo': [b'lower']},
+                 {'FOO': ['upper']},
+                 {'----:com.apple.iTunes:FOO': [b'upper'], '----:com.apple.iTunes:foo': [b'lower']},
+                 marks=pytest.mark.xfail(strict=True, reason='the atom named in lower case is deleted by a save'),
+                 id='case'),
+    pytest.param({'----:com.apple.iTunes:title': [b'Freeform']}, {'title': ['Real']},
+                 {'----:com.apple.iTunes:title': [b'Freeform'], '\xa9nam': ['Real']},
+                 marks=pytest.mark.xfail(strict=True, reason='the freeform atom shows as the title and replaces it'),
+                 id='mapped'),
+])
+def test_freeform_atoms_named_alike(make_audio, atoms, shown, kept):
+    # news.txt: "There was a pretty nasty bug where puddletag would remove any
+    # unsupported tags." The maintainer decided on 2026-11-10 that of atoms of
+    # one name puddletag shows one and keeps the others untouched, and on
+    # 2026-11-11 that names differing only by case are one name and that a
+    # freeform atom named like a mapped field is kept and not shown.
+    # Synthetic values.
+    path = make_audio('song.m4a', title='Real')
+    add_atoms(path, atoms)
+    fields = audioinfo.usertags(audioinfo.Tag(str(path)))
+    assert {k: v for k, v in fields.items() if k.lower() in {s.lower() for s in shown}} == shown
+
+    saved, _ = save(path, {'album': ['A']})
+    assert {atom: saved[atom] for atom in kept} == kept
+
+
+@pytest.mark.xfail(strict=True, reason='a total alone is saved as track 0 of N')
+def test_total_without_a_track(make_audio):
+    # "__total: If the track field is of track/numtracks format, returns
+    # numtracks. Can also be written to." With no track nothing is written.
+    # Synthetic value.
+    path = make_audio('song.m4a', title='T')
+    atoms, tag = save(path, {'__total': '12'})
+    assert 'trkn' not in atoms
+    assert ('track' in tag, 'totaltracks' in tag, tag['title']) == (False, False, ['T'])
+
+
+@pytest.mark.xfail(strict=True, reason="'__total' in tag is False and tag['__total'] is a list")
+def test_total_is_there_with_a_track(make_audio):
+    # "__total: If the track field is of track/numtracks format, returns
+    # numtracks." Synthetic values.
+    atoms, tag = save(make_audio('song.m4a'), {'track': ['3'], 'totaltracks': ['12']})
+    assert ('__total' in tag, tag.get('__total')) == (True, '12')
+
+
+@pytest.mark.parametrize('field, total, atom', [
+    pytest.param('totaltracks', '12', 'trkn', marks=pytest.mark.xfail(
+        strict=True, reason='a total alone shows track 0'), id='tracks'),
+    pytest.param('totaldiscs', '2', 'disk', marks=pytest.mark.xfail(
+        strict=True, reason='a total alone shows disc 0'), id='discs'),
+])
+def test_total_alone_shows_no_track(make_audio, field, total, atom):
+    # "track and totaltracks share the trkn atom ... each a whole number":
+    # MP4 stores a missing number as 0. Synthetic values.
+    atoms, tag = save(make_audio('song.m4a'), {field: [total]})
+    number = {'totaltracks': 'track', 'totaldiscs': 'discnumber'}[field]
+    assert atoms[atom] == [(0, int(total))]
+    assert (number in tag, tag[field]) == (False, [total])
+
+
+@pytest.mark.xfail(strict=True, reason='a total of 0 is shown')
+def test_number_without_a_total_shows_no_total(make_audio):
+    # "track and totaltracks share the trkn atom ... each a whole number":
+    # MP4 stores a missing total as 0, and a save keeps it. Synthetic values.
+    path = make_audio('song.m4a')
+    add_atoms(path, {'disk': [(1, 0)], 'trkn': [(3, 0)]})
+    tag = audioinfo.Tag(str(path))
+    assert (tag['track'], tag['discnumber']) == (['3'], ['1'])
+    assert ('totaltracks' in tag, 'totaldiscs' in tag, '__total' in tag) == (False, False, False)
+
+    atoms, _ = save(path, {'title': ['After']})
+    assert (atoms['trkn'], atoms['disk']) == ([(3, 0)], [(1, 0)])
+
+
+# Minimal 1x1 images, as bytes: Qt can't write GIF.
+GIF = (b'GIF89a\x01\x00\x01\x00\x80\x00\x00\xff\xff\xff\x00\x00\x00!\xf9\x04\x01\x00\x00\x00\x00,'
+       b'\x00\x00\x00\x00\x01\x00\x01\x00\x00\x02\x02D\x01\x00;')
+BMP = (b'BM' + struct.pack('<IHHI', 58, 0, 0, 54)
+       + struct.pack('<IiiHHIIiiII', 40, 1, 1, 1, 24, 0, 4, 2835, 2835, 0, 0) + b'\x00\x00\x00\x00')
+
+
+@pytest.mark.parametrize('data, mime, format', [
+    pytest.param(GIF, 'image/gif', AtomDataType.GIF, id='gif'),
+    pytest.param(BMP, 'image/bmp', AtomDataType.BMP, id='bmp'),
+])
+@pytest.mark.xfail(strict=True, reason='a GIF or BMP cover is dropped on save')
+def test_cover_of_another_image_type(make_audio, data, mime, format):
+    # "MP4 tags also support multiple pictures per file, but not setting
+    # descriptions." Synthetic images.
+    path = make_audio('song.m4a')
+    atoms, tag = save(path, {'__image': [{'data': data, 'mime': mime}]})
+    # mutagen reads any type but JPEG and PNG back as JPEG, so look at the file.
+    assert b'data' + struct.pack('>2I', format, 0) + data in path.read_bytes()
+    assert (bytes(atoms['covr'][0]), tag.images[0]['mime']) == (data, mime)
+
+
+@pytest.mark.xfail(strict=True, reason="a copy's info raises AttributeError")
+def test_copy_of_a_tag(make_audio):
+    # What actions and tag sources run on is a copy of a tag; it must be the
+    # same kind of tag. Synthetic file.
+    path = make_audio('song.m4a', title='Before')
+    save(path, {'__image': [FRONT]})
+    tag = audioinfo.Tag(str(path))
+    twin = copy.deepcopy(tag)
+    twin.update({'title': ['Copy']})
+    assert (tag['title'], twin['title']) == (['Before'], ['Copy'])
+    assert twin.images == tag.images
+    assert twin.info == tag.info

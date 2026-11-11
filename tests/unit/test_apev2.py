@@ -8,11 +8,14 @@ keep them as Disc and Album Artist (foobar2000, Winamp), or AlbumArtist
 (Mp3tag). Keys are compared with their case, which a save keeps (#419).
 Synthetic files and values.
 """
+import copy
+
 import mutagen.apev2
 import mutagen.id3
 import pytest
 
 from puddlestuff import audioinfo
+from test_covers import FRONT, write
 
 APE_FORMATS = ['ape', 'mpc', 'wv']
 
@@ -161,3 +164,65 @@ def test_id3_edit_keeps_an_mp3_s_apev2_tag(make_audio):
     tag.save()
     assert stored(path) == {'Custom': 'x', 'Title': 'Ape'}
     assert mutagen.id3.ID3(str(path))['TIT2'].text == ['B']
+
+
+# A file with no APEv2 tag, the cover and file information lines.
+
+def test_ape_file_without_an_apev2_tag(make_audio):
+    # tags.txt: "__tag_read: The tag that'll get written to in the file." and
+    # new keys are saved "with each word capitalised in APEv2 (Title, ...)".
+    # A Monkey's Audio file with a header and no tag. Synthetic.
+    path = make_audio('song.ape')
+    tag = audioinfo.Tag(str(path))
+    assert (audioinfo.usertags(tag), tag['__tag_read']) == ({}, 'APEv2')
+    tag.update({'title': ['New']})
+    tag.save()
+    assert stored(path) == {'Title': 'New'}
+
+
+@pytest.mark.parametrize('ext', APE_FORMATS)
+def test_delete_cover_and_file_info(make_audio, ext):
+    # tags.txt: "__image: Refers to the album art present in the file." Plugins
+    # get the Tag object and delete these keys (the export_tags plugin restores
+    # a tag dict the same way); the file information isn't saved. Synthetic.
+    path = make_audio('song.' + ext, title='Song')
+    write(path, [FRONT])
+    tag = audioinfo.Tag(str(path))
+    del tag['__image']
+    del tag['__length']
+    assert (tag.images, tag['__length']) == ([], '00:01')
+    tag.save()
+    assert 'Cover Art (Front)' not in stored(path)
+
+
+@pytest.mark.parametrize('ext', APE_FORMATS)
+def test_cover_without_data_is_not_saved(make_audio, ext):
+    # tags.txt: "__image: Refers to the album art present in the file." A cover
+    # with no bytes has nothing to store, so it isn't saved. Synthetic.
+    path = make_audio('song.' + ext, title='Song')
+    tag = audioinfo.Tag(str(path))
+    tag.update({'__image': [{'data': b'', 'description': '', 'imagetype': 3, 'mime': 'image/png'}]})
+    tag.save()
+    assert stored(path) == {'Title': 'Song'}
+
+
+def test_tta_file_info(make_audio):
+    # menus.txt: Properties "Shows the first selected file's format
+    # information". A TrueAudio file is the generic APEv2 class. Synthetic.
+    tag = audioinfo.Tag(str(make_audio('song.tta', title='Song')))
+    [(file_title, rows), (title, info)] = tag.info
+    assert title == 'APEv2 Info'
+    assert dict(info)['Length'] == tag['__length']
+
+
+@pytest.mark.xfail(strict=True, reason="a copy of a tag is the generic APEv2 class: no file information, no filetype")
+@pytest.mark.parametrize('ext', APE_FORMATS + ['tta'])
+def test_copy_of_a_tag(make_audio, ext):
+    # A copy keeps its kind and its file information (the maintainer's
+    # decision): actions and tag sources edit a copy of the tag. Synthetic.
+    tag = audioinfo.Tag(str(make_audio('song.' + ext, title='Before')))
+    twin = copy.deepcopy(tag)
+    twin.update({'title': ['Copy']})
+    assert (tag['title'], twin['title']) == (['Before'], ['Copy'])
+    assert (type(twin) is type(tag), twin.filetype) == (True, tag.filetype)
+    assert twin.info == tag.info
