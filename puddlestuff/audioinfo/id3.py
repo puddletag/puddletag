@@ -618,7 +618,7 @@ def set_rgain(frame, value):
 
 
 def get_rgain(frame):
-    return ':'.join(map(str, [frame.channel, frame.gain, frame.peak]))
+    return [':'.join(map(str, [frame.channel, frame.gain, frame.peak]))]
 
 
 def rgain_handler(frames):
@@ -647,7 +647,7 @@ def set_uslt(f, value):
 
     for lyrics in value:
         try:
-            lyrics = [z for z in lyrics.split('|', 3)]
+            lyrics = [z for z in lyrics.split('|', 2)]
         except (TypeError, ValueError):
             continue
         len_l = len(lyrics)
@@ -662,10 +662,6 @@ def set_uslt(f, value):
         elif len_l == 3:
             lang, desc, text = lyrics
             lang = lang.strip()
-        elif len_l > 3:
-            text = ''.join(lyrics[2:])
-            lang = lyrics[0].strip()
-            desc = lyrics[1]
         else:
             continue
 
@@ -1038,8 +1034,6 @@ def tag_factory(id3_filetype):
                     self.__tags.update(create_ufid(key, value))
                 elif key.startswith('rgain:'):
                     self.__tags.update(create_rgain(key, value))
-                elif key.startswith('unsyncedlyrics:'):
-                    self.__tags.update(create_uslt(key, value))
                 else:
                     self.__tags.update(create_usertext(key, value))
 
@@ -1093,7 +1087,10 @@ def tag_factory(id3_filetype):
             self.mut_obj = audio
             # A frame whose values another frame shows (TXXX:YEAR, under
             # year) is shown too.
-            self._originaltags = [key for key, frame in audio.items() if frame.__class__ in frames]
+            # A UFID or COMM it doesn't show (not UTF-8, a second language) stays.
+            shown = self._shown_frames()
+            self._originaltags = [key for key, frame in audio.items() if frame.__class__ in frames
+                                  and (key in shown or frame.__class__ not in (id3.COMM, id3.UFID))]
             self.update_tag_list()
             return self
 

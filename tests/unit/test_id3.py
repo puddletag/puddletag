@@ -563,7 +563,6 @@ def test_total_needs_a_track_total(make_audio, ext):
     assert ('__total' in with_total, with_total['__total'], '__total' in without) == (True, '12', False)
 
 
-@pytest.mark.xfail(strict=True, raises=TypeError, reason='the field raises TypeError instead of becoming a TXXX')
 def test_lyrics_field_named_with_a_language(id3_file):
     # "Any unknown field is assumed to be a user-defined field. Therefore
     # writing to the field 'mytag' will write to the ID3 tag frame
@@ -574,7 +573,6 @@ def test_lyrics_field_named_with_a_language(id3_file):
         ['eng|d|t'], [], ['eng|d|t'])
 
 
-@pytest.mark.xfail(strict=True, reason='a bar in the lyrics is lost')
 @pytest.mark.parametrize('value, text', [('eng|d|a|b', 'a|b'), ('eng|d|a|b|c', 'a|b|c')])
 def test_lyrics_keep_their_bars(id3_file, value, text):
     # "Values should take the form Language|Description|Lyrics": whatever
@@ -584,7 +582,6 @@ def test_lyrics_keep_their_bars(id3_file, value, text):
         [('eng', 'd', text)], [f'eng|d|{text}'])
 
 
-@pytest.mark.xfail(strict=True, reason='a save deletes the UFID puddletag does not show')
 @pytest.mark.parametrize('ext', ID3_FORMATS)
 def test_undecodable_ufid_is_kept(make_audio, ext):
     # "Only values that can be decoded to UTF-8 will be editable". The
@@ -596,7 +593,6 @@ def test_undecodable_ufid_is_kept(make_audio, ext):
     assert (frames['UFID:example.org'].data, 'ufid:example.org' in tag) == (b'\xff\xfe\x00', False)
 
 
-@pytest.mark.xfail(strict=True, reason='a save deletes the comment puddletag does not show')
 @pytest.mark.parametrize('ext', ID3_FORMATS)
 def test_comments_in_two_languages_are_kept(make_audio, ext):
     # "storing different comment frames requires a different description for
@@ -609,7 +605,6 @@ def test_comments_in_two_languages_are_kept(make_audio, ext):
     assert sorted((c.lang, c.text) for c in frames.getall('COMM:x')) == [('eng', ['English']), ('fra', ['French'])]
 
 
-@pytest.mark.xfail(strict=True, reason='the value is a string, not a list')
 def test_replaygain_value_is_a_list(id3_file):
     # A field maps to a list of strings (audioinfo's contract). Synthetic
     # value.
