@@ -149,25 +149,20 @@ def test_script_error_in_a_filter(matches):
     # "Any text in the form %string% (if it's not enclosed in quotes) will
     # be assumed to be a field." and "Evaluates to True if field is not
     # present in a file."
-    pytest.param('MISSING %artist%', False, marks=pytest.mark.xfail(
-        strict=True, reason='MISSING and PRESENT read %field% as text'), id='missing-percent'),
-    pytest.param('PRESENT %artist%', True, marks=pytest.mark.xfail(
-        strict=True, reason='MISSING and PRESENT read %field% as text'), id='present-percent'),
+    pytest.param('MISSING %artist%', False, id='missing-percent'),
+    pytest.param('PRESENT %artist%', True, id='present-percent'),
     pytest.param('MISSING %style%', True, id='missing-percent-absent'),
     # "Comparisons ignore case"; the docs are silent for field names.
     pytest.param('MISSING Artist', False, id='missing-case'),
     pytest.param('PRESENT ARTIST', True, id='present-case'),
     # A quoted field name is read as the field too (synthetic).
-    pytest.param('MISSING "artist"', False, marks=pytest.mark.xfail(
-        strict=True, reason='MISSING and PRESENT read "field" as text'), id='missing-quoted'),
-    pytest.param('PRESENT "artist"', True, marks=pytest.mark.xfail(
-        strict=True, reason='MISSING and PRESENT read "field" as text'), id='present-quoted'),
+    pytest.param('MISSING "artist"', False, id='missing-quoted'),
+    pytest.param('PRESENT "artist"', True, id='present-quoted'),
 ])
 def test_missing_and_present_read_fields(matches, expression, expected):
     assert matches(expression, **BONGO) is expected
 
 
-@pytest.mark.xfail(strict=True, reason='MISSING is False for a file without tags')
 def test_missing_and_present_on_a_file_without_tags(matches):
     # "MISSING field: Evaluates to True if field is not present in a file."
     # A file with no tags at all lacks every field.

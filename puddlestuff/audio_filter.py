@@ -62,6 +62,14 @@ def wrap_bool(original):
     return __bool__
 
 
+def field_name(text):
+    """The field a MISSING or PRESENT operand names: `artist`, `%artist%` or
+    `"artist"`."""
+    if len(text) > 1 and text[0] == text[-1] and text[0] in '%"':
+        return text[1:-1]
+    return text
+
+
 def wrap_comparison(original):
     """Like wrap_bool, for the operators that compare text: an operand that
     isn't text (a bracketed comparison) can't be compared, so the result is
@@ -147,9 +155,7 @@ class Missing(BoolOperand):
 
     def __bool__(self):
         logging.debug('missing: ' + str(self.arg))
-        if getattr(self, "audio", None):
-            return not (self.arg in self.audio)
-        return False
+        return field_name(self.arg) not in self.audio
 
 
 class Present(BoolOperand):
@@ -158,9 +164,7 @@ class Present(BoolOperand):
 
     def __bool__(self):
         logging.debug('present: ' + str(self.arg))
-        if getattr(self, "audio", None):
-            return (self.arg in self.audio)
-        return False
+        return field_name(self.arg) in self.audio
 
 
 class BoolIs(BoolOperand):
