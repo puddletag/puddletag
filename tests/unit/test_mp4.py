@@ -456,11 +456,9 @@ def test_number_freeform_atom(make_audio):
     pytest.param({'----:com.apple.iTunes:FOO': [b'upper'], '----:com.apple.iTunes:foo': [b'lower']},
                  {'FOO': ['upper']},
                  {'----:com.apple.iTunes:FOO': [b'upper'], '----:com.apple.iTunes:foo': [b'lower']},
-                 marks=pytest.mark.xfail(strict=True, reason='the atom named in lower case is deleted by a save'),
                  id='case'),
     pytest.param({'----:com.apple.iTunes:title': [b'Freeform']}, {'title': ['Real']},
                  {'----:com.apple.iTunes:title': [b'Freeform'], '\xa9nam': ['Real']},
-                 marks=pytest.mark.xfail(strict=True, reason='the freeform atom shows as the title and replaces it'),
                  id='mapped'),
 ])
 def test_freeform_atoms_named_alike(make_audio, atoms, shown, kept):

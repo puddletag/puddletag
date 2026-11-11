@@ -61,6 +61,9 @@ TAGS = {
     '\xa9pub': 'itunespublisher',
 }
 
+# Fields a freeform atom can't take the name of: the mapped atoms show there.
+MAPPED = {*TAGS.values(), 'discnumber', 'totaldiscs', 'totaltracks', 'track'}
+
 # The data types of a freeform atom that holds text.
 TEXT_FORMATS = (AtomDataType.IMPLICIT, AtomDataType.UTF8)
 
@@ -384,7 +387,7 @@ class Tag(util.MockTag):
         revmap, mapping = self.revmapping, self.mapping
         self.revmapping, self.mapping = {}, {}
 
-        self.__freeform = {}  # Keys are tags as required by mutagen i.e. The '----'
+        self.__freeform = CaselessDict()  # Keys are tags as required by mutagen i.e. The '----'
         # frames. Values are the tag as represented by puddletag.
 
         if audio.tags:  # Not empty
@@ -433,6 +436,9 @@ class Tag(util.MockTag):
                     except UnicodeDecodeError:
                         self.__errors.add(key)  # not text: kept as it is, not shown
                         continue
+                    if field.lower() in MAPPED:
+                        self.__errors.add(key)  # the mapped atom shows; this one is kept
+                        continue
                     if field in self.__freeform:
                         # Of atoms sharing a name the same one always shows,
                         # whatever order a save leaves them in; the rest are
@@ -442,6 +448,7 @@ class Tag(util.MockTag):
                         self.__errors.add(old if winner == key else key)
                         if winner != key:
                             continue
+                        tags.pop(old[old.find(':', old.find(':') + 1) + 1:], None)
                     self.__freeform[field] = key
                     tags[field] = field_value
 
@@ -523,7 +530,7 @@ class Tag(util.MockTag):
         audio.save()
 
     def set_fundamentals(self, tags, images, mut_obj, freeform=None, errors=None):
-        self.__freeform = {} if freeform is None else freeform
+        self.__freeform = CaselessDict() if freeform is None else freeform
         self.__errors = {} if errors is None else errors
         self.__tags = tags
         self.mut_obj = mut_obj
