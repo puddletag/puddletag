@@ -9,7 +9,6 @@ import pytest
 from mutagen.mp4 import AtomDataType, MP4FreeForm
 
 from puddlestuff import audioinfo
-from puddlestuff.audioinfo.util import to_string
 from test_covers import FRONT
 
 
@@ -201,8 +200,8 @@ def test_track_and_its_total(make_audio):
     atoms, tag = save(make_audio('song.m4a'), {'track': ['3'], 'totaltracks': ['12']})
     assert atoms['trkn'] == [(3, 12)]
     assert (tag['track'], tag['totaltracks']) == (['3'], ['12'])
-    # tags.txt, __total: the total (a list here, a string for MP3 and FLAC).
-    assert to_string(tag['__total']) == '12'
+    # tags.txt, __total: the total.
+    assert tag['__total'] == '12'
 
 
 # The disc number is discnumber in ID3, APEv2 and WMA, in the tag sources,
@@ -487,7 +486,6 @@ def test_total_without_a_track(make_audio):
     assert ('track' in tag, 'totaltracks' in tag, tag['title']) == (False, False, ['T'])
 
 
-@pytest.mark.xfail(strict=True, reason="'__total' in tag is False and tag['__total'] is a list")
 def test_total_is_there_with_a_track(make_audio):
     # "__total: If the track field is of track/numtracks format, returns
     # numtracks." Synthetic values.

@@ -6,7 +6,7 @@ from . import tag_versions, util
 from .util import (usertags, isempty,
                    FILENAME, PATH,
                    getdeco, setdeco, FILETAGS, str_filesize, fn_hash, CaselessDict, keys_deco,
-                   del_deco, cover_info, info_to_dict, parse_image, get_total, get_mime, FieldNameError,
+                   del_deco, cover_info, info_to_dict, parse_image, get_mime, FieldNameError,
                    LYRICS_PREFIX)
 
 ATTRIBUTES = ('frequency', 'bitrate', 'length', 'accessed', 'size', 'created',
@@ -254,10 +254,7 @@ class Tag(util.MockTag):
             return bool(self.images)
 
         elif key == '__total':
-            try:
-                return bool(get_total(self))
-            except (KeyError, ValueError):
-                return False
+            return 'totaltracks' in self.__tags
 
         if self.revmapping:
             key = self.revmapping.get(key, key)
@@ -287,7 +284,7 @@ class Tag(util.MockTag):
             if key == '__image':
                 return self.images
             elif key == '__total':
-                return FUNCS['totaltracks'][0](self.__tags['totaltracks'])
+                return util.to_string(FUNCS['totaltracks'][0](self.__tags['totaltracks']))
             else:
                 return self.__tags[key]
 
