@@ -561,8 +561,8 @@ def str_filesize(size):
     >>>str_filesize(1024**3)
     '1.00 GB'
     """
-    valid = [z for z in _sizes if size / (1024.0 ** z) > 1]
-    val = max(valid)
+    valid = [z for z in _sizes if size >= 1024 ** z]
+    val = max(valid, default=0)
     if val < 2:
         return '%d %s' % (size / (1024 ** val), _sizes[val])
     else:

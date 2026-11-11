@@ -199,7 +199,6 @@ def test_file_size_units(size, text):
     assert audioinfo.str_filesize(size) == text
 
 
-@pytest.mark.xfail(strict=True, reason='an exact 1024 bytes shows as 1024 B, 1 GiB as 1024.00 MB')
 @pytest.mark.parametrize('size, text', [
     (1024, '1 KB'),
     (1024 ** 2, '1.00 MB'),
@@ -210,14 +209,12 @@ def test_file_size_at_each_unit(size, text):
     assert audioinfo.str_filesize(size) == text
 
 
-@pytest.mark.xfail(strict=True, reason='a file under 2 bytes raises ValueError')
 @pytest.mark.parametrize('size, text', [(0, '0 B'), (1, '1 B')])
 def test_size_of_an_empty_file(size, text):
     # __file_size: "The file's size in human-readable format." Synthetic sizes.
     assert audioinfo.str_filesize(size) == text
 
 
-@pytest.mark.xfail(strict=True, reason='a file under 2 bytes raises ValueError')
 def test_empty_wavpack_file(tmp_path):
     # __size: "The size of the file in bytes." __file_size: "The file's size
     # in human-readable format." Synthetic empty file.

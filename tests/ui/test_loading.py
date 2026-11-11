@@ -79,7 +79,6 @@ def test_cancel_lists_the_files_read_and_reads_no_more(mainwin, make_audio, tmp_
     assert waiting < FILES
 
 
-@pytest.mark.xfail(strict=True, reason='an empty .wv raises ValueError and is not listed')
 def test_empty_file_of_a_format_that_allows_it_is_listed(mainwin, make_audio, tmp_path, qtbot):
     # menus.txt, Open Folder: "All files with supported/valid tags are read."
     # tags.txt, __file_size: "The file's size in human-readable format."
