@@ -165,7 +165,6 @@ def test_extension_written_by_format(user, nested, qtbot):
     assert table.model().taginfo[0].filepath == str(renamed)
 
 
-@pytest.mark.xfail(strict=True, reason='Format raises a syntax error instead of showing it')
 def test_format_with_a_syntax_error(user, loaded, mainwin, dialogs):
     # Tag->File shows a pattern's syntax error in a warning and changes
     # nothing; Format does the same. Synthetic pattern, missing its closing

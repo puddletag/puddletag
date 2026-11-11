@@ -241,17 +241,20 @@ def format(parent=None, preview=None):
     pattern = status['patterntext']
     selected = status['selectedtags']
 
-    ret = []
     tf = findfunc.tagtofilename
 
     state = {'__total_files': str(len(files))}
-    for i, (audio, s) in enumerate(zip(files, selected)):
-        state['__counter'] = str(i + 1)
-        val = tf(pattern, audio, state=state)
-        # Not the folder cells: a pattern's value there moves the folder,
-        # relative to the working folder.
-        ret.append(dict([(tag, val) for tag in s if tag not in (DIRNAME, DIRPATH, PATH)]))
-    emit('writeselected', ret)
+
+    # A generator, so writeselected shows a syntax error instead of raising.
+    def values():
+        for i, (audio, s) in enumerate(zip(files, selected)):
+            state['__counter'] = str(i + 1)
+            val = tf(pattern, audio, state=state)
+            # Not the folder cells: a pattern's value there moves the folder,
+            # relative to the working folder.
+            yield dict([(tag, val) for tag in s if tag not in (DIRNAME, DIRPATH, PATH)])
+
+    emit('writeselected', values())
 
 
 def in_lib(state, parent=None):
