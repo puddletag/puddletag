@@ -105,3 +105,61 @@ def test_folder_cells_left_alone(user, loaded, qtbot, tmp_path, monkeypatch):
     assert [in_file(music / f'{i} - Title {i}', 'title') for i in (1, 2, 3)] == [
         [f'{i} - Title {i}'] for i in (1, 2, 3)]
     assert [audio.dirpath for audio in table.model().taginfo] == [str(music)] * 3
+
+
+@pytest.mark.xfail(strict=True, reason='patterns read only the fields keys() lists, which hold no __total')
+def test_total_in_the_pattern(mainwin, make_audio, tmp_path, qtbot, user):
+    # tags.txt: "__total: If the track field is of track/numtracks format,
+    # returns numtracks."
+    path = make_audio('song.flac', tmp_path / 'music', title='Song', tracknumber='3/12')
+    mainwin.openDir(str(path.parent), False)
+    table = mainwin._table
+    qtbot.waitUntil(lambda: table.model().rowCount() == 1)
+    user.activate()
+    table.setFocus()
+    user.click_cell(user.cell(0, 'title'))
+    set_pattern(user, '%__total%')
+    user.click_toolbar('&Format')
+    qtbot.waitUntil(lambda: in_file(path, 'title') == ['12'])
+    assert table.model().taginfo[0]['title'] == ['12']
+
+
+@pytest.fixture
+def nested(mainwin, make_audio, tmp_path, qtbot, user):
+    """One MP3 in A/B, loaded."""
+    path = make_audio('song.mp3', tmp_path / 'A' / 'B', title='Song')
+    mainwin.openDir(str(path.parent), False)
+    table = mainwin._table
+    qtbot.waitUntil(lambda: table.model().rowCount() == 1)
+    user.activate()
+    table.setHeaderTags(table.model().headerdata + [('__ext', '__ext'), ('__parent_dir', '__parent_dir')])
+    return table, path
+
+
+def test_parent_dir_not_written_by_format(user, nested, qtbot, tmp_path):
+    # __parent_dir: "Cannot be written to."
+    table, path = nested
+    user.click_cell(user.cell(0, '__parent_dir'))
+    set_pattern(user, 'X')
+    user.click_toolbar('&Format')
+    # The first Format has run by the time the second one's result shows.
+    user.click_cell(user.cell(0, 'title'))
+    set_pattern(user, '%title%!')
+    user.click_toolbar('&Format')
+    qtbot.waitUntil(lambda: in_file(path, 'title') == ['Song!'])
+    assert path.exists()
+    assert not (tmp_path / 'A' / 'X').exists()
+    assert table.model().taginfo[0]['__parent_dir'] == 'A'
+
+
+def test_extension_written_by_format(user, nested, qtbot):
+    # __ext: "Extension of the file." The docs don't say it can't be written
+    # to; the maintainer's decision is that Format renames the file.
+    table, path = nested
+    user.click_cell(user.cell(0, '__ext'))
+    set_pattern(user, 'ogg')
+    user.click_toolbar('&Format')
+    renamed = path.parent / 'song.ogg'
+    qtbot.waitUntil(renamed.exists)
+    assert not path.exists()
+    assert table.model().taginfo[0].filepath == str(renamed)

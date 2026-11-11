@@ -77,3 +77,20 @@ def test_cancel_lists_the_files_read_and_reads_no_more(mainwin, make_audio, tmp_
     qtbot.waitUntil(lambda: len(read) == len(started))
     assert (len(started), model.rowCount()) == (waiting, 3)
     assert waiting < FILES
+
+
+@pytest.mark.xfail(strict=True, reason='an empty .wv raises ValueError and is not listed')
+def test_empty_file_of_a_format_that_allows_it_is_listed(mainwin, make_audio, tmp_path, qtbot):
+    # menus.txt, Open Folder: "All files with supported/valid tags are read."
+    # tags.txt, __file_size: "The file's size in human-readable format."
+    # Synthetic empty WavPack file.
+    music = tmp_path / 'music'
+    make_audio('a.mp3', music, title='A')
+    (music / 'b.wv').write_bytes(b'')
+
+    mainwin.openDir(str(music), False)
+    model = mainwin._table.model()
+    qtbot.waitUntil(lambda: model.rowCount() == 2)
+
+    files = sorted(model.taginfo, key=lambda audio: audio.filepath)
+    assert files[1]['__file_size'] == '0 B'

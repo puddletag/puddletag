@@ -101,3 +101,23 @@ def test_field_of_its_own_read(make_audio, ext, kind):
     path = make_audio('song.' + ext, title='Song')
     write(path, kind, KEYS[kind][1], VALUES)
     assert audioinfo.Tag(str(path))['myfield'] == VALUES
+
+
+@pytest.mark.parametrize('ext, kind', FORMATS)
+def test_blank_value_among_several(make_audio, ext, kind):
+    # The docs are silent on blank values among several; each format keeps
+    # what it does today, MP4 the blank and the others without it
+    # (https://github.com/puddletag/puddletag/issues/1030).
+    path = make_audio('song.' + ext, title='Song')
+    tag = save(path, {'artist': ['a', '', 'c']})
+    expected = ['a', '', 'c'] if kind == 'MP4' else ['a', 'c']
+    assert (stored(path, kind, KEYS[kind][0]), tag['artist']) == (expected, expected)
+
+
+@pytest.mark.parametrize('ext, kind', FORMATS)
+def test_field_of_blanks_removed(make_audio, ext, kind):
+    # tut3.txt: "Empty a cell to remove that field from the file."
+    path = make_audio('song.' + ext, title='Song')
+    save(path, {'artist': ['a']})
+    tag = save(path, {'artist': ['', '']})
+    assert ('artist' in tag, stored(path, kind, KEYS[kind][0])) == (False, [])

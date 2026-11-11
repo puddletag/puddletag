@@ -3,6 +3,7 @@ its list, its options changed, then OK, Cancel, Esc or Enter; the config
 files and the main window checked, also after a restart (preferences.txt,
 menus.txt, translate.txt, tags.txt). Files and profiles are synthetic."""
 import os
+from copy import deepcopy
 
 import mutagen.id3
 import pytest
@@ -965,3 +966,37 @@ def test_confirmation_shows_the_programs_wording(mainwin, user, qtbot, restart, 
     assert 'Confirm when moving files to the trash.' in texts
     assert 'Synthetic old wording' not in texts
     new_user.close_preferences(window, 'Cancel')
+
+
+@pytest.fixture
+def restored_mappings(monkeypatch):
+    """setmapping merges a global mapping into each tag class's own and
+    replaces only the tag types its mapping names: every class gets its
+    mapping back after the test."""
+    monkeypatch.setattr(audioinfo, 'mapping', audioinfo.mapping)
+    monkeypatch.setattr(audioinfo, 'revmapping', deepcopy(audioinfo.revmapping))
+    for cls in {kind[1] for kind in audioinfo.extensions.values()}:
+        monkeypatch.setattr(cls, 'mapping', deepcopy(cls.mapping))
+        monkeypatch.setattr(cls, 'revmapping', deepcopy(cls.revmapping))
+
+
+@pytest.mark.xfail(strict=True, reason='a global mapping is listed and saved again under each tag type')
+def test_global_mapping_is_listed_and_saved_once(mainwin, user, qtbot, restart, restored_mappings, make_audio, tmp_path):
+    # preferences.txt: "A mapping whose Tag is global applies to every tag
+    # type." Synthetic mapping and file.
+    make_audio('01.flac', tmp_path / 'music', comment='Synthetic comment')
+    window = user.open_preferences('Mappings')
+    page = window.stack.currentWidget()
+    add_mapping(user, page, 'global', 'comment', 'notes')
+    user.close_preferences(window)
+
+    win, user = restarted(restart, qtbot, user)
+    window = user.open_preferences('Mappings')
+    rows = mapping_rows(window.stack.currentWidget())
+    user.close_preferences(window)
+
+    assert [r for r in rows if r[1:] == ('comment', 'notes')] == [('global', 'comment', 'notes')]
+    with open(mappings_file()) as f:
+        assert [line.strip() for line in f if line.strip().endswith(',comment,notes')] == ['global,comment,notes']
+    model = load(win, qtbot, tmp_path / 'music', 1)
+    assert model.taginfo[0]['notes'] == ['Synthetic comment']

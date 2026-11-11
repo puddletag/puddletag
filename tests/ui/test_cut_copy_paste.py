@@ -2,6 +2,9 @@
 their shortcuts and the File-View's right-click menu. Each paste is checked
 in the files and in the table. Synthetic files.
 """
+import base64
+import json
+
 import pytest
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QApplication
@@ -217,3 +220,22 @@ def test_paste_onto_selection_is_not_restarted(user, loaded, qtbot):
     user.click_menu('Paste &Onto Selection')
     qtbot.waitUntil(lambda: in_file(paths[1], 'title') == [['Artist 1']])
     assert in_file(paths[1], 'title', 'album', 'genre', 'comment') == [['Artist 1'], ['Album 1'], None, None]
+
+
+def test_copy_all_fields_as_text(user, loaded, qtbot):
+    # "Copies the complete tag of the selected files": the clipboard's text
+    # holds it as JSON, only to support pasting outside of puddletag (code
+    # comment).
+    table, paths = loaded
+    tag = audioinfo.Tag(str(paths[0]))
+    tag.update({'genre': ['Genre 1'], '__image': [{'data': JPEG, 'mime': 'image/jpeg'}]})
+    tag.save()
+    user.press(Key.Key_F5)  # Refresh, to read the cover
+    qtbot.waitUntil(lambda: bool(table.model().taginfo[0].images))
+    user.activate()  # the loading window took the activation
+    user.click_cell(user.cell(0, 'title'))
+    user.press(Key.Key_C, Ctrl | Shift)
+    [copied] = json.loads(QApplication.clipboard().text())
+    assert copied['artist'] == ['Artist 1']
+    assert copied['genre'] == ['Genre 1']
+    assert [base64.b64decode(image['data']) for image in copied['__image']] == [JPEG]

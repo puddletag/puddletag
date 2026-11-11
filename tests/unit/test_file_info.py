@@ -11,7 +11,7 @@ import re
 import mutagen
 import pytest
 
-from puddlestuff import audioinfo
+from puddlestuff import audioinfo, findfunc
 from puddlestuff.audioinfo.util import strlength
 
 # Each format and the tag puddletag reads and writes in it.
@@ -185,3 +185,120 @@ def test_save_with_no_tags(make_audio, tmp_path, ext):
     tag.update({'title': ['New']})
     tag.save()
     assert audioinfo.Tag(str(path))['title'] == ['New']
+
+
+@pytest.mark.parametrize('size, text', [
+    (2, '2 B'),
+    (1023, '1023 B'),
+    (1025, '1 KB'),
+    (5 * 1024 ** 2, '5.00 MB'),
+    (3 * 1024 ** 3, '3.00 GB'),
+])
+def test_file_size_units(size, text):
+    # __file_size: "The file's size in human-readable format." Synthetic sizes.
+    assert audioinfo.str_filesize(size) == text
+
+
+@pytest.mark.xfail(strict=True, reason='an exact 1024 bytes shows as 1024 B, 1 GiB as 1024.00 MB')
+@pytest.mark.parametrize('size, text', [
+    (1024, '1 KB'),
+    (1024 ** 2, '1.00 MB'),
+    (1024 ** 3, '1.00 GB'),
+])
+def test_file_size_at_each_unit(size, text):
+    # __file_size: "The file's size in human-readable format." Synthetic sizes.
+    assert audioinfo.str_filesize(size) == text
+
+
+@pytest.mark.xfail(strict=True, reason='a file under 2 bytes raises ValueError')
+@pytest.mark.parametrize('size, text', [(0, '0 B'), (1, '1 B')])
+def test_size_of_an_empty_file(size, text):
+    # __file_size: "The file's size in human-readable format." Synthetic sizes.
+    assert audioinfo.str_filesize(size) == text
+
+
+@pytest.mark.xfail(strict=True, reason='a file under 2 bytes raises ValueError')
+def test_empty_wavpack_file(tmp_path):
+    # __size: "The size of the file in bytes." __file_size: "The file's size
+    # in human-readable format." Synthetic empty file.
+    path = tmp_path / 'empty.wv'
+    path.write_bytes(b'')
+    tag = audioinfo.Tag(str(path))
+    assert (tag['__size'], tag['__file_size']) == ('0', '0 B')
+
+
+@pytest.mark.xfail(strict=True, reason='patterns read only the fields keys() lists, which hold no __total')
+@pytest.mark.parametrize('ext', sorted(set(FORMATS) - {'m4a'}))
+def test_total_in_a_pattern(make_audio, tmp_path, ext):
+    # "If the track field is of track/numtracks format, returns numtracks."
+    path = make_audio('song.' + ext, tmp_path, tracknumber='3/12')
+    assert findfunc.parsefunc('%__total%', audioinfo.Tag(str(path))) == '12'
+
+
+@pytest.mark.xfail(strict=True, reason='patterns read only the fields keys() lists, which hold no __total')
+def test_total_in_a_pattern_mp4(make_audio, tmp_path):
+    # MP4: "writing track as 3/12 ... sets both" (make_audio can't set an MP4
+    # track, so it is written through the tag).
+    path = make_audio('song.m4a', tmp_path, title='Song')
+    tag = audioinfo.Tag(str(path))
+    tag.update({'track': ['3/12']})
+    tag.save()
+    assert findfunc.parsefunc('%__total%', audioinfo.Tag(str(path))) == '12'
+
+
+def test_no_total_without_one_in_the_track(make_audio, tmp_path):
+    # Synthetic: "If the track field is of track/numtracks format, returns
+    # numtracks." A track of 3 has no numtracks, so there is no __total.
+    path = make_audio('song.flac', tmp_path, tracknumber='3')
+    tag = audioinfo.Tag(str(path))
+    assert '__total' not in tag
+    with pytest.raises(KeyError):
+        tag['__total']
+
+
+def test_empty_total_removes_it(make_audio, tmp_path):
+    # Synthetic: "Can also be written to." Writing an empty total leaves the
+    # track alone.
+    path = make_audio('song.flac', tmp_path, tracknumber='3/12')
+    tag = audioinfo.Tag(str(path))
+    tag.update({'__total': ''})
+    tag.save()
+    assert audioinfo.Tag(str(path))['track'] == ['3']
+
+
+@pytest.mark.xfail(strict=True, reason="writing __parent_dir renames the file's folder")
+def test_parent_dir_cannot_be_written(song):
+    # __parent_dir: "Cannot be written to."
+    path = song['__path']
+    song.update({'__parent_dir': 'X'})
+    assert song['__path'] == path
+    assert song['__parent_dir'] == 'Artist'
+
+
+def test_file_name_fields_written_one_by_one(song):
+    # The docs don't say whether __ext, __dirname, __filename_no_ext and
+    # __filename can be written to; the maintainer's call is that writing
+    # each renames the file. Each on a fresh tag of the same file. Synthetic
+    # values.
+    path = song['__path']
+    folder, name = os.path.split(path)
+    ext = song['__ext']
+
+    tag = audioinfo.Tag(path)
+    tag.update({'__ext': ''})
+    assert tag['__path'] == os.path.join(folder, 'song')
+    assert tag.filename_no_ext == 'song'
+
+    tag = audioinfo.Tag(path)
+    tag.update({'__dirname': 'Other'})
+    assert tag['__path'] == os.path.join(os.path.dirname(folder), 'Other', name)
+    assert (tag.dirname, tag.parent_dir) == ('Other', 'Artist')
+
+    tag = audioinfo.Tag(path)
+    tag.update({'__filename_no_ext': 'other'})
+    assert tag['__path'] == os.path.join(folder, 'other.' + ext)
+    assert tag.filename_no_ext == 'other'
+
+    tag = audioinfo.Tag(path)
+    tag.update({'__filename': ['list.' + ext]})
+    assert tag['__path'] == os.path.join(folder, 'list.' + ext)
