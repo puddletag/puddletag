@@ -745,7 +745,7 @@ Match &Case, check"""
 
     def replace_matches(value):
         try:
-            return re.sub(regex, replace_tokens, value, 0, flags)
+            return re.sub(regex, replace_tokens, value, count=0, flags=flags)
         except re.error as e:
             raise findfunc.FuncError(str(e))
 

@@ -11,7 +11,6 @@ Where the code disagrees with the docs, the case is a strict xfail that says
 what differs, so it starts failing once either side is fixed.
 """
 import re
-import sys
 import warnings
 
 import pytest
@@ -543,8 +542,6 @@ def test_replace_an_empty_word():
     assert run('$replace(abc,,x)') == 'abc'
 
 
-@pytest.mark.xfail(sys.version_info >= (3, 13), strict=True, raises=DeprecationWarning,
-                   reason='re.sub gets count and flags as positional arguments')
 def test_regex_without_deprecation_warning():
     # docs: "$regex(text, regex, repl, matchcase)" replaces matches; Python 3.13
     # warns about re.sub's positional count and flags. Synthetic text.
