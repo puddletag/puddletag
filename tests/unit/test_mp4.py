@@ -540,7 +540,6 @@ def test_cover_of_another_image_type(make_audio, data, mime, format):
     assert (bytes(atoms['covr'][0]), tag.images[0]['mime']) == (data, mime)
 
 
-@pytest.mark.xfail(strict=True, reason="a copy's info raises AttributeError")
 def test_copy_of_a_tag(make_audio):
     # What actions and tag sources run on is a copy of a tag; it must be the
     # same kind of tag. Synthetic file.

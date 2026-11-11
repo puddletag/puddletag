@@ -237,7 +237,6 @@ def test_clearing_a_field_the_file_lacks(vorbis_file):
     assert comments(vorbis_file) == [('TITLE', 'Song')]
 
 
-@pytest.mark.xfail(strict=True, reason='the copy is the base class: no file information, no info')
 def test_copy_of_a_tag(vorbis_file):
     # A copy of a tag keeps its kind and its file information, and editing it
     # leaves the original alone. Actions and tag sources run their functions on

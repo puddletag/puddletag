@@ -215,7 +215,6 @@ def test_tta_file_info(make_audio):
     assert dict(info)['Length'] == tag['__length']
 
 
-@pytest.mark.xfail(strict=True, reason="a copy of a tag is the generic APEv2 class: no file information, no filetype")
 @pytest.mark.parametrize('ext', APE_FORMATS + ['tta'])
 def test_copy_of_a_tag(make_audio, ext):
     # A copy keeps its kind and its file information (the maintainer's

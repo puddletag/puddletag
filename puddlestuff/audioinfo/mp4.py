@@ -268,6 +268,8 @@ class Tag(util.MockTag):
         cls.revmapping = self.revmapping
         cls.set_fundamentals(deepcopy(self.__tags), deepcopy(self.images),
                              self.mut_obj, deepcopy(self.__freeform), deepcopy(self.__errors))
+        cls.set_attrs(ATTRIBUTES, cls.__tags)
+        cls.filetype = self.filetype
         cls.filepath = self.filepath
         return cls
 

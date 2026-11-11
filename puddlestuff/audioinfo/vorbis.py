@@ -118,11 +118,12 @@ def vorbis_tag(base, name):
             return key in self.__tags
 
         def __deepcopy__(self, memo):
-            cls = Tag()
+            cls = type(self)()
             cls.mapping = self.mapping
             cls.revmapping = self.revmapping
             cls.set_fundamentals(deepcopy(self.__tags),
                                  self.mut_obj, self.images)
+            cls.set_attrs(ATTRIBUTES)
             cls.filepath = self.filepath
             return cls
 

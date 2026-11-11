@@ -117,11 +117,13 @@ def get_class(mutagen_file, filetype, attrib_fields, header_error=None):
             return key in self.__tags
 
         def __deepcopy__(self, memo):
-            cls = Tag()
+            cls = type(self)()
             cls.mapping = self.mapping
             cls.revmapping = self.revmapping
             cls.set_fundamentals(deepcopy(self.__tags),
                                  self.mut_obj, self.images)
+            cls.set_attrs(attrib_fields, cls.__tags)
+            cls.filetype = self.filetype
             cls.filepath = self.filepath
             return cls
 
