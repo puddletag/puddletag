@@ -326,9 +326,20 @@ Match filename's &case:, check'''
 
     images = []
     dirpath = r_tags.dirpath
-    pictures = fnmatch(filepatterns, os.listdir(dirpath), matchcase)
-    for pic in pictures:
-        filename = os.path.join(dirpath, pic)
+    filenames = []
+    for entry in filepatterns.split(';'):
+        entry = entry.strip()
+        folder = os.path.join(dirpath, os.path.dirname(entry))
+        try:
+            names = os.listdir(folder)
+        except OSError:
+            continue
+        for name in sorted(fnmatch(os.path.basename(entry), names, matchcase),
+                           key=lambda x: natural_sort_key(x, case_insensitive=not matchcase)):
+            filename = os.path.join(folder, name)
+            if filename not in filenames:
+                filenames.append(filename)
+    for filename in filenames:
         image = _load_image(filename)
         if not image:
             continue

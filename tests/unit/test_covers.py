@@ -371,8 +371,6 @@ def test_artwork_from_several_filenames(make_audio):
     assert sorted(cover['data'] for cover in changes['__image']) == sorted([FRONT['data'], BACK['data']])
 
 
-@pytest.mark.xfail(strict=True, reason='code differs from the docs: the files load in the order the folder lists '
-                                       'them')
 def test_artwork_loaded_in_order(make_audio):
     # "The files are loaded in the order the list names them": so the first
     # is the cover __image_mimetype and __image_size describe. Both orders,
@@ -502,7 +500,6 @@ def test_artwork_skips_what_cannot_be_read(make_audio):
     assert [cover['data'] for cover in changes['__image']] == [BACK['data']]
 
 
-@pytest.mark.xfail(strict=True, reason='an absolute path loads nothing (#312)')
 @pytest.mark.parametrize('pattern', ['{covers}/*.png', '{covers}/front.png', '../covers/front.png'])
 def test_artwork_loaded_from_another_folder(make_audio, tmp_path, pattern):
     # "Each name can also be an absolute path or be relative to the file's
@@ -517,7 +514,6 @@ def test_artwork_loaded_from_another_folder(make_audio, tmp_path, pattern):
     assert [cover['data'] for cover in changes.get('__image', [])] == [FRONT['data']]
 
 
-@pytest.mark.xfail(strict=True, reason='the matches of a wildcard load in the order the folder lists them')
 def test_wildcard_matches_loaded_by_name(make_audio):
     # "The files are loaded in the order the list names them; a wildcard's
     # matches by name." The files are created in the opposite order.
