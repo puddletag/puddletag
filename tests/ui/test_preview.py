@@ -534,7 +534,6 @@ def test_filename_set_back(mainwin, user, loaded, qtbot):
     assert shown(user, 0, '__filename') == ('01.mp3', 'italic')
 
 
-@pytest.mark.xfail(strict=True, reason="emptying a changed cell in Preview Mode brings back the file's value")
 def test_emptying_a_changed_cell_previews_the_removal(mainwin, user, loaded, qtbot):
     # "Empty a cell to remove that field from the file." (tut3.txt) In
     # Preview Mode the removal is shown in bold until it is written

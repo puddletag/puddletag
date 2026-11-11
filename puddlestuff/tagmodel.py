@@ -281,7 +281,7 @@ def model_tag(model, base=audioinfo.AbstractTag):
                     value = to_string(value)
 
                 if key not in READONLY:
-                    if not value and key in self.preview:
+                    if not value and key in self.preview and not self.stored(key):
                         del (self.preview[key])
                     else:
                         self.preview[key] = value
