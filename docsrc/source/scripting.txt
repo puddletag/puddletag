@@ -145,9 +145,9 @@ The scripting functions that puddletag supports are listed here. Use them where 
    Returns False if x evaluates to True and vice versa.
 
 
-.. describe:: $num(number, y)
+.. describe:: $num(number, y, keep_total)
 
-   Pads zeroes to number until it's of length y. If number has excess zeroes and it's length is less than y then these zeroes are removed.
+   Pads zeroes to number until it's of length y. If number has excess zeroes and it's length is less than y then these zeroes are removed. If number has a total, as in ``5/12``, the total is dropped: ``$num(5/12,3)`` gives ``005``. Pass 1 as **keep_total** to keep it: ``$num(5/12,3,1)`` gives ``005/12``.
 
 
 .. describe:: $odd(x)

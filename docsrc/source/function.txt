@@ -113,7 +113,7 @@ Consider a file */mnt/music/Thebe/Ungawa Kum.mp3* containing four images. The fi
 
 + The pattern *folder_%img_counter%* will create four images in */mnt/music/Thebe*: **folder_1.png, folder_2.png, folder_3.jpg** and **folder_4.jpg**.
 + *%img_desc%* will create four images in */mnt/music/Thebe*: **one.png, two.png, three.jpg** and **four.jpg**.
-+ */home/user/Desktop/%artist%* will create four images in */home/user/Desktop*: **Thebe_1.png, Thebe_2.png, Thebe_3.jpg** and **Thebe_4.jpg**.
++ */home/user/Desktop/%artist%* will create four images in */home/user/Desktop*: **Thebe.png, Thebe_1.png, Thebe.jpg** and **Thebe_1.jpg**.
 
 .. _filename_to_tag:
 
@@ -200,7 +200,7 @@ Description
 
 Loads the artwork in filenames to the specified file.
 
-Filenames are a semicolon-separated list of shell-style wildcards, eg. **\*.jpg;\*.png**. Or just something like **folder.jpg**. The files will be loaded in order and the images.
+Filenames are a semicolon-separated list of shell-style wildcards, eg. **\*.jpg;\*.png**. Or just something like **folder.jpg**. Each name can also be an absolute path or be relative to the file's folder, eg. **../covers/\*.jpg**. The files are loaded in the order the list names them; a wildcard's matches by name. The loaded images replace the file's covers, and each one is made Cover (Front).
 
 Default description can be any pattern, eg. **%artist%**.
 
@@ -399,6 +399,7 @@ For a file with the tag, **artist=Relatively Unknown, title=Horrible for everyon
 
 * %album%/%artist% - %title% will move the file to /home/concentricpuddle/multimedia/music/Indie/**Fans like it/Relatively Unknown - Horrible for everyone else.mp3**.
 * For every slash, the file is moved up one directory (a directory that comes out empty doesn't count). %artist%/%album%/%title% will move the file to /home/concentricpuddle/multimedia/music/**Relatively Unknown/Fans like it/Horrible for everyone else.mp3**
+* A pattern that starts with ./ or ../ is relative to the file's folder: ./%title% keeps the file where it is, ../%title% moves it to the parent.
 * If you want you can also have an absolute path, by starting the pattern with a slash, eg. the pattern /mnt/library/%album%/%track% will move the file to /mnt/library/Fans like it/5.mp3
 
 .. _text_to_tag:
