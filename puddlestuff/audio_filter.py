@@ -15,12 +15,6 @@ ParserElement.enable_packrat()
 
 
 def str_cmp(a, b):
-    if not isinstance(a, str):
-        a = '\\'.join(a)
-
-    if not isinstance(b, str):
-        b = '\\'.join(b)
-
     return a.lower() == b.lower()
 
 
@@ -68,6 +62,19 @@ def wrap_bool(original):
     return __bool__
 
 
+def wrap_comparison(original):
+    """Like wrap_bool, for the operators that compare text: an operand that
+    isn't text (a bracketed comparison) can't be compared, so the result is
+    False."""
+    def __bool__(self):
+        self.args = [parse_arg(self.audio, z) for z in self.args]
+        if not all(isinstance(z, str) for z in self.args):
+            return False
+        return original(self)
+
+    return __bool__
+
+
 class BoolOperand(object):
     def __init__(self, t):
         self.args = t[0][0::2]
@@ -106,7 +113,7 @@ class BoolNot(BoolOperand):
 
 
 class Greater(BoolOperand):
-    @wrap_bool
+    @wrap_comparison
     def __bool__(self):
         logging.debug('greater: ' + str(self.args))
         try:
@@ -117,7 +124,7 @@ class Greater(BoolOperand):
 
 
 class Less(BoolOperand):
-    @wrap_bool
+    @wrap_comparison
     def __bool__(self):
         logging.debug('less: ' + str(self.args))
         try:
@@ -128,7 +135,7 @@ class Less(BoolOperand):
 
 
 class Equal(BoolOperand):
-    @wrap_bool
+    @wrap_comparison
     def __bool__(self):
         logging.debug('equal: ' + str(self.args))
         return str_cmp(self.args[0], self.args[1])
@@ -157,21 +164,21 @@ class Present(BoolOperand):
 
 
 class BoolIs(BoolOperand):
-    @wrap_bool
+    @wrap_comparison
     def __bool__(self):
         logging.debug('is: ' + str(self.args))
         return str_cmp(self.args[0], self.args[1])
 
 
 class Has(BoolOperand):
-    @wrap_bool
+    @wrap_comparison
     def __bool__(self):
         logging.debug('has: ' + str(self.args))
         return self.args[1].lower() in self.args[0].lower()
 
 
 class Matches(BoolOperand):
-    @wrap_bool
+    @wrap_comparison
     def __bool__(self):
         logging.debug('matches: ' + str(self.args))
         try:
@@ -212,7 +219,10 @@ def parse(audio, expr):
         if len(res) > 1 and res[0] == res[-1] == '"':
             res = res[1:-1]
         return in_any_field(audio, res)
-    return bool(res)
+    try:
+        return bool(res)
+    except findfunc.ParseError:  # a quoted script with an error
+        return False
 
 
 if __name__ == '__main__':

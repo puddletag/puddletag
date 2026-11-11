@@ -118,7 +118,6 @@ def test_word_search_skips_the_cover(make_audio, tmp_path):
     assert parse(audio, 'Nowhere') is False
 
 
-@pytest.mark.xfail(strict=True, reason='a nested comparison crashes the Filter')
 @pytest.mark.parametrize('expression', [
     pytest.param('(artist IS "Bongo Maffin") IS (title IS Monster)', id='is'),
     pytest.param('(artist IS "Bongo Maffin") EQUAL (title IS Monster)', id='equal'),
@@ -140,7 +139,6 @@ def test_not_of_a_comparison(matches):
     assert matches('NOT (artist IS "Bongo Maffin")', **BONGO) is False
 
 
-@pytest.mark.xfail(strict=True, reason='a quoted script with an error crashes the Filter')
 def test_script_error_in_a_filter(matches):
     # An expression that can't be evaluated (a quoted script missing its
     # ")", synthetic) shows no file, with no message.

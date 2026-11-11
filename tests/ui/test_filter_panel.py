@@ -293,7 +293,6 @@ def test_invalid_expression_shows_no_file(loaded, mainwin, user):
     assert shown(table) == ['01.mp3', '03.mp3']
 
 
-@pytest.mark.xfail(strict=True, reason='a nested comparison crashes the Filter')
 def test_nested_comparison_shows_no_file(user, loaded, mainwin):
     # filter.txt: "If it evaluates to True for a file, then that file will
     # be shown. Otherwise, puddletag will hide it." Beyond it, an
