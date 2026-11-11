@@ -637,7 +637,6 @@ def test_text_field_in_a_number_argument():
         run('$sub(%title%,1)', title='abc')
 
 
-@pytest.mark.xfail(strict=True, reason='a function that needs the file raises a raw error')
 @pytest.mark.parametrize('script', [
     '$artwork(*.jpg,,0)',
     '$autonumbering()',

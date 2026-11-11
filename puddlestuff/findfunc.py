@@ -49,7 +49,7 @@ class FuncError(ParseError): pass
 class MultiValueError(FuncError): pass
 
 
-from .functions import functions
+from .functions import functions, no_fields
 
 
 def arglen_error(e, passed, function, to_raise=True):
@@ -313,6 +313,12 @@ def run_format_func(funcname, arguments, m_audio, s_audio=None, extra=None,
         else:
             func = funcname
     except KeyError:
+        raise ParseError(SYNTAX_ERROR.format(funcname,
+                                             translate('Defaults', "function does not exist.")))
+
+    # A script has no file to hand these, so it can't call them.
+    if (func in no_fields or (hasattr(func, '__code__') and
+                              'r_tags' in func.__code__.co_varnames[:func.__code__.co_argcount])):
         raise ParseError(SYNTAX_ERROR.format(funcname,
                                              translate('Defaults', "function does not exist.")))
 
