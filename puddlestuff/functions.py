@@ -39,11 +39,10 @@ import operator
 import os
 import re
 import traceback
-from mutagen.mp3 import HeaderNotFoundError
 from collections import defaultdict
-from functools import partial
 from unidecode import unidecode
 
+import mutagen
 import pyparsing
 
 from . import audioinfo
@@ -158,12 +157,6 @@ def char(text):
         return
 
 
-def changeartist(artist, *files):
-    for audio in files:
-        audio['artist'] = artist
-        audio.save()
-
-
 def div(n_numerator, n_divisor):
     if n_divisor == 0:
         raise FuncError("Cannot divide by zero.")
@@ -171,11 +164,6 @@ def div(n_numerator, n_divisor):
         return _plain(D(n_numerator) / D(n_divisor))
     except decimal.InvalidOperation:
         return
-    # ret = unicode(float(n_numerator) / n_divisor)
-    # if len(ret) < len(normalized):
-    # return ret
-    # else:
-    # return normalized
 
 
 def eql(text, text1):
@@ -248,13 +236,10 @@ def if_(text, text1, z):
 
 
 def iflonger(a, b, text, text1):
-    try:
-        if len(a) > len(b):
-            return text
-        else:
-            return text1
-    except TypeError:
-        return
+    if len(a) > len(b):
+        return text
+    else:
+        return text1
 
 
 def import_text(m_tags, p_pattern, r_tags):
@@ -298,15 +283,6 @@ def leql(text, text1):
 
 def less(text, text1):
     return _compare(operator.lt, text, text1)
-
-
-def libstuff(dirname):
-    files = []
-    for filename in os.listdir(dirname):
-        tag = audioinfo.Tag(path.join(dirname, filename))
-        if tag:
-            files.append(tag)
-    return files
 
 
 def _load_image(filename):
@@ -429,9 +405,6 @@ def tag_to_filename(pattern, m_tags, r_tags, ext=True, state=None,
     tf = findfunc.parsefunc
     path_join = os.path.join
 
-    if state is None:
-        state = {}
-
     path_seps, text = tf(pattern, tags, state=state, path_sep="/")
 
     start_pos = 0
@@ -491,11 +464,9 @@ def tag_to_filename(pattern, m_tags, r_tags, ext=True, state=None,
         return add_extension(os.path.join(*(parent + [new_fn])), tags, ext)
 
 
-def add_extension(fn, tags, addext=None, extension=None):
+def add_extension(fn, tags, addext=None):
     if not addext:
         return fn
-    elif addext and (extension is not None):
-        return fn + os.path.extsep + encode_fn(extension)
     else:
         return fn + os.path.extsep + encode_fn(tags["__ext"])
 
@@ -503,9 +474,6 @@ def add_extension(fn, tags, addext=None, extension=None):
 def move(m_tags, p_pattern, r_tags, ext=True, state=None):
     """Tag to filename, Tag->File: $1
 &Pattern, text"""
-
-    tags = m_tags
-    tf = findfunc.tagtofilename
 
     fn = tag_to_filename(p_pattern, m_tags, r_tags, ext, state)
 
@@ -603,23 +571,6 @@ def remove_except(tags, fields):
         return ret
 
 
-import mutagen.id3, mutagen.apev2
-
-_tag_classes = {
-    'APEv2': mutagen.apev2.delete,
-    'ID3v1': partial(mutagen.id3.delete, v1=True, v2=False),
-    'ID3v2': partial(mutagen.id3.delete, v1=False, v2=True),
-    'All ID3': partial(mutagen.id3.delete, v1=True, v2=True)}
-
-
-def remove_tag(r_tags, tag='APEv2'):
-    '''Remove Tag, "Remove $1 Tag"
-&Tag, combo, Base, APEv2, ID3v1, ID3v2, All ID3'''
-
-    if tag in _tag_classes:
-        _tag_classes[tag](r_tags.filepath)
-
-
 def rename_dirs(tags, state, pattern):
     '''Rename Directory, "Rename dir: $1"
 &Pattern:, text'''
@@ -655,11 +606,7 @@ only as &whole word, check'''
     else:
         pat = re.compile(word, matchcase)
 
-    try:
-        text = pat.sub(lambda match: replaceword, text)
-    except Exception as e:
-        raise findfunc.FuncError(str(e))
-    return text
+    return pat.sub(lambda match: replaceword, text)
 
 
 _GROUP_REF = re.compile(r'\$\d+')
@@ -823,46 +770,6 @@ def right(text, n):
     return text[-int(n):]
 
 
-def gain_to_watts(gain):
-    return 10 ** (-gain * .1)
-
-
-def to_hexstring(x):
-    # leading space required; blame Apple
-    return " %08X" % int(x)
-
-
-def rg2sc(gain, peak=None):
-    if peak is None:
-        gain = gain.split(':')
-        if len(gain) == 2:  # gain:peak
-            peak = float(gain[1])
-            gain = float(gain[0])
-        elif len(gain) == 3:  # channel:gain:peak
-            peak = float(gain[2])
-            gain = float(gain[1])
-        else:
-            return
-    else:
-        gain = float(gain)
-        peak = float(peak)
-
-    values = [
-        to_hexstring(1000 * gain_to_watts(gain)),
-        to_hexstring(1000 * gain_to_watts(gain)),
-        to_hexstring(2500 * gain_to_watts(gain)),
-        to_hexstring(2500 * gain_to_watts(gain)),
-        " 00024CA8",  # bogus
-        " 00024CA8",  # bogus
-        to_hexstring(peak * (32 * 1024 - 1)),
-        to_hexstring(peak * (32 * 1024 - 1)),
-        " 00024CA8",  # bogus
-        " 00024CA8",  # bogus
-    ]
-
-    return str(''.join(values))
-
-
 def save_artwork(m_tags, pattern, r_tags, state=None, write=True):
     """Export artwork to file, "Export Art: pattern='$1'"
 &Pattern (extension not required), text, folder_%img_counter%"""
@@ -972,10 +879,7 @@ def sub(n_1, n_2):
 def tag_dir(m_tags, pattern, r_tags, state=None):
     '''Tag to Dir, "Tag->Dir: $1"
 &Pattern (can be relative path), text, %artist% - %album%'''
-    if state is None:
-        state = {'tag_dir': set()}
-
-    elif 'tag_dir' not in state:
+    if 'tag_dir' not in state:
         state['tag_dir'] = set()
 
     if r_tags.dirpath in state['tag_dir']:
@@ -1102,7 +1006,6 @@ functions = {
     "hasformat": hasformat,
     "if": if_,
     "iflonger": iflonger,
-    # 'image_to_file': image_to_file,
     'import_text': import_text,
     "isdigit": isdigit,
     "left": left,
@@ -1126,7 +1029,6 @@ functions = {
     "rand": rand,
     "re_escape": re_escape,
     'remove_except': remove_except,
-    # 'remove_tag': remove_tag,
     "replace": replace,
     "regex": replaceWithReg,
     "right": right,
@@ -1149,7 +1051,7 @@ functions = {
 
 no_fields = [filenametotag, load_images, move, remove_except,
              save_artwork, tag_dir, update_from_tag]
-no_preview = [autonumbering, load_images, remove_tag, save_artwork]
+no_preview = [autonumbering, load_images, save_artwork]
 
 from . import findfunc
 

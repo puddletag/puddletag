@@ -16,8 +16,6 @@ def sanitize(type_, value, default=None):
             return True
         else:
             return False
-    else:
-        return value
 
 
 class AutoNumbering(QWidget):
