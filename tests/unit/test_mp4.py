@@ -425,8 +425,7 @@ def test_delete_cover_and_file_info(make_audio):
 # What a value that isn't a number does to a number field.
 
 @pytest.mark.parametrize('field, first, bad, atom, stored, shown', [
-    pytest.param('bpm', ['120'], ['x'], 'tmpo', [120], ['120'], marks=pytest.mark.xfail(
-        strict=True, reason="a value that isn't a number empties the atom")),
+    ('bpm', ['120'], ['x'], 'tmpo', [120], ['120']),
     ('bpm', ['120'], 'x', 'tmpo', [120], ['120']),
     ('track', ['3/12'], ['a/b'], 'trkn', [(3, 12)], ['3']),
 ])

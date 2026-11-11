@@ -325,7 +325,7 @@ class Tag(util.MockTag):
         else:
             try:
                 new_val = FUNCS[key][1](value)
-                if value:
+                if new_val != []:
                     self.__tags[key] = new_val
             except KeyError:
                 # User defined tags.
