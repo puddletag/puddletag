@@ -261,7 +261,6 @@ def test_empty_total_removes_it(make_audio, tmp_path):
     assert audioinfo.Tag(str(path))['track'] == ['3']
 
 
-@pytest.mark.xfail(strict=True, reason="writing __parent_dir renames the file's folder")
 def test_parent_dir_cannot_be_written(song):
     # __parent_dir: "Cannot be written to."
     path = song['__path']

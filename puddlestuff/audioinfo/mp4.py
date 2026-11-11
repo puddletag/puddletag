@@ -5,7 +5,7 @@ from mutagen.mp4 import AtomDataType, MP4, MP4Cover
 from . import tag_versions, util
 from .util import (usertags, isempty,
                    FILENAME, PATH,
-                   getdeco, setdeco, FILETAGS, str_filesize, fn_hash, CaselessDict, keys_deco,
+                   getdeco, setdeco, str_filesize, fn_hash, CaselessDict, keys_deco,
                    del_deco, cover_info, info_to_dict, parse_image, get_mime, FieldNameError,
                    LYRICS_PREFIX)
 
@@ -285,7 +285,7 @@ class Tag(util.MockTag):
         elif key.startswith('__'):
             if key == '__image':
                 self.images = value
-            if key in FILETAGS:
+            if key in fn_hash:
                 setattr(self, fn_hash[key], value)
             elif key == '__total' and 'track' in self.__tags:
                 self.__tags['totaltracks'] = FUNCS['totaltracks'][1](value)

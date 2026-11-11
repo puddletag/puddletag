@@ -34,8 +34,7 @@ fn_hash = {
     EXTENSION: 'ext',
     DIRPATH: 'dirpath',
     DIRNAME: 'dirname',
-    FILENAME_NO_EXT: 'filename_no_ext',
-    PARENT_DIR: 'parent_dir'}
+    FILENAME_NO_EXT: 'filename_no_ext'}
 
 splitext = lambda x: path.splitext(x)[1][1:].lower()
 
@@ -864,10 +863,6 @@ class MockTag(object):
     @property
     def parent_dir(self):
         return path.basename(path.dirname(self.dirpath))
-
-    @parent_dir.setter
-    def parent_dir(self, value):
-        self.dirpath = path.join(path.dirname(self.dirpath), value)
 
     @property
     def tags(self):
