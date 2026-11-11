@@ -1066,7 +1066,6 @@ def test_action_with_an_unknown_function(loaded, user, qtbot):
     qtbot.waitUntil(lambda: in_table(table) == expected)
 
 
-@pytest.mark.xfail(strict=True, reason="a saved value that isn't a number stops the action loading")
 def test_action_with_a_bad_saved_number(loaded, user, qtbot):
     # Synthetic action: the docs are silent on a saved number that isn't one;
     # the decision: the control's default, 1.
@@ -1081,7 +1080,6 @@ def test_action_with_a_bad_saved_number(loaded, user, qtbot):
     close_window(user, qtbot, window)
 
 
-@pytest.mark.xfail(strict=True, reason="a saved value that isn't a number stops the action loading")
 def test_bad_saved_number_doesnt_stop_startup(loaded, qtbot, restart):
     # Synthetic action: puddletag loads every saved action at start; the docs
     # are silent on a bad saved number, but the program must still start.

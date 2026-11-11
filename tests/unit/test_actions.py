@@ -587,10 +587,8 @@ def test_action_file_with_an_unknown_function(tmp_path, module, expected):
 @pytest.mark.parametrize('saved, expected', [
     ([5, True, 3], [5, True, 3]),
     (['5', 'False', '3'], [5, False, 3]),
-    pytest.param(['abc', False, 3], [1, False, 3], marks=pytest.mark.xfail(
-        strict=True, reason="a saved value that isn't a number stops the action loading")),
-    pytest.param([None, False, 3], [1, False, 3], marks=pytest.mark.xfail(
-        strict=True, reason="a saved value that isn't a number stops the action loading")),
+    (['abc', False, 3], [1, False, 3]),
+    ([None, False, 3], [1, False, 3]),
 ])
 def test_saved_numbers_in_an_action(tmp_path, saved, expected):
     # function.txt:22 "Numbers tracks sequentially beginning with Start.": the

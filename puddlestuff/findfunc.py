@@ -199,7 +199,10 @@ def load_macro_info(filename):
                     else:
                         newargs.append(True)
                 elif control == SPINBOX:
-                    newargs.append(int(arg))
+                    try:
+                        newargs.append(int(arg))
+                    except (TypeError, ValueError):
+                        newargs.append(int(func._getControls(index=0)[i][2]))
                 else:
                     newargs.append(arg)
             if func.controls:
