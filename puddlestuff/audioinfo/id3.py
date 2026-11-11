@@ -5,21 +5,9 @@ from functools import partial
 import mutagen.id3 as id3
 import mutagen.mp3
 
-try:
-    from mutagen.aiff import AIFF, _IFFID3
-except ImportError:
-    AIFF = None
-
-try:
-    from mutagen.dsf import DSF, _DSFID3
-except ImportError:
-    DSF = None
-
-try:
-    from mutagen.dsdiff import DSDIFF
-except ImportError:
-    DSDIFF = None
-
+from mutagen.aiff import AIFF, _IFFID3
+from mutagen.dsdiff import DSDIFF
+from mutagen.dsf import DSF, _DSFID3
 from mutagen.id3 import (APIC, PairedTextFrame, TextFrame, TimeStampTextFrame,
                          UrlFrame)
 
@@ -58,20 +46,17 @@ def handle(audio):
     ret = {}
 
     # Handler returns a dictionary with fields as used in puddletag
-    # eg 'title' and text, a frame, or a list of frames as its
-    # associated value. User-defined frames come last, so one named like
-    # a field (TXXX:YEAR) adds its values to that field's frame (TDRC).
+    # eg 'title' and a frame as its associated value. User-defined frames
+    # come last, so one named like a field (TXXX:YEAR) adds its values to
+    # that field's frame (TDRC).
     for handler, frame in sorted(handlers.items(), key=lambda item: item[0] is usertext_handler):
         for k, v in handler(frame).items():
             lower = k.lower()
             if lower in keys:
-                if isinstance(v, str):
-                    ret[keys[lower]].append(v)
-                else:
-                    # Through the frame's setter, which makes TDRC's text
-                    # dates.
-                    first = ret[keys[lower]]
-                    first.set_value(first.get_value() + v.get_value())
+                # Through the frame's setter, which makes TDRC's text
+                # dates.
+                first = ret[keys[lower]]
+                first.set_value(first.get_value() + v.get_value())
             else:
                 keys[lower] = k
                 ret[k] = v
@@ -89,7 +74,6 @@ WRITE_BOTH = 3
 
 v1_option = 2
 v2_option = 4
-apev2_option = False
 
 ISO8859 = 0
 UTF16 = 1
@@ -206,12 +190,9 @@ text_frames = {
     id3.TYER: 'year',
 }
 
-try:
-    text_frames.update({
-        id3.TCMP: "itunescompilationflag",
-        id3.TSOC: "itunescomposersortorder"})
-except AttributeError:
-    pass
+text_frames.update({
+    id3.TCMP: "itunescompilationflag",
+    id3.TSOC: "itunescomposersortorder"})
 
 revtext_frames = dict((key, frame) for frame, key in text_frames.items())
 write_frames = dict((key, partial(create_text, key)) for
@@ -672,7 +653,6 @@ def set_uslt(f, value):
 
     if not frames:
         f.frames = []
-        f.get_value
         return {}
 
     f.frames = frames
@@ -769,8 +749,6 @@ class ID3(CompatID3):
     PEDANTIC = True
 
     def loaded_frame(self, tag):
-        if len(type(tag).__name__) == encoding:
-            tag = type(tag).__base__(tag)
         i = 0
         try:
             desc = tag.desc
@@ -792,35 +770,34 @@ class ID3FileType(mutagen.mp3.MP3):
         return super(ID3FileType, self).load(filename, ID3, **kwargs)
 
 
-if AIFF is not None:
-    class AIFFFileType(AIFF):
-        """See ID3 class."""
+class AIFFFileType(AIFF):
+    """See ID3 class."""
 
-        def add_tags(self, ID3=_IFFID3):
-            AIFF.add_tags(self)
+    def add_tags(self, ID3=_IFFID3):
+        AIFF.add_tags(self)
 
-        def load(self, filename, **kwargs):
-            return AIFF.load(self, filename, **kwargs)
+    def load(self, filename, **kwargs):
+        return AIFF.load(self, filename, **kwargs)
 
-if DSF is not None:
-    class DSFFileType(DSF):
-        """See ID3 class."""
 
-        def add_tags(self, ID3=_IFFID3):
-            DSF.add_tags(self)
+class DSFFileType(DSF):
+    """See ID3 class."""
 
-        def load(self, filename, **kwargs):
-            return DSF.load(self, filename, **kwargs)
+    def add_tags(self, ID3=_IFFID3):
+        DSF.add_tags(self)
 
-if DSDIFF is not None:
-    class DSDIFFFileType(DSDIFF):
-        """See ID3 class."""
+    def load(self, filename, **kwargs):
+        return DSF.load(self, filename, **kwargs)
 
-        def add_tags(self, ID3=_IFFID3):
-            DSDIFF.add_tags(self)
 
-        def load(self, filename, **kwargs):
-            return DSDIFF.load(self, filename, **kwargs)
+class DSDIFFFileType(DSDIFF):
+    """See ID3 class."""
+
+    def add_tags(self, ID3=_IFFID3):
+        DSDIFF.add_tags(self)
+
+    def load(self, filename, **kwargs):
+        return DSDIFF.load(self, filename, **kwargs)
 
 
 def _save_v23(tags, filename):
@@ -1096,8 +1073,6 @@ def tag_factory(id3_filetype):
             return self
 
         def save(self, v1=None, v2=None):
-            if v1 is None:
-                v1 = v1_option
             """Writes the tags to file."""
             filename = self.filepath
             if self.mut_obj.tags is None:
@@ -1139,19 +1114,19 @@ def tag_factory(id3_filetype):
             v1 = v1_option if v1 is None else v1
             v2 = v2_option if v2 is None else v2
 
-            if AIFF is not None and id3_filetype is AIFFFileType:
+            if id3_filetype is AIFFFileType:
                 if v2 == 3:
                     _save_v23(audio.tags, self.filepath)  # AIFF doesn't support id3v1
                 else:
                     audio.tags.save()  # AIFF doesn't support id3v1
 
-            elif DSF is not None and id3_filetype is DSFFileType:
+            elif id3_filetype is DSFFileType:
                 if v2 == 3:
                     _save_v23(audio.tags, self.filepath)  # DSF doesn't support id3v1
                 else:
                     audio.tags.save()  # DSF doesn't support id3v1
 
-            elif DSDIFF is not None and id3_filetype is DSDIFFFileType:
+            elif id3_filetype is DSDIFFFileType:
                 if v2 == 3:
                     _save_v23(audio.tags, self.filepath)  # DSDIFF doesn't support id3v1
                 else:
@@ -1224,11 +1199,6 @@ filetypes = [
     (ID3FileType, Tag, 'ID3', 'mp3'),
 ]
 
-if AIFF is not None:
-    filetypes.append((AIFFFileType, tag_factory(AIFFFileType), 'ID3', 'aiff'))
-
-if DSF is not None:
-    filetypes.append((DSFFileType, tag_factory(DSFFileType), 'ID3', 'dsf'))
-
-if DSDIFF is not None:
-    filetypes.append((DSDIFFFileType, tag_factory(DSDIFFFileType), 'ID3', 'dff'))
+filetypes.append((AIFFFileType, tag_factory(AIFFFileType), 'ID3', 'aiff'))
+filetypes.append((DSFFileType, tag_factory(DSFFileType), 'ID3', 'dsf'))
+filetypes.append((DSDIFFFileType, tag_factory(DSDIFFFileType), 'ID3', 'dff'))

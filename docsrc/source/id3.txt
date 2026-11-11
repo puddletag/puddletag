@@ -11,7 +11,7 @@ Comment frames are written to the **COMM** frame. Multiple values are allowed pe
 
 Any unknown field is assumed to be a user-defined field. Therefore writing to the field 'mytag' will write to the ID3 tag frame **TXXX:mytag**.
 
-The list of ID3 text frames as supported by puddletag is shown below. Multiple values per field are allowed. The iTunes frames are only supported by Mutagen 1.17 and above.
+The list of ID3 text frames as supported by puddletag is shown below. Multiple values per field are allowed.
 
 =======================   ==============
 puddletag field           ID3v2.4 Frame

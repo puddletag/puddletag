@@ -35,34 +35,6 @@ def fullread(fileobj, size):
     return data
 
 
-def has_apev2(fn):
-    close_file = isinstance(fn, str)
-    fileobj = open(fn, 'rb') if close_file else fn
-
-    try:
-        fileobj.seek(-160, 2)
-        return b"APETAGEX" in fileobj.read()
-    except IOError:
-        return False
-    finally:
-        if close_file:
-            fileobj.close()
-
-
-def has_v1(fn):
-    close_file = isinstance(fn, str)
-    fileobj = open(fn, 'rb') if close_file else fn
-
-    try:
-        fileobj.seek(-128, 2)
-        return b"TAG" == struct.unpack("3s", fullread(fileobj, 3))[0]
-    except (struct.error, EOFError, EnvironmentError):
-        return False
-    finally:
-        if close_file:
-            fileobj.close()
-
-
 def get_v2(fn):
     close_file = isinstance(fn, str)
     fileobj = open(fn, 'rb') if close_file else fn
@@ -102,27 +74,6 @@ def id3v2_values(fn):
         return None
     if frames:
         return convert_id3_frames(frames)
-
-
-def id3_tags(fn):
-    close_file = isinstance(fn, str)
-    fileobj = open(fn, 'rb') if close_file else fn
-    version = []
-
-    try:
-        version = [(1, 1)] if has_v1(fileobj) else []
-    except EOFError:
-        if close_file:
-            fileobj.close()
-        return []
-
-    fileobj.seek(0)
-    v2 = get_v2(fileobj)
-    if v2:
-        version.append(v2)
-    if close_file:
-        fileobj.close()
-    return version
 
 
 def tags_in_file(fn, to_check=(ID3_V1, ID3_V2, APEv2), known_v2=None):
@@ -186,14 +137,3 @@ def tag_values(fn, tag):
         return {}
 
     return _value_types[tag](fn)
-
-
-if __name__ == '__main__':
-    import sys
-
-    filename = sys.argv[1]
-    # f = open(filename, 'rb')
-    print(tags_in_file(filename))
-    print(id3v1_values(filename))
-    print(id3v2_values(filename))
-    print(apev2_values(filename))
