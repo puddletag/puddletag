@@ -67,6 +67,8 @@ year                        TYER
 
 TYER (year), TDAT (date), TIME (time), TORY (originalyear), TRDA (recordingdates) and TSIZ (audiosize) exist only in ID3v2.3. Tags are read as ID3v2.4, so these come back changed: year, date and time together as **year** (TDRC, eg. 2001-12-05 12:30:00), originalyear as **originalreleasetime** (TDOR), and recordingdates and audiosize not at all. Saving as ID3v2.4 writes year to TDRC and originalyear to TDOR, and leaves out date, time, recordingdates and audiosize.
 
+Saving as ID3v2.3 also leaves out mood (TMOO), producednotice (TPRO), encodingtime (TDEN), releasetime (TDRL) and taggingtime (TDTG), which only ID3v2.4 has, and writes involvedpeople and musiciancredits together as involvedpeople (IPLS).
+
 Time Frames
 -----------
 [From the mutagen docs] Time fields take the form of **YYYY-MM-DD HH:MM:SS** Or some partial form (YYYY-MM-DD HH, YYYY, etc.). puddletag supports reading from and writing to:

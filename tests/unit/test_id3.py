@@ -610,3 +610,106 @@ def test_replaygain_value_is_a_list(id3_file):
     # value.
     frames, tag = save(id3_file, {'rgain:track': ['1:-6.5:0.5']})
     assert isinstance(tag['rgain:track'], list)
+
+
+@pytest.mark.parametrize('ext', [
+    pytest.param(ext, marks=pytest.mark.xfail(strict=True, reason="AIFF, DSF and DSDIFF saves drop them in ID3v2.3"))
+    if ext != 'mp3' else ext for ext in ID3_FORMATS])
+def test_id3v23_keeps_the_sort_frames(make_audio, ext):
+    # id3.txt lists albumsortorder (TSOA), performersortorder (TSOP),
+    # setsubtitle (TSST) and titlesortorder (TSOT) and is silent on ID3v2.3;
+    # puddletag's MP3 code keeps them there because "most applications use
+    # them also in ID3v2.3", so the other formats do the same. Synthetic
+    # values.
+    path = make_audio('song.' + ext)
+    save(path, {'albumsortorder': ['a'], 'performersortorder': ['p'], 'setsubtitle': ['s'],
+                'titlesortorder': ['t']}, v2=3)
+    frames = id3_frames(path, translate=False)
+    assert ({name: frames[name].text for name in ('TSOA', 'TSOP', 'TSOT', 'TSST')}, frames.version[:2]) == (
+        {'TSOA': ['a'], 'TSOP': ['p'], 'TSOT': ['t'], 'TSST': ['s']}, (2, 3))
+
+
+def test_id3v23_leaves_out_frames_only_id3v24_has(id3_file):
+    # id3.txt: saving as ID3v2.3 leaves out mood (TMOO), producednotice
+    # (TPRO), encodingtime (TDEN), releasetime (TDRL) and taggingtime (TDTG),
+    # which only ID3v2.4 has, and writes involvedpeople and musiciancredits
+    # together as involvedpeople (IPLS). Synthetic values.
+    save(id3_file, {'encodingtime': ['2001'], 'involvedpeople': ['Bob:Piano'], 'mood': ['m'], 'producednotice': ['n'],
+                    'releasetime': ['2002'], 'taggingtime': ['2003'], 'title': ['T']}, v2=3)
+    frames = id3_frames(id3_file, translate=False)
+    assert (sorted(frames.keys()), frames['IPLS'].people) == (['IPLS', 'TIT2'], [['Bob', 'Piano']])
+
+
+@pytest.mark.xfail(strict=True, reason="an ID3v2.3 save drops musiciancredits when involvedpeople is set")
+@pytest.mark.parametrize('ext', ID3_FORMATS)
+def test_id3v23_writes_the_credits_together(make_audio, ext):
+    # id3.txt: saving as ID3v2.3 "writes involvedpeople and musiciancredits
+    # together as involvedpeople (IPLS)". Synthetic values.
+    path = make_audio('song.' + ext)
+    save(path, {'involvedpeople': ['Bob:Piano'], 'musiciancredits': ['Ann:Drums'], 'title': ['T']}, v2=3)
+    frames = id3_frames(path, translate=False)
+    assert (sorted(frames.keys()), frames['IPLS'].people, audioinfo.Tag(str(path))['involvedpeople']) == (
+        ['IPLS', 'TIT2'], [['Bob', 'Piano'], ['Ann', 'Drums']], ['Bob:Piano;Ann:Drums'])
+
+
+@pytest.mark.xfail(strict=True, reason="an ID3v2.3 save drops musiciancredits when involvedpeople is set")
+@pytest.mark.parametrize('ext', ID3_FORMATS)
+def test_id3v23_saved_twice_writes_the_credits_once(make_audio, ext):
+    # id3.txt: saving as ID3v2.3 "writes involvedpeople and musiciancredits
+    # together as involvedpeople (IPLS)"; the save changes the file, not the
+    # fields the table shows. Synthetic values.
+    path = make_audio('song.' + ext)
+    tag = audioinfo.Tag(str(path))
+    tag.update({'involvedpeople': ['Bob:Piano'], 'musiciancredits': ['Ann:Drums']})
+    tag.save(v2=3)
+    tag.save(v2=3)
+    assert (id3_frames(path, translate=False)['IPLS'].people, tag['involvedpeople']) == (
+        [['Bob', 'Piano'], ['Ann', 'Drums']], ['Bob:Piano'])
+
+
+@pytest.mark.xfail(strict=True, reason="the second lyrics frame stays UTF-16")
+@pytest.mark.parametrize('ext', ID3_FORMATS)
+def test_convert_to_utf8(make_audio, ext):
+    # id3.txt: "Text is written as UTF-8 in ID3v2.4 and as UTF-16 in ID3v2.3,
+    # which has no UTF-8". The Tag Tools > Convert to UTF-8 command turns an
+    # ID3v2.3 file into ID3v2.4 with every frame in UTF-8. Synthetic values.
+    path = make_audio('song.' + ext)
+    save(path, {'artist': ['Ünï'], 'comment': ['Ç'], 'mine': ['ü'], 'unsyncedlyrics': ['eng|d|ä', 'fra|e|ö']}, v2=3)
+    audioinfo.Tag(str(path)).to_encoding(3)
+    frames = id3_frames(path, translate=False)
+    assert ({key: frame.encoding for key, frame in frames.items()}, frames.version[:2],
+            audioinfo.Tag(str(path))['__tag_read']) == (
+        {key: Encoding.UTF8 for key in ('COMM::XXX', 'TPE1', 'TXXX:mine', 'USLT:d:eng', 'USLT:e:fra')},
+        (2, 4), 'ID3v2.4')
+
+
+def test_failed_conversion_keeps_the_encodings(make_audio, monkeypatch):
+    # Convert to UTF-8 (see above) that fails to save leaves every frame's
+    # encoding as it was: a later save shows it. Synthetic values.
+    path = make_audio('song.mp3')
+    save(path, {'artist': ['Ünï']}, v2=3)
+    tag = audioinfo.Tag(str(path))
+
+    def fail(**kwargs):
+        raise OSError('disk full')
+
+    with monkeypatch.context() as patch:
+        patch.setattr(tag, 'save', fail)
+        with pytest.raises(OSError):
+            tag.to_encoding(3)
+    tag.save(v2=4)
+    assert id3_frames(path, translate=False)['TPE1'].encoding == Encoding.UTF16
+
+
+@pytest.mark.parametrize('ext', ID3_FORMATS)
+def test_save_after_a_rename(make_audio, ext):
+    # The docs are silent: the table renames a file (Tag to Filename) and
+    # its next edit must be saved under the new name. Synthetic title.
+    path = make_audio('song.' + ext, title='Song')
+    tag = audioinfo.Tag(str(path))
+    new = path.with_name('renamed.' + ext)
+    path.rename(new)
+    tag.filepath = str(new)
+    tag.update({'title': ['After']})
+    tag.save(v2=4)
+    assert (audioinfo.Tag(str(new))['title'], path.exists()) == (['After'], False)
