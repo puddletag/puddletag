@@ -1052,9 +1052,7 @@ def update_from_tag(r_tags, fields, tag='APEv2'):
             values = tag.usertags if tag is not None else None
         if values is None:
             return
-    except EnvironmentError:
-        return
-    except mutagen.mp3.HeaderNotFoundError:
+    except (EnvironmentError, mutagen.MutagenError):
         return
     values = dict((k, v) for k, v in values.items() if not k.startswith('__'))
     fields = [_f for _f in [z.strip() for z in fields.split(';')] if _f]

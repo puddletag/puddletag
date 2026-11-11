@@ -6,7 +6,6 @@ tag_versions.tag_values), and the Update From Tag function (function.txt).
 
 Synthetic files and tags.
 """
-import mutagen
 import mutagen.apev2
 import mutagen.id3
 import pytest
@@ -144,11 +143,7 @@ def test_update_from_tag_without_that_tag(make_audio, name, tag_type):
     assert update_from_tag(path, '', tag_type) == {}
 
 
-@pytest.mark.parametrize('tag_type', [
-    pytest.param('APEv2', marks=pytest.mark.xfail(strict=True, raises=mutagen.MutagenError,
-                                                  reason='a missing file raises MutagenError')),
-    'ID3',
-])
+@pytest.mark.parametrize('tag_type', ['APEv2', 'ID3'])
 def test_update_from_tag_on_a_file_deleted_since_loading(make_audio, tag_type):
     # "Updates the fields specified with the values found in Tag type.": the
     # file is gone, so nothing is found, as for a file without that tag.
