@@ -10,7 +10,7 @@ import os
 import pytest
 from PyQt6.QtCore import QPoint, QPointF, QSize, QTranslator, Qt
 from PyQt6.QtGui import QWheelEvent
-from PyQt6.QtWidgets import QApplication, QStyle, QStyleOptionViewItem
+from PyQt6.QtWidgets import QApplication, QMenu, QStyle, QStyleOptionViewItem
 
 from puddlestuff import audioinfo, puddleobjects
 from puddlestuff.actiondlg import ActionWindow, CreateAction, CreateFunction
@@ -1029,3 +1029,64 @@ def test_add_action_prints_no_parse_error(loaded, user, qtbot, dialogs, capsys):
     assert Macro(action_path('Upper.action')).name == 'Upper'
     assert 'Error parsing' not in capsys.readouterr().out
     close_window(user, qtbot, window)
+
+
+def test_edit_action_lists_the_steps(loaded, user, qtbot):
+    # tut2.txt:52-58 "Select Case Conversion and click on Edit"; its screenshot
+    # (tut1/caseaction.png) lists the step as "Convert Case: artist, album,
+    # title: Mixed Case".
+    window = open_actions(user, qtbot)
+    editor = edit_action(user, qtbot, window, 0)
+    assert names(editor.listbox) == ['Convert Case: artist, album, title: Mixed Case']
+    user.click(editor.okcancel.cancelButton)
+    qtbot.waitUntil(lambda: not editor.isVisible())
+    user.activate(window)
+    close_window(user, qtbot, window)
+
+
+def test_action_with_an_unknown_function(loaded, user, qtbot):
+    # Synthetic action: the docs are silent on a step naming a function that
+    # doesn't exist; the decision: the step is skipped, the rest loads and runs.
+    table, paths = loaded
+    write_action('mixed.action', 'Mixed up', [('nosuch', ['title'], ['x']),
+                                              ('titleCase', ['title'], ['UPPER CASE', '., !'])])
+    window = open_actions(user, qtbot)
+    assert names(window.listbox) == ['Case Conversion', 'Mixed up', 'Standard']
+    editor = edit_action(user, qtbot, window, 1)
+    assert names(editor.listbox) == ['Convert Case: title: UPPER CASE']
+    user.click(editor.okcancel.cancelButton)
+    qtbot.waitUntil(lambda: not editor.isVisible())
+    user.activate(window)
+    check(user, window, 'Mixed up')
+    user.click(window.okcancel.okButton)
+    written(qtbot, user, paths[1], 'title', ['TITLE 2'])
+    expected = [{'artist': ['artist 1'], 'title': ['TITLE 1']},
+                {'artist': ['artist 2'], 'title': ['TITLE 2']}]
+    assert in_files(paths) == expected
+    qtbot.waitUntil(lambda: in_table(table) == expected)
+
+
+@pytest.mark.xfail(strict=True, reason="a saved value that isn't a number stops the action loading")
+def test_action_with_a_bad_saved_number(loaded, user, qtbot):
+    # Synthetic action: the docs are silent on a saved number that isn't one;
+    # the decision: the control's default, 1.
+    write_action('count.action', 'Count', [('autonumbering', ['track'], ['abc', False, 1])])
+    window = open_actions(user, qtbot)
+    assert names(window.listbox) == ['Case Conversion', 'Count', 'Standard']
+    editor = edit_action(user, qtbot, window, 1)
+    assert names(editor.listbox) == ['Autonumbering: track, Start: 1, Restart for dir: No, Padding: 1']
+    user.click(editor.okcancel.cancelButton)
+    qtbot.waitUntil(lambda: not editor.isVisible())
+    user.activate(window)
+    close_window(user, qtbot, window)
+
+
+@pytest.mark.xfail(strict=True, reason="a saved value that isn't a number stops the action loading")
+def test_bad_saved_number_doesnt_stop_startup(loaded, qtbot, restart):
+    # Synthetic action: puddletag loads every saved action at start; the docs
+    # are silent on a bad saved number, but the program must still start.
+    write_action('count.action', 'Count', [('autonumbering', ['track'], ['abc', False, 1])])
+    win = restart()
+    assert win.isVisible()
+    [menu] = [m for m in win.menuBar().findChildren(QMenu) if m.title() == '&Actions']
+    assert '&Actions' in [item.text() for item in menu.actions()]

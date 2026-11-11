@@ -9,6 +9,7 @@ import pytest
 
 from puddlestuff import audioinfo
 from puddlestuff.audio_filter import parse
+from test_covers import FRONT, write
 
 # The docs' example artist and title.
 BONGO = {'artist': 'Bongo Maffin', 'title': 'Monster', 'tracknumber': '05', 'genre': 'Kwaito'}
@@ -105,3 +106,72 @@ def test_invalid_regex_does_not_crash(matches):
     # #665, #929: a filter the user is still typing must not crash
     # puddletag; it matches nothing. Synthetic expression, missing a "(".
     assert matches('title MATCHES "live)$"', title='Song (Live)') is False
+
+
+def test_word_search_skips_the_cover(make_audio, tmp_path):
+    # "string: Evaluates to True if a contains string in any of it's
+    # fields." A cover isn't text, so the word search passes over it.
+    path = make_audio('song.flac', tmp_path / 'music', **BONGO)
+    write(path, [FRONT])
+    audio = audioinfo.Tag(str(path))
+    assert parse(audio, 'Maffin') is True
+    assert parse(audio, 'Nowhere') is False
+
+
+@pytest.mark.xfail(strict=True, reason='a nested comparison crashes the Filter')
+@pytest.mark.parametrize('expression', [
+    pytest.param('(artist IS "Bongo Maffin") IS (title IS Monster)', id='is'),
+    pytest.param('(artist IS "Bongo Maffin") EQUAL (title IS Monster)', id='equal'),
+    pytest.param('artist IS (title IS Monster)', id='is-right'),
+    pytest.param('(artist IS "Bongo Maffin") HAS (title IS Monster)', id='has'),
+    pytest.param('(artist IS "Bongo Maffin") MATCHES Monster', id='matches'),
+    pytest.param('(artist IS "Bongo Maffin") GREATER (title IS Monster)', id='greater'),
+])
+def test_nested_comparison(matches, expression):
+    # filter.txt: "field IS expr", "field HAS expr" and "field MATCHES
+    # expr" take a field on the left; "If it evaluates to True for a file,
+    # then that file will be shown." Beyond it, an expression that can't be
+    # evaluated shows no file, with no message, as a broken regex does.
+    assert matches(expression, **BONGO) is False
+
+
+def test_not_of_a_comparison(matches):
+    # filter.txt: "NOT expr: Evaluates to True if expr is False."
+    assert matches('NOT (artist IS "Bongo Maffin")', **BONGO) is False
+
+
+@pytest.mark.xfail(strict=True, reason='a quoted script with an error crashes the Filter')
+def test_script_error_in_a_filter(matches):
+    # An expression that can't be evaluated (a quoted script missing its
+    # ")", synthetic) shows no file, with no message.
+    assert matches('title IS "$upper(Monster"', **BONGO) is False
+
+
+@pytest.mark.parametrize('expression, expected', [
+    # "Any text in the form %string% (if it's not enclosed in quotes) will
+    # be assumed to be a field." and "Evaluates to True if field is not
+    # present in a file."
+    pytest.param('MISSING %artist%', False, marks=pytest.mark.xfail(
+        strict=True, reason='MISSING and PRESENT read %field% as text'), id='missing-percent'),
+    pytest.param('PRESENT %artist%', True, marks=pytest.mark.xfail(
+        strict=True, reason='MISSING and PRESENT read %field% as text'), id='present-percent'),
+    pytest.param('MISSING %style%', True, id='missing-percent-absent'),
+    # "Comparisons ignore case"; the docs are silent for field names.
+    pytest.param('MISSING Artist', False, id='missing-case'),
+    pytest.param('PRESENT ARTIST', True, id='present-case'),
+    # A quoted field name is read as the field too (synthetic).
+    pytest.param('MISSING "artist"', False, marks=pytest.mark.xfail(
+        strict=True, reason='MISSING and PRESENT read "field" as text'), id='missing-quoted'),
+    pytest.param('PRESENT "artist"', True, marks=pytest.mark.xfail(
+        strict=True, reason='MISSING and PRESENT read "field" as text'), id='present-quoted'),
+])
+def test_missing_and_present_read_fields(matches, expression, expected):
+    assert matches(expression, **BONGO) is expected
+
+
+@pytest.mark.xfail(strict=True, reason='MISSING is False for a file without tags')
+def test_missing_and_present_on_a_file_without_tags(matches):
+    # "MISSING field: Evaluates to True if field is not present in a file."
+    # A file with no tags at all lacks every field.
+    assert matches('MISSING artist') is True
+    assert matches('PRESENT artist') is False

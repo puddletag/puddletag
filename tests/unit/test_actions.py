@@ -12,11 +12,11 @@ import mutagen.id3
 import pytest
 
 from puddlestuff import audioinfo
-from puddlestuff.constants import ACTIONDIR, DATADIR
+from puddlestuff.constants import ACTIONDIR, COMBO, DATADIR, TEXT
 from puddlestuff.findfunc import (Function, Macro, apply_actions, apply_macros, load_macro_info,
                                   parse_field_list, save_macro)
 from puddlestuff.puddleobjects import load_actions
-from puddlestuff.util import write
+from puddlestuff.util import PluginFunction, write
 from test_covers import NO_FIELDS
 
 
@@ -562,3 +562,87 @@ def test_split_with_an_empty_separator():
     # left as they are. Synthetic value.
     changes = apply_actions([make_action('split_by_sep', ['genre'], '')], {'genre': ['Rap;Rock']})
     assert values(changes) == {'genre': ['Rap;Rock']}
+
+
+@pytest.mark.parametrize('module, expected', [
+    ('puddlestuff.functions', [('titleCase', ['UPPER CASE', '., !'])]),
+    ('nosuch.module', []),
+])
+def test_action_file_with_an_unknown_function(tmp_path, module, expected):
+    # Synthetic action. The docs are silent on a step naming a function that
+    # doesn't exist; the decision: the step is skipped and the rest loads.
+    path = tmp_path / 'mixed.action'
+    path.write_text(json.dumps({
+        'info': {'name': 'Mixed up'},
+        'Func0': {'func_name': 'nosuch', 'module': 'puddlestuff.functions',
+                  'fields': ['title'], 'arguments': ['x']},
+        'Func1': {'func_name': 'titleCase', 'module': module,
+                  'fields': ['title'], 'arguments': ['UPPER CASE', '., !']},
+    }))
+    funcs, name = load_macro_info(str(path))
+    assert name == 'Mixed up'
+    assert [(func.function.__name__, func.args) for func in funcs] == expected
+
+
+@pytest.mark.parametrize('saved, expected', [
+    ([5, True, 3], [5, True, 3]),
+    (['5', 'False', '3'], [5, False, 3]),
+    pytest.param(['abc', False, 3], [1, False, 3], marks=pytest.mark.xfail(
+        strict=True, reason="a saved value that isn't a number stops the action loading")),
+    pytest.param([None, False, 3], [1, False, 3], marks=pytest.mark.xfail(
+        strict=True, reason="a saved value that isn't a number stops the action loading")),
+])
+def test_saved_numbers_in_an_action(tmp_path, saved, expected):
+    # function.txt:22 "Numbers tracks sequentially beginning with Start.": the
+    # saved Start comes back as a number. A saved value that isn't a number is
+    # docs-silent; the decision: the control's default, 1. Synthetic values.
+    path = tmp_path / 'count.action'
+    path.write_text(json.dumps({
+        'info': {'name': 'Count'},
+        'Func0': {'func_name': 'autonumbering', 'module': 'puddlestuff.functions',
+                  'fields': ['track'], 'arguments': saved},
+    }))
+    [func], name = load_macro_info(str(path))
+    assert func.args == expected
+
+
+def plugin_step(print_string, controls, *args):
+    def f(text, *rest):
+        return text
+
+    function = PluginFunction('Synthetic', f, print_string, controls)
+    step = Function(function, ['artist'])
+    step.setArgs(list(args))
+    return step
+
+
+@pytest.mark.parametrize('step, expected', [
+    # tut2.txt:52-58 "Select Case Conversion and click on Edit"; the
+    # screenshot (tut1/caseaction.png) shows this line.
+    (make_action('titleCase', ['artist', 'album', 'title'], 'Mixed Case', '., !'),
+     'Convert Case: artist, album, title: Mixed Case'),
+    # "$# shows the value of argument number #. $0 will always be the fields
+    # that'll get written to." (docsrc/source/functionplugin/__init__.py); a
+    # check box shown as Yes/No is docs-silent.
+    (make_action('autonumbering', ['track'], 5, True, 3),
+     'Autonumbering: track, Start: 5, Restart for dir: Yes, Padding: 3'),
+    (make_action('replace', ['__all'], 'Dj', 'DJ', False, True),
+     "Replace __all: 'Dj' -> 'DJ', Match Case: No, Words Only: Yes"),
+    # Synthetic: docs-silent on a step saved one argument short, and on a
+    # missing check box value.
+    (make_action('replace', ['title'], 'a', 'b', False),
+     "Replace title: 'a' -> 'b', Match Case: No, Words Only: "),
+    (make_action('replace', ['title'], 'a', 'b', None, False),
+     "Replace title: 'a' -> 'b', Match Case: No, Words Only: No"),
+    # The plugin docs' example: "The print_string u'Activities: $0 -> Where:
+    # $1, What: $2' would become 'Activities: artist -> Where: underwater,
+    # What: swimming'".
+    (plugin_step('Activities: $0 -> Where: $1, What: $2',
+                 [('Where', TEXT, ''), ('What', COMBO, 'swimming', 'running')],
+                 'underwater', 'swimming'),
+     'Activities: artist -> Where: underwater, What: swimming'),
+    # Synthetic: docs-silent on an escaped dollar sign.
+    (plugin_step(r'Costs \$1: $1', [('X', TEXT, '')], 'x'), 'Costs $1: x'),
+])
+def test_step_text(step, expected):
+    assert step.description() == expected

@@ -16,7 +16,7 @@ from PyQt6.QtCore import QEvent, Qt
 from PyQt6.QtGui import QKeyEvent
 from PyQt6.QtWidgets import QApplication, QPushButton
 
-from puddlestuff import audioinfo
+from puddlestuff import audioinfo, tagmodel
 from puddlestuff.mainwin.filterwin import FilterView
 
 pytestmark = pytest.mark.ui
@@ -291,6 +291,44 @@ def test_invalid_expression_shows_no_file(loaded, mainwin, user):
 
     enter_filter(user, mainwin, 'Maffin')
     assert shown(table) == ['01.mp3', '03.mp3']
+
+
+@pytest.mark.xfail(strict=True, reason='a nested comparison crashes the Filter')
+def test_nested_comparison_shows_no_file(user, loaded, mainwin):
+    # filter.txt: "If it evaluates to True for a file, then that file will
+    # be shown. Otherwise, puddletag will hide it." Beyond it, an
+    # expression that can't be evaluated shows no file, and no file shows
+    # twice afterwards.
+    table, paths = loaded
+    enter_filter(user, mainwin, 'Maffin')
+    assert shown(table) == ['01.mp3', '03.mp3']
+
+    enter_filter(user, mainwin, '(artist IS "Bongo Maffin") IS (title IS Monster)')
+    assert shown(table) == []
+    assert table.model().rowCount() == 0
+
+    enter_filter(user, mainwin, '')
+    assert shown(table) == ['01.mp3', '02.mp3', '03.mp3']
+
+
+@pytest.mark.xfail(strict=True, reason='a failed filter adds the hidden files again')
+def test_a_failing_filter_keeps_each_file_once(user, loaded, mainwin, qtbot, monkeypatch):
+    # The docs are silent: after a filter fails (a puddletag function
+    # replaced by one that raises, synthetic), each file shows once.
+    table, paths = loaded
+    enter_filter(user, mainwin, 'Maffin')
+
+    def raising(audio, pattern):
+        raise RuntimeError('synthetic')
+
+    monkeypatch.setattr(tagmodel, 'filter_audio', raising)
+    with qtbot.capture_exceptions() as errors:
+        enter_filter(user, mainwin, 'Jon')
+    assert errors
+    monkeypatch.undo()
+
+    enter_filter(user, mainwin, '')
+    assert shown(table) == ['01.mp3', '02.mp3', '03.mp3']
 
 
 def test_picking_from_the_list_applies_it(loaded, mainwin, qtbot, user):

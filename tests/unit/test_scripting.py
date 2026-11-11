@@ -548,3 +548,124 @@ def test_regex_without_deprecation_warning():
     with warnings.catch_warnings():
         warnings.simplefilter('error', DeprecationWarning)
         assert run('$regex(Jay Z,jay,Shawn)') == 'Shawn Z'
+
+
+@pytest.mark.xfail(strict=True, reason='inf and nan count as numbers')
+@pytest.mark.parametrize('script, name, argument', [
+    ('$ceiling(nan)', 'ceiling', 1),
+    ('$div(inf,1)', 'div', 1),
+    ('$floor(-inf)', 'floor', 1),
+    ('$floor(inf)', 'floor', 1),
+    ('$meta(artist,inf)', 'meta', 2),
+    ('$mid(abc,1,nan)', 'mid', 3),
+    ('$mid(abc,inf,1)', 'mid', 2),
+    ('$mod(inf,2)', 'mod', 1),
+    ('$mul(inf,0)', 'mul', 1),
+    ('$num(5,inf)', 'num', 2),
+    ('$odd(nan)', 'odd', 1),
+    ('$round(inf)', 'round', 1),
+    ('$sub(inf,1)', 'sub', 1),
+])
+def test_infinity_and_nan_are_not_numbers(script, name, argument):
+    # docs: "$floor(number)": "Returns the largest integer that is less than or
+    # equal to number." There is no such integer for infinity. Synthetic text.
+    message = f'SYNTAX ERROR: {name} expects a number at argument {argument}.'
+    with pytest.raises(ParseError, match=re.escape(message)):
+        run(script, artist=['A'])
+
+
+COUNTS_UNTYPED_PARAMETERS = pytest.mark.xfail(
+    strict=True, reason='counts parameters the user never types')
+
+
+@pytest.mark.parametrize('script, message', [
+    ('$add(1)', 'SYNTAX ERROR in $add: At least 2 arguments expected. 1 given.'),
+    pytest.param(
+        '$meta()', 'SYNTAX ERROR in $meta: At least 1 arguments expected. 0 given.',
+        marks=COUNTS_UNTYPED_PARAMETERS),
+    pytest.param(
+        '$num()', 'SYNTAX ERROR in $num: At least 2 arguments expected. 0 given.',
+        marks=COUNTS_UNTYPED_PARAMETERS),
+    pytest.param(
+        '$replace(abc)', 'SYNTAX ERROR in $replace: At least 3 arguments expected. 1 given.',
+        marks=COUNTS_UNTYPED_PARAMETERS),
+    ('$upper()', 'SYNTAX ERROR in $upper: At least 1 arguments expected. 0 given.'),
+])
+def test_too_few_arguments(script, message):
+    # docs: "$add(x,y)", "$replace(string, word, replaceword, matchcase, whole)",
+    # "$meta(field, n)" and "$num(number, y, keep_total)" give each signature;
+    # the message is the maintainer's choice. Synthetic text.
+    with pytest.raises(ParseError, match=re.escape(message)):
+        run(script)
+
+
+def test_extra_arguments_are_dropped():
+    # Docs silent: the program has always ignored the arguments a function
+    # doesn't take. Synthetic text.
+    assert run('$upper(a,b)') == 'A'
+
+
+@pytest.mark.parametrize('script, expected', [
+    ('abc\\', 'abc\\'),
+    ('$upper(abc)\\', 'ABC\\'),
+])
+def test_trailing_backslash(script, expected):
+    # docs: "Before any other character the backslash is kept." The end of the
+    # pattern is no character: docs silent, the program keeps the backslash.
+    # Synthetic text.
+    assert run(script) == expected
+
+
+def test_trailing_backslash_in_an_open_function():
+    # Docs silent: nothing closes the bracket, so it is an error. Synthetic text.
+    with pytest.raises(ParseError, match='No closing bracket found.'):
+        run('$upper(abc\\')
+
+
+@pytest.mark.xfail(strict=True, reason='a backslash before % is dropped')
+def test_backslash_before_percent():
+    # docs: "Inside a function's arguments, a backslash makes the next character
+    # literal if it is one of ``, ( ) $ \``, ... Before any other character the
+    # backslash is kept." Synthetic tags.
+    assert run(r'$upper(a\%artist%)', artist='Bob') == r'A\BOB'
+
+
+@pytest.mark.xfail(strict=True, reason='#612: fields in number arguments')
+@pytest.mark.parametrize('script, expected', [
+    ('$mid(%title%,%n%,2)', 'cd'),
+    ('$num(%track%,%n%)', '05'),
+    ('$round(%x%)', '3'),
+    ('$sub(%track%,1)', '4'),
+])
+def test_field_in_a_number_argument(script, expected):
+    # #612 (https://github.com/puddletag/puddletag/issues/612): "fill the 'Title'
+    # field with chapter numbers from the populated 'Track' field, using the
+    # '$sub' function"; docs: "$round(number)", "$mid(string,n,i)". Synthetic tags.
+    assert run(script, title='abcdef', track='5', n='2', x='2.5') == expected
+
+
+def test_text_field_in_a_number_argument():
+    # Docs silent: text is no number. Synthetic text.
+    with pytest.raises(ParseError, match=re.escape('sub expects a number at argument 1.')):
+        run('$sub(%title%,1)', title='abc')
+
+
+@pytest.mark.xfail(strict=True, reason='a function that needs the file raises a raw error')
+@pytest.mark.parametrize('script', [
+    '$artwork(*.jpg,,0)',
+    '$autonumbering()',
+    '$filenametotag(%artist%)',
+    '$import_text(x.txt)',
+    '$move(%artist%)',
+    '$remove_except(artist)',
+    '$save_artwork(%artist%)',
+    '$tag_dir(%artist%)',
+    '$update_from_tag(artist)',
+])
+def test_function_that_needs_the_file_in_a_script(script):
+    # Docs silent: scripting.txt lists none of these, so a script treats them as
+    # unknown, as it does any other name. Synthetic text.
+    name = script[1:script.index('(')]
+    message = f'SYNTAX ERROR in ${name}: function does not exist.'
+    with pytest.raises(ParseError, match=re.escape(message)):
+        run(script, artist='A')

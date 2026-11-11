@@ -124,6 +124,21 @@ def test_read_only_folder(user, loaded, qtbot, dialogs):
     assert [audio.filepath for audio in table.model().taginfo] == [str(p) for p in paths]
 
 
+def test_tag_to_file_with_a_syntax_error(user, loaded, mainwin, dialogs):
+    # A pattern's syntax error is shown in a warning and no file is renamed.
+    # Synthetic pattern, missing its closing bracket.
+    table, paths = loaded
+    user.click_cell(user.cell(0, 'title'))
+    set_pattern(user, '$upper(abc')
+    dialogs.answer('QMessageBox.warning', QMessageBox.StandardButton.Ok)
+    user.click_toolbar('&Tag->File')
+    assert dialogs.calls == [
+        ('QMessageBox.warning',
+         (mainwin, 'Error', 'SYNTAX ERROR in $upper: No closing bracket found.'), {})]
+    assert all(p.exists() for p in paths)
+    assert [audio.filepath for audio in table.model().taginfo] == [str(p) for p in paths]
+
+
 def test_rename_to_another_filesystem(user, loaded, qtbot):
     # #252 reports "link between devices" when Tag->File moves a file to
     # another filesystem. function.txt: "Files can also be moved, by

@@ -7,6 +7,7 @@ import os
 
 import pytest
 from PyQt6.QtCore import Qt
+from PyQt6.QtWidgets import QMessageBox
 
 from puddlestuff import audioinfo
 
@@ -162,3 +163,20 @@ def test_extension_written_by_format(user, nested, qtbot):
     qtbot.waitUntil(renamed.exists)
     assert not path.exists()
     assert table.model().taginfo[0].filepath == str(renamed)
+
+
+@pytest.mark.xfail(strict=True, reason='Format raises a syntax error instead of showing it')
+def test_format_with_a_syntax_error(user, loaded, mainwin, dialogs):
+    # Tag->File shows a pattern's syntax error in a warning and changes
+    # nothing; Format does the same. Synthetic pattern, missing its closing
+    # bracket.
+    table, paths = loaded
+    user.click_cell(user.cell(0, 'title'))
+    set_pattern(user, '$upper(abc')
+    dialogs.answer('QMessageBox.warning', QMessageBox.StandardButton.Ok)
+    user.click_toolbar('&Format')
+    assert dialogs.calls == [
+        ('QMessageBox.warning',
+         (mainwin, 'Error', 'SYNTAX ERROR in $upper: No closing bracket found.'), {})]
+    assert in_file(paths[0], 'title') == ['Title 1']
+    assert [audio['title'] for audio in table.model().taginfo] == [[f'Title {i}'] for i in (1, 2, 3)]
