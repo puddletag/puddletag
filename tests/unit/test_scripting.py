@@ -611,7 +611,6 @@ def test_trailing_backslash_in_an_open_function():
         run('$upper(abc\\')
 
 
-@pytest.mark.xfail(strict=True, reason='a backslash before % is dropped')
 def test_backslash_before_percent():
     # docs: "Inside a function's arguments, a backslash makes the next character
     # literal if it is one of ``, ( ) $ \``, ... Before any other character the

@@ -389,7 +389,7 @@ def parsefunc(s, m_audio, s_audio=None, state=None, extra=None, ret_i=False, pat
     tags.update(state)
     tags.update(extra if extra is not None else {})
 
-    escape_chars = set('()$%\\,')
+    escape_chars = set('()$\\,')
 
     br_error = translate('Errors', 'No closing bracket found.')
 
