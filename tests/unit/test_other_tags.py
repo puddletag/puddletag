@@ -6,6 +6,7 @@ tag_versions.tag_values), and the Update From Tag function (function.txt).
 
 Synthetic files and tags.
 """
+import mutagen
 import mutagen.apev2
 import mutagen.id3
 import pytest
@@ -132,3 +133,30 @@ def test_update_from_tag_keeps_that_tag(make_audio, kind, tag_type, read):
     tag.update(update_from_tag(path, '', tag_type))
     tag.save()
     assert {k: str(v) for k, v in read(str(path)).items()} == {k: str(v) for k, v in before.items()}
+
+
+@pytest.mark.parametrize('name, tag_type', [('song.mp3', 'APEv2'), ('song.flac', 'ID3')],
+                         ids=['mp3-APEv2', 'flac-ID3'])
+def test_update_from_tag_without_that_tag(make_audio, name, tag_type):
+    # "Updates the fields specified with the values found in Tag type.": the
+    # file has no such tag, so nothing is found. Synthetic files.
+    path = make_audio(name, title='T')
+    assert update_from_tag(path, '', tag_type) == {}
+
+
+@pytest.mark.parametrize('tag_type', [
+    pytest.param('APEv2', marks=pytest.mark.xfail(strict=True, raises=mutagen.MutagenError,
+                                                  reason='a missing file raises MutagenError')),
+    'ID3',
+])
+def test_update_from_tag_on_a_file_deleted_since_loading(make_audio, tag_type):
+    # "Updates the fields specified with the values found in Tag type.": the
+    # file is gone, so nothing is found, as for a file without that tag.
+    # Synthetic file.
+    path = make_audio('song.flac', title='V')
+    tag = audioinfo.Tag(str(path))
+    path.unlink()
+    action = Function('update_from_tag')
+    action.setTag(['__all'])
+    action.setArgs(['', tag_type])
+    assert apply_actions([action], tag) == {}

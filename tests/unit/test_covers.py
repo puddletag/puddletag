@@ -374,9 +374,9 @@ def test_artwork_from_several_filenames(make_audio):
 @pytest.mark.xfail(strict=True, reason='code differs from the docs: the files load in the order the folder lists '
                                        'them')
 def test_artwork_loaded_in_order(make_audio):
-    # "The files will be loaded in order": as the filenames list them, so
-    # the first is the cover __image_mimetype and __image_size describe.
-    # Both orders, which the folder's own order can't both match.
+    # "The files are loaded in the order the list names them": so the first
+    # is the cover __image_mimetype and __image_size describe. Both orders,
+    # which the folder's own order can't both match. Synthetic files.
     path = make_audio('song.mp3', title='Song')
     for name, cover in ('front.png', FRONT), ('back.jpg', BACK):
         (path.parent / name).write_bytes(cover['data'])
@@ -424,15 +424,14 @@ def test_artwork_export_fields(make_audio):
 
 def test_artwork_exported_to_another_folder(make_audio, tmp_path):
     # "/home/user/Desktop/%artist% will create four images in
-    # /home/user/Desktop". The names it gives, Thebe_1.png to Thebe_4.jpg,
-    # disagree with the rule on existing pictures, so only the folder is
-    # checked.
+    # /home/user/Desktop: Thebe.png, Thebe_1.png, Thebe.jpg and Thebe_1.jpg".
     path = make_audio('song.mp3', title='Song', artist='Thebe')
     write(path, EXAMPLE)
     desktop = tmp_path / 'Desktop'
     desktop.mkdir()
     apply_function('save_artwork', path, str(desktop / '%artist%'))
-    assert sorted(pictures(desktop).values()) == sorted(cover['data'] for cover in EXAMPLE)
+    assert pictures(desktop) == {'Thebe.png': EXAMPLE[0]['data'], 'Thebe_1.png': EXAMPLE[1]['data'],
+                                 'Thebe.jpg': EXAMPLE[2]['data'], 'Thebe_1.jpg': EXAMPLE[3]['data']}
 
 
 def test_artwork_exported_next_to_existing_pictures(make_audio):
@@ -460,3 +459,104 @@ def test_same_picture_exported_once(make_audio):
     for path in paths:
         apply_function('save_artwork', path, 'folder', state=state)
     assert pictures(paths[0].parent) == {'folder.png': FRONT['data'], 'folder_1.png': EXAMPLE[1]['data']}
+
+
+@pytest.mark.xfail(strict=True, raises=TypeError, reason='an empty pattern raises TypeError')
+def test_artwork_export_with_an_empty_pattern(make_audio):
+    # "Saves all artwork found in an audio file using the desired
+    # **Pattern**." An empty pattern names no file, so nothing is saved and
+    # no message shows. Synthetic input.
+    path = make_audio('song.mp3', title='Song')
+    write(path, [FRONT])
+    assert apply_function('save_artwork', path, '') == {}
+    assert pictures(path.parent) == {}
+
+
+def test_artwork_export_without_pictures(make_audio):
+    # "Saves all artwork found in an audio file using the desired
+    # **Pattern**." A file with no artwork has none to save. Synthetic input.
+    path = make_audio('song.mp3', title='Song')
+    assert apply_function('save_artwork', path, 'folder') == {}
+    assert pictures(path.parent) == {}
+
+
+def test_artwork_export_skips_a_picture_of_unknown_type(make_audio):
+    # "Saves all artwork found in an audio file": a picture that is neither
+    # PNG nor JPEG, with no MIME type, can't be told apart and is skipped.
+    # Synthetic input.
+    path = make_audio('song.mp3', title='Song')
+    tags = mutagen.id3.ID3(str(path))
+    tags.add(mutagen.id3.APIC(encoding=3, mime='', type=3, desc='', data=b'\x00\x01\x02\x03\xff\xfe'))
+    tags.save(str(path))
+    assert apply_function('save_artwork', path, 'folder') == {}
+    assert pictures(path.parent) == {}
+
+
+def test_artwork_skips_what_cannot_be_read(make_audio):
+    # "Filenames are a semicolon-separated list of shell-style wildcards, eg.
+    # *.jpg;*.png": a folder named like a match isn't a picture, and the
+    # others still load. Synthetic files.
+    path = make_audio('song.mp3', title='Song')
+    (path.parent / 'back.jpg').write_bytes(BACK['data'])
+    (path.parent / 'folder.jpg').mkdir()
+    changes = apply_function('artwork', path, '*.jpg', '', False)
+    assert [cover['data'] for cover in changes['__image']] == [BACK['data']]
+
+
+@pytest.mark.xfail(strict=True, reason='an absolute path loads nothing (#312)')
+@pytest.mark.parametrize('pattern', ['{covers}/*.png', '{covers}/front.png', '../covers/front.png'])
+def test_artwork_loaded_from_another_folder(make_audio, tmp_path, pattern):
+    # "Each name can also be an absolute path or be relative to the file's
+    # folder, eg. ../covers/*.jpg"; #312's steps: "Enter full path to
+    # artwork image (e.g. /media/music/example/Cover.jpg)". Synthetic files.
+    covers = tmp_path / 'covers'
+    covers.mkdir()
+    (covers / 'front.png').write_bytes(FRONT['data'])
+    (tmp_path / 'music').mkdir()
+    song = make_audio('music/song.mp3', title='Song')
+    changes = apply_function('artwork', song, pattern.format(covers=covers), '', False)
+    assert [cover['data'] for cover in changes.get('__image', [])] == [FRONT['data']]
+
+
+@pytest.mark.xfail(strict=True, reason='the matches of a wildcard load in the order the folder lists them')
+def test_wildcard_matches_loaded_by_name(make_audio):
+    # "The files are loaded in the order the list names them; a wildcard's
+    # matches by name." The files are created in the opposite order.
+    # Synthetic files.
+    path = make_audio('song.mp3', title='Song')
+    for name, cover in ('b.jpg', BACK), ('a.jpg', ARTIST):
+        (path.parent / name).write_bytes(cover['data'])
+    changes = apply_function('artwork', path, '*.jpg', '', False)
+    assert [cover['data'] for cover in changes['__image']] == [ARTIST['data'], BACK['data']]
+
+
+def test_file_matched_twice_loaded_once(make_audio):
+    # "The files are loaded in the order the list names them": a file two
+    # names match is one file. Synthetic file.
+    path = make_audio('song.mp3', title='Song')
+    (path.parent / 'front.png').write_bytes(FRONT['data'])
+    changes = apply_function('artwork', path, '*.png;front.png', '', False)
+    assert [cover['data'] for cover in changes['__image']] == [FRONT['data']]
+
+
+@pytest.mark.xfail(strict=True, reason="every picture that isn't PNG is saved as .jpg")
+def test_artwork_exported_with_its_own_extension(make_audio):
+    # "Saves all artwork found in an audio file using the desired
+    # **Pattern**. Extensions are added automatically." A GIF is saved as a
+    # GIF. Synthetic file.
+    gif = (b'GIF89a\x01\x00\x01\x00\x80\x00\x00\x00\x00\x00\xff\xff\xff!\xf9\x04\x01\x00\x00\x00\x00,'
+           b'\x00\x00\x00\x00\x01\x00\x01\x00\x00\x02\x02D\x01\x00;')
+    path = make_audio('song.mp3', title='Song')
+    write(path, [dict(FRONT, data=gif, mime='image/gif')])
+    apply_function('save_artwork', path, 'folder')
+    assert pictures(path.parent) == {'folder.gif': gif}
+
+
+def test_png_with_a_nonstandard_mime_type_exported_as_png(make_audio):
+    # "Extensions are added automatically": a PNG whose MIME type is
+    # image/x-png, as some programs write it, is still saved as .png.
+    # Synthetic file.
+    path = make_audio('song.mp3', title='Song')
+    write(path, [dict(FRONT, mime='image/x-png')])
+    apply_function('save_artwork', path, 'folder')
+    assert pictures(path.parent) == {'folder.png': FRONT['data']}

@@ -284,3 +284,23 @@ def test_slash_written_in_a_function_makes_a_folder(tag_to_file, pattern, path, 
     # function.txt: "Files can also be moved, by specifying '/' as a
     # directory delimeter", inside a function too. Synthetic tags.
     assert tag_to_file(pattern, path, **tags) == expected
+
+
+@pytest.mark.parametrize('pattern, expected', [
+    ('./%title%', 'music/album/Song.mp3'),
+    ('../%title%', 'music/Song.mp3'),
+])
+def test_tag_to_file_dot_paths(tag_to_file, pattern, expected):
+    # function.txt: "A pattern that starts with ./ or ../ is relative to the
+    # file's folder: ./%title% keeps the file where it is, ../%title% moves it
+    # to the parent." Synthetic folders and tags.
+    assert tag_to_file(pattern, 'music/album/x.mp3', title='Song') == expected
+
+
+def test_tag_to_file_stops_at_the_root(tag_to_file, tmp_path):
+    # function.txt: "For every slash, the file is moved up one directory".
+    # More slashes than the file has folders stop at the root. Synthetic.
+    levels = len(tmp_path.parts) + 2
+    pattern = '/'.join(['%artist%'] * levels) + '/%title%'
+    assert tag_to_file(pattern, 'music/x.mp3', artist='A', title='Song') == (
+        '/' + '/'.join(['A'] * levels) + '/Song.mp3')

@@ -10,6 +10,10 @@ Tag values are synthetic unless the linked source gave them.
 Where the code disagrees with the docs, the case is a strict xfail that says
 what differs, so it starts failing once either side is fixed.
 """
+import re
+import sys
+import warnings
+
 import pytest
 
 from puddlestuff import functions
@@ -437,3 +441,123 @@ def test_regex_without_repl_deletes_the_matches(title, expected):
     # Text to replace all matches of regex with. Can be left out, then the matches
     # are removed." Synthetic titles.
     assert run('$regex(%title%,"x")', title=title) == expected
+
+
+@pytest.mark.xfail(strict=True, reason='$div, $mod and $mul write 10 as 1E+1')
+@pytest.mark.parametrize('script, expected', [
+    ('$div(100,1)', '100'),   # "$div(x, y) Divides x by y."
+    ('$mod(100,30)', '10'),   # "Returns the remainder of x divided by y."
+    ('$mul(2.5,4)', '10'),    # "$mul(x,y) Multiplies x by y."
+    ('$mul(5,2)', '10'),
+])
+def test_numbers_in_plain_notation(script, expected):
+    # docs: the quoted lines of scripting.txt. Synthetic numbers.
+    assert run(script) == expected
+
+
+def test_right_of_zero_characters():
+    # docs: "Returns rightmost n characters in string". Zero characters is
+    # nothing. Synthetic text.
+    assert run('$right(abc,0)') == ''
+
+
+def test_grtr_on_an_empty_field():
+    # shared: D1028's script wants no disc folder for a single disc, so a file
+    # without disctotal gives '.'. Synthetic tags.
+    assert run('$if($grtr(%disctotal%,1),Disc %discnumber%,.)', discnumber='1') == '.'
+
+
+@pytest.mark.xfail(strict=True, reason='$add writes 1000 as 1E+3')
+def test_add_in_plain_notation():
+    # docs: "$add(x,y) Adds x and y". A number written as an exponent gives
+    # plain digits, as $div, $mod and $mul do. Synthetic number.
+    assert run('$add(1e3,0)') == '1000'
+
+
+@pytest.mark.parametrize('script, expected', [
+    ('$add(a,1)', ''),
+    ('$char(ab)', ''),
+    ('$meta(artist)', 'A, B'),
+    ('$meta(artist, 5)', ''),
+    ('$meta(genre)', ''),
+    ('$meta_sep(genre)', ''),
+    ('$mod(10,0)', ''),
+    # docs: "$num(number, y, keep_total)": "Pass 1 as keep_total to keep it:
+    # $num(5/12,3,1) gives 005/12" and "$num(5/12,3) gives 005"
+    ('$num(5/12,3)', '005'),
+    ('$num(5/12,3,1)', '005/12'),
+])
+def test_function_errors(script, expected):
+    # Docs silent: these give nothing, or the plain result, as the program
+    # always did. Synthetic tags.
+    assert run(script, artist=['A', 'B']) == expected
+
+
+@pytest.mark.parametrize('script, message', [
+    ('$div(1,0)', 'Cannot divide by zero'),
+    ('$left(abc,x)', 'Integer expected, got "x"'),
+    ('$right(abc,x)', 'Integer expected, got "x"'),
+    ('$mid(abc,x,1)', 'mid expects a number at argument 2'),
+])
+def test_function_error_messages(script, message):
+    # Docs silent: the parser's message names what was wrong. Synthetic text.
+    with pytest.raises(ParseError, match=re.escape(message)):
+        run(script)
+
+
+NUMBER_AGAINST_TEXT = pytest.mark.xfail(
+    strict=True, raises=TypeError,
+    reason='$geql, $grtr, $leql and $less raise TypeError for a number against text')
+
+
+@pytest.mark.parametrize('script, expected', [
+    pytest.param(truth('$geql(,5)'), 'no', marks=NUMBER_AGAINST_TEXT),
+    pytest.param(truth('$geql(5,abc)'), 'no', marks=NUMBER_AGAINST_TEXT),  # '5' (53) before 'a' (97)
+    pytest.param(truth('$grtr(abc,5)'), 'yes', marks=NUMBER_AGAINST_TEXT),
+    pytest.param(truth('$leql(abc,5)'), 'no', marks=NUMBER_AGAINST_TEXT),
+    pytest.param(truth('$less(,5)'), 'yes', marks=NUMBER_AGAINST_TEXT),
+    pytest.param(truth('$less(abc,5)'), 'no', marks=NUMBER_AGAINST_TEXT),
+    pytest.param(truth('$grtr(,-1)'), 'no', marks=pytest.mark.xfail(
+        strict=True, reason='$grtr counts an empty value as 0')),
+])
+def test_comparing_a_number_with_text(script, expected):
+    # docs: "Returns True if x >= y. False otherwise." and filter.txt's GREATER:
+    # "If both are numbers, they're compared as numbers; otherwise as text, by
+    # character code". Synthetic values.
+    assert run(script) == expected
+
+
+@pytest.mark.xfail(strict=True, reason='$caps3 returns nothing for a text without a letter')
+@pytest.mark.parametrize('text', ['--', '...'])
+def test_caps3_without_a_letter(text):
+    # docs: "Capitalizes the first letter of the string and converts the rest
+    # to lower case." No letter to capitalize: the text is kept. Synthetic.
+    assert run(f'$caps3("{text}")') == text
+
+
+@pytest.mark.parametrize('script, expected', [
+    ('$merge_values(abc)', 'abc'),
+    ('$remove_dupes(abc)', 'abc'),
+    ('$sort(abc)', 'abc'),
+    ('$split_by_sep("a;b",";")', 'a;b'),
+])
+def test_dialog_function_called_from_a_script(script, expected):
+    # Docs silent: a script passes one text, a field of one value, which these
+    # leave as it is. Synthetic text.
+    assert run(script) == expected
+
+
+@pytest.mark.xfail(strict=True, reason='an empty word matches between every character')
+def test_replace_an_empty_word():
+    # Docs silent: no word to replace, so the text is kept. Synthetic text.
+    assert run('$replace(abc,,x)') == 'abc'
+
+
+@pytest.mark.xfail(sys.version_info >= (3, 13), strict=True, raises=DeprecationWarning,
+                   reason='re.sub gets count and flags as positional arguments')
+def test_regex_without_deprecation_warning():
+    # docs: "$regex(text, regex, repl, matchcase)" replaces matches; Python 3.13
+    # warns about re.sub's positional count and flags. Synthetic text.
+    with warnings.catch_warnings():
+        warnings.simplefilter('error', DeprecationWarning)
+        assert run('$regex(Jay Z,jay,Shawn)') == 'Shawn Z'

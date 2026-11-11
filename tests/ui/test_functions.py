@@ -9,7 +9,8 @@ import os
 import mutagen.id3
 import pytest
 from PyQt6.QtCore import Qt
-from PyQt6.QtWidgets import QApplication, QPushButton, QStyle, QStyleOptionViewItem
+from PyQt6.QtWidgets import (
+    QApplication, QPushButton, QStyle, QStyleOptionButton, QStyleOptionViewItem)
 
 from puddlestuff import audioinfo
 from puddlestuff.actiondlg import ActionWindow, CreateFunction
@@ -515,3 +516,36 @@ def test_functions_invalid_regexp(user, loaded, qtbot, dialogs, preview):
     assert in_files(paths) == [tags(1), tags(2), tags(3)]
     assert in_table(table) == [tags(1), tags(2), tags(3)]
     assert [audio.preview for audio in table.model().taginfo] == [{}, {}, {}]
+
+
+def test_functions_window_remembers_autonumbering(user, loaded, qtbot, mainwin):
+    # Synthetic settings (Start 5, Restart on, three files in one folder: 5, 6,
+    # 7). function.txt, Autonumbering: "Numbers tracks sequentially beginning
+    # with Start" and "restart the numbering from Start for each directory".
+    # The window reopens with the settings it last ran with.
+    table, paths = loaded
+    select_all(user)
+    window = open_functions_window(user, qtbot, mainwin)
+    pick_autonumbering(user, qtbot, window)
+    numbering = window.stack.currentWidget().widget
+    user.click(numbering._start.lineEdit())
+    user.press(Key.Key_A, Ctrl)
+    user.type('5')
+    box = numbering._restart_numbering
+    option = QStyleOptionButton()
+    box.initStyleOption(option)
+    user.click(box, box.style().subElementRect(
+        QStyle.SubElement.SE_CheckBoxIndicator, option, box).center())
+    assert box.isChecked()
+    user.click(window.okcancel.okButton)
+    written(qtbot, user, paths[2], 'discnumber', ['7'])
+    expected = [dict(tags(i), discnumber=[str(i + 4)]) for i in (1, 2, 3)]
+    assert in_files(paths) == expected
+    assert in_table(table) == expected
+    window = open_functions_window(user, qtbot, mainwin)
+    pick(user, qtbot, window.functions, 'Autonumbering')
+    numbering = window.stack.currentWidget().widget
+    assert (numbering._start.value(), numbering._restart_numbering.isChecked(),
+            numbering._padlength.value()) == (5, True, 1)
+    user.click(window.okcancel.cancelButton)
+    qtbot.waitUntil(lambda: not window.isVisible())

@@ -489,3 +489,76 @@ def test_tag_to_dir_on_another_filesystem(make_audio, tmp_path, other_filesystem
     with pytest.raises(OSError):
         tag_to_dir(path, other_filesystem + '/%album%')
     assert (path.exists(), os.listdir(other_filesystem)) == (True, [])
+
+
+@pytest.mark.parametrize('name, expected', [
+    ('Indie Artist - No Autotune.mp3', {'artist': ['Indie Artist'], 'title': ['No Autotune']}),
+    ('Untitled.mp3', {}),
+])
+def test_filename_to_tag_function(make_audio, tmp_path, name, expected):
+    # menus.txt (File->Tag): "Invoking File->Tag on a file with filename
+    # 'Indie Artist - No Autotune.mp3' with %artist% - %title% ... will
+    # retrieve artist=Indie Artist and title=No Autotune"; "A file whose name
+    # the pattern doesn't match is left as it is." function.txt's Filename to
+    # Tag points to it. Synthetic file names.
+    path = make_audio(name, tmp_path)
+    tag = audioinfo.Tag(str(path))
+    changes = apply_actions([make_action('filenametotag', NO_FIELDS, '%artist% - %title%')], tag)
+    assert values(changes) == expected
+    saved = save(tag, changes)
+    assert {field: saved[field] for field in expected} == expected
+
+
+def test_remove_duplicate_values_case_sensitively():
+    # "Removes all duplicate values in a multiple-valued field. Case
+    # sensitively or not." Synthetic values.
+    changes = apply_actions([make_action('remove_dupes', ['genre'], True)],
+                            {'genre': ['Rap', 'Rock', 'rap', 'Rap']})
+    assert values(changes) == {'genre': ['Rap', 'Rock', 'rap']}
+
+
+def test_case_conversion_lower_case():
+    # "There are three types of case conversion: UPPER CASE, lower case and
+    # Mixed Case. Upper and lower are self-explanatory." Synthetic value.
+    changes = apply_actions([make_action('titleCase', ['title'], 'lower case', '')],
+                            {'title': ['HeLLo World']})
+    assert values(changes) == {'title': ['hello world']}
+
+
+@pytest.mark.parametrize('pattern', ['', 'latin.txt', 'missing.txt'])
+def test_import_text_file_that_cannot_be_read(make_audio, tmp_path, pattern):
+    # Import text file: "the files complete text is loaded into that field".
+    # Docs silent on a file that isn't there, isn't UTF-8 or has no name; the
+    # decision: the field is left as it is. Synthetic file.
+    path = make_audio('filename.mp3', tmp_path)
+    (tmp_path / 'latin.txt').write_bytes('café'.encode('latin-1'))
+    tag = audioinfo.Tag(str(path))
+    assert apply_actions([make_action('import_text', ['unsyncedlyrics'], pattern)], tag) == {}
+    assert audioinfo.Tag(str(path)).get('unsyncedlyrics') is None
+
+
+def test_import_text_file_from_dot_path(make_audio, tmp_path):
+    # function.txt's Import text file example: "../lyrics.txt will load the
+    # file at /mnt/Music/artist/lyrics.txt". Tag to filename: "A pattern that
+    # starts with ./ or ../ is relative to the file's folder: ./%title% keeps
+    # the file where it is, ../%title% moves it to the parent." Synthetic text.
+    path = make_audio('filename.mp3', tmp_path / 'Music/artist/album')
+    text = 'Lyrics from the album folder\n\nLast line\n'
+    (tmp_path / 'Music/artist/album/lyrics.txt').write_text(text)
+    tag = audioinfo.Tag(str(path))
+    action = [make_action('import_text', ['unsyncedlyrics'], './lyrics.txt')]
+    assert save(tag, apply_actions(action, tag))['unsyncedlyrics'] == ['und||' + text]
+
+
+def test_text_to_tag_without_a_match():
+    # Text to Tag: docs silent on a pattern that doesn't match the text; the
+    # decision: nothing changes. Synthetic text.
+    action = [make_action('texttotag', ['comment'], 'First', '%1 - %2', '%2')]
+    assert apply_actions(action, {}) == {}
+
+
+def test_split_with_an_empty_separator():
+    # Split: docs silent on an empty separator; the decision: the values are
+    # left as they are. Synthetic value.
+    changes = apply_actions([make_action('split_by_sep', ['genre'], '')], {'genre': ['Rap;Rock']})
+    assert values(changes) == {'genre': ['Rap;Rock']}
