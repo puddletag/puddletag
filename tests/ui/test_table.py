@@ -566,7 +566,6 @@ def drag_row_border(qtbot, table):
 
 
 # The docs don't say; the program means every row to take the new height.
-@pytest.mark.xfail(strict=True, reason='only the dragged row and the next take the new height')
 def test_dragging_a_row_border_sets_every_row(qtbot, five):
     table = five
     height = drag_row_border(qtbot, table)

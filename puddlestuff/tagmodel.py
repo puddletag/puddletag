@@ -1423,6 +1423,11 @@ class VerticalHeader(QHeaderView):
 
     def _resize(self, row, oldsize, newsize):
         self.setDefaultSectionSize(newsize)
+        # Signals are blocked so the loop doesn't call this again for every row.
+        self.blockSignals(True)
+        for section in range(self.count()):
+            self.resizeSection(section, newsize)
+        self.blockSignals(False)
 
 
 class TagTable(QTableView):
