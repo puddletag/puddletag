@@ -43,6 +43,7 @@ initialkey                  TKEY
 isrc                        TSRC
 itunescompilationflag       TCMP
 itunescomposersortorder     TSOC
+itunesgrouping              GRP1
 language                    TLAN
 lyricist                    TEXT
 mediatype                   TMED

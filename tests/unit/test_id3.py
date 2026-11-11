@@ -5,7 +5,7 @@ import mutagen
 import mutagen.id3
 import mutagen.mp4
 import pytest
-from mutagen.id3 import CHAP, CTOC, CTOCFlags, Encoding, GEOB, GRP1, PRIV, PictureType, SYLT, TIT2
+from mutagen.id3 import CHAP, CTOC, CTOCFlags, Encoding, GEOB, GRP1, MCDI, PRIV, PictureType, SYLT, TIT2
 
 from puddlestuff import audioinfo
 from puddlestuff.audioinfo.util import to_string
@@ -205,8 +205,8 @@ TEXT_FRAMES = {
     'bpm': 'TBPM', 'composer': 'TCOM', 'conductor': 'TPE3', 'copyright': 'TCOP', 'discnumber': 'TPOS',
     'encodedby': 'TENC', 'encodingsettings': 'TSSE', 'filename': 'TOFN', 'fileowner': 'TOWN',
     'filetype': 'TFLT', 'genre': 'TCON', 'grouping': 'TIT1', 'initialkey': 'TKEY', 'isrc': 'TSRC',
-    'itunescompilationflag': 'TCMP', 'itunescomposersortorder': 'TSOC', 'language': 'TLAN',
-    'lyricist': 'TEXT', 'mediatype': 'TMED', 'mood': 'TMOO', 'organization': 'TPUB',
+    'itunescompilationflag': 'TCMP', 'itunescomposersortorder': 'TSOC', 'itunesgrouping': 'GRP1',
+    'language': 'TLAN', 'lyricist': 'TEXT', 'mediatype': 'TMED', 'mood': 'TMOO', 'organization': 'TPUB',
     'originalalbum': 'TOAL', 'originalartist': 'TOPE', 'performersortorder': 'TSOP',
     'producednotice': 'TPRO', 'radioowner': 'TRSO', 'radiostationname': 'TRSN', 'setsubtitle': 'TSST',
     'title': 'TIT2', 'titlesortorder': 'TSOT', 'track': 'TRCK', 'version': 'TIT3',
@@ -407,9 +407,9 @@ def test_saving_again_keeps_one_tag(make_audio, v2):
 
 
 # Frames id3.txt doesn't list, as other programs write them: a chapter and
-# its table of contents, a private frame, an object, synced lyrics and
-# iTunes' grouping. Synthetic values.
-UNLISTED = ['CHAP:c1', 'CTOC:toc', 'GEOB:d', 'GRP1', 'PRIV:example.org:private', 'SYLT::eng']
+# its table of contents, an object, a CD identifier, a private frame and
+# synced lyrics. Synthetic values.
+UNLISTED = ['CHAP:c1', 'CTOC:toc', 'GEOB:d', 'MCDI', 'PRIV:example.org:private', 'SYLT::eng']
 
 
 def add_unlisted_frames(path):
@@ -420,7 +420,7 @@ def add_unlisted_frames(path):
                         child_element_ids=['c1'], sub_frames=[]))
     audio.tags.add(GEOB(encoding=Encoding.UTF8, mime='application/octet-stream', filename='a.bin',
                         desc='d', data=b'xyz'))
-    audio.tags.add(GRP1(encoding=Encoding.UTF8, text=['Group']))
+    audio.tags.add(MCDI(data=b'\x00\x01'))
     audio.tags.add(PRIV(owner='example.org', data=b'private'))
     audio.tags.add(SYLT(encoding=Encoding.UTF8, lang='eng', format=2, type=1, desc='',
                         text=[('la', 0), ('la', 500)]))
@@ -710,7 +710,6 @@ def test_save_after_a_rename(make_audio, ext):
     assert (audioinfo.Tag(str(new))['title'], path.exists()) == (['After'], False)
 
 
-@pytest.mark.xfail(strict=True, reason="a GRP1 frame isn't shown as the itunesgrouping field")
 @pytest.mark.parametrize('ext', ID3_FORMATS)
 def test_itunes_grouping_is_shown_and_kept(make_audio, ext):
     # id3.txt's table: "itunesgrouping  GRP1". iTunes writes its grouping to
@@ -722,7 +721,6 @@ def test_itunes_grouping_is_shown_and_kept(make_audio, ext):
     assert (frames['GRP1'].text, tag['itunesgrouping'], tag['title']) == (['Group'], ['Group'], ['After'])
 
 
-@pytest.mark.xfail(strict=True, reason="itunesgrouping is written to a TXXX frame, not GRP1")
 @pytest.mark.parametrize('ext', ID3_FORMATS)
 def test_itunes_grouping_writes_grp1_only(make_audio, ext):
     # id3.txt's table: "grouping  TIT1" and "itunesgrouping  GRP1": each field

@@ -159,6 +159,7 @@ def genre_handler(frames):
 
 
 text_frames = {
+    id3.GRP1: 'itunesgrouping',
     id3.TALB: 'album',
     id3.TBPM: 'bpm',
     id3.TCOM: 'composer',
