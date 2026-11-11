@@ -204,25 +204,27 @@ FUNCS = {
 }
 
 
+MIME_FORMATS = {'image/bmp': AtomDataType.BMP, 'image/gif': AtomDataType.GIF,
+                'image/jpeg': MP4Cover.FORMAT_JPEG, 'image/png': MP4Cover.FORMAT_PNG}
+FORMAT_MIMES = {format: mime for mime, format in MIME_FORMATS.items()}
+
+
 def bin_to_pic(cover):
     try:
         format = cover.imageformat
     except AttributeError:
         format = cover.format
-    if format == MP4Cover.FORMAT_PNG:
-        return {'data': cover, 'mime': 'image/png'}
-    else:
-        return {'data': cover, 'mime': 'image/jpeg'}
+    # mutagen reads any type but PNG as JPEG, so GIF and BMP are told by their data.
+    mime = get_mime(cover)
+    if mime not in MIME_FORMATS or format == MP4Cover.FORMAT_PNG:
+        mime = FORMAT_MIMES.get(format, 'image/jpeg')
+    return {'data': cover, 'mime': mime}
 
 
 def pic_to_bin(image):
     data = image[util.DATA]
-    mime = get_mime(data)
-    if mime == 'image/png':
-        format = MP4Cover.FORMAT_PNG
-    elif mime == 'image/jpeg':
-        format = MP4Cover.FORMAT_JPEG
-    else:
+    format = MIME_FORMATS.get(get_mime(data))
+    if format is None:
         return
     return MP4Cover(data, format)
 

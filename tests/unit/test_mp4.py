@@ -530,7 +530,6 @@ BMP = (b'BM' + struct.pack('<IHHI', 58, 0, 0, 54)
     pytest.param(GIF, 'image/gif', AtomDataType.GIF, id='gif'),
     pytest.param(BMP, 'image/bmp', AtomDataType.BMP, id='bmp'),
 ])
-@pytest.mark.xfail(strict=True, reason='a GIF or BMP cover is dropped on save')
 def test_cover_of_another_image_type(make_audio, data, mime, format):
     # "MP4 tags also support multiple pictures per file, but not setting
     # descriptions." Synthetic images.
