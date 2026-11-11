@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import math
 import os
 import re
 from collections import defaultdict
@@ -275,8 +276,9 @@ def get_function_arguments(funcname, func, arguments, reserved, fmt=True, *dicts
             topass[param] = arg
         elif param.startswith('n_'):
             try:
-                if float(arg) or float(arg) == 0:
-                    topass[param] = Decimal(arg)
+                if not math.isfinite(float(arg)):
+                    raise ValueError(arg)
+                topass[param] = Decimal(arg)
             except ValueError:
                 raise ParseError(SYNTAX_ARG_ERROR.format(funcname, no + 1))
         else:

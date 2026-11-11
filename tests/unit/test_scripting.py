@@ -550,7 +550,6 @@ def test_regex_without_deprecation_warning():
         assert run('$regex(Jay Z,jay,Shawn)') == 'Shawn Z'
 
 
-@pytest.mark.xfail(strict=True, reason='inf and nan count as numbers')
 @pytest.mark.parametrize('script, name, argument', [
     ('$ceiling(nan)', 'ceiling', 1),
     ('$div(inf,1)', 'div', 1),
