@@ -443,7 +443,6 @@ def test_regex_without_repl_deletes_the_matches(title, expected):
     assert run('$regex(%title%,"x")', title=title) == expected
 
 
-@pytest.mark.xfail(strict=True, reason='$div, $mod and $mul write 10 as 1E+1')
 @pytest.mark.parametrize('script, expected', [
     ('$div(100,1)', '100'),   # "$div(x, y) Divides x by y."
     ('$mod(100,30)', '10'),   # "Returns the remainder of x divided by y."
@@ -467,7 +466,6 @@ def test_grtr_on_an_empty_field():
     assert run('$if($grtr(%disctotal%,1),Disc %discnumber%,.)', discnumber='1') == '.'
 
 
-@pytest.mark.xfail(strict=True, reason='$add writes 1000 as 1E+3')
 def test_add_in_plain_notation():
     # docs: "$add(x,y) Adds x and y". A number written as an exponent gives
     # plain digits, as $div, $mod and $mul do. Synthetic number.

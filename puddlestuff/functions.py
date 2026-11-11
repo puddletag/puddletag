@@ -59,9 +59,13 @@ path = os.path
 D = decimal.Decimal
 
 
+def _plain(value):
+    return format(value.normalize(), 'f')
+
+
 def add(text, text1):
     try:
-        return str((D(str(text)) + D(str(text1))).normalize().to_eng_string())
+        return _plain(D(str(text)) + D(str(text1)))
     except decimal.InvalidOperation:
         return
 
@@ -154,7 +158,7 @@ def div(n_numerator, n_divisor):
     if n_divisor == 0:
         raise FuncError("Cannot divide by zero.")
     try:
-        return str((D(n_numerator) / D(n_divisor)).normalize())
+        return _plain(D(n_numerator) / D(n_divisor))
     except decimal.InvalidOperation:
         return
     # ret = unicode(float(n_numerator) / n_divisor)
@@ -440,7 +444,7 @@ def mid(text, n_start, n_len):
 
 def mod(n_x, n_y):
     try:
-        return str((n_x % n_y).normalize())
+        return _plain(n_x % n_y)
     except decimal.InvalidOperation:
         return
 
@@ -543,7 +547,7 @@ def move(m_tags, p_pattern, r_tags, ext=True, state=None):
 def mul(n_x, n_y):
     D = decimal.Decimal
     try:
-        return str((D(n_x) * D(n_y)).normalize())
+        return _plain(D(n_x) * D(n_y))
     except decimal.InvalidOperation:
         return
 
