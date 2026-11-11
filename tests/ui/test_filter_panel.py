@@ -310,7 +310,6 @@ def test_nested_comparison_shows_no_file(user, loaded, mainwin):
     assert shown(table) == ['01.mp3', '02.mp3', '03.mp3']
 
 
-@pytest.mark.xfail(strict=True, reason='a failed filter adds the hidden files again')
 def test_a_failing_filter_keeps_each_file_once(user, loaded, mainwin, qtbot, monkeypatch):
     # The docs are silent: after a filter fails (a puddletag function
     # replaced by one that raises, synthetic), each file shows once.

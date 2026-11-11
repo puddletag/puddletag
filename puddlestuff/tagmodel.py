@@ -646,14 +646,13 @@ class TagModel(QAbstractTableModel):
         self._filterPattern = pattern
         with self.reset_context():
             self.taginfo = self.taginfo + self._filtered
-            if self._filtered:
+            hidden = self._filtered
+            self._filtered = []
+            if hidden:
                 for field in self.sortFields:
                     self.taginfo.sort(key=lambda a: natural_sort_key(a.get(field, '')), reverse=self.reverseSort)
             taginfo = self.taginfo
-            if (not pattern) and (not self._filtered):
-                return
-            elif not pattern:
-                self._filtered = []
+            if not pattern:
                 return
 
             filtered = [(filter_audio(a, pattern), a) for a in self.taginfo]
