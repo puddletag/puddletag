@@ -204,3 +204,4 @@ In this panel you can modify the columns listed in the file-view.
 + Any unchecked columns will not be shown.
 + **Title** is the title that'll be displayed on the file-view's header.
 + Data will be retrieved from the **Field** you specify.
++ **Add** appends an empty column. **Duplicate** appends a copy of the selected column, ticked or not as the original; the file-view shows it once its **Title** or **Field** differs from the original's.
