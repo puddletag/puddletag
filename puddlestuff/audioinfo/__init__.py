@@ -50,16 +50,11 @@ def setmapping(m):
     mapping = m
     for z in mapping:
         revmapping[z] = CaselessDict([(value, key) for key, value in mapping[z].items()])
-    for z in extensions.values():
-        try:
-            if z[2] in mapping:
-                z[1].mapping = mapping[z[2]]
-                z[1].revmapping = revmapping[z[2]]
-            if 'global' in mapping:
-                z[1].mapping.update(mapping['global'])
-                z[1].revmapping.update(revmapping['global'])
-        except IndexError:
-            pass
+    common = mapping.get('global', {})
+    for kind in extensions.values():
+        own = {**mapping.get(kind[2], {}), **common}
+        kind[1].mapping = own
+        kind[1].revmapping = CaselessDict([(value, key) for key, value in own.items()])
 
 
 def Tag(filename):

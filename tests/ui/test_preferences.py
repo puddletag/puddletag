@@ -980,7 +980,6 @@ def restored_mappings(monkeypatch):
         monkeypatch.setattr(cls, 'revmapping', deepcopy(cls.revmapping))
 
 
-@pytest.mark.xfail(strict=True, reason='a global mapping is listed and saved again under each tag type')
 def test_global_mapping_is_listed_and_saved_once(mainwin, user, qtbot, restart, restored_mappings, make_audio, tmp_path):
     # preferences.txt: "A mapping whose Tag is global applies to every tag
     # type." Synthetic mapping and file.

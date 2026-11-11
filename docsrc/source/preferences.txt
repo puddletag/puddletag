@@ -83,6 +83,7 @@ The mapping doesn't work in reverse, **albumartist** won't be show as **performe
 * The mappings are saved to the **mappings** file in puddletag's configuration folder only when they differ from the built-in ones. When they're the same again, the file is removed, so the built-in mappings (which may change in a new release) are used.
 * Mappings apply the next time you start puddletag.
 * Tag can be one one of ID3, MP4, APEv2 (for Musepack, WavPack, etc.) or VorbisComment (for FLAC and Ogg Vorbis). Note that these are **case-sensitive**.
+* A mapping whose **Tag** is **global** applies to every tag type.
 * You can also set mappings for Tag Sources using the **exact** Tag Source's name. eg. **MusicBrainz**.
 * **Mapping default fields like "__filename, __dirpath, __image, etc". will cause undesired behaviour.**
 
