@@ -340,8 +340,6 @@ def test_copy_all_fields_over_5_mib(user, loaded, qtbot, monkeypatch, button):
     assert covers == ([BIG_JPEG] if button == '&Yes' else [])
 
 
-@pytest.mark.xfail(strict=True, reason="Copy All Fields copies everything when the large-copy "
-                                       "question ends without a button")
 def test_copy_all_fields_over_5_mib_with_no_button_clicked(user, loaded, qtbot, dialogs):
     # Synthetic: the dialog guard's stand-in for the question returns
     # without a click. The same as No: nothing is copied.

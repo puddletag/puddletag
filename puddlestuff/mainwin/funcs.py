@@ -184,6 +184,7 @@ def check_copy_data(data):
             return 1
         elif msgbox.clickedButton() is noImgBtn:
             return 2
+        return 1
     else:
         return 0
 
