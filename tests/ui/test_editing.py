@@ -388,7 +388,6 @@ def test_rename_error_restores_the_cursor(user, loaded, qtbot, dialogs):
     assert in_file(paths[0]) == {'artist': ['Artist 1'], 'title': ['Title 1']}
 
 
-@pytest.mark.xfail(strict=True, reason='#966: a case-only rename says "File exists" on a case-insensitive filesystem')
 def test_case_only_rename(mainwin, make_audio, tmp_path, qtbot, user, monkeypatch, dialogs):
     # tut3.txt: "Editing the Filename cell renames the file." Changing only
     # the case of the name does too, on a filesystem that ignores case (#966).
@@ -400,7 +399,6 @@ def test_case_only_rename(mainwin, make_audio, tmp_path, qtbot, user, monkeypatc
     user.activate()
     table.setFocus()
     case_insensitive(monkeypatch, music)
-    dialogs.answer('QMessageBox.warning', QMessageBox.StandardButton.Ok)
     edit(user, user.cell(0, '__filename'), 'fileNAME.mp3')
     user.press(Key.Key_Return)
     qtbot.waitUntil(lambda: os.listdir(music) == ['fileNAME.mp3'])

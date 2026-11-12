@@ -2,6 +2,7 @@ import logging
 import os
 import shutil
 import traceback
+import uuid
 from collections import defaultdict
 from copy import copy, deepcopy
 from errno import EEXIST
@@ -68,8 +69,10 @@ def rename(oldpath, newpath):
     if oldpath == newpath:
         return False
     if os.path.exists(newpath):
-        raise RenameError(IOError(EEXIST, os.strerror(EEXIST),
-                                  newpath), oldpath, newpath)
+        if not os.path.samefile(oldpath, newpath):
+            raise RenameError(IOError(EEXIST, os.strerror(EEXIST),
+                                      newpath), oldpath, newpath)
+        return _rename_same_file(oldpath, newpath)
 
     if not os.path.exists(os.path.dirname(newpath)):
         try:
@@ -89,6 +92,28 @@ def rename(oldpath, newpath):
             return True
         except EnvironmentError as e:
             raise RenameError(e, oldpath, newpath)
+
+
+def _rename_same_file(oldpath, newpath):
+    """newpath is another name for oldpath: on a case-insensitive filesystem,
+    a name that differs only in case. Renamed through a temporary name, since
+    renaming a file onto itself does nothing."""
+    temp = os.path.join(os.path.dirname(oldpath), '.puddletag-' + uuid.uuid4().hex)
+    try:
+        os.rename(oldpath, temp)
+    except EnvironmentError as e:
+        raise RenameError(e, oldpath, newpath)
+    if os.path.exists(newpath):
+        # A hard link: a different name, not a case change.
+        os.rename(temp, oldpath)
+        raise RenameError(IOError(EEXIST, os.strerror(EEXIST),
+                                  newpath), oldpath, newpath)
+    try:
+        os.rename(temp, newpath)
+    except EnvironmentError as e:
+        os.rename(temp, oldpath)
+        raise RenameError(e, oldpath, newpath)
+    return True
 
 
 def rename_dir(filename, olddir, newdir):
