@@ -269,7 +269,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
   <context>
     <name>Artwork</name>
     <message>
-      <location filename="../puddleobjects.py" line="1971" />
+      <location filename="../puddleobjects.py" line="1973" />
       <location filename="../puddleobjects.py" line="1596" />
       <source>Enter a description</source>
       <translation>Введите описание</translation>
@@ -295,57 +295,57 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
       <translation>&lt;p&gt;Выберите тип обложки для рисунка.&lt;/p&gt;</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1723" />
+      <location filename="../puddleobjects.py" line="1725" />
       <source>&amp;Save cover to file</source>
       <translation>&amp;Сохранить обложку в файл</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1726" />
+      <location filename="../puddleobjects.py" line="1728" />
       <source>&amp;Add cover</source>
       <translation>&amp;Добавить обложку</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1729" />
+      <location filename="../puddleobjects.py" line="1731" />
       <source>C&amp;opy cover</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1732" />
+      <location filename="../puddleobjects.py" line="1734" />
       <source>&amp;Paste cover</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1735" />
+      <location filename="../puddleobjects.py" line="1737" />
       <source>&amp;Remove cover</source>
       <translation>&amp;Удалить обложку</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1738" />
+      <location filename="../puddleobjects.py" line="1740" />
       <source>&amp;Change cover</source>
       <translation>&amp;Изменить обложку</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1805" />
+      <location filename="../puddleobjects.py" line="1807" />
       <source>Select Image...</source>
       <translation>Выбрать изображение...</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1806" />
+      <location filename="../puddleobjects.py" line="1808" />
       <source>JPEG &amp; PNG Images (*.jpg *.jpeg *.png);;JPEG Images (*.jpg *.jpeg);;PNG Images (*.png);;All Files(*.*)</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="2019" />
+      <location filename="../puddleobjects.py" line="2021" />
       <source>Save artwork as...</source>
       <translation>Сохранить рисунок как...</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="2021" />
+      <location filename="../puddleobjects.py" line="2023" />
       <source>JPEG Images (*.jpg);;PNG Images (*.png);;All Files(*.*)</source>
       <translation>Изображения JPEG (*.jpg);;Изображения PNG (*.png);;Все файлы(*.*)</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="2031" />
+      <location filename="../puddleobjects.py" line="2033" />
       <source>Writing to &lt;b&gt;{}&lt;/b&gt; failed.</source>
       <translation>Запись &lt;b&gt;{}&lt;/b&gt; не удалась.</translation>
     </message>
@@ -371,13 +371,13 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
   <context>
     <name>Autonumbering Wizard</name>
     <message>
-      <location filename="../helperwin.py" line="56" />
+      <location filename="../helperwin.py" line="55" />
       <location filename="../functions_dialogs.py" line="33" />
       <source>&amp;Start: </source>
       <translation>&amp;Начало: </translation>
     </message>
     <message>
-      <location filename="../helperwin.py" line="66" />
+      <location filename="../helperwin.py" line="65" />
       <location filename="../functions_dialogs.py" line="41" />
       <source>Max length after padding with zeroes: </source>
       <translation>Максимальная длина после заполнения нулями: </translation>
@@ -388,64 +388,64 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
       <translation>&amp;Начинать нумерацию в каждой директории.</translation>
     </message>
     <message>
-      <location filename="../helperwin.py" line="41" />
+      <location filename="../helperwin.py" line="40" />
       <source>Autonumbering Wizard</source>
       <translation>Мастер автонумерации</translation>
     </message>
     <message>
-      <location filename="../helperwin.py" line="143" />
-      <location filename="../helperwin.py" line="72" />
+      <location filename="../helperwin.py" line="142" />
+      <location filename="../helperwin.py" line="71" />
       <source>Add track &amp;separator ['/']: Number of tracks</source>
       <translation>Добаить &amp;разделить треков ['/']: Число треков</translation>
     </message>
     <message>
-      <location filename="../helperwin.py" line="79" />
+      <location filename="../helperwin.py" line="78" />
       <source>&amp;Restart numbering at each directory group.</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../helperwin.py" line="89" />
+      <location filename="../helperwin.py" line="88" />
       <source>Group tracks using pattern: </source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../helperwin.py" line="97" />
+      <location filename="../helperwin.py" line="96" />
       <source>Output field: </source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../helperwin.py" line="112" />
+      <location filename="../helperwin.py" line="111" />
       <source>Increase counter only on group change</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../helperwin.py" line="139" />
+      <location filename="../helperwin.py" line="138" />
       <source>Add track &amp;separator ['/']</source>
       <translation>Добавить &amp;разделитель ['/']</translation>
     </message>
     <message>
-      <location filename="../mainwin/funcs.py" line="324" />
-      <location filename="../mainwin/funcs.py" line="317" />
-      <location filename="../helperwin.py" line="158" />
-      <location filename="../helperwin.py" line="150" />
+      <location filename="../mainwin/funcs.py" line="328" />
+      <location filename="../mainwin/funcs.py" line="321" />
+      <location filename="../helperwin.py" line="157" />
+      <location filename="../helperwin.py" line="149" />
       <source>Field empty...</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../mainwin/funcs.py" line="318" />
-      <location filename="../helperwin.py" line="151" />
+      <location filename="../mainwin/funcs.py" line="322" />
+      <location filename="../helperwin.py" line="150" />
       <source>The field specified to use as a directory splitter was invalid. Please check your values.</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../mainwin/funcs.py" line="325" />
-      <location filename="../helperwin.py" line="167" />
-      <location filename="../helperwin.py" line="159" />
+      <location filename="../mainwin/funcs.py" line="329" />
+      <location filename="../helperwin.py" line="166" />
+      <location filename="../helperwin.py" line="158" />
       <source>The output field specified was invalid. Please check your values.</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../helperwin.py" line="166" />
+      <location filename="../helperwin.py" line="165" />
       <source>Invalid field...</source>
       <translation type="unfinished" />
     </message>
@@ -562,7 +562,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
   <context>
     <name>Combo Box</name>
     <message>
-      <location filename="../puddleobjects.py" line="2286" />
+      <location filename="../puddleobjects.py" line="2288" />
       <source>Remove current item.</source>
       <translation>Удалить данный элемент.</translation>
     </message>
@@ -922,17 +922,6 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
       <translation>{} изображения</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1414" />
-      <location filename="../helperwin.py" line="1203" />
-      <source>OK</source>
-      <translation>Да</translation>
-    </message>
-    <message>
-      <location filename="../helperwin.py" line="1205" />
-      <source>Never show this message again.</source>
-      <translation>Никогда не показывать это сообщение снова.</translation>
-    </message>
-    <message>
       <location filename="../mainwin/tagsources.py" line="146" />
       <location filename="../actiondlg.py" line="216" />
       <source>&amp;Fields</source>
@@ -945,7 +934,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
       <location filename="../puddletag.py" line="557" />
       <location filename="../puddletag.py" line="554" />
       <location filename="../puddletag.py" line="547" />
-      <location filename="../puddleobjects.py" line="2030" />
+      <location filename="../puddleobjects.py" line="2032" />
       <location filename="../puddleobjects.py" line="478" />
       <source>Error</source>
       <translation>Ошибка</translation>
@@ -962,7 +951,12 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
       <translation>Поле</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="2213" />
+      <location filename="../puddleobjects.py" line="1414" />
+      <source>OK</source>
+      <translation>Да</translation>
+    </message>
+    <message>
+      <location filename="../puddleobjects.py" line="2215" />
       <location filename="../puddleobjects.py" line="1415" />
       <source>Cancel</source>
       <translation>Отмена</translation>
@@ -1121,7 +1115,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
       <translation>Действия</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="2155" />
+      <location filename="../puddleobjects.py" line="2157" />
       <source>Album Art</source>
       <translation>Обложка альбома</translation>
     </message>
@@ -1129,7 +1123,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
   <context>
     <name>Dir Renaming</name>
     <message>
-      <location filename="../mainwin/funcs.py" line="602" />
+      <location filename="../mainwin/funcs.py" line="606" />
       <source>Rename: &lt;b&gt;{}&lt;/b&gt; to: &lt;i&gt;{}&lt;/i&gt;</source>
       <translation>Переименовать: &lt;b&gt;{}&lt;/b&gt; to: &lt;i&gt;{}&lt;/i&gt;</translation>
     </message>
@@ -1245,27 +1239,27 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
   <context>
     <name>Edit Field</name>
     <message>
-      <location filename="../helperwin.py" line="426" />
+      <location filename="../helperwin.py" line="425" />
       <source>Edit Field</source>
       <translation>Редактировать Поле</translation>
     </message>
     <message>
-      <location filename="../helperwin.py" line="431" />
+      <location filename="../helperwin.py" line="430" />
       <source>&amp;Field</source>
       <translation>&amp;Поле</translation>
     </message>
     <message>
-      <location filename="../helperwin.py" line="443" />
+      <location filename="../helperwin.py" line="442" />
       <source>&amp;Value</source>
       <translation>&amp;Значение</translation>
     </message>
     <message>
-      <location filename="../helperwin.py" line="449" />
+      <location filename="../helperwin.py" line="448" />
       <source>A&amp;dd</source>
       <translation>&amp;Добавить</translation>
     </message>
     <message>
-      <location filename="../helperwin.py" line="460" />
+      <location filename="../helperwin.py" line="459" />
       <source>E&amp;dit</source>
       <translation>&amp;Редактировать</translation>
     </message>
@@ -1306,22 +1300,22 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
   <context>
     <name>Extended Tags</name>
     <message>
-      <location filename="../helperwin.py" line="668" />
+      <location filename="../helperwin.py" line="637" />
       <source>Field</source>
       <translation>Поле</translation>
     </message>
     <message>
-      <location filename="../helperwin.py" line="669" />
+      <location filename="../helperwin.py" line="638" />
       <source>Value</source>
       <translation>Значение</translation>
     </message>
     <message>
-      <location filename="../helperwin.py" line="701" />
+      <location filename="../helperwin.py" line="666" />
       <source>Resets the selected fields to their original value.</source>
       <translation>Сбросить выбранные значения к их оригинальному значению.</translation>
     </message>
     <message>
-      <location filename="../helperwin.py" line="954" />
+      <location filename="../helperwin.py" line="918" />
       <source>Different files.</source>
       <translation>Различные файлы.</translation>
     </message>
@@ -3125,18 +3119,18 @@ Do you want to go ahead?</source>
       <translation>Артисты библиотеки</translation>
     </message>
     <message>
-      <location filename="../mainwin/funcs.py" line="289" />
-      <location filename="../mainwin/funcs.py" line="263" />
+      <location filename="../mainwin/funcs.py" line="293" />
+      <location filename="../mainwin/funcs.py" line="267" />
       <source>No libraries found</source>
       <translation>Библиотеки не найдены</translation>
     </message>
     <message>
-      <location filename="../mainwin/funcs.py" line="264" />
+      <location filename="../mainwin/funcs.py" line="268" />
       <source>Load a lib first.</source>
       <translation>Загрузить сначала библиотеку.</translation>
     </message>
     <message>
-      <location filename="../mainwin/funcs.py" line="290" />
+      <location filename="../mainwin/funcs.py" line="294" />
       <source>No supported music libraries were found. Most likely the required dependencies aren't installed. Visit the puddletag website, &lt;a href='http://puddletag.sourceforge.net'&gt;puddletag.sourceforge.net&lt;/a&gt; for more details.</source>
       <translation>Не было найдено ни одной поддерживаемой библиотеки. Скорее всего требуемые зависимости не установлены. Посетите веб-сайт puddletag, &lt;a href='http://puddletag.sourceforge.net'&gt;puddletag.sourceforge.net&lt;/a&gt; для дополнительной информации.</translation>
     </message>
@@ -3444,12 +3438,12 @@ Do you want to go ahead?</source>
   <context>
     <name>Progress Dialog</name>
     <message>
-      <location filename="../puddleobjects.py" line="2193" />
+      <location filename="../puddleobjects.py" line="2195" />
       <source>Please Wait...</source>
       <translation>Пожалуйста, ждите...</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="2194" />
+      <location filename="../puddleobjects.py" line="2196" />
       <source>{}{} of {}...</source>
       <translation>{}{} из {}...</translation>
     </message>
@@ -3675,12 +3669,12 @@ Do you want to go ahead?</source>
   <context>
     <name>Status Bar</name>
     <message>
-      <location filename="../mainwin/funcs.py" line="584" />
+      <location filename="../mainwin/funcs.py" line="588" />
       <source>&lt;b&gt;{}&lt;/b&gt;</source>
       <translation>&lt;b&gt;{}&lt;/b&gt;</translation>
     </message>
     <message>
-      <location filename="../mainwin/funcs.py" line="590" />
+      <location filename="../mainwin/funcs.py" line="594" />
       <source>New Filename: &lt;b&gt;{}&lt;/b&gt;</source>
       <translation>Новое имя файла: &lt;b&gt;{}&lt;/b&gt;</translation>
     </message>
@@ -4006,37 +4000,37 @@ Real: {}</source>
   <context>
     <name>Text File -&gt; Tag</name>
     <message>
-      <location filename="../helperwin.py" line="257" />
+      <location filename="../helperwin.py" line="256" />
       <source>Import tags from text file</source>
       <translation>Импортировать теги из текстового файла</translation>
     </message>
     <message>
-      <location filename="../helperwin.py" line="262" />
+      <location filename="../helperwin.py" line="261" />
       <source>Text</source>
       <translation>Текст</translation>
     </message>
     <message>
-      <location filename="../helperwin.py" line="265" />
+      <location filename="../helperwin.py" line="264" />
       <source>Tag preview</source>
       <translation>Предпросмотр тега</translation>
     </message>
     <message>
-      <location filename="../helperwin.py" line="286" />
+      <location filename="../helperwin.py" line="285" />
       <source>&amp;Select File</source>
       <translation>&amp;Выберите файл</translation>
     </message>
     <message>
-      <location filename="../helperwin.py" line="288" />
+      <location filename="../helperwin.py" line="287" />
       <source>&amp;Paste Clipboard</source>
       <translation>&amp;Вставить содержимое буфера обмена</translation>
     </message>
     <message>
-      <location filename="../helperwin.py" line="353" />
+      <location filename="../helperwin.py" line="352" />
       <source>The file &lt;b&gt;{}&lt;/b&gt; couldn't be loaded.&lt;br /&gt; Do you want to choose another?</source>
       <translation>Файл &lt;b&gt;{}&lt;/b&gt; не может быть загружен.&lt;br /&gt; Хотите ли вы выбрать другой файл?</translation>
     </message>
     <message>
-      <location filename="../helperwin.py" line="359" />
+      <location filename="../helperwin.py" line="358" />
       <source>Error</source>
       <translation>Ошибка</translation>
     </message>
