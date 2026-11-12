@@ -625,9 +625,7 @@ class _SignalObject(QObject):
     tfstatus = pyqtSignal(str, name='tfstatus')
     renamedirstatus = pyqtSignal(str, name='renamedirstatus')
     formatstatus = pyqtSignal(str, name='formatstatus')
-    renamedirs = pyqtSignal(list, name='renamedirs')
     onetomany = pyqtSignal(dict, name='onetomany')
-    renameselected = pyqtSignal(name='renameselected')
     adddock = pyqtSignal(str, object, int, name='adddock')
     highlight = pyqtSignal(list, name='highlight')
     writeaction = pyqtSignal([object, object, dict], name='writeaction')
@@ -635,8 +633,8 @@ class _SignalObject(QObject):
 
 obj = _SignalObject()
 obj.emits = ['writeselected', 'ftstatus', 'tfstatus', 'renamedirstatus',
-             'formatstatus', 'renamedirs', 'onetomany', 'renameselected',
-             'adddock', 'highlight', 'writeaction']
+             'formatstatus', 'onetomany', 'adddock', 'highlight',
+             'writeaction']
 obj.receives = [('filesselected', update_status),
                 ('patternchanged', update_status)]
 

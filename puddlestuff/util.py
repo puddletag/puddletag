@@ -136,16 +136,10 @@ def rename_dir(filename, olddir, newdir):
 
 
 class RenameError(EnvironmentError):
-    def __init__(self, errno=None, strerror=None, filename=None):
-        if isinstance(errno, Exception):
-            e = errno
-            EnvironmentError.__init__(self, e.errno, e.strerror, e.filename)
-            self.oldpath = strerror
-            self.newpath = filename
-        else:
-            EnvironmentError.__init__(self, errno, strerror, filename)
-            self.oldpath = ''
-            self.newpath = ''
+    def __init__(self, error, oldpath, newpath):
+        EnvironmentError.__init__(self, error.errno, error.strerror, error.filename)
+        self.oldpath = oldpath
+        self.newpath = newpath
 
 
 class DirRenameError(RenameError): pass
@@ -167,33 +161,6 @@ def convert_dict(d, keys):
             d[keys[key]] = d[key]
             del (d[key])
     return d
-
-
-def equal(audio1, audio2, tags=('artist', 'album', 'title')):
-    for key in tags:
-        if (key in audio1) and (key in audio2):
-            if to_string(audio1[key]) != to_string(audio2[key]):
-                return False
-        else:
-            return False
-    return True
-
-
-def fields_from_text(text):
-    if not text:
-        return []
-    return [_f for _f in map(str.strip, text.split(',')) if _f]
-
-
-def matching(audios, listing):
-    ret = {}
-    for audio in audios:
-        for tag in listing:
-            if equal(audio, tag):
-                ret[audio] = tag
-    if len(audios) == len(ret):
-        return ret, True
-    return ret, False
 
 
 def m_to_string(v):
@@ -312,8 +279,6 @@ def sorted_split_by_field(tracks, field='artist'):
 def to_list(value):
     if isinstance(value, (str, int, float)):
         value = [str(value)]
-    elif isinstance(value, str):
-        value = [value]
     return value
 
 
@@ -420,11 +385,6 @@ def dict_diff(d1, d2):
         except (TypeError, ValueError):
             ret[key] = d2[key]
     return ret
-
-
-def real_filetags(mapping, revmapping, tags):
-    filefields = [mapping.get(key, key) for key in FILETAGS]
-    return dict([(revmapping.get(key, key), tags[key]) for key in filefields if key in tags])
 
 
 def separator(parent=None):

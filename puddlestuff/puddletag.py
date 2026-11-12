@@ -17,15 +17,13 @@ from . import steps
 from .mainwin import funcs as mainfuncs
 from .masstag import dialogs
 from .puddleobjects import (PuddleConfig, PuddleDock, winsettings,
-                            progress, PuddleStatus, errormsg, dircmp, get_icon)
+                            progress, PuddleStatus, errormsg, get_icon)
 from .puddlesettings import SettingsDialog, load_gen_settings, update_settings
 from .tagmodel import TagTable
 
 from . import audioinfo
 from .util import rename_error_msg
 from .audioinfo import lnglength, strlength, PATH, str_filesize, encode_fn
-from errno import EEXIST
-from operator import itemgetter
 from collections import defaultdict
 from . import constants, shortcutsettings
 
@@ -295,14 +293,12 @@ class MainWin(QMainWindow):
                          ('filesloaded', self._filesLoaded),
                          ('viewfilled', self._viewFilled),
                          ('filesselected', self._filesSelected),
-                         ('renamedirs', self.renameDirs),
                          ('filesloaded', self.updateTotalStats),
                          ('filesselected', self.updateSelectedStats),
                          ('onetomany', self.writeOneToMany),
                          ('dirschanged', self._dirChanged),
                          ('writepreview', self._writePreview),
                          ('clearpreview', self._clearPreview),
-                         ('renameselected', self._renameSelected),
                          ('playlistchanged', self._dirChanged),
                          ('adddock', self.addDock),
                          ('writeaction', self.writeAction),
@@ -851,13 +847,7 @@ class MainWin(QMainWindow):
             return
         func, fin, rows = ret
 
-        def finished():
-            fin()
-            if 'rename_dirs' in state:
-                self.renameDirs(list(state['rename_dirs'].items()))
-
-        s = progress(func, translate("Defaults", 'Writing '), len(rows),
-                     finished)
+        s = progress(func, translate("Defaults", 'Writing '), len(rows), fin)
         s(self)
 
     def writeOneToMany(self, d):
@@ -923,75 +913,6 @@ class MainWin(QMainWindow):
         self.writeTags((z[2] for z in data), [z[0] for z in data], previews,
                        [z[1] for z in data])
 
-    def _renameSelected(self, filenames):
-        rows = status['selectedrows']
-        files = status['selectedfiles']
-        model = self._table.model()
-        setRowData = model.setRowData
-
-        def fin():
-            model.undolevel += 1
-            self._table.selectionChanged()
-
-        if model.previewMode:
-            for row, audio, filename in zip(rows, files, filenames):
-                tag = PATH
-                if tag in audio.mapping:
-                    tag = audio.mapping[tag]
-                setRowData(row, {tag: filename}, True, True)
-            fin()
-            return
-
-        def func():
-            for row, audio, filename in zip(rows, files, filenames):
-                tag = PATH
-                if tag in audio.mapping:
-                    tag = audio.mapping[tag]
-                try:
-                    setRowData(row, {tag: filename}, True, True)
-                    yield None
-                except EnvironmentError as e:
-                    m = translate('Dir Renaming',
-                                  "An error occured while renaming <b>{}</b> to <b>{}</b>. ({})"
-                                  ).format(audio[PATH], filename, e.strerror)
-                    if row == rows[-1]:
-                        yield m, 1
-                    else:
-                        yield m, len(rows)
-
-        s = progress(func, translate("Dir Renaming", 'Renaming '), len(rows), fin)
-        s(self)
-
-    def renameDirs(self, dirs):
-        self._table.saveSelection()
-        showmessage = True
-        dirs = sorted(dirs, dircmp, itemgetter(0))
-        for index, (olddir, newdir) in enumerate(dirs):
-            try:
-                if os.path.exists(newdir) and (olddir != newdir):
-                    raise IOError(EEXIST, os.strerror(EEXIST), newdir)
-                os.rename(olddir, newdir)
-                self._table.changeFolder(olddir, newdir)
-                if self._lastdir and olddir in self._lastdir:
-                    self._lastdir[self._lastdir.index(olddir)] = newdir
-            except (IOError, OSError) as detail:
-                msg = translate('Dir Renaming',
-                                "I couldn't rename: <i>{}</i> to <b>{}</b> ({})"
-                                ).format(olddir, newdir, detail.strerror)
-                if index == len(dirs) - 1:
-                    dirlen = 1
-                else:
-                    dirlen = len(dirs)
-                if showmessage:
-                    ret = errormsg(self, msg, dirlen)
-                    if ret is True:
-                        showmessage = False
-                    elif ret is False:
-                        break
-        self.dirsmoved.emit(dirs)
-        self._dirChanged(self._lastdir)
-        self._table.restoreSelection()
-
     def updateDirs(self, dirs):
         if self.__updateDirs:
             if self.__dirsToUpdate:
@@ -1015,7 +936,7 @@ class MainWin(QMainWindow):
         else:
             last = None
         for index, (olddir, newdir) in enumerate(dirs):
-            self._table.changeFolder(olddir, newdir, False)
+            self._table.changeFolder(olddir, newdir)
             if last and olddir in last:
                 last[last.index(olddir)] = newdir
         self.dirsmoved.emit(dirs)

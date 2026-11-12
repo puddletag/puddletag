@@ -557,18 +557,6 @@ def remove_except(tags, fields):
         return ret
 
 
-def rename_dirs(tags, state, pattern):
-    '''Rename Directory, "Rename dir: $1"
-&Pattern:, text'''
-    dirname = safe_name(format_value(tags, pattern))
-    old_path = tags['__dirpath']
-    dirpath = path.join(path.dirname(old_path), dirname)
-    if 'rename_dirs' in state:
-        state['rename_dirs'][old_path] = dirpath
-    else:
-        state['rename_dirs'] = {old_path: dirpath}
-
-
 def replace(text, word, replaceword, matchcase=False, whole=False, chars=None):
     '''Replace, "Replace $0: '$1' -> '$2', Match Case: $3, Words Only: $4"
 &Replace, text

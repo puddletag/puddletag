@@ -402,38 +402,6 @@ def create_buddy(text, control, box=None):
     return box
 
 
-def dircmp(a, b):
-    """Compare function to sort directories via parent.
-So that the child is renamed before parent, thereby not
-giving Permission Denied errors."""
-    a, b = removeslash(a), removeslash(b)
-    if a == b:
-        return 0
-    elif a in b and (dirlevels(a) != dirlevels(b)):
-        return 1
-    elif b in a and (dirlevels(a) != dirlevels(b)):
-        return -1
-    elif len(a) > len(b):
-        return 1
-    elif len(b) > len(a):
-        return -1
-    elif len(b) == len(a):
-        return 0
-
-
-def dircmp1(a, b):
-    """Like dircmp, but returns dirs as being in the same directory as equal."""
-    a, b = removeslash(a), removeslash(b)
-    if a == b or (dirlevels(a) == dirlevels(b)):
-        return 0
-    elif a in b:
-        return 1
-    elif b in a:
-        return -1
-    else:
-        return 0
-
-
 def issubfolder(parent, child, level=1):
     parent, child = removeslash(parent), removeslash(child)
     if isinstance(parent, str):

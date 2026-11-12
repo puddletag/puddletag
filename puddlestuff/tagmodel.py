@@ -1444,7 +1444,7 @@ class TagTable(QTableView):
         self.model().applyFilter(pattern, matchcase)
         self.restoreSelection()
 
-    def changeFolder(self, olddir, newdir, updatemodel=True):
+    def changeFolder(self, olddir, newdir):
         try:
             for i, d in enumerate(self.dirs[::]):
                 if d == olddir:
@@ -1453,8 +1453,6 @@ class TagTable(QTableView):
                     self.dirs[i] = newdir + d[len(olddir):]
         except IndexError:
             pass
-        if updatemodel:
-            self.model().changeFolder(olddir, newdir)
 
     def clearAll(self):
         msg = translate('Previews', 'Some files have uncommited previews. '
