@@ -165,7 +165,6 @@ def test_extension_written_by_format(user, nested, qtbot):
     assert table.model().taginfo[0].filepath == str(renamed)
 
 
-@pytest.mark.xfail(strict=True, reason='Format into __filename_no_ext renames nothing')
 def test_filename_no_ext_written_by_format(user, nested, qtbot):
     # __filename_no_ext: "The file's filename without extension. Can be
     # written to: the file is renamed and keeps its extension."

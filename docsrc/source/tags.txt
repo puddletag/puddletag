@@ -100,7 +100,7 @@ The following fields are common to almost all music files.
 
 .. describe:: __filename_no_ext
 
-    The file's filename without extension.
+    The file's filename without extension. Can be written to: the file is renamed and keeps its extension.
 
 .. describe:: __filetype
 

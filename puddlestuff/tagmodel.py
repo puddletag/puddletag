@@ -909,7 +909,7 @@ class TagModel(QAbstractTableModel):
             currentfile = self.taginfo[index.row()]
             newvalue = str(value)
             realtag = currentfile.mapping.get(tag, tag)
-            if realtag in FILETAGS and tag not in [FILENAME, EXTENSION, DIRNAME]:
+            if realtag in FILETAGS and tag not in [FILENAME, FILENAME_NO_EXT, EXTENSION, DIRNAME]:
                 QApplication.restoreOverrideCursor()
                 return False
 

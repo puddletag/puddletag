@@ -14,7 +14,7 @@ from PyQt6.QtGui import QAction
 
 from . import translations, constants
 from .audioinfo import (FILETAGS, setmodtime, PATH, FILENAME,
-                        EXTENSION, MockTag, DIRPATH, DIRNAME, READONLY, fn_hash, isempty, encode_fn, decode_fn)
+                        EXTENSION, FILENAME_NO_EXT, MockTag, DIRPATH, DIRNAME, READONLY, fn_hash, isempty, encode_fn, decode_fn)
 from .constants import BLANK, SEPARATOR, LOG_FILENAME
 from .puddleobjects import (issubfolder, safe_name)
 
@@ -247,6 +247,10 @@ def rename_file(audio, tags):
         test_audio.filename = safe_name(to_string(tags[FILENAME]))
     if EXTENSION in tags:
         test_audio.ext = safe_name(to_string(tags[EXTENSION]))
+    if FILENAME_NO_EXT in tags:
+        name = safe_name(to_string(tags[FILENAME_NO_EXT]))
+        ext = test_audio.ext
+        test_audio.filename = name + os.extsep + ext if ext else name
 
     if DIRNAME in tags:
         newdir = safe_name(encode_fn(tags[DIRNAME]))

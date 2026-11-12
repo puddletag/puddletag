@@ -327,7 +327,6 @@ def test_filename_without_extension(user, loaded, qtbot):
 # "__filename_no_ext: The file's filename without extension. Can be written
 # to: the file is renamed and keeps its extension."
 
-@pytest.mark.xfail(strict=True, reason='typing into a __filename_no_ext cell renames nothing')
 def test_filename_no_ext_cell_typed(user, loaded, qtbot):
     table, paths = loaded
     table.setHeaderTags(table.model().headerdata + [('__filename_no_ext', '__filename_no_ext')])
@@ -339,7 +338,6 @@ def test_filename_no_ext_cell_typed(user, loaded, qtbot):
     assert table.model().taginfo[0].filepath == str(renamed)
 
 
-@pytest.mark.xfail(strict=True, reason='typing into a __filename_no_ext cell renames nothing')
 def test_filename_no_ext_of_a_file_without_extension(user, loaded, qtbot):
     table, paths = loaded
     table.setHeaderTags(table.model().headerdata + [('__filename_no_ext', '__filename_no_ext')])
