@@ -10,6 +10,7 @@ from operator import itemgetter
 from os import path
 from subprocess import Popen
 from typing import Dict
+from mutagen import MutagenError
 from send2trash import send2trash
 
 from PyQt6.QtCore import QAbstractTableModel, QEvent, QItemSelection, QItemSelectionModel, \
@@ -1529,10 +1530,18 @@ class TagTable(QTableView):
             return
         deltag = self.model().deleteTag
 
+        removed = []
+
         def func():
             for row in self.selectedRows:
                 try:
-                    deltag(row)
+                    try:
+                        deltag(row)
+                    except MutagenError as e:
+                        if e.args and isinstance(e.args[0], OSError):
+                            raise e.args[0]
+                        raise
+                    removed.append(row)
                     yield None
                 except (OSError, IOError) as e:
                     msg = translate('Table',
@@ -1550,7 +1559,8 @@ class TagTable(QTableView):
 
         def fin():
             self.selectionChanged()
-            self.model().undolevel += 1
+            if removed:
+                self.model().undolevel += 1
 
         f = progress(func, translate("Table", 'Deleting tag... '),
                      len(self.selectedRows), fin)

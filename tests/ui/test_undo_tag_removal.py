@@ -488,7 +488,6 @@ def two_files(make_audio, tmp_path):
 
 
 @pytest.mark.skipif(os.geteuid() == 0, reason='root can write a read-only file')
-@pytest.mark.xfail(strict=True, reason='the error of a file mutagen cannot open for writing escapes the command')
 def test_remove_tag_on_a_read_only_file(mainwin, make_audio, tmp_path, qtbot, user, dialogs):
     # Remove Tag: "Removes the tags of selected files." and Undo: "When
     # there's nothing left to undo, Undo is greyed out." A read-only file
@@ -511,7 +510,6 @@ def test_remove_tag_on_a_read_only_file(mainwin, make_audio, tmp_path, qtbot, us
 
 
 @pytest.mark.skipif(os.geteuid() == 0, reason='root can write a read-only file')
-@pytest.mark.xfail(strict=True, reason='the error of a file mutagen cannot open for writing escapes the command')
 def test_remove_tag_on_read_only_files(mainwin, make_audio, tmp_path, qtbot, user, dialogs):
     # Remove Tag: "Removes the tags of selected files." and Undo: "When
     # there's nothing left to undo, Undo is greyed out." With several files
@@ -536,7 +534,6 @@ def test_remove_tag_on_read_only_files(mainwin, make_audio, tmp_path, qtbot, use
 
 
 @pytest.mark.skipif(os.geteuid() == 0, reason='root can write a read-only file')
-@pytest.mark.xfail(strict=True, reason='the error of a file mutagen cannot open for writing escapes the command')
 def test_remove_tag_goes_on_after_a_read_only_file(mainwin, make_audio, tmp_path, qtbot, user, dialogs):
     # Remove Tag: "Removes the tags of selected files." and Undo: "Undo's
     # the last edit": the file that is read-only (synthetic: 0444) keeps its
@@ -564,7 +561,6 @@ def test_remove_tag_goes_on_after_a_read_only_file(mainwin, make_audio, tmp_path
 
 
 @pytest.mark.skipif(os.geteuid() == 0, reason='root can write a read-only file')
-@pytest.mark.xfail(strict=True, reason='the error of a file mutagen cannot open for writing escapes the command')
 def test_edit_undone_after_remove_tag_failed(mainwin, make_audio, tmp_path, qtbot, user, dialogs):
     # Undo: "Undo's the last edit" and "When there's nothing left to undo,
     # Undo is greyed out." A Remove Tag that changed no file isn't an edit,
