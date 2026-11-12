@@ -384,10 +384,10 @@ def write(audio, tags, save_mtime=True, justrename=False):
     
     except Exception as e:
         audio.update(undo)
+        audio.preview = preview
         if isinstance(e, MutagenError) and e.args and isinstance(e.args[0], PermissionError):
             logging.exception(e)
             raise e.args[0]
-        audio.preview = preview
         logging.exception(e)
         raise WriteError(e, audio.filepath) from e
 

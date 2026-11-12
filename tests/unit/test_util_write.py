@@ -10,7 +10,6 @@ from puddlestuff import audioinfo, util
 
 
 @pytest.mark.skipif(os.geteuid() == 0, reason='root can write a read-only file')
-@pytest.mark.xfail(strict=True, reason="a write that can't open the file drops the file's preview")
 def test_failed_write_keeps_the_preview(make_audio, tmp_path):
     path = make_audio('01.flac', tmp_path, title='One')
     tag = audioinfo.Tag(str(path))
