@@ -540,7 +540,6 @@ def test_blank_in_preview_mode_removes_the_field(user, loaded, qtbot):
     assert [in_file(p).get('album') for p in paths] == [None] * 3
 
 
-@pytest.mark.xfail(strict=True, reason="<keep> in Preview Mode previews the text <keep>")
 def test_keep_in_preview_mode_keeps_each_files_value(user, loaded, qtbot):
     # "<keep>, signifying that upon saving that field will remain unchanged
     # for each file" (tut1.txt)

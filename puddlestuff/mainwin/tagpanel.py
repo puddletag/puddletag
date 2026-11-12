@@ -165,6 +165,7 @@ class FrameCombo(QGroupBox):
         elif text == KEEP:
             if self._audios:
                 self.manypreview.emit([{field: a.get(field, '')} for a in self._audios])
+            return
         else:
             if field in INFOTAGS:
                 value = text
