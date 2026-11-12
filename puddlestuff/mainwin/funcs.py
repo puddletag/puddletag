@@ -199,7 +199,11 @@ def display_tag(tag):
 
 def extended_tags(parent=None):
     rows = status['selectedrows']
-    win = helperwin.ExTags(files=status['selectedfiles'], parent=parent)
+    if len(rows) == 1:
+        win = helperwin.ExTags(parent, rows[0], status['alltags'],
+                               status['previewmode'], status=status)
+    else:
+        win = helperwin.ExTags(files=status['selectedfiles'], parent=parent)
     win.setModal(True)
     win.rowChanged.connect(status['table'].selectRow)
     win.loadSettings()

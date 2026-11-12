@@ -684,7 +684,7 @@ class ExTags(QDialog):
         else:
             self.piclabel.removepic.triggered.connect(self.removePic)
 
-        if row and row >= 0 and files:
+        if row is not None and row >= 0 and files:
             buttons = MoveButtons(files, row)
             buttons.indexChanged.connect(self._prevnext)
             buttons.setVisible(True)
@@ -754,7 +754,7 @@ class ExTags(QDialog):
         self.filechanged = False
         self.coversdiffer = False
 
-        if row and row >= 0 and files:
+        if row is not None and row >= 0 and files:
             self._prevnext(row)
         else:
             self.loadFiles(files)

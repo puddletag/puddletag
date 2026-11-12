@@ -763,7 +763,6 @@ def test_untouched_fields_stay_unstaged(load, mainwin, user, qtbot):
     win.close()
 
 
-@pytest.mark.xfail(strict=True, reason='a field added in Preview Mode is not shown bold before OK')
 def test_field_added_in_preview_mode_is_bold(load, user, qtbot):
     # menus.txt, Preview Mode: "any values you change that differ from the
     # original will be shown as emboldened text in the File-View and
@@ -994,7 +993,6 @@ def move_button(window, text):
     return button
 
 
-@pytest.mark.xfail(strict=True, reason='one selected file shows no Previous and Next buttons')
 def test_previous_and_next_step_through_the_files(load, user, qtbot):
     # Synthetic files. The first row selected alone is the case #597
     # reported: the window showed every file's fields instead of that
@@ -1020,7 +1018,6 @@ def test_previous_and_next_step_through_the_files(load, user, qtbot):
     win.close()
 
 
-@pytest.mark.xfail(strict=True, reason='one selected file shows no Previous and Next buttons')
 def test_next_writes_the_edit_first(load, user, qtbot):
     # Synthetic files. Docs silent; the maintainer's call: Next writes the
     # edit made to the file shown before it shows the next one.
