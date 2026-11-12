@@ -99,18 +99,16 @@ def loadsettings():
 
 
 def has_previews(tags=None, parent=None, msg=None):
-    """Disables preview mode. Returns True if disable successful, else False.
+    """Returns True if the caller should stop: files have previews and the
+    user didn't answer Yes; False otherwise.
 
     Displays a confirmation to the user (message box) asking if they want
-    to exit Preview Mode if any files contain previews. If the user selects
-    that they want to exit, then True is returned. Preview Mode is not
+    to exit Preview Mode if any files contain previews. Preview Mode is not
     changed.
-
-    If not previews in tags, then True is returned.
 
     tags is a list of audioinfo.Tag object with the preview attribute.
         If preview not empty, the file will be considered to have a preview.
-        If not specified status['alltags'] is used.
+        If not specified, the shown and the hidden files are used.
     parent => A window to have as the parent for the message box.
     msg => Message to show in message box.
     """
@@ -119,7 +117,7 @@ def has_previews(tags=None, parent=None, msg=None):
         msg = translate("Previews", 'Do you want to exit Preview Mode? Unsaved changes will be discarded')
 
     if tags is None:
-        tags = status['alltags']
+        tags = status['model'].taginfo + status['model']._filtered
 
     previews = False
     for z in tags:
@@ -548,6 +546,8 @@ class TagModel(QAbstractTableModel):
                 top = self.index(min(rows), 0)
                 bottom = self.index(max(rows), self.columnCount() - 1)
                 self.dataChanged.emit(top, bottom)
+            for audio in self._filtered:
+                audio.preview = {}
 
             self.undolevel = self._savedundolevel
             self._previewUndo.clear()
@@ -2083,7 +2083,7 @@ class TagTable(QTableView):
 
     def previewMode(self, value):
         if not value:
-            if has_previews(self.model().taginfo, self):
+            if has_previews(self.model().taginfo + self.model()._filtered, self):
                 return False
         self.model().previewMode = value
         return value
@@ -2134,7 +2134,7 @@ class TagTable(QTableView):
 
     def reloadFiles(self, files=None):
         msg = translate('Previews', 'There are unsaved changes pending. Do you want to discard and reload?')
-        if has_previews(self.model().taginfo, self, msg):
+        if has_previews(self.model().taginfo + self.model()._filtered, self, msg):
             return
 
         self._restore = self.saveSelection()

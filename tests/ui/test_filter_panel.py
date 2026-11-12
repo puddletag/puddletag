@@ -473,7 +473,6 @@ def test_refresh_selected_asks_about_hidden_previews(mainwin, loaded, qtbot, use
     assert titles(table)['02.mp3'] == ['New']
 
 
-@pytest.mark.xfail(strict=True, reason="Leaving Preview Mode doesn't ask about the previews of hidden files")
 def test_leaving_preview_mode_asks_about_hidden_previews(mainwin, loaded, qtbot, user, dialogs):
     # menus.txt, Preview Mode: "If some files have previews that haven't
     # been written, disabling Preview Mode first asks whether to discard
@@ -490,7 +489,6 @@ def test_leaving_preview_mode_asks_about_hidden_previews(mainwin, loaded, qtbot,
     assert in_file(paths[1])['title'] == ['Angel']
 
 
-@pytest.mark.xfail(strict=True, reason='A hidden file keeps its preview when Preview Mode is left')
 def test_discarded_hidden_preview_stays_discarded(mainwin, loaded, qtbot, user, dialogs):
     # menus.txt, Preview Mode: "If some files have previews that haven't
     # been written, disabling Preview Mode first asks whether to discard
