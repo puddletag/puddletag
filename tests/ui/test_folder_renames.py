@@ -71,8 +71,6 @@ def in_table(table):
     return sorted(audio.filepath for audio in table.model().taginfo)
 
 
-@pytest.mark.xfail(strict=True, reason='renaming Album also renamed the loaded folder Album 2 to New 2 '
-                                       'in the list Refresh re-reads')
 def test_refresh_rereads_a_folder_named_like_the_renamed_one(mainwin, make_audio, tmp_path, qtbot, user):
     # menus.txt: Rename Directories "Renames the selected files' directories
     # based on the pattern in Pattern Combo"; Refresh (F5) "If any
@@ -97,7 +95,6 @@ def test_refresh_rereads_a_folder_named_like_the_renamed_one(mainwin, make_audio
     assert sorted(os.listdir(m)) == ['Album 2', 'New']
 
 
-@pytest.mark.xfail(strict=True, reason='a file two folders down keeps its old path in the File-View')
 def test_files_deeper_down_move_along(mainwin, make_audio, tmp_path, qtbot, user):
     # tut3.txt: "Editing a Dirname cell renames the file's folder, and every
     # file in it moves along".
@@ -115,7 +112,6 @@ def test_files_deeper_down_move_along(mainwin, make_audio, tmp_path, qtbot, user
     assert all(os.path.exists(path) for path in expected)
 
 
-@pytest.mark.xfail(strict=True, reason='a file the Filter hides keeps its old path after its folder is renamed')
 def test_a_hidden_file_moves_along(mainwin, make_audio, tmp_path, qtbot, user):
     # tut3.txt: "Editing a Dirname cell renames the file's folder, and every
     # file in it moves along"; filter.txt: "Otherwise, puddletag will hide

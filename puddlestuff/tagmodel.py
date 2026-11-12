@@ -6,7 +6,6 @@ import time
 from concurrent.futures import ThreadPoolExecutor, wait, FIRST_COMPLETED
 from contextlib import contextmanager
 from copy import copy, deepcopy
-from operator import itemgetter
 from os import path
 from subprocess import Popen
 from typing import Dict
@@ -621,18 +620,15 @@ class TagModel(QAbstractTableModel):
 
         olddir = encode_fn(olddir)
 
-        folder = itemgetter(DIRPATH)
-        tags = [(i, z) for i, z in enumerate(self.taginfo)
-                if z.dirpath.startswith(olddir)]
-        libtags = []
-        for i, audio in tags:
-            if audio.dirpath == olddir:
-                audio.dirpath = newdir
-            elif issubfolder(olddir, audio.dirpath):  # Newdir is a parent
-                audio.dirpath = os.path.join(newdir, audio.dirname)
-            if audio.library:
-                audio.save(True)
-        rows = [z[0] for z in tags]
+        def inside(dirpath):
+            return dirpath == olddir or dirpath.startswith(olddir + os.sep)
+
+        rows = [i for i, audio in enumerate(self.taginfo) if inside(audio.dirpath)]
+        for audio in self.taginfo + self._filtered:
+            if inside(audio.dirpath):
+                audio.dirpath = newdir + audio.dirpath[len(olddir):]
+                if audio.library:
+                    audio.save(True)
         if rows:
             self.dataChanged.emit(
                 self.index(min(rows), 0), self.index(max(rows),
@@ -1453,7 +1449,7 @@ class TagTable(QTableView):
             for i, d in enumerate(self.dirs[::]):
                 if d == olddir:
                     self.dirs[i] = newdir
-                elif d.startswith(olddir):
+                elif d.startswith(olddir + os.sep):
                     self.dirs[i] = newdir + d[len(olddir):]
         except IndexError:
             pass
