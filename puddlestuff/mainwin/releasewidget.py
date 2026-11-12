@@ -3,7 +3,7 @@ from copy import deepcopy
 from functools import partial
 
 from PyQt6 import QtCore
-from PyQt6.QtCore import QModelIndex, Qt, pyqtRemoveInputHook, pyqtSignal
+from PyQt6.QtCore import QModelIndex, QPersistentModelIndex, Qt, QTimer, pyqtRemoveInputHook, pyqtSignal
 from PyQt6.QtGui import QAction
 from PyQt6.QtWidgets import QAbstractItemView, QApplication, QHeaderView, QMenu, QStyle, QTreeView, QWidget
 
@@ -153,6 +153,7 @@ class TreeItem(RootItem):
         self.dispPattern = pattern
         self.hasTracks = True
         self.expanded = False
+        self.failed = False
         self.retrieving = False
 
     def data(self, column):
@@ -318,7 +319,7 @@ class TreeModel(QtCore.QAbstractItemModel):
     def canFetchMore(self, index):
         item = index.internalPointer()
         if item in self.rootItem.childItems and not item.childItems \
-                and item.hasTracks:
+                and item.hasTracks and not item.failed:
             return True
         return False
 
@@ -389,7 +390,15 @@ class TreeModel(QtCore.QAbstractItemModel):
         else:
             item.retrieving = False
             if not item.childCount():
-                self.collapse.emit(index)
+                # Qt asks again within the same expand, and collapsing
+                # from inside its expand leaves the view stuck expanding.
+                item.failed = True
+                failed = QPersistentModelIndex(index)
+
+                def collapse():
+                    item.failed = False
+                    self.collapse.emit(QModelIndex(failed))
+                QTimer.singleShot(0, collapse)
         self.retrievalDone.emit()
 
     def hasChildren(self, index):

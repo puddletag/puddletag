@@ -2149,7 +2149,6 @@ RETRIEVAL_ERROR = (RetrievalError('Synthetic failure'), 'An error occurred: Synt
 UNHANDLED_ERROR = (RuntimeError('Synthetic crash'), 'An unhandled error occurred: Synthetic crash')
 
 
-@pytest.mark.xfail(strict=True, reason="An album whose retrieval failed can't be expanded again")
 @pytest.mark.parametrize('expand, error, label', [
     pytest.param(expand_with_the_arrow, *RETRIEVAL_ERROR, id='arrow, retrieval error'),
     pytest.param(expand_with_the_arrow, *UNHANDLED_ERROR, id='arrow, unhandled error'),
@@ -2178,7 +2177,6 @@ def test_expand_error_collapses_the_album_and_expands_again(expand, error, label
     assert len(track_rows(window, 'Alpha')) == 3
 
 
-@pytest.mark.xfail(strict=True, reason="An album whose retrieval failed can't be expanded again")
 def test_click_on_the_album_after_a_failed_expand_retrieves_it(mainwin, make_audio, tmp_path, qtbot, user):
     # tagsources.txt: "Lists the retrieved albums. Click on an album to
     # retrieve metadata." A click works after a failed expand too, and the
