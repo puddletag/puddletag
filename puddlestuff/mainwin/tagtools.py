@@ -1,8 +1,7 @@
-import traceback
 from functools import partial
 
 from PyQt6.QtWidgets import QMessageBox
-from mutagen import id3, apev2
+from mutagen import MutagenError, id3, apev2
 
 from .. import audioinfo
 from ..puddleobjects import progress
@@ -31,9 +30,10 @@ def _remove_tag(f, tag):
     undoable = False
     try:
         if tag.startswith('ID3') and isinstance(f, id3_tag):
+            # The tags the undo step saves are the old ones until f.link.
+            _delete[tag](f.filepath)
             status['model'].deleteTag(audio=f, delete=False)
             undoable = True
-            _delete[tag](f.filepath)
             f.link(f.filepath)
         elif tag in ('ID3', 'ID3v2') and isinstance(f, id3_chunk_tags):
             status['model'].deleteTag(audio=f, delete=True)
@@ -45,8 +45,11 @@ def _remove_tag(f, tag):
             f.link(f.filepath)
         else:
             _delete[tag](f.filepath)
-    except:
-        traceback.print_exc()
+    except MutagenError as e:
+        # remove_tag reports OSErrors.
+        if e.args and isinstance(e.args[0], OSError):
+            raise e.args[0] from e
+        raise
     return undoable
 
 

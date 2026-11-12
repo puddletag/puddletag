@@ -142,7 +142,6 @@ def load(mainwin, user, qtbot, folder, count):
     ('mp3', 'remove_id3v1'),
     ('mp3', 'remove_id3v2'),
 ])
-@pytest.mark.xfail(strict=True, reason='the tool says nothing about the failure, and records an undo step')
 def test_tag_tool_on_a_read_only_file(mainwin, user, make_audio, qtbot, dialogs, kind, tool):
     # Tag Tools: "Deleting 'official' tags can be undone"; Undo: "When
     # there's nothing left to undo, Undo is greyed out." Synthetic file,
@@ -162,7 +161,6 @@ def test_tag_tool_on_a_read_only_file(mainwin, user, make_audio, qtbot, dialogs,
 
 
 @pytest.mark.skipif(os.geteuid() == 0, reason='root can write a read-only file')
-@pytest.mark.xfail(strict=True, reason='the tool says nothing about the failures, and records an undo step')
 def test_tag_tool_on_read_only_files(mainwin, user, make_audio, qtbot, dialogs, tmp_path):
     # Tag Tools: "Deleting 'official' tags can be undone"; Undo: "When
     # there's nothing left to undo, Undo is greyed out." Synthetic files,
@@ -184,7 +182,6 @@ def test_tag_tool_on_read_only_files(mainwin, user, make_audio, qtbot, dialogs, 
 
 
 @pytest.mark.skipif(os.geteuid() == 0, reason='root can write a read-only file')
-@pytest.mark.xfail(strict=True, reason='the tool says nothing about the failure, and records an undo step')
 def test_tag_tool_goes_on_after_a_read_only_file(mainwin, user, make_audio, qtbot, dialogs, tmp_path):
     # Tag Tools: "Deleting 'official' tags can be undone". Synthetic files,
     # the first read-only (0444): the second still loses its ID3 tags, and
