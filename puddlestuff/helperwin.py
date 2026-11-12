@@ -2,16 +2,15 @@
 """Dialog's that crop up along the application, but are used at at most
 one place, and aren't that complicated are put here."""
 import os
-import sys
 from copy import deepcopy
 
-from PyQt6.QtCore import QItemSelectionModel, Qt, pyqtRemoveInputHook, pyqtSignal
-from PyQt6.QtGui import QAction, QPalette, QBrush, QColor
+from PyQt6.QtCore import QItemSelectionModel, Qt, pyqtSignal
+from PyQt6.QtGui import QPalette, QBrush, QColor
 from PyQt6.QtWidgets import QAbstractItemView, QApplication, QCheckBox, QComboBox, QCompleter, \
     QDialog, QFileDialog, QFrame, QGridLayout, QHBoxLayout, QHeaderView, QLabel, QLineEdit, QMessageBox, \
     QPlainTextEdit, QPushButton, QSpinBox, QTableWidget, QTableWidgetItem, QTextEdit, QToolButton, QVBoxLayout
 
-from . import findfunc, audioinfo
+from . import findfunc
 from .audioinfo import commontags, FILETAGS, PATH
 from .constants import HOMEDIR, KEEP
 from .puddleobjects import (
@@ -545,17 +544,10 @@ class VerticalHeader(QHeaderView):
         self.setDefaultSectionSize(self.minimumSectionSize() + 4)
         self.setMinimumSectionSize(1)
 
-        self.sectionResized.connect(
-            self._resize)
-
-    def _resize(self, row, oldsize, newsize):
-        self.setDefaultSectionSize(newsize)
-
 
 class StatusWidgetCombo(QComboBox):
     def __init__(self, items=None, status=None, colors=None, preview=False):
         QComboBox.__init__(self)
-        self.preview = preview
 
         self.statusColors = colors
         self.setSizeAdjustPolicy(QComboBox.SizeAdjustPolicy.AdjustToContents)
@@ -568,22 +560,11 @@ class StatusWidgetCombo(QComboBox):
         self.addItems(items)
         self.setCurrentIndex(0)
 
-        if status and status in self.statusColors:
-            self.setBackground(self.statusColors[status])
-        else:
-            self.setBackground(None)
+        self.setBackground(None)
 
         self._status = status
         self._original = (items, preview, status)
         self.linked = []
-
-    @property
-    def preview(self):
-        return False
-
-    @preview.setter
-    def preview(self, _):
-        return
 
     @property
     def status(self):
@@ -592,8 +573,6 @@ class StatusWidgetCombo(QComboBox):
     @status.setter
     def status(self, status):
         if status and status in self.statusColors:
-            if self._status == ADD and status != REMOVE:
-                return
             self.setBackground(self.statusColors[status])
             self._status = status
         else:
@@ -607,21 +586,11 @@ class StatusWidgetCombo(QComboBox):
             color = brush.color().name()
         self.setStyleSheet("QComboBox { background-color: %s; }" % color)
 
-    def background(self):
-        brush = QBrush()
-        brush.setColor(self.palette().color(QPalette.ColorRole.Window))
-        return brush
-
     def reset(self):
         self.clear()
         self.addItems(self._original[0])
         self.setCurrentIndex(0)
-        self.preview = self._original[1]
-        status = self._original[2]
-        if status == ADD:
-            self.status = REMOVE
-        else:
-            self.status = status
+        self.status = self._original[2]
         self.linked = []
 
     def setText(self, value):
@@ -678,11 +647,7 @@ class ExTags(QDialog):
         self.piclabel.imageChanged.connect(
             self._imageChanged)
 
-        if not isinstance(self.piclabel.removepic, QAction):
-            self.piclabel.removepic.clicked.connect(
-                self.removePic)
-        else:
-            self.piclabel.removepic.triggered.connect(self.removePic)
+        self.piclabel.removepic.clicked.connect(self.removePic)
 
         if row is not None and row >= 0 and files:
             buttons = MoveButtons(files, row)
@@ -792,11 +757,6 @@ class ExTags(QDialog):
     def closeMe(self):
         self.canceled = True
         self.close()
-
-    def _deletePressed(self, item):
-        if self.table.deletePressed:
-            self.table.deletePressed = False
-            self.removeField()
 
     def duplicate(self):
         self.editField(True)
@@ -957,8 +917,6 @@ class ExTags(QDialog):
             self.setWindowTitle(
                 translate('Extended Tags', 'Different files.'))
 
-            from .tagmodel import status
-            k = status['table'].model().taginfo[0]
             common, numvalues, imagetags = commontags(audios)
             images = common['__image']
             del (common['__image'])
@@ -985,13 +943,9 @@ class ExTags(QDialog):
                     self._settag(row, field, values, multi=True)
                     row += 1
                 else:
-                    if isinstance(values, str):
-                        self._settag(row, field, values, None, preview)
+                    for v in values:
+                        self._settag(row, field, v, None, preview)
                         row += 1
-                    else:
-                        for v in values:
-                            self._settag(row, field, v, None, preview)
-                            row += 1
 
             self.piclabel.setImageTags(imagetags)
             if images:
@@ -1020,10 +974,7 @@ class ExTags(QDialog):
                 preview = BOLD
             else:
                 preview = UNCHANGED
-            if isinstance(val, str):
-                items.append([key, val, None, preview])
-            else:
-                [items.append([key, z, None, preview]) for z in val]
+            [items.append([key, z, None, preview]) for z in val]
 
         [self._settag(i, *item) for i, item in enumerate(items)]
 
@@ -1074,7 +1025,6 @@ class ExTags(QDialog):
                 to_remove[row] = item
             rows.append(row)
             item.status = REMOVE
-            item.status = REMOVE
         [tb.removeRow(tb.row(z)) for z in to_remove.values()]
         tb.setSortingEnabled(True)
         self.filechanged = True
@@ -1121,11 +1071,7 @@ class ExTags(QDialog):
             self.imagechanged = True
             self.piclabel.context = 'No Images'
             self.piclabel.removepic.setEnabled(False)
-            if not isinstance(self.piclabel.removepic, QAction):
-                self.piclabel.removepic.clicked.disconnect(
-                    self.removePic)
-            else:
-                self.piclabel.removepic.triggered.disconnect(self.removePic)
+            self.piclabel.removepic.clicked.disconnect(self.removePic)
 
             self.piclabel.setImages(None)
 
@@ -1207,60 +1153,3 @@ class ExTags(QDialog):
 
         tb.setSortingEnabled(True)
         return field_item
-
-
-class ConfirmationErrorDialog(QDialog):
-    def __init__(self, name, parent=None):
-        super(ConfirmationErrorDialog, self).__init__(parent)
-        self.name = name
-        self.__label = QLabel()
-        icon = QLabel()
-        msgbox = QMessageBox()
-        msgbox.setIcon(QMessageBox.Icon.Warning)
-        icon.setPixmap(msgbox.iconPixmap())
-        ok = QPushButton(translate("Defaults", "OK"))
-        checkbox = QCheckBox(
-            translate("Defaults", "Never show this message again."))
-
-        ok.clicked.connect(partial(self.saveState, name))
-
-        labelbox = QHBoxLayout()
-        labelbox.addWidget(icon)
-        labelbox.addWidget(self.__label)
-
-        layout = QVBoxLayout()
-        layout.addLayout(labelbox, 1)
-        layout.addWidget(checkbox, 0, Qt.AlignmentFlag.AlignHCenter)
-        layout.addWidget(ok, 0, Qt.AlignmentFlag.AlignHCenter)
-        layout.addStretch()
-        self.setLayout(layout)
-
-    def saveState(self, name):
-        settings = PuddleConfig()
-        settings.set("OnceOnlyErrors", name, True)
-        self.close()
-
-    def showMessage(self, message):
-        settings = PuddleConfig()
-        should_show = settings.get("OnceOnlyErrors", self.name, True)
-        self.__label.setText(message)
-        if should_show:
-            self.setModal(True)
-            self.show()
-
-
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    dirpath = '/home/keith/Desktop/Daft.Punk-Random.Access.Memories-2013-FLAC.-NewsHost-1023'
-    import glob
-
-    tags = list(map(audioinfo.Tag, glob.glob(os.path.join(dirpath, "*.flac"))))
-    for tag in tags:
-        tag.preview = {}
-        tag.equal_fields = lambda: []
-        tag.library = None
-    wid = ExTags(files=tags)
-    wid.resize(200, 400)
-    wid.show()
-    pyqtRemoveInputHook()
-    app.exec()

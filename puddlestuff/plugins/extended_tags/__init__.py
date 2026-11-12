@@ -4,8 +4,7 @@ from PyQt6.QtGui import QAction, QKeySequence
 from ...audioinfo import commontags
 from ...constants import (LEFTDOCK, SELECTIONCHANGED,
                           KEEP)
-from ...helperwin import (BOLD, UNCHANGED, EditField,
-                          ExTags)
+from ...helperwin import BOLD, UNCHANGED, ExTags
 from ... import puddletag
 from ...puddleobjects import (settaglist)
 
@@ -62,15 +61,6 @@ class ExTagsPlugin(ExTags):
             return True
         return super().eventFilter(obj, event)
 
-    def addTag(self):
-        win = EditField(parent=self, taglist=self.get_fieldlist)
-        win.setModal(True)
-        win.show()
-        win.donewithmyshit.connect(self.editTagBuddy)
-
-    def _imageChanged(self):
-        self.filechanged = True
-
     def loadFiles(self, audios=None):
         if audios is None:
             audios = self._status['selectedfiles']
@@ -122,16 +112,6 @@ class ExTagsPlugin(ExTags):
         if newtags and newtags != ['__image']:
             settaglist(newtags + self.get_fieldlist)
         self.onetomany.emit(tags)
-
-    def _tag(self, row, status=None):
-        getitem = self.table.item
-        item = getitem(row, 0)
-        tag = str(item.text())
-        value = str(getitem(row, 1).text())
-        if status:
-            return (tag, value, item.status)
-        else:
-            return (tag, value)
 
 
 dialogs = [('Extended Tags', ExTagsPlugin, LEFTDOCK, False), ]
