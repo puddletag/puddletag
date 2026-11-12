@@ -179,13 +179,10 @@ def model_tag(model, base=audioinfo.AbstractTag):
             else:
                 super(ModelTag, self).__delitem__(key)
 
-        def delete(self, tag=None):
+        def delete(self):
             if model.previewMode:
                 return
-            try:
-                base.delete(self, tag)
-            except TypeError:
-                base.delete(self)
+            base.delete(self)
 
         def equal_fields(self):
             if not (model.previewMode and self.preview):
@@ -719,9 +716,6 @@ class TagModel(QAbstractTableModel):
             audio.delete()
         self._addUndo(audio, tags)
 
-    def dropMimeData(self, data, action, row, column, parent=QModelIndex()):
-        return True
-
     def flags(self, index):
         if not index.isValid():
             return Qt.ItemFlag.ItemIsEnabled
@@ -1067,9 +1061,6 @@ class TagModel(QAbstractTableModel):
             self.sortFields = fields
 
         self.sorted.emit()
-
-    def supportedDropActions(self):
-        return Qt.DropAction.CopyAction
 
     def undo(self, on_error=None):
         """Undos the last action.
@@ -1587,12 +1578,8 @@ class TagTable(QTableView):
             self.selectionChanged()
         self.filesloaded.emit(bool(self.model().taginfo))
 
-    def trashSelected(self, delfiles=True, ifgone=False, showmsg=None):
-        if showmsg is None:
-            showmsg = True
-            showmsg = confirmations.should_show('trash_files')
-
-        if delfiles and showmsg:
+    def trashSelected(self):
+        if confirmations.should_show('trash_files'):
             result = QMessageBox.question(self, "puddletag",
                                           translate("Table", "Are you sure you want to move the selected files to the trash?"))
         else:
@@ -1700,13 +1687,6 @@ class TagTable(QTableView):
     def mouseMoveEvent(self, event):
 
         if event.buttons() != Qt.MouseButton.LeftButton:
-            return
-        mimeData = QMimeData()
-        plainText = ""
-        tags = []
-        if hasattr(self, "selectedRows"):
-            selectedRows = self.selectedRows[::]
-        else:
             return
         try:
             pnt = QPoint(*self.StartPosition)
