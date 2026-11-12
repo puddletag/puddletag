@@ -1031,11 +1031,12 @@ def test_moved_files_edits_leave_undo(mainwin, qtbot, user, music, drop_target, 
     assert dialogs.calls == []
 
 
-# Synthetic: holding Meta while dragging the selected files onto another
-# row moves them there.
+# menus.txt, Move Selected Down: "Dragging the selected files onto another
+# row while holding Meta (the Windows key; Control on macOS) moves them
+# there: dragged onto a row below them they land after it, onto a row above
+# them they land before it."
 @pytest.mark.parametrize('start, end, expected', [
-    pytest.param(0, 2, ['02.mp3', '03.mp3', '01.mp3'], marks=pytest.mark.xfail(
-        strict=True, reason='a drop on the last row lists the moved file twice')),
+    (0, 2, ['02.mp3', '03.mp3', '01.mp3']),
     (2, 0, ['03.mp3', '01.mp3', '02.mp3']),
 ])
 def test_meta_drag_reorders_rows(mainwin, qtbot, user, music, monkeypatch, start, end, expected):

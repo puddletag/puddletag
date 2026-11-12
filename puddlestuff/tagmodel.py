@@ -838,8 +838,6 @@ class TagModel(QAbstractTableModel):
 
         tags = [taginfo[i] for i in rows]
 
-        num_moved = len(rows)
-
         first = min(rows)
         first = first if first < row else row
 
@@ -854,10 +852,9 @@ class TagModel(QAbstractTableModel):
             rows = [i - 1 for i in rows[1:]]
 
         if row >= len(taginfo):
-            row = row - num_moved
             taginfo.extend(tags)
-
-        [taginfo.insert(row, z) for z in reversed(tags)]
+        else:
+            [taginfo.insert(row, z) for z in reversed(tags)]
 
         self.dataChanged.emit(top, bottom)
 

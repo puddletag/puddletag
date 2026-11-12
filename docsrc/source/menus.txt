@@ -132,7 +132,10 @@ Moves the selected files up one row in the File-View.
 
 Move Selected Down (Ctrl+KP-)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Moves the selected files down one row in the File-View.
+Moves the selected files down one row in the File-View. Dragging the selected
+files onto another row while holding Meta (the Windows key; Control on macOS)
+moves them there: dragged onto a row below them they land after it, onto a row
+above them they land before it.
 
 Increase Font Size (Ctrl+Shift+KP+)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
