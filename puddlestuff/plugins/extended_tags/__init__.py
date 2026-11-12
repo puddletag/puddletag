@@ -121,7 +121,6 @@ class ExTagsPlugin(ExTags):
         newtags = [z for z in tags if z not in self.get_fieldlist]
         if newtags and newtags != ['__image']:
             settaglist(newtags + self.get_fieldlist)
-        tags.update({'__image': self._status['images']})
         self.onetomany.emit(tags)
 
     def _tag(self, row, status=None):

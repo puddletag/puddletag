@@ -925,8 +925,6 @@ def test_save_extended_keeps_the_field_list(dock, mainwin, load, user, qtbot):
     assert 'composer' in names
 
 
-@pytest.mark.xfail(strict=True, reason="Save Extended writes the Artwork window's last covers "
-                                       'to the saved files')
 def test_save_extended_leaves_covers_alone(dock, mainwin, load, user, qtbot):
     # The plugin's own words: "Uses Plugins->Save Extended (Ctrl+Shift+S) to
     # save." Docs silent about covers; the maintainer's call: covers are the
