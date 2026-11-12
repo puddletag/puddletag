@@ -91,6 +91,9 @@ def rename(oldpath, newpath):
             shutil.move(oldpath, newpath)
             return True
         except EnvironmentError as e:
+            # Copied, but the original couldn't be removed: drop the copy.
+            if os.path.exists(oldpath) and os.path.exists(newpath):
+                os.remove(newpath)
             raise RenameError(e, oldpath, newpath)
 
 

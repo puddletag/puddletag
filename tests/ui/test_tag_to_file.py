@@ -149,7 +149,6 @@ def test_folder_that_cannot_be_created(mainwin, make_audio, tmp_path, qtbot, use
 
 
 @pytest.mark.skipif(os.geteuid() == 0, reason='root can rename in a read-only folder')
-@pytest.mark.xfail(strict=True, reason='a move that fails after copying the file leaves the copy behind')
 def test_move_out_of_a_read_only_folder_leaves_no_copy(mainwin, make_audio, tmp_path, qtbot, user, dialogs):
     # The docs are silent; a move that fails must not leave the file in
     # both places. The destination folder is writable, the source's isn't.
