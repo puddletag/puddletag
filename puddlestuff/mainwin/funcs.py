@@ -1,6 +1,5 @@
 import json
 import os
-import pickle
 from collections import OrderedDict
 from typing import List, Optional
 
@@ -14,6 +13,7 @@ from .. import steps
 from ..puddleobjects import (PuddleConfig, PuddleDock)
 
 from ..audioinfo import PATH, DIRNAME, DIRPATH, FILETAGS, AbstractTag, tag_to_json, encode_fn, decode_fn
+from ..audioinfo.util import b64_to_img
 from .. import musiclib, about as about
 from ..util import split_by_tag, translate, to_string
 from .. import functions
@@ -24,7 +24,7 @@ path = os.path
 
 status = {}
 
-_TAGS_MIME_TYPE = 'application/x.puddletag.tags'
+_TAGS_MIME_TYPE = 'application/x.puddletag.tags+json'
 
 
 def applyaction(files=None, funcs=None):
@@ -103,14 +103,13 @@ def connect_status(actions):
 
 
 def _setClipboardTags(tags):
-    """ Save the given list of tags in the clipboard, both as json and binary. """
+    """ Save the given list of tags in the clipboard, as json. """
     mime = QMimeData()
 
-    binaryData = pickle.dumps(tags)
-    mime.setData(_TAGS_MIME_TYPE, binaryData)
+    jsonData = json.dumps(list(map(tag_to_json, tags)))
+    mime.setData(_TAGS_MIME_TYPE, jsonData.encode('utf-8'))
 
     # This is only to support pasting outside of puddletag
-    jsonData = json.dumps(list(map(tag_to_json, tags)))
     mime.setText(jsonData)
 
     QApplication.clipboard().setMimeData(mime)
@@ -370,10 +369,16 @@ def number_tracks(tags: List[AbstractTag], parent: Optional[QObject], offset: in
 
 def _getClipboardTags():
     """ Returns the list of tags from the clipboard (if any) """
-    if not QApplication.clipboard().mimeData().hasFormat(_TAGS_MIME_TYPE):
+    mime = QApplication.clipboard().mimeData()
+    if mime is None or not mime.hasFormat(_TAGS_MIME_TYPE):
         return None
-    binaryData = QApplication.clipboard().mimeData().data(_TAGS_MIME_TYPE).data()
-    tags = pickle.loads(binaryData)
+    try:
+        tags = json.loads(mime.data(_TAGS_MIME_TYPE).data().decode('utf-8'))
+    except ValueError:
+        return None
+    for tag in tags:
+        if '__image' in tag:
+            tag['__image'] = [b64_to_img(image) for image in tag['__image']]
     return tags
 
 

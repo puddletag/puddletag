@@ -254,7 +254,7 @@ def test_copy_all_fields_as_text(user, loaded, qtbot):
 
 
 OLD_TAGS_TYPE = 'application/x.puddletag.tags'
-TAGS_TYPE = 'application/x.puddletag.tags'
+TAGS_TYPE = 'application/x.puddletag.tags+json'
 
 
 def with_big_cover(user, qtbot, table, path):
@@ -290,9 +290,7 @@ def answer_large_copy(monkeypatch, qtbot, button):
     return shown
 
 
-@pytest.mark.parametrize('clipboard', [
-    pytest.param('empty', marks=pytest.mark.xfail(strict=True, reason="Paste raises with an empty clipboard")),
-    'text from another program'])
+@pytest.mark.parametrize('clipboard', ['empty', 'text from another program'])
 def test_paste_with_nothing_copied_writes_nothing(user, loaded, qtbot, dialogs, clipboard):
     # "Pastes the copied/cut fields onto the selected files": with nothing
     # copied by puddletag there is nothing to paste.
@@ -351,7 +349,6 @@ def test_copy_all_fields_over_5_mib_with_no_button_clicked(user, loaded, qtbot, 
     assert QApplication.clipboard().text() == ''
 
 
-@pytest.mark.xfail(strict=True, reason="Paste unpickles the clipboard")
 def test_paste_runs_no_code_from_the_clipboard(user, loaded, qtbot, tmp_path):
     # Synthetic payload. Data on the clipboard is read, not run: any
     # program can put data under puddletag's type.
