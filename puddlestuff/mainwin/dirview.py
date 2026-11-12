@@ -170,12 +170,6 @@ class DirView(QTreeView):
         smodel.blockSignals(False)
         return True
 
-    def clearSelection(self, *args):
-        self.blockSignals(True)
-        self.selectionModel().clearSelection()
-        self.blockSignals(False)
-        self.removeFolders.emit([], True)
-
     def contextMenuEvent(self, event):
 
         connect = lambda o, s: o.triggered.connect(s)

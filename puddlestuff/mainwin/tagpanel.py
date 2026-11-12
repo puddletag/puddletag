@@ -1,11 +1,10 @@
 import os
-import sys
 from copy import deepcopy
 
 from PyQt6 import sip
-from PyQt6.QtCore import QEvent, QThread, Qt, pyqtRemoveInputHook, pyqtSignal
+from PyQt6.QtCore import Qt, pyqtRemoveInputHook, pyqtSignal
 from PyQt6.QtGui import QBrush
-from PyQt6.QtWidgets import QApplication, QComboBox, QCompleter, QDialog, QGroupBox, QHBoxLayout, \
+from PyQt6.QtWidgets import QApplication, QComboBox, QCompleter, QGroupBox, QHBoxLayout, \
     QLabel, QLineEdit, QTableWidget, QTableWidgetItem, QVBoxLayout, QWidget
 
 from ..audioinfo import INFOTAGS
@@ -19,12 +18,9 @@ from ..translations import translate
 from ..constants import CONFIGDIR
 
 
-def loadsettings(filepath=None):
+def loadsettings():
     settings = PuddleConfig()
-    if filepath:
-        settings.filename = filepath
-    else:
-        settings.filename = os.path.join(CONFIGDIR, 'tagpanel')
+    settings.filename = os.path.join(CONFIGDIR, 'tagpanel')
     numrows = settings.get('panel', 'numrows', -1, True)
     if numrows > -1:
         sections = settings.sections()
@@ -44,12 +40,9 @@ def loadsettings(filepath=None):
     return d
 
 
-def savesettings(d, filepath=None):
+def savesettings(d):
     settings = PuddleConfig()
-    if filepath:
-        settings.filename = filepath
-    else:
-        settings.filename = os.path.join(settings.savedir, 'tagpanel')
+    settings.filename = os.path.join(settings.savedir, 'tagpanel')
     settings.set('panel', 'numrows', str(len(d)))
     for row, rowtags in d.items():
         settings.set(str(row), 'tags', [z[1] for z in rowtags])
@@ -70,17 +63,6 @@ class Combo(QComboBox):
             super().wheelEvent(event)
         else:
             event.ignore()
-
-
-class Thread(QThread):
-    update = pyqtSignal(object, name='update')
-
-    def __init__(self, values, parent=None):
-        self._values = values
-        QThread.__init__(self, parent)
-
-    def run(self):
-        self.update.emit(self._values)
 
 
 class FrameCombo(QGroupBox):
@@ -126,11 +108,6 @@ class FrameCombo(QGroupBox):
             completer.setCaseSensitivity(Qt.CaseSensitivity.CaseSensitive)
             completer.setCompletionMode(QCompleter.CompletionMode.UnfilteredPopupCompletion)
 
-    def disableCombos(self):
-        for z in self.combos:
-            self.combos[z].clear()
-            self.combos[z].setEnabled(False)
-
     def _enablePreview(self):
         self.__disconnectIndexChanged()
         self.__indexFuncs = []
@@ -166,11 +143,6 @@ class FrameCombo(QGroupBox):
             if self._audios:
                 self.manypreview.emit([{field: a.get(field, '')} for a in self._audios])
             return
-        else:
-            if field in INFOTAGS:
-                value = text
-            else:
-                value = text.split(SEPARATOR)
         self.onetomanypreview.emit({field: text})
 
     def fillCombos(self, *args):
@@ -212,8 +184,6 @@ class FrameCombo(QGroupBox):
             index = combo.findText(values[0])
             if index > -1:
                 combo.setCurrentIndex(index)
-            else:
-                combo.setEditText(values[0])
         elif 'genre' in tags:
             combos['genre'].setCurrentIndex(0)
 
@@ -329,11 +299,6 @@ class FrameCombo(QGroupBox):
             # New fields, as Preferences' OK makes: they save previews too.
             self._enablePreview()
 
-    def eventFilter(self, obj, event):
-        if isinstance(obj, QComboBox) and event.type() == QEvent.Type.FocusOut:
-            return False
-        return QGroupBox.eventFilter(self, obj, event)
-
     def initCombos(self, enable=False):
         """Clears the comboboxes and adds two items, <keep> and <blank>.
         If <keep> is selected and the tags in the combos are saved,
@@ -344,11 +309,7 @@ class FrameCombo(QGroupBox):
             combo.addItems([KEEP, BLANK])
 
         if 'genre' in self.combos:
-            pass
             self.combos['genre'].addItems(self._status['genres'])
-
-    def reloadCombos(self, tags):
-        self.setCombos(tags)
 
     def loadSettings(self):
         self.setCombos(loadsettings())
@@ -441,7 +402,7 @@ ROW = translate("Tag Panel Settings", 'Row')
 class SettingsWin(QWidget):
 
     def __init__(self, parent=None, status=None):
-        QDialog.__init__(self, parent)
+        QWidget.__init__(self, parent)
         self.title = translate('Settings', 'Tag Panel')
         self._table = PuddleTable([TITLE, FIELD, ROW],
                                   [TITLE, FIELD, '0'], self)
@@ -542,9 +503,3 @@ class SettingsWin(QWidget):
 
 
 control = ('Tag Panel', FrameCombo, LEFTDOCK, True)
-
-if __name__ == '__main__':
-    app = QApplication(sys.argv)
-    win = SettingsWin()
-    win.show()
-    app.exec()

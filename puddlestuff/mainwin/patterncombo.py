@@ -1,8 +1,6 @@
-import sys
-
 from PyQt6.QtCore import Qt, pyqtSignal
 from PyQt6.QtGui import QShortcut
-from PyQt6.QtWidgets import QAbstractItemView, QApplication, QComboBox, QFrame, QHBoxLayout, QInputDialog, QPushButton, \
+from PyQt6.QtWidgets import QAbstractItemView, QComboBox, QFrame, QHBoxLayout, QInputDialog, QPushButton, \
     QVBoxLayout
 
 from ..puddleobjects import (PuddleConfig, ListBox,
@@ -117,11 +115,6 @@ class SettingsWin(QFrame):
             self.listbox.sortItems(Qt.SortOrder.AscendingOrder)
             self._sortOrder = Qt.SortOrder.AscendingOrder
 
-    def saveSettings(self):
-        patterns = [str(self.listbox.item(row).text()) for row in range(self.listbox.count())]
-        cparser = PuddleConfig()
-        cparser.set('editor', 'patterns', patterns)
-
     def addPattern(self):
         l = self.listbox.item
         patterns = [str(l(z).text()) for z in range(self.listbox.count())]
@@ -158,9 +151,3 @@ class SettingsWin(QFrame):
 
 
 control = ('patterncombo', PatternCombo, False)
-
-if __name__ == '__main__':
-    app = QApplication(sys.argv)
-    win = PatternCombo(['one', 'the', 'three'])
-    win.show()
-    app.exec()

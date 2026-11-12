@@ -114,11 +114,6 @@ class ArtworkWidget(QWidget):
         else:
             self.setEnabled(False)
 
-    def init(self):
-        pics = self._readOnlyPics()
-        self.picwidget.setImages(pics)
-        self.picwidget.readonly = [0, 1]
-
     def _readOnlyPics(self):
         if not self._readOnly:
             font = get_font(QRect(0, 0, 200, 200), KEEP, BLANK)

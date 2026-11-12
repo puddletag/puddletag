@@ -52,10 +52,7 @@ def applyaction(files=None, funcs=None):
 
 
 def applyquickaction(files, funcs):
-    if isinstance(funcs[0], findfunc.Macro):
-        qa = findfunc.apply_macros
-    else:
-        qa = findfunc.apply_actions
+    qa = findfunc.apply_macros
 
     selected = status['selectedtags']
     state = {'__total_files': str(len(selected))}
@@ -317,20 +314,6 @@ def number_tracks(tags: List[AbstractTag], parent: Optional[QObject], offset: in
     The first item of indices is the starting track.
     The second item of indices is the number of tracks."""
 
-    if not split_field:
-        QMessageBox.critical(parent, translate("Autonumbering Wizard", 'Field empty...'),
-                             translate("Autonumbering Wizard",
-                                       "The field specified to use as a directory splitter was invalid. "
-                                       "Please check your values."))
-        return
-
-    if not output_field:
-        QMessageBox.critical(parent, translate("Autonumbering Wizard", 'Field empty...'),
-                             translate("Autonumbering Wizard",
-                                       "The output field specified was invalid. "
-                                       "Please check your values."))
-        return
-
     if restartdirs:  # Restart dir numbering
         folders = OrderedDict()
         for tag_index, tag in enumerate(tags):
@@ -460,6 +443,7 @@ def run_function(parent=None, prevfunc=None):
         prevfunc = status['prevfunc']
 
     example = selectedfiles[0]
+    selected_fields = []
     try:
         selected_file = status['selectedtags'][0]
         selected_fields = list(selected_file.keys())
