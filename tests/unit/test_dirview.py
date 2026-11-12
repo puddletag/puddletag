@@ -86,6 +86,15 @@ def test_mount_table_read_again_after_10_seconds(mounts, monkeypatch):
     assert sorted(get_network_mounts()) == ['/nas/music', '/run/user/1000/gvfs']
 
 
+def test_mount_table_that_cant_be_read(tmp_path, monkeypatch):
+    # The docs don't say: this is what puddletag does. Without a mount
+    # table no folder counts as a network share.
+    monkeypatch.setattr(dirview, 'MOUNTS', str(tmp_path / 'missing'))
+    monkeypatch.setattr(dirview, '_network_mounts_cache', None)
+    assert get_network_mounts() == []
+    assert is_network_path('/nas/music') is False
+
+
 def test_dirmodel_local_empty_and_nonempty(qapp, tmp_path):
     empty_dir = tmp_path / 'empty'
     empty_dir.mkdir()

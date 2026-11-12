@@ -6,6 +6,7 @@ import threading
 
 import pytest
 from PyQt6.QtCore import QPoint, QRect, Qt, QTimer
+from PyQt6.QtGui import QFileSystemModel
 from PyQt6.QtWidgets import (QAbstractItemView, QApplication, QCheckBox, QMenu, QMessageBox, QProxyStyle, QStyle,
                              QStyleOptionButton)
 
@@ -492,15 +493,37 @@ def test_refresh_directory(mainwin, music, tmp_path, qtbot, user):
     # refresh it." (menus.txt) The new folder shows through the model's
     # file watcher, whatever Refresh Directory does.
     view = tree(mainwin)
-    model = view.model()
-    parent = model.index(str(tmp_path))
 
     def names():
+        model = view.model()
+        parent = model.index(str(tmp_path))
         return sorted(model.fileName(model.index(row, 0, parent)) for row in range(model.rowCount(parent)))
 
     folder_pos(qtbot, view, tmp_path / 'a')
     qtbot.waitUntil(lambda: names() == ['a', 'b', 'c'])
     (tmp_path / 'new').mkdir()
+    right_click_folder(user, qtbot, view, tmp_path, 'Refresh Directory')
+    qtbot.waitUntil(lambda: 'new' in names())
+
+
+@pytest.mark.xfail(strict=True, reason="Refresh Directory doesn't read a listed folder again")
+def test_refresh_directory_lists_a_new_folder_the_watcher_missed(mainwin, music, tmp_path, qtbot, user):
+    # "Right click on a directory and click on **Refresh Directory** to
+    # refresh it." (menus.txt) The model doesn't watch for changes, as on a
+    # network share, whose changes the watcher misses.
+    view = tree(mainwin)
+
+    def names():
+        model = view.model()
+        parent = model.index(str(tmp_path))
+        return sorted(model.fileName(model.index(row, 0, parent)) for row in range(model.rowCount(parent)))
+
+    folder_pos(qtbot, view, tmp_path / 'a')
+    qtbot.waitUntil(lambda: names() == ['a', 'b', 'c'])
+    view.model().setOption(QFileSystemModel.Option.DontWatchForChanges)
+    (tmp_path / 'new').mkdir()
+    qtbot.wait(500)
+    assert 'new' not in names()
     right_click_folder(user, qtbot, view, tmp_path, 'Refresh Directory')
     qtbot.waitUntil(lambda: 'new' in names())
 
