@@ -5,14 +5,24 @@ found in the selected files", "Removes the ID3v1 tag from the selected
 files") and leaves the others; the table then shows what the file holds,
 and a later edit saves only that. Synthetic files and tags.
 """
+import os
+
 import mutagen.apev2
 import mutagen.id3
 import pytest
+from PyQt6.QtCore import Qt
+from PyQt6.QtWidgets import QMessageBox
 
 from puddlestuff import audioinfo
 from puddlestuff.mainwin import tagtools
 
 pytestmark = pytest.mark.ui
+
+Ctrl = Qt.KeyboardModifier.ControlModifier
+Key = Qt.Key
+Ok = QMessageBox.StandardButton.Ok
+Shift = Qt.KeyboardModifier.ShiftModifier
+Yes = QMessageBox.StandardButton.Yes
 
 
 def mp3(make_audio):
@@ -89,3 +99,106 @@ def test_tag_tool(mainwin, make_audio, qtbot, kind, tool, listed, fields):
     assert audioinfo.usertags(model.taginfo[0]) == fields
     model.setRowData(0, {'genre': ['Edited']}, undo=True)
     assert audioinfo.usertags(audioinfo.Tag(str(path))) == dict(fields, genre=['Edited'])
+
+
+MENU = {
+    'remove_apev2': 'Remove &APEv2 Tag',
+    'remove_id3': 'Remove All &ID3 Tags',
+    'remove_id3v1': 'Remove ID3v&1 Tag',
+    'remove_id3v2': 'Remove ID3v&2 Tag',
+}
+
+
+def writing_error(path, reason='Permission denied'):
+    return f'An error occured while writing to <b>{path}</b>. ({reason})'
+
+
+def in_file(path):
+    return audioinfo.Tag(str(path))['__tag'], audioinfo.usertags(audioinfo.Tag(str(path)))
+
+
+def calls(dialogs, name):
+    return [args for call, args, kwargs in dialogs.calls if call == name]
+
+
+def load(mainwin, user, qtbot, folder, count):
+    mainwin.openDir(str(folder), False)
+    table = mainwin._table
+    qtbot.waitUntil(lambda: table.model().rowCount() == count)
+    user.activate()
+    table.setFocus()
+    user.click_cell(user.cell(0, 'title'))
+    if count > 1:
+        user.click_cell(user.cell(count - 1, 'title'), Shift)
+        qtbot.waitUntil(lambda: len(table.selectedRows) == count)
+
+
+@pytest.mark.skipif(os.geteuid() == 0, reason='root can write a read-only file')
+@pytest.mark.parametrize('kind, tool', [
+    ('aiff', 'remove_id3'),
+    ('ape', 'remove_apev2'),
+    ('mp3', 'remove_apev2'),
+    ('mp3', 'remove_id3'),
+    ('mp3', 'remove_id3v1'),
+    ('mp3', 'remove_id3v2'),
+])
+@pytest.mark.xfail(strict=True, reason='the tool says nothing about the failure, and records an undo step')
+def test_tag_tool_on_a_read_only_file(mainwin, user, make_audio, qtbot, dialogs, kind, tool):
+    # Tag Tools: "Deleting 'official' tags can be undone"; Undo: "When
+    # there's nothing left to undo, Undo is greyed out." Synthetic file,
+    # read-only (0444): it stays as it is, the user is told why, and there
+    # is nothing to undo.
+    path = FILES[kind](make_audio)
+    before = in_file(path)
+    os.chmod(path, 0o444)
+    load(mainwin, user, qtbot, path.parent, 1)
+    dialogs.answer('QMessageBox.warning', Ok)
+    user.click_menu(MENU[tool])
+    user.activate()
+    [args] = calls(dialogs, 'QMessageBox.warning')
+    assert args[1:] == ('Error', writing_error(path))
+    assert in_file(path) == before
+    assert not user.action('&Undo').isEnabled()
+
+
+@pytest.mark.skipif(os.geteuid() == 0, reason='root can write a read-only file')
+@pytest.mark.xfail(strict=True, reason='the tool says nothing about the failures, and records an undo step')
+def test_tag_tool_on_read_only_files(mainwin, user, make_audio, qtbot, dialogs, tmp_path):
+    # Tag Tools: "Deleting 'official' tags can be undone"; Undo: "When
+    # there's nothing left to undo, Undo is greyed out." Synthetic files,
+    # both read-only (0444): as Move to Trash does, every failing file asks
+    # whether to go on, the last one too, and there is nothing to undo.
+    paths = [make_audio(name, tmp_path, title='Title', artist='Artist') for name in ('01.mp3', '02.mp3')]
+    before = [in_file(path) for path in paths]
+    for path in paths:
+        os.chmod(path, 0o444)
+    load(mainwin, user, qtbot, tmp_path, 2)
+    dialogs.answer('QMessageBox.exec', Yes, Yes)
+    user.click_menu(MENU['remove_id3'])
+    user.activate()
+    assert [args[0].text() for args in calls(dialogs, 'QMessageBox.exec')] == [
+        writing_error(path) + '<br /> Do you want to continue?' for path in paths]
+    assert calls(dialogs, 'QMessageBox.warning') == []
+    assert [in_file(path) for path in paths] == before
+    assert not user.action('&Undo').isEnabled()
+
+
+@pytest.mark.skipif(os.geteuid() == 0, reason='root can write a read-only file')
+@pytest.mark.xfail(strict=True, reason='the tool says nothing about the failure, and records an undo step')
+def test_tag_tool_goes_on_after_a_read_only_file(mainwin, user, make_audio, qtbot, dialogs, tmp_path):
+    # Tag Tools: "Deleting 'official' tags can be undone". Synthetic files,
+    # the first read-only (0444): the second still loses its ID3 tags, and
+    # that alone can be undone.
+    paths = [make_audio(name, tmp_path, title='Title', artist='Artist') for name in ('01.mp3', '02.mp3')]
+    before = [in_file(path) for path in paths]
+    os.chmod(paths[0], 0o444)
+    load(mainwin, user, qtbot, tmp_path, 2)
+    dialogs.answer('QMessageBox.exec', Yes)
+    user.click_menu(MENU['remove_id3'])
+    user.activate()
+    assert audioinfo.usertags(audioinfo.Tag(str(paths[1]))) == {}
+    assert in_file(paths[0]) == before[0]
+    assert user.action('&Undo').isEnabled()
+    user.press(Key.Key_Z, Ctrl)
+    assert audioinfo.usertags(audioinfo.Tag(str(paths[1]))) == before[1][1]
+    assert not user.action('&Undo').isEnabled()

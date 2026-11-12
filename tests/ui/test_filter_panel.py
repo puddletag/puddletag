@@ -14,7 +14,7 @@ import os
 import pytest
 from PyQt6.QtCore import QEvent, Qt
 from PyQt6.QtGui import QKeyEvent
-from PyQt6.QtWidgets import QApplication, QPushButton
+from PyQt6.QtWidgets import QApplication, QMessageBox, QPushButton
 
 from puddlestuff import audioinfo, tagmodel
 from puddlestuff.mainwin.filterwin import FilterView
@@ -26,6 +26,7 @@ Alt = Qt.KeyboardModifier.AltModifier
 Ctrl = Qt.KeyboardModifier.ControlModifier
 NoModifier = Qt.KeyboardModifier.NoModifier
 Shift = Qt.KeyboardModifier.ShiftModifier
+Yes = QMessageBox.StandardButton.Yes
 
 
 @pytest.fixture
@@ -397,3 +398,161 @@ def test_write_previews_writes_hidden_files(mainwin, loaded, qtbot, user):
     user.activate()
     assert [in_file(p)['title'] for p in paths] == [['New'], ['New'], ['New']]
     assert not table.model().previewMode
+    enter_filter(user, mainwin, '')
+    assert titles(table) == {'01.mp3': ['New'], '02.mp3': ['New'], '03.mp3': ['New']}
+    assert not table.model().data(user.cell(1, 'title'), Qt.ItemDataRole.FontRole).bold()
+
+
+def preview_titles(qtbot, user, table, first, last):
+    """Turns Preview Mode on and sets the titles of the rows to 'New'."""
+    table.setFocus()
+    user.press(Key.Key_P, Ctrl | Shift)
+    user.click_cell(user.cell(first, 'title'))
+    if last != first:
+        user.click_cell(user.cell(last, 'title'), Shift)
+    user.press(Key.Key_F2)
+    user.type('New')
+    user.press(Key.Key_Return)
+    audios = table.model().taginfo[first:last + 1]
+    qtbot.waitUntil(lambda: all(audio.preview for audio in audios))
+
+
+def questions(dialogs):
+    """The question dialogs' title and text, each time one was asked."""
+    return [args[1:] for name, args, kwargs in dialogs.calls if name == 'QMessageBox.question']
+
+
+@pytest.mark.xfail(strict=True, reason='Refresh Selected lists the hidden files and the new ones whatever the Filter says')
+def test_refresh_selected_keeps_the_filter(mainwin, loaded, make_audio, qtbot, user):
+    # menus.txt, Refresh Selected: "Re-reads the folders of the selected
+    # files: new files in them are added and deleted ones are removed."
+    # filter.txt: "If it evaluates to True for a file, then that file will
+    # be shown. Otherwise, puddletag will hide it."
+    table, paths = loaded
+    enter_filter(user, mainwin, 'Maffin')
+    user.click_cell(user.cell(0, 'title'))
+    make_audio('04.mp3', paths[0].parent, artist='Bongo Maffin', title='Uhuru')
+    make_audio('05.mp3', paths[0].parent, artist='Ana Pop', title='Uno')
+    table.setFocus()
+    user.click_menu('Refresh &Selected')
+    qtbot.waitUntil(lambda: '04.mp3' in shown(table))
+    user.activate()
+    assert shown(table) == ['01.mp3', '03.mp3', '04.mp3']
+    enter_filter(user, mainwin, '')
+    assert sorted(shown(table)) == ['01.mp3', '02.mp3', '03.mp3', '04.mp3', '05.mp3']
+
+
+@pytest.mark.xfail(strict=True, reason='Refresh Selected keeps a deleted hidden file')
+def test_refresh_selected_removes_a_deleted_hidden_file(mainwin, loaded, qtbot, user):
+    # menus.txt, Refresh Selected: "Re-reads the folders of the selected
+    # files: new files in them are added and deleted ones are removed."
+    table, paths = loaded
+    enter_filter(user, mainwin, 'Maffin')
+    os.remove(paths[1])
+    user.click_cell(user.cell(0, 'title'))
+    table.setFocus()
+    with qtbot.waitSignal(table.model().modelReset):
+        user.click_menu('Refresh &Selected')
+    user.activate()
+    enter_filter(user, mainwin, '')
+    assert shown(table) == ['01.mp3', '03.mp3']
+
+
+@pytest.mark.xfail(strict=True, reason="Refresh Selected doesn't ask about the previews of hidden files")
+def test_refresh_selected_asks_about_hidden_previews(mainwin, loaded, qtbot, user, dialogs):
+    # menus.txt, Preview Mode: "If some files have previews that haven't
+    # been written, disabling Preview Mode first asks whether to discard
+    # them." Refresh Selected asks the same before it discards them.
+    table, paths = loaded
+    preview_titles(qtbot, user, table, 1, 1)
+    enter_filter(user, mainwin, 'Maffin')
+    user.click_cell(user.cell(0, 'title'))
+    table.setFocus()
+    dialogs.answer('QMessageBox.question', QMessageBox.StandardButton.No)
+    user.click_menu('Refresh &Selected')
+    user.activate()
+    assert questions(dialogs) == [('puddletag', 'There are unsaved changes pending. Do you want to discard and reload?')]
+    enter_filter(user, mainwin, '')
+    assert titles(table)['02.mp3'] == ['New']
+
+
+@pytest.mark.xfail(strict=True, reason="Leaving Preview Mode doesn't ask about the previews of hidden files")
+def test_leaving_preview_mode_asks_about_hidden_previews(mainwin, loaded, qtbot, user, dialogs):
+    # menus.txt, Preview Mode: "If some files have previews that haven't
+    # been written, disabling Preview Mode first asks whether to discard
+    # them."
+    table, paths = loaded
+    preview_titles(qtbot, user, table, 1, 1)
+    enter_filter(user, mainwin, 'Maffin')
+    table.setFocus()
+    dialogs.answer('QMessageBox.question', Yes)
+    user.press(Key.Key_P, Ctrl | Shift)
+    assert questions(dialogs) == [('puddletag', 'Do you want to exit Preview Mode? Unsaved changes will be discarded')]
+    assert not table.model().previewMode
+    enter_filter(user, mainwin, '')
+    assert in_file(paths[1])['title'] == ['Angel']
+
+
+@pytest.mark.xfail(strict=True, reason='A hidden file keeps its preview when Preview Mode is left')
+def test_discarded_hidden_preview_stays_discarded(mainwin, loaded, qtbot, user, dialogs):
+    # menus.txt, Preview Mode: "If some files have previews that haven't
+    # been written, disabling Preview Mode first asks whether to discard
+    # them."
+    table, paths = loaded
+    preview_titles(qtbot, user, table, 0, 2)
+    enter_filter(user, mainwin, 'Maffin')
+    table.setFocus()
+    dialogs.answer('QMessageBox.question', Yes)
+    user.press(Key.Key_P, Ctrl | Shift)
+    enter_filter(user, mainwin, '')
+    table.setFocus()
+    user.press(Key.Key_P, Ctrl | Shift)
+    index = user.cell(1, 'title')
+    assert table.model().data(index) == 'Angel'
+    font = table.model().data(index, Qt.ItemDataRole.FontRole)
+    assert font is None or not font.bold()
+
+
+def test_write_previews_with_hidden_files_undone_at_once(mainwin, loaded, qtbot, user):
+    # menus.txt: "If preview mode has been enabled and some changes were
+    # made, they'll get written to the files, and Preview Mode is disabled.
+    # A single Undo then undoes the whole write."
+    table, paths = loaded
+    preview_titles(qtbot, user, table, 0, 2)
+    enter_filter(user, mainwin, 'Maffin')
+    table.setFocus()
+    user.press(Key.Key_W, Ctrl)
+    qtbot.waitUntil(lambda: in_file(paths[2])['title'] == ['New'])
+    user.activate()
+    table.setFocus()
+    user.press(Key.Key_Z, Ctrl)
+    assert [in_file(p)['title'] for p in paths] == [['Monster'], ['Angel'], ['Monster (Live)']]
+    assert not user.action('&Undo').isEnabled()
+    enter_filter(user, mainwin, '')
+    assert titles(table) == {'01.mp3': ['Monster'], '02.mp3': ['Angel'], '03.mp3': ['Monster (Live)']}
+
+
+@pytest.mark.skipif(os.geteuid() == 0, reason='root can write a read-only file')
+@pytest.mark.xfail(strict=True, reason='a hidden file is not written, so nothing fails and its preview is dropped')
+def test_write_previews_keeps_a_hidden_preview_it_cannot_write(mainwin, loaded, dialogs, qtbot, user):
+    # menus.txt: "If preview mode has been enabled and some changes were
+    # made, they'll get written to the files, and Preview Mode is disabled."
+    # The docs are silent on a file that can't be written: its change stays
+    # previewed, as it does for a shown file, and the user is asked whether
+    # to go on, as for any file that can't be written among several.
+    table, paths = loaded
+    preview_titles(qtbot, user, table, 0, 2)
+    enter_filter(user, mainwin, 'Maffin')
+    table.setFocus()
+    os.chmod(paths[1], 0o444)
+    dialogs.answer('QMessageBox.exec', Yes)
+    user.press(Key.Key_W, Ctrl)
+    qtbot.waitUntil(lambda: in_file(paths[2])['title'] == ['New'])
+    qtbot.waitUntil(lambda: any(name == 'QMessageBox.exec' for name, *_ in dialogs.calls))
+    [args] = [args for name, args, kwargs in dialogs.calls if name == 'QMessageBox.exec']
+    assert str(paths[1]) in args[0].text()
+    user.activate()
+    assert table.model().previewMode
+    assert in_file(paths[1])['title'] == ['Angel']
+    enter_filter(user, mainwin, '')
+    assert titles(table)['02.mp3'] == ['New']

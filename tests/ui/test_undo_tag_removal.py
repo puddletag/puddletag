@@ -8,12 +8,14 @@ considered the 'official' tag (eg. When you delete APEv2 from and mp3 file)
 there'll be no way to undo that action." Each undo is checked in the table
 and on disk. Synthetic files.
 """
+import os
+
 import mutagen.apev2
 import mutagen.id3
 import pytest
 from PyQt6.QtCore import QBuffer, QIODevice, Qt
 from PyQt6.QtGui import QImage
-from PyQt6.QtWidgets import QApplication
+from PyQt6.QtWidgets import QApplication, QMessageBox
 
 from puddlestuff import audioinfo
 
@@ -21,7 +23,9 @@ pytestmark = pytest.mark.ui
 
 Key = Qt.Key
 Ctrl = Qt.KeyboardModifier.ControlModifier
+Ok = QMessageBox.StandardButton.Ok
 Shift = Qt.KeyboardModifier.ShiftModifier
+Yes = QMessageBox.StandardButton.Yes
 
 # Every format puddletag registers, as the kinds of file make_audio makes.
 FORMATS = ['aiff', 'ape', 'apl', 'dff', 'dsf', 'flac', 'm4a', 'mp3', 'mpc', 'ogg', 'opus', 'wma', 'wv']
@@ -467,3 +471,117 @@ def test_official_tag_undone_with_cover(mainwin, make_audio, tmp_path, qtbot, us
 
     user.press(Key.Key_Z, Ctrl)
     check_covers_back(table, paths, fields)
+
+
+def read_only(*paths):
+    for path in paths:
+        os.chmod(path, 0o444)
+
+
+def removal_error(path, reason='Permission denied'):
+    return f'An error occurred while deleting the tag of {path}: <b>{reason}</b>'
+
+
+def two_files(make_audio, tmp_path):
+    music = tmp_path / 'music'
+    return [make_audio(f'0{i}.mp3', music, artist=f'Artist {i}', title=f'Title {i}') for i in (1, 2)]
+
+
+@pytest.mark.skipif(os.geteuid() == 0, reason='root can write a read-only file')
+@pytest.mark.xfail(strict=True, reason='the error of a file mutagen cannot open for writing escapes the command')
+def test_remove_tag_on_a_read_only_file(mainwin, make_audio, tmp_path, qtbot, user, dialogs):
+    # Remove Tag: "Removes the tags of selected files." and Undo: "When
+    # there's nothing left to undo, Undo is greyed out." A read-only file
+    # (synthetic: 0444) keeps its tag, and the user is told why.
+    music = tmp_path / 'music'
+    path = make_audio('01.mp3', music, artist='Artist 1', title='Title 1')
+    table = load(mainwin, qtbot, user, [path])
+    read_only(path)
+    select(user, [0])
+    dialogs.answer('QMessageBox.warning', Ok)
+
+    user.press(Key.Key_R, Ctrl)
+
+    [args] = [args for name, args, kwargs in dialogs.calls if name == 'QMessageBox.warning']
+    assert args[1:] == ('Error', removal_error(path))
+    original = {'artist': ['Artist 1'], 'title': ['Title 1']}
+    assert in_file(path) == original
+    assert in_table(table) == [original]
+    assert not user.action('&Undo').isEnabled()
+
+
+@pytest.mark.skipif(os.geteuid() == 0, reason='root can write a read-only file')
+@pytest.mark.xfail(strict=True, reason='the error of a file mutagen cannot open for writing escapes the command')
+def test_remove_tag_on_read_only_files(mainwin, make_audio, tmp_path, qtbot, user, dialogs):
+    # Remove Tag: "Removes the tags of selected files." and Undo: "When
+    # there's nothing left to undo, Undo is greyed out." With several files
+    # selected, as the program behaves (the docs are silent) and as Move to
+    # Trash does: it asks whether to go on after each file that can't be
+    # changed, the last one included. Synthetic files, read-only (0444).
+    paths = two_files(make_audio, tmp_path)
+    table = load(mainwin, qtbot, user, paths)
+    read_only(*paths)
+    select(user, [0, 1])
+    dialogs.answer('QMessageBox.exec', Yes, Yes)
+
+    user.press(Key.Key_R, Ctrl)
+    user.activate()
+
+    assert [args[0].text() for name, args, kwargs in dialogs.calls if name == 'QMessageBox.exec'] \
+        == [removal_error(path) + '<br /> Do you want to continue?' for path in paths]
+    original = [{'artist': [f'Artist {i}'], 'title': [f'Title {i}']} for i in (1, 2)]
+    assert [in_file(p) for p in paths] == original
+    assert in_table(table) == original
+    assert not user.action('&Undo').isEnabled()
+
+
+@pytest.mark.skipif(os.geteuid() == 0, reason='root can write a read-only file')
+@pytest.mark.xfail(strict=True, reason='the error of a file mutagen cannot open for writing escapes the command')
+def test_remove_tag_goes_on_after_a_read_only_file(mainwin, make_audio, tmp_path, qtbot, user, dialogs):
+    # Remove Tag: "Removes the tags of selected files." and Undo: "Undo's
+    # the last edit": the file that is read-only (synthetic: 0444) keeps its
+    # tag once the user says to go on, the other loses it, and Undo brings
+    # that one back.
+    paths = two_files(make_audio, tmp_path)
+    table = load(mainwin, qtbot, user, paths)
+    read_only(paths[0])
+    select(user, [0, 1])
+    dialogs.answer('QMessageBox.exec', Yes)
+
+    user.press(Key.Key_R, Ctrl)
+    user.activate()
+
+    assert in_file(paths[0]) == {'artist': ['Artist 1'], 'title': ['Title 1']}
+    assert in_file(paths[1]) == {}
+    assert in_table(table) == [{'artist': ['Artist 1'], 'title': ['Title 1']}, {}]
+    assert user.action('&Undo').isEnabled()
+
+    user.press(Key.Key_Z, Ctrl)
+
+    assert in_file(paths[1]) == {'artist': ['Artist 2'], 'title': ['Title 2']}
+    assert in_table(table)[1] == {'artist': ['Artist 2'], 'title': ['Title 2']}
+    assert not user.action('&Undo').isEnabled()
+
+
+@pytest.mark.skipif(os.geteuid() == 0, reason='root can write a read-only file')
+@pytest.mark.xfail(strict=True, reason='the error of a file mutagen cannot open for writing escapes the command')
+def test_edit_undone_after_remove_tag_failed(mainwin, make_audio, tmp_path, qtbot, user, dialogs):
+    # Undo: "Undo's the last edit" and "When there's nothing left to undo,
+    # Undo is greyed out." A Remove Tag that changed no file isn't an edit,
+    # so Undo still reaches the edit before it. Synthetic files, two of them
+    # read-only (0444).
+    music = tmp_path / 'music'
+    paths = [make_audio(f'0{i}.mp3', music, artist=f'Artist {i}', title=f'Title {i}') for i in (1, 2, 3)]
+    table = load(mainwin, qtbot, user, paths)
+    edit(user, qtbot, 2, 'Edited', paths[2])
+    read_only(paths[0], paths[1])
+    select(user, [0, 1])
+    dialogs.answer('QMessageBox.exec', Yes, Yes)
+
+    user.press(Key.Key_R, Ctrl)
+    user.activate()
+    user.press(Key.Key_Z, Ctrl)
+
+    assert in_file(paths[2])['title'] == ['Title 3']
+    assert in_table(table)[2]['title'] == ['Title 3']
+    assert not user.action('&Undo').isEnabled()

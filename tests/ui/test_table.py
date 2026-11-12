@@ -7,16 +7,17 @@ menus.txt). Synthetic files.
 import os
 import shutil
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 from PyQt6.QtCore import QEvent, QMimeData, QPoint, QPointF, Qt, QTimer, QUrl
-from PyQt6.QtGui import (QDragEnterEvent, QDragMoveEvent, QDropEvent, QFontMetrics, QHelpEvent,
-                         QWheelEvent)
+from PyQt6.QtGui import (QDrag, QDragEnterEvent, QDragMoveEvent, QDropEvent, QFontMetrics,
+                         QHelpEvent, QMouseEvent, QWheelEvent)
 from PyQt6.QtWidgets import (QApplication, QCheckBox, QLabel, QMenu, QMessageBox,
                              QStyle, QStyleOptionButton, QStyleOptionViewItem, QToolButton,
                              QToolTip)
 
-from puddlestuff import audioinfo
+from puddlestuff import audioinfo, tagmodel
 from puddlestuff.tagmodel import ColumnSettings
 
 pytestmark = pytest.mark.ui
@@ -24,6 +25,7 @@ pytestmark = pytest.mark.ui
 Key = Qt.Key
 Ctrl = Qt.KeyboardModifier.ControlModifier
 LEFT = Qt.MouseButton.LeftButton
+Meta = Qt.KeyboardModifier.MetaModifier
 NO_MODIFIER = Qt.KeyboardModifier.NoModifier
 Shift = Qt.KeyboardModifier.ShiftModifier
 
@@ -876,3 +878,191 @@ def test_add_folder_named_like_the_start_of_a_loaded_one(mainwin, make_audio, tm
     qtbot.waitUntil(lambda: table.model().rowCount() == 3)
     user.activate()
     assert titles_loaded(table) == ['x', 'y', 'z']
+
+
+def drag(qtbot, table, user, start, end, modifier=NO_MODIFIER):
+    """Presses the left button on the start row's Title cell and moves
+    to the end row's, as a user starts a drag. QTest's mouseMove carries
+    the held button but no modifier, so a modifier's move is sent as the
+    windowing system sends it."""
+    viewport = table.viewport()
+    begin = table.visualRect(user.cell(start, 'title')).center()
+    finish = table.visualRect(user.cell(end, 'title')).center()
+    qtbot.mousePress(viewport, LEFT, modifier, begin)
+    if modifier == NO_MODIFIER:
+        qtbot.mouseMove(viewport, finish)
+    else:
+        QApplication.sendEvent(viewport, QMouseEvent(
+            QEvent.Type.MouseMove, QPointF(finish), viewport.mapToGlobal(QPointF(finish)),
+            Qt.MouseButton.NoButton, LEFT, modifier))
+    qtbot.mouseRelease(viewport, LEFT, modifier, finish)
+
+
+@pytest.fixture
+def drop_target(monkeypatch):
+    """Stands in for the program the files are dropped on. The offscreen
+    platform's drag ends at once with no target, so QDrag.exec is
+    replaced: the target gets the dragged files' paths, may move some of
+    them (as a file manager does on a move), and answers with an action.
+    Set `target.move` (the paths to move away) and `target.action`."""
+    target = SimpleNamespace(action=Qt.DropAction.IgnoreAction, dragged=[], move=[], moved_to=None)
+
+    class Drag(QDrag):
+        def exec(self, *args):
+            target.dragged.append([url.toLocalFile() for url in self.mimeData().urls()])
+            for path in target.move:
+                shutil.move(path, target.moved_to)
+            return target.action
+
+    monkeypatch.setattr(tagmodel, 'QDrag', Drag)
+    return target
+
+
+class FromTable:
+    """Mixed into Qt's drag events: the drag started in this table."""
+    table = None
+
+    def source(self):
+        return self.table
+
+
+class Enter(FromTable, QDragEnterEvent):
+    pass
+
+
+class Move(FromTable, QDragMoveEvent):
+    pass
+
+
+class Drop(FromTable, QDropEvent):
+    pass
+
+
+def trashed_anything():
+    return (TRASH / 'files').exists() and any((TRASH / 'files').iterdir())
+
+
+# No drag and drop in the docs. A drop that moves the files elsewhere takes
+# them off the list, as Remove from List does: "Removes the selected files
+# from the list without asking, and leaves them as they are on disk."
+def test_drag_carries_the_selected_files(mainwin, qtbot, user, music, drop_target):
+    table, paths = music
+    before = stamps(paths)
+    user.click_cell(user.cell(0, 'title'))
+    user.click_cell(user.cell(1, 'title'), Shift)
+    drag(qtbot, table, user, 1, 2)
+    assert drop_target.dragged == [[str(paths[0]), str(paths[1])]]
+    assert names(table) == ['01.mp3', '02.mp3', '03.mp3']
+    untouched(before)
+
+
+def test_short_move_starts_no_drag(mainwin, qtbot, user, music, drop_target):
+    # Synthetic: a move shorter than the drag distance is no drag.
+    table, paths = music
+    viewport = table.viewport()
+    start = table.visualRect(user.cell(0, 'title')).center()
+    assert QPoint(1, 0).manhattanLength() < QApplication.startDragDistance()
+    qtbot.mousePress(viewport, LEFT, NO_MODIFIER, start)
+    qtbot.mouseMove(viewport, start + QPoint(1, 0))
+    qtbot.mouseRelease(viewport, LEFT, NO_MODIFIER, start + QPoint(1, 0))
+    assert drop_target.dragged == []
+
+
+def test_refused_drop_keeps_the_files(mainwin, qtbot, user, music, drop_target, empty_trash):
+    # A drop nobody accepted moves nothing, so the files stay listed and on disk.
+    table, paths = music
+    before = stamps(paths)
+    user.click_cell(user.cell(0, 'title'))
+    user.click_cell(user.cell(1, 'title'), Shift)
+    drag(qtbot, table, user, 1, 2)
+    assert names(table) == ['01.mp3', '02.mp3', '03.mp3']
+    assert all(path.exists() for path in paths)
+    assert not trashed_anything()
+    untouched(before)
+
+
+@pytest.mark.xfail(strict=True, reason='asks to continue after trashing the files the drop left in place')
+def test_moved_files_leave_the_list(mainwin, qtbot, user, music, drop_target, dialogs, tmp_path, empty_trash):
+    table, paths = music
+    elsewhere = tmp_path / 'elsewhere'
+    elsewhere.mkdir()
+    user.click_cell(user.cell(0, 'title'))
+    user.click_cell(user.cell(1, 'title'), Shift)
+    drop_target.move = [str(paths[0]), str(paths[1])]
+    drop_target.moved_to = str(elsewhere)
+    drop_target.action = Qt.DropAction.MoveAction
+    dialogs.answer('QMessageBox.exec', QMessageBox.StandardButton.No)
+    drag(qtbot, table, user, 1, 2)
+    assert names(table) == ['03.mp3']
+    assert sorted(p.name for p in elsewhere.iterdir()) == ['01.mp3', '02.mp3']
+    assert paths[2].exists()
+    assert not trashed_anything()
+    assert dialogs.calls == []
+
+
+@pytest.mark.xfail(strict=True, reason='trashes the file the drop left in place')
+def test_files_left_in_place_stay(mainwin, qtbot, user, music, drop_target, dialogs, tmp_path, empty_trash):
+    table, paths = music
+    before = stamps(paths[1:])
+    elsewhere = tmp_path / 'elsewhere'
+    elsewhere.mkdir()
+    user.click_cell(user.cell(0, 'title'))
+    user.click_cell(user.cell(1, 'title'), Shift)
+    drop_target.move = [str(paths[0])]
+    drop_target.moved_to = str(elsewhere)
+    drop_target.action = Qt.DropAction.MoveAction
+    dialogs.answer('QMessageBox.exec', QMessageBox.StandardButton.No)
+    drag(qtbot, table, user, 1, 2)
+    assert names(table) == ['02.mp3', '03.mp3']
+    assert paths[1].exists() and paths[2].exists()
+    assert not trashed_anything()
+    assert dialogs.calls == []
+    untouched(before)
+
+
+@pytest.mark.xfail(strict=True, reason='warns that it cannot trash the moved file')
+def test_moved_files_edits_leave_undo(mainwin, qtbot, user, music, drop_target, dialogs, tmp_path, empty_trash):
+    table, paths = music
+    elsewhere = tmp_path / 'elsewhere'
+    elsewhere.mkdir()
+    edit_title(qtbot, user, table, 'Edited')
+    user.click_cell(user.cell(0, 'title'))
+    drop_target.move = [str(paths[0])]
+    drop_target.moved_to = str(elsewhere)
+    drop_target.action = Qt.DropAction.MoveAction
+    dialogs.answer('QMessageBox.warning', QMessageBox.StandardButton.Ok)
+    drag(qtbot, table, user, 0, 2)
+    assert not user.action('&Undo').isEnabled()
+    assert names(table) == ['02.mp3', '03.mp3']
+    assert dialogs.calls == []
+
+
+# Synthetic: holding Meta while dragging the selected files onto another
+# row moves them there.
+@pytest.mark.parametrize('start, end, expected', [
+    pytest.param(0, 2, ['02.mp3', '03.mp3', '01.mp3'], marks=pytest.mark.xfail(
+        strict=True, reason='a drop on the last row lists the moved file twice')),
+    (2, 0, ['03.mp3', '01.mp3', '02.mp3']),
+])
+def test_meta_drag_reorders_rows(mainwin, qtbot, user, music, monkeypatch, start, end, expected):
+    table, paths = music
+    before = stamps(paths)
+    viewport = table.viewport()
+
+    class Drag(QDrag):
+        def exec(self, *args):
+            pos = table.visualRect(user.cell(end, 'title')).center()
+            mime = self.mimeData()
+            actions = Qt.DropAction.MoveAction
+            for event in (Enter(pos, actions, mime, LEFT, Meta), Move(pos, actions, mime, LEFT, Meta),
+                          Drop(QPointF(pos), actions, mime, LEFT, Meta)):
+                event.table = table
+                QApplication.sendEvent(viewport, event)
+            return Qt.DropAction.MoveAction
+
+    monkeypatch.setattr(tagmodel, 'QDrag', Drag)
+    user.click_cell(user.cell(start, 'title'))
+    drag(qtbot, table, user, start, end, Meta)
+    assert names(table) == expected
+    assert table.model().rowCount() == 3
+    untouched(before)
