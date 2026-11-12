@@ -424,21 +424,17 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
       <translation>Adicionar faixa &amp;separador ['/']</translation>
     </message>
     <message>
-      <location filename="../mainwin/funcs.py" line="328" />
-      <location filename="../mainwin/funcs.py" line="321" />
       <location filename="../helperwin.py" line="157" />
       <location filename="../helperwin.py" line="149" />
       <source>Field empty...</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../mainwin/funcs.py" line="322" />
       <location filename="../helperwin.py" line="150" />
       <source>The field specified to use as a directory splitter was invalid. Please check your values.</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../mainwin/funcs.py" line="329" />
       <location filename="../helperwin.py" line="166" />
       <location filename="../helperwin.py" line="158" />
       <source>The output field specified was invalid. Please check your values.</source>
@@ -554,7 +550,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
       <translation>Ajustar a visibilidade das colunas.</translation>
     </message>
     <message>
-      <location filename="../tagmodel.py" line="1233" />
+      <location filename="../tagmodel.py" line="1239" />
       <source>&amp;Select Columns</source>
       <translation>&amp;Selecionar Colunas</translation>
     </message>
@@ -850,7 +846,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
       <translation>Sim</translation>
     </message>
     <message>
-      <location filename="../mainwin/funcs.py" line="172" />
+      <location filename="../mainwin/funcs.py" line="168" />
       <location filename="../constants.py" line="33" />
       <location filename="../constants.py" line="11" />
       <source>No</source>
@@ -929,8 +925,8 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
     </message>
     <message>
       <location filename="../musiclib.py" line="216" />
+      <location filename="../tagmodel.py" line="2058" />
       <location filename="../tagmodel.py" line="2052" />
-      <location filename="../tagmodel.py" line="2046" />
       <location filename="../puddletag.py" line="557" />
       <location filename="../puddletag.py" line="554" />
       <location filename="../puddletag.py" line="547" />
@@ -945,7 +941,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
       <translation>&lt;br /&gt; Você gostaria de continuar?</translation>
     </message>
     <message>
-      <location filename="../mainwin/tagpanel.py" line="430" />
+      <location filename="../mainwin/tagpanel.py" line="398" />
       <location filename="../puddleobjects.py" line="970" />
       <source>Field</source>
       <translation>Campo</translation>
@@ -969,23 +965,23 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
       <translation>Gravando</translation>
     </message>
     <message>
-      <location filename="../tagmodel.py" line="1833" />
+      <location filename="../tagmodel.py" line="1839" />
       <source>Reading Directory: {}</source>
       <translation>Lendo Diretório:{}</translation>
     </message>
     <message>
-      <location filename="../tagmodel.py" line="1835" />
+      <location filename="../tagmodel.py" line="1841" />
       <source>Reading Directory: {} + others</source>
       <translation>Lendo Diretório:{} + outros</translation>
     </message>
     <message>
-      <location filename="../tagmodel.py" line="1837" />
+      <location filename="../tagmodel.py" line="1843" />
       <source>Reading Dir</source>
       <translation>Lendo Diretório</translation>
     </message>
     <message>
-      <location filename="../tagmodel.py" line="1918" />
-      <location filename="../tagmodel.py" line="1914" />
+      <location filename="../tagmodel.py" line="1924" />
+      <location filename="../tagmodel.py" line="1920" />
       <source>Loading </source>
       <translation>Carregando</translation>
     </message>
@@ -996,24 +992,19 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
       <translation>Apli&amp;car</translation>
     </message>
     <message>
-      <location filename="../mainwin/filterwin.py" line="47" />
+      <location filename="../mainwin/filterwin.py" line="20" />
       <source>Filter: </source>
       <translation>Filtro:</translation>
     </message>
     <message>
-      <location filename="../mainwin/filterwin.py" line="48" />
+      <location filename="../mainwin/filterwin.py" line="21" />
       <source>Go</source>
       <translation>Avançar</translation>
     </message>
     <message>
-      <location filename="../mainwin/tagpanel.py" line="429" />
+      <location filename="../mainwin/tagpanel.py" line="397" />
       <source>Title</source>
       <translation>Título</translation>
-    </message>
-    <message>
-      <location filename="../mainwin/funcs.py" line="170" />
-      <source>&amp;Yes</source>
-      <translation>&amp;SIm</translation>
     </message>
     <message>
       <location filename="../mainwin/tagsources.py" line="361" />
@@ -1024,6 +1015,11 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
       <location filename="../mainwin/tagtools.py" line="73" />
       <source>An error occured while writing to &lt;b&gt;{}&lt;/b&gt;. ({})</source>
       <translation>Um erro ocorreu enquando gravava para &lt;b&gt;{}&lt;/b&gt;,({})</translation>
+    </message>
+    <message>
+      <location filename="../mainwin/funcs.py" line="166" />
+      <source>&amp;Yes</source>
+      <translation>&amp;SIm</translation>
     </message>
     <message>
       <location filename="../masstag/dialogs.py" line="391" />
@@ -1123,7 +1119,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
   <context>
     <name>Dir Renaming</name>
     <message>
-      <location filename="../mainwin/funcs.py" line="606" />
+      <location filename="../mainwin/funcs.py" line="596" />
       <source>Rename: &lt;b&gt;{}&lt;/b&gt; to: &lt;i&gt;{}&lt;/i&gt;</source>
       <translation>Renomear: &lt;b&gt;{}&lt;/b&gt; para:&lt;i&gt;{}&lt;/i&gt;</translation>
     </message>
@@ -1131,27 +1127,27 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
   <context>
     <name>Dirview</name>
     <message>
-      <location filename="../mainwin/dirview.py" line="183" />
+      <location filename="../mainwin/dirview.py" line="178" />
       <source>Refresh Directory</source>
       <translation>Atualizar Diretório</translation>
     </message>
     <message>
-      <location filename="../mainwin/dirview.py" line="191" />
+      <location filename="../mainwin/dirview.py" line="186" />
       <source>Show Header</source>
       <translation>Mostrar Cabeçalho</translation>
     </message>
     <message>
-      <location filename="../mainwin/dirview.py" line="195" />
+      <location filename="../mainwin/dirview.py" line="190" />
       <source>Hide Header</source>
       <translation>Esconder Cabeçalho</translation>
     </message>
     <message>
-      <location filename="../mainwin/dirview.py" line="199" />
+      <location filename="../mainwin/dirview.py" line="194" />
       <source>Open in File Manager</source>
       <translation>Abrir no Gerenciador de Arquivos</translation>
     </message>
     <message>
-      <location filename="../mainwin/dirview.py" line="423" />
+      <location filename="../mainwin/dirview.py" line="476" />
       <source>Subfolders</source>
       <translation>Subpastas</translation>
     </message>
@@ -2841,7 +2837,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
   <context>
     <name>Messages</name>
     <message>
-      <location filename="../mainwin/funcs.py" line="164" />
+      <location filename="../mainwin/funcs.py" line="160" />
       <source>That's a large amount of data to copy.
 It may cause your system to lock up.
 
@@ -2852,7 +2848,7 @@ Isto pode causar o travamento de seu sistema.
 Você quer continuar?</translation>
     </message>
     <message>
-      <location filename="../mainwin/funcs.py" line="176" />
+      <location filename="../mainwin/funcs.py" line="172" />
       <source>Copy without images.</source>
       <translation>Copiar sem imagens.</translation>
     </message>
@@ -3123,18 +3119,18 @@ Você quer continuar?</translation>
       <translation>Artistas da Biblioteca</translation>
     </message>
     <message>
-      <location filename="../mainwin/funcs.py" line="293" />
-      <location filename="../mainwin/funcs.py" line="267" />
+      <location filename="../mainwin/funcs.py" line="290" />
+      <location filename="../mainwin/funcs.py" line="264" />
       <source>No libraries found</source>
       <translation>Nenhuma biblioteca encontrada</translation>
     </message>
     <message>
-      <location filename="../mainwin/funcs.py" line="268" />
+      <location filename="../mainwin/funcs.py" line="265" />
       <source>Load a lib first.</source>
       <translation>Carregue uma biblioteca primeiro.</translation>
     </message>
     <message>
-      <location filename="../mainwin/funcs.py" line="294" />
+      <location filename="../mainwin/funcs.py" line="291" />
       <source>No supported music libraries were found. Most likely the required dependencies aren't installed. Visit the puddletag website, &lt;a href='http://puddletag.sourceforge.net'&gt;puddletag.sourceforge.net&lt;/a&gt; for more details.</source>
       <translation>Nenhuma biblioteca de músicas suportada foi encontrada. É possivel que as dependências necessarias não estejam instaladas. Visite o site do puddletag, &lt;a href='http://puddletag.sourceforge.net'&gt;puddletag.sourceforge.net&lt;/a&gt; para mais detalhes.</translation>
     </message>
@@ -3142,13 +3138,13 @@ Você quer continuar?</translation>
   <context>
     <name>Pattern Settings</name>
     <message>
-      <location filename="../mainwin/patterncombo.py" line="96" />
+      <location filename="../mainwin/patterncombo.py" line="94" />
       <source>&amp;Sort</source>
       <translation>&amp;Ordenar</translation>
     </message>
     <message>
-      <location filename="../mainwin/patterncombo.py" line="147" />
-      <location filename="../mainwin/patterncombo.py" line="132" />
+      <location filename="../mainwin/patterncombo.py" line="140" />
+      <location filename="../mainwin/patterncombo.py" line="125" />
       <source>Enter a pattern</source>
       <translation>Digite um padrão</translation>
     </message>
@@ -3247,7 +3243,7 @@ Você quer continuar?</translation>
       <translation>&lt;b&gt;Modo de Visualização: Ligado&lt;/b&gt;</translation>
     </message>
     <message>
-      <location filename="../mainwin/dirview.py" line="156" />
+      <location filename="../mainwin/dirview.py" line="157" />
       <location filename="../puddletag.py" line="586" />
       <source>Some files have uncommited previews. Changes will be lost once you load a directory. &lt;br /&gt;Do you still want to load a new directory?&lt;br /&gt;</source>
       <translation>Alguns arquivos possuem visualizaçoes não submetidas. Mudanças serão perdidas assim que voce carregar um diretorio. &lt;br /&gt;Você ainda deseja carregar um novo diretório?&lt;br /&gt;</translation>
@@ -3258,13 +3254,13 @@ Você quer continuar?</translation>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../tagmodel.py" line="1458" />
+      <location filename="../tagmodel.py" line="1464" />
       <source>Some files have uncommited previews. Changes will be lost once you unload them. &lt;br /&gt;Do you still want to unload everything?&lt;br /&gt;</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../tagmodel.py" line="2110" />
-      <location filename="../tagmodel.py" line="2082" />
+      <location filename="../tagmodel.py" line="2116" />
+      <location filename="../tagmodel.py" line="2088" />
       <source>There are unsaved changes pending. Do you want to discard and reload?</source>
       <translation type="unfinished" />
     </message>
@@ -3551,12 +3547,12 @@ Você quer continuar?</translation>
       <translation>&amp;Janelas</translation>
     </message>
     <message>
-      <location filename="../mainwin/tagpanel.py" line="438" />
+      <location filename="../mainwin/tagpanel.py" line="406" />
       <source>Tag Panel</source>
       <translation>Painel de Tags</translation>
     </message>
     <message>
-      <location filename="../mainwin/patterncombo.py" line="83" />
+      <location filename="../mainwin/patterncombo.py" line="81" />
       <source>Patterns</source>
       <translation>Padrões</translation>
     </message>
@@ -3673,67 +3669,75 @@ Você quer continuar?</translation>
   <context>
     <name>Status Bar</name>
     <message>
-      <location filename="../mainwin/funcs.py" line="588" />
+      <location filename="../mainwin/funcs.py" line="578" />
       <source>&lt;b&gt;{}&lt;/b&gt;</source>
       <translation>&lt;b&gt;{}&lt;/b&gt;</translation>
     </message>
     <message>
-      <location filename="../mainwin/funcs.py" line="594" />
+      <location filename="../mainwin/funcs.py" line="584" />
       <source>New Filename: &lt;b&gt;{}&lt;/b&gt;</source>
       <translation>Novo nome do arquivo: &lt;b&gt;{}&lt;/b&gt;</translation>
     </message>
   </context>
   <context>
+    <name>Stored Tags</name>
+    <message>
+      <location filename="../mainwin/storedtags.py" line="75" />
+      <source>Error</source>
+      <translation type="unfinished">Erro</translation>
+    </message>
+  </context>
+  <context>
     <name>Table</name>
     <message>
-      <location filename="../tagmodel.py" line="674" />
+      <location filename="../tagmodel.py" line="680" />
       <source>Preview: {}
 Real: {}</source>
       <translation>Pré-visualização: {}
 Real: {}</translation>
     </message>
     <message>
-      <location filename="../tagmodel.py" line="1508" />
+      <location filename="../tagmodel.py" line="1514" />
       <source>Disable Preview Mode first to enable tag deletion.</source>
       <translation>Desativar Modo de Pré-Visualização primeiro para habilitar a remoção de tags.</translation>
     </message>
     <message>
-      <location filename="../tagmodel.py" line="1526" />
+      <location filename="../tagmodel.py" line="1532" />
       <source>An error occurred while deleting the tag of {}: &lt;b&gt;{}&lt;/b&gt;</source>
       <translation>Um erro ocorreu na hora de remover a tag de {}: &lt;b&gt;{}&lt;/b&gt;</translation>
     </message>
     <message>
-      <location filename="../tagmodel.py" line="1535" />
+      <location filename="../tagmodel.py" line="1541" />
       <source>There was an error deleting the tag of {}: &lt;b&gt;Tag deletion isn't supported for {} files.&lt;/b&gt;</source>
       <translation>Houve um erro ao remover a tag de {}: &lt;b&gt;Remoção de tags não é suportada para arquivos {}.&lt;/b&gt;</translation>
     </message>
     <message>
-      <location filename="../tagmodel.py" line="1544" />
+      <location filename="../tagmodel.py" line="1550" />
       <source>Deleting tag... </source>
       <translation>Removendo tag... </translation>
     </message>
     <message>
-      <location filename="../tagmodel.py" line="1578" />
+      <location filename="../tagmodel.py" line="1584" />
       <source>Are you sure you want to move the selected files to the trash?</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../tagmodel.py" line="1607" />
+      <location filename="../tagmodel.py" line="1613" />
       <source>I couldn't move &lt;b&gt;{}&lt;/b&gt; to the trash ({})</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../tagmodel.py" line="1626" />
+      <location filename="../tagmodel.py" line="1632" />
       <source>Moving to the trash </source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../tagmodel.py" line="2047" />
+      <location filename="../tagmodel.py" line="2053" />
       <source>An error occurred while trying to play the selected files: &lt;b&gt;{}&lt;/b&gt;&lt;br /&gt;Does the music player you defined (&lt;b&gt;{}&lt;/b&gt;) exist?</source>
       <translation>Houve um erro ao tentar executar os arquivos selecionados: &lt;b&gt;{}&lt;/b&gt; &lt;br /&gt;O tocador de músicas que você definiu (&lt;b&gt;{}&lt;/b&gt;) existe?</translation>
     </message>
     <message>
-      <location filename="../tagmodel.py" line="2053" />
+      <location filename="../tagmodel.py" line="2059" />
       <source>It wasn't possible to play the selected files, because the music player you defined (&lt;b&gt;{}&lt;/b&gt;) does not exist.</source>
       <translation>Não foi possivel executar os arquivos selecionados, pois o tocador de músicas que voce definiu (&lt;b&gt;{}&lt;/b&gt;) não existe.</translation>
     </message>
@@ -3741,12 +3745,12 @@ Real: {}</translation>
   <context>
     <name>Tag Panel Settings</name>
     <message>
-      <location filename="../mainwin/tagpanel.py" line="431" />
+      <location filename="../mainwin/tagpanel.py" line="399" />
       <source>Row</source>
       <translation>Linha</translation>
     </message>
     <message>
-      <location filename="../mainwin/tagpanel.py" line="485" />
+      <location filename="../mainwin/tagpanel.py" line="453" />
       <source>All row numbers must be integers.</source>
       <translation>Todos os numeros de linha devem ser inteiros.</translation>
     </message>
@@ -3934,16 +3938,16 @@ Real: {}</translation>
       <translation type="unfinished">&lt;b&gt;Selecione alguns arquivos ou insira parametros de busca.&lt;/b&gt;</translation>
     </message>
     <message>
-      <location filename="../mainwin/releasewidget.py" line="466" />
-      <location filename="../mainwin/releasewidget.py" line="369" />
+      <location filename="../mainwin/releasewidget.py" line="475" />
+      <location filename="../mainwin/releasewidget.py" line="370" />
       <location filename="../mainwin/tagsources.py" line="921" />
       <location filename="../mainwin/tagsources.py" line="896" />
       <source>An error occurred: {}</source>
       <translation type="unfinished">Um erro ocorreu: {}</translation>
     </message>
     <message>
-      <location filename="../mainwin/releasewidget.py" line="471" />
-      <location filename="../mainwin/releasewidget.py" line="374" />
+      <location filename="../mainwin/releasewidget.py" line="480" />
+      <location filename="../mainwin/releasewidget.py" line="375" />
       <location filename="../mainwin/tagsources.py" line="925" />
       <location filename="../mainwin/tagsources.py" line="900" />
       <source>An unhandled error occurred: {}</source>
@@ -3970,23 +3974,23 @@ Real: {}</translation>
       <translation type="unfinished">&lt;b&gt;Erro no padrão&lt;/b&gt;</translation>
     </message>
     <message>
-      <location filename="../mainwin/releasewidget.py" line="259" />
+      <location filename="../mainwin/releasewidget.py" line="260" />
       <source>Retrieved Albums</source>
       <translation type="unfinished">Álbuns Obtidos</translation>
     </message>
     <message>
-      <location filename="../mainwin/releasewidget.py" line="379" />
+      <location filename="../mainwin/releasewidget.py" line="380" />
       <source>Retrieving album tracks...</source>
       <translation type="unfinished">Obtendo faixas do álbum...</translation>
     </message>
     <message>
-      <location filename="../mainwin/releasewidget.py" line="482" />
-      <location filename="../mainwin/releasewidget.py" line="387" />
+      <location filename="../mainwin/releasewidget.py" line="491" />
+      <location filename="../mainwin/releasewidget.py" line="388" />
       <source>Retrieval complete.</source>
       <translation type="unfinished">Obtençao completa.</translation>
     </message>
     <message>
-      <location filename="../mainwin/releasewidget.py" line="488" />
+      <location filename="../mainwin/releasewidget.py" line="497" />
       <source>Retrieving tracks...</source>
       <translation type="unfinished">Obtendo faixas...</translation>
     </message>
@@ -4067,17 +4071,17 @@ Real: {}</translation>
       <translation type="unfinished">Opçoes de obtenção automatica</translation>
     </message>
     <message>
-      <location filename="../mainwin/releasewidget.py" line="721" />
+      <location filename="../mainwin/releasewidget.py" line="730" />
       <source>No matching albums were found.</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../mainwin/releasewidget.py" line="724" />
+      <location filename="../mainwin/releasewidget.py" line="733" />
       <source>More than one album matches. None will be retrieved.</source>
       <translation type="unfinished">Mais de um álbum correspondente. Nenhum sera obtido.</translation>
     </message>
     <message>
-      <location filename="../mainwin/releasewidget.py" line="727" />
+      <location filename="../mainwin/releasewidget.py" line="736" />
       <source>Retrieving album.</source>
       <translation type="unfinished">Obtendo album.</translation>
     </message>
