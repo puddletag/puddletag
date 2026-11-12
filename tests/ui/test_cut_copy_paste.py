@@ -4,10 +4,12 @@ in the files and in the table. Synthetic files.
 """
 import base64
 import json
+import pickle
+from pathlib import Path
 
 import pytest
-from PyQt6.QtCore import Qt
-from PyQt6.QtWidgets import QApplication
+from PyQt6.QtCore import QMimeData, Qt, QTimer
+from PyQt6.QtWidgets import QApplication, QMessageBox
 
 from puddlestuff import audioinfo
 
@@ -18,6 +20,16 @@ Ctrl = Qt.KeyboardModifier.ControlModifier
 Shift = Qt.KeyboardModifier.ShiftModifier
 
 JPEG = b'\xff\xd8' + b'\0' * 64 + b'\xff\xd9'
+
+# Read before the dialog guard replaces it, so the 5 MiB question can run
+# for real.
+REAL_EXEC = QMessageBox.exec
+
+# Synthetic: a JPEG's start and end around 4 MiB of zeros; its base64 alone
+# is over 5 MiB.
+BIG_JPEG = b'\xff\xd8' + b'\0' * (4 * 1024 * 1024) + b'\xff\xd9'
+LARGE = ("That's a large amount of data to copy.\nIt may cause your system to lock up.\n\n"
+         "Do you want to go ahead?")
 
 
 @pytest.fixture(autouse=True)
@@ -239,3 +251,143 @@ def test_copy_all_fields_as_text(user, loaded, qtbot):
     assert copied['artist'] == ['Artist 1']
     assert copied['genre'] == ['Genre 1']
     assert [base64.b64decode(image['data']) for image in copied['__image']] == [JPEG]
+
+
+OLD_TAGS_TYPE = 'application/x.puddletag.tags'
+TAGS_TYPE = 'application/x.puddletag.tags'
+
+
+def with_big_cover(user, qtbot, table, path):
+    tag = audioinfo.Tag(str(path))
+    tag.update({'__image': [{'data': BIG_JPEG, 'mime': 'image/jpeg'}]})
+    tag.save()
+    user.press(Key.Key_F5)  # Refresh, to read the cover
+    qtbot.waitUntil(lambda: bool(table.model().taginfo[0].images))
+    user.activate()  # the loading window took the activation
+
+
+def answer_large_copy(monkeypatch, qtbot, button):
+    """Runs the 5 MiB question for real and, from inside its event loop,
+    clicks the button with this text, or presses Esc for 'Esc'. Returns
+    the list the question's text is put in."""
+    monkeypatch.setattr(QMessageBox, 'exec', lambda self: REAL_EXEC(self))
+    shown = []
+
+    def pick(tries=200):
+        box = QApplication.activeModalWidget()
+        if not isinstance(box, QMessageBox):
+            if tries:
+                QTimer.singleShot(10, lambda: pick(tries - 1))
+            return
+        shown.append(box.text())
+        if button == 'Esc':
+            qtbot.keyClick(box, Key.Key_Escape)
+        else:
+            [found] = [b for b in box.buttons() if b.text() == button]
+            qtbot.mouseClick(found, Qt.MouseButton.LeftButton)
+
+    QTimer.singleShot(0, pick)
+    return shown
+
+
+@pytest.mark.parametrize('clipboard', [
+    pytest.param('empty', marks=pytest.mark.xfail(strict=True, reason="Paste raises with an empty clipboard")),
+    'text from another program'])
+def test_paste_with_nothing_copied_writes_nothing(user, loaded, qtbot, dialogs, clipboard):
+    # "Pastes the copied/cut fields onto the selected files": with nothing
+    # copied by puddletag there is nothing to paste.
+    table, paths = loaded
+    if clipboard != 'empty':
+        QApplication.clipboard().setText('Synthetic text')
+    user.click_cell(user.cell(3, 'title'))
+    for paste in (by_key(Key.Key_V), by_key(Key.Key_Insert, Shift), by_menu('Paste &Onto Selection')):
+        paste(user, None)
+        qtbot.wait(200)
+    assert in_file(paths[3], 'artist', 'title', 'album') == [['Artist 4'], ['Title 4'], ['Album 4']]
+    assert dialogs.calls == []
+    assert not user.action('&Undo').isEnabled()
+
+
+@pytest.mark.parametrize('button', ['&Yes', 'No', 'Copy without images.', 'Esc'])
+def test_copy_all_fields_over_5_mib(user, loaded, qtbot, monkeypatch, button):
+    # "Copies the complete tag of the selected files": over 5 MiB of data
+    # puddletag asks first (synthetic cover); Yes copies everything, No
+    # nothing, and "Copy without images." the fields only.
+    table, paths = loaded
+    with_big_cover(user, qtbot, table, paths[0])
+    user.click_cell(user.cell(0, 'title'))
+    shown = answer_large_copy(monkeypatch, qtbot, button)
+    user.press(Key.Key_C, Ctrl | Shift)
+    qtbot.waitUntil(lambda: bool(shown))
+    assert shown == [LARGE]
+    user.activate()  # the question took the activation
+    clipboard = QApplication.clipboard()
+    if button in ('No', 'Esc'):
+        assert clipboard.text() == ''
+        # An empty clipboard has no mime data at all.
+        assert clipboard.mimeData() is None or not clipboard.mimeData().hasFormat(TAGS_TYPE)
+        return
+    [copied] = json.loads(clipboard.text())
+    assert copied['artist'] == ['Artist 1']
+    if button == '&Yes':
+        assert [base64.b64decode(image['data']) for image in copied['__image']] == [BIG_JPEG]
+    else:
+        assert '__image' not in copied
+    user.click_cell(user.cell(2, 'title'))
+    user.press(Key.Key_V, Ctrl)
+    qtbot.waitUntil(lambda: in_file(paths[2], 'artist') == [['Artist 1']], timeout=10000)
+    covers = [image['data'] for image in audioinfo.Tag(str(paths[2])).images]
+    assert covers == ([BIG_JPEG] if button == '&Yes' else [])
+
+
+@pytest.mark.xfail(strict=True, reason="Copy All Fields copies everything when the large-copy "
+                                       "question ends without a button")
+def test_copy_all_fields_over_5_mib_with_no_button_clicked(user, loaded, qtbot, dialogs):
+    # Synthetic: the dialog guard's stand-in for the question returns
+    # without a click. The same as No: nothing is copied.
+    table, paths = loaded
+    with_big_cover(user, qtbot, table, paths[0])
+    user.click_cell(user.cell(0, 'title'))
+    dialogs.answer('QMessageBox.exec', None)
+    user.press(Key.Key_C, Ctrl | Shift)
+    assert QApplication.clipboard().text() == ''
+
+
+@pytest.mark.xfail(strict=True, reason="Paste unpickles the clipboard")
+def test_paste_runs_no_code_from_the_clipboard(user, loaded, qtbot, tmp_path):
+    # Synthetic payload. Data on the clipboard is read, not run: any
+    # program can put data under puddletag's type.
+    table, paths = loaded
+    marker = tmp_path / 'ran'
+
+    class Payload:
+        def __reduce__(self):
+            return (Path.touch, (marker,))
+
+    mime = QMimeData()
+    for name in (OLD_TAGS_TYPE, TAGS_TYPE):
+        mime.setData(name, pickle.dumps([Payload()]))
+    QApplication.clipboard().setMimeData(mime)
+    user.click_cell(user.cell(3, 'title'))
+    user.press(Key.Key_V, Ctrl)
+    qtbot.wait(200)
+    assert not marker.exists()
+    assert in_file(paths[3], 'artist', 'title') == [['Artist 4'], ['Title 4']]
+
+
+def test_paste_between_two_puddletags(user, loaded, qtbot):
+    # "Pastes the copied/cut fields onto the selected files": what another
+    # puddletag put on the clipboard is whatever formats it set, so they are
+    # carried over as they are.
+    table, paths = loaded
+    select(user, (0, 'artist'), (0, 'title'))
+    user.press(Key.Key_C, Ctrl)
+    mime = QApplication.clipboard().mimeData()
+    other = QMimeData()
+    for name in mime.formats():
+        other.setData(name, mime.data(name))
+    QApplication.clipboard().clear()
+    QApplication.clipboard().setMimeData(other)
+    select(user, (3, 'artist'), (3, 'title'))
+    user.press(Key.Key_V, Ctrl)
+    written(user, qtbot, lambda: in_file(paths[3], 'artist', 'title') == [['Artist 1'], ['Title 1']])
