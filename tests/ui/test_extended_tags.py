@@ -968,8 +968,6 @@ def test_delete_removes_the_field_when_a_cover_is_shown(load, user, qtbot):
     assert stored(path) == [FRONT]
 
 
-@pytest.mark.xfail(strict=True, reason="Preferences shows the added colour green and the edited one "
-                   "yellow, the reverse of the colours the window paints on a fresh profile")
 def test_window_colours_match_preferences(mainwin, user):
     # preferences.txt: "Defines the background colours to used in various
     # puddletag dialogs." The Extended Tags window paints added rows yellow,

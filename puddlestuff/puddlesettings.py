@@ -514,8 +514,8 @@ class ColorEdit(QWidget):
         cparser = PuddleConfig()
         get_color = lambda key, default: QColor.fromRgb(
             *cparser.get('extendedtags', key, default, True))
-        add = get_color('add', [0, 255, 0])
-        edit = get_color('edit', [255, 255, 0])
+        add = get_color('add', [255, 255, 0])
+        edit = get_color('edit', [0, 255, 0])
         remove = get_color('remove', [255, 0, 0])
 
         get_color = lambda key, default: QColor.fromRgb(
