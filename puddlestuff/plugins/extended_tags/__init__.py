@@ -6,7 +6,7 @@ from ...constants import (LEFTDOCK, SELECTIONCHANGED,
                           KEEP)
 from ...helperwin import (BOLD, UNCHANGED, EditField,
                           ExTags)
-from ...puddletag import add_shortcuts
+from ... import puddletag
 from ...puddleobjects import (settaglist)
 
 
@@ -14,8 +14,6 @@ class ExTagsPlugin(ExTags):
     onetomany = pyqtSignal(dict, name='onetomany')
 
     def __init__(self, parent=None, row=None, files=None, status=False):
-        super(ExTags, self).__init__(parent)
-
         self._status = status
 
         def set_pmode(v): self.previewMode = v
@@ -47,7 +45,7 @@ class ExTagsPlugin(ExTags):
             k.setSeparator(True)
             return k
 
-        add_shortcuts('&Plugins', [sep(), action, sep()])
+        puddletag.add_shortcuts('&Plugins', [sep(), action, sep()])
 
     def addTag(self):
         win = EditField(parent=self, taglist=self.get_fieldlist)
