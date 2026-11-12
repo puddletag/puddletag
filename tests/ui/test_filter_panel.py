@@ -379,7 +379,6 @@ def test_loaded_files_are_filtered(mainwin, loaded, make_audio, tmp_path, qtbot,
     assert filter_box(mainwin).lineEdit().text() == 'Maffin'
 
 
-@pytest.mark.xfail(strict=True, reason='Write Previews writes only the files the Filter shows')
 def test_write_previews_writes_hidden_files(mainwin, loaded, qtbot, user):
     # menus.txt: "If preview mode has been enabled and some changes were
     # made, they'll get written to the files, and Preview Mode is disabled."
@@ -528,7 +527,6 @@ def test_write_previews_with_hidden_files_undone_at_once(mainwin, loaded, qtbot,
 
 
 @pytest.mark.skipif(os.geteuid() == 0, reason='root can write a read-only file')
-@pytest.mark.xfail(strict=True, reason='a hidden file is not written, so nothing fails and its preview is dropped')
 def test_write_previews_keeps_a_hidden_preview_it_cannot_write(mainwin, loaded, dialogs, qtbot, user):
     # menus.txt: "If preview mode has been enabled and some changes were
     # made, they'll get written to the files, and Preview Mode is disabled."

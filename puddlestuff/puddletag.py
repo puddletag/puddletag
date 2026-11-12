@@ -747,12 +747,17 @@ class MainWin(QMainWindow):
     def updateTotalStats(self, *args):
         self._totalstats.setText(self._updateStatus(status['alltags']))
 
-    def _write(self, tagiter, rows=None, previews=None):
+    def _write(self, tagiter, rows=None, previews=None, audios=None):
+        """audios are the files to write, parallel to rows (a row is None for
+        a file the Filter hides); they default to the rows' files. previews
+        are keyed by position in rows."""
         self.__updateDirs = False
         if not rows:
             rows = status['selectedrows']
         model = self._table.model()
         setRowData = model.setRowData
+        if audios is None:
+            audios = [model.taginfo[row] for row in rows]
 
         def fin():
             model.undolevel += 1
@@ -762,8 +767,8 @@ class MainWin(QMainWindow):
 
         lib_updates = []
 
-        failed_rows = [rows[0]]  # First element=last row used.
-        # Rest, rows that failed to write.
+        failed_rows = [0]  # First element=last position used.
+        # Rest, positions that failed to write.
 
         parse_errors = []
 
@@ -775,7 +780,8 @@ class MainWin(QMainWindow):
                 parse_errors.append(e)
 
         if model.previewMode:
-            previewed = [setRowData(row, f, undo=True) for row, f in zip(rows, parsed())]
+            previewed = [setRowData(row, f, undo=True, audio=audio)
+                         for row, audio, f in zip(rows, audios, parsed())]
             if parse_errors:
                 errormsg(self, parse_errors[0].message, 1)
             if previewed:
@@ -783,26 +789,26 @@ class MainWin(QMainWindow):
             return
 
         def func():
-            for row, f in zip(rows, parsed()):
-                failed_rows[0] = row
+            for position, (row, audio, f) in enumerate(zip(rows, audios, parsed())):
+                failed_rows[0] = position
                 try:
-                    update = setRowData(row, f, undo=True)
+                    update = setRowData(row, f, undo=True, audio=audio)
                     if update:
                         lib_updates.append(update)
                     yield None
                 except PermissionError as e:
-                    failed_rows.append(row)
-                    filename = model.taginfo[row][PATH]
+                    failed_rows.append(position)
+                    filename = audio[PATH]
                     m = rename_error_msg(e, filename)
-                    if row == rows[-1]:
+                    if position == len(rows) - 1:
                         yield m, 1
                     else:
                         yield m, len(rows)
                 except EnvironmentError as e:
-                    failed_rows.append(row)
-                    filename = model.taginfo[row][PATH]
+                    failed_rows.append(position)
+                    filename = audio[PATH]
                     m = rename_error_msg(e, filename)
-                    if row == rows[-1]:
+                    if position == len(rows) - 1:
                         yield m, 1
                     else:
                         yield m, len(rows)
@@ -814,22 +820,22 @@ class MainWin(QMainWindow):
             self.updateDirs([])
             if previews and failed_rows[1:]:
                 model.previewMode = True
-                last_row = failed_rows[0]
-                [failed_rows.append(r) for r in previews if r > last_row]
-                taginfo = model.taginfo
-                for row in failed_rows[1:]:
-                    if row not in previews:
+                last_position = failed_rows[0]
+                [failed_rows.append(p) for p in previews if p > last_position]
+                for position in failed_rows[1:]:
+                    if position not in previews:
                         continue
-                    taginfo[row].preview = previews[row]
-                last_row = failed_rows[0]
+                    audios[position].preview = previews[position]
 
-                model.updateTable(failed_rows)
+                shown_rows = [rows[p] for p in failed_rows if rows[p] is not None]
+                if shown_rows:
+                    model.updateTable(shown_rows)
             return fin()
 
         return func, finished, rows
 
-    def writeTags(self, tagiter, rows=None, previews=None):
-        ret = self._write(tagiter, rows, previews)
+    def writeTags(self, tagiter, rows=None, previews=None, audios=None):
+        ret = self._write(tagiter, rows, previews, audios)
         if ret is None:
             return
 
@@ -899,21 +905,23 @@ class MainWin(QMainWindow):
             model.dataChanged.emit(start, end)
 
     def _writePreview(self):
-        taginfo = self._table.model().taginfo
+        model = self._table.model()
         previews = {}
+        # The files the Filter hides have no row.
+        files = list(enumerate(model.taginfo)) + [(None, audio) for audio in model._filtered]
 
-        def get(audio, row):
+        def get(row, audio):
             preview = audio.preview
             audio.preview = {}
-            previews[row] = preview
-            return row, preview
+            previews[len(previews)] = preview
+            return row, audio, preview
 
-        data = [get(audio, row) for row, audio in
-                enumerate(taginfo) if audio.preview]
+        data = [get(row, audio) for row, audio in files if audio.preview]
         if not data:
             return
-        self._table.model().previewMode = False
-        self.writeTags((z[1] for z in data), [z[0] for z in data], previews)
+        model.previewMode = False
+        self.writeTags((z[2] for z in data), [z[0] for z in data], previews,
+                       [z[1] for z in data])
 
     def _renameSelected(self, filenames):
         rows = status['selectedrows']
