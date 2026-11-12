@@ -1570,11 +1570,13 @@ class TagTable(QTableView):
             self.contextMenu.exec(event.globalPos())
 
     def unloadSelected(self):
-        selected = self.selectedTags
-        selectedRows = self.selectedRows
+        self._unload(self.selectedRows)
+
+    def _unload(self, rows):
+        selected = [self.model().taginfo[row] for row in rows]
         curindex = self.currentIndex()
-        last = max(selectedRows) - len(selectedRows) + 1, curindex.column()
-        for row in sorted(selectedRows, reverse=True):
+        last = max(rows) - len(rows) + 1, curindex.column()
+        for row in sorted(rows, reverse=True):
             self.model().removeRows(row)
         self.model().removeFromUndo(selected)
         index = self.model().index(*last)
@@ -1720,13 +1722,18 @@ class TagTable(QTableView):
         else:
             mimeData.draggedRows = None
 
+        rows = self.selectedRows[::]
+        files = self.selectedTags
+
         drag = QDrag(self)
         drag.setMimeData(mimeData)
         drag.setHotSpot(event.pos() - self.rect().topLeft())
         dropaction = drag.exec()
         if dropaction == Qt.DropAction.MoveAction:
-            if not os.path.exists(filenames[0]):
-                self.trashSelected(False, False, False)
+            gone = [row for row, audio in zip(rows, files)
+                    if not os.path.exists(audio.filepath)]
+            if gone:
+                self._unload(gone)
 
     def mousePressEvent(self, event):
         if event.buttons() == Qt.MouseButton.LeftButton:

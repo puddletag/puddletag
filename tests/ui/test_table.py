@@ -981,7 +981,6 @@ def test_refused_drop_keeps_the_files(mainwin, qtbot, user, music, drop_target, 
     untouched(before)
 
 
-@pytest.mark.xfail(strict=True, reason='asks to continue after trashing the files the drop left in place')
 def test_moved_files_leave_the_list(mainwin, qtbot, user, music, drop_target, dialogs, tmp_path, empty_trash):
     table, paths = music
     elsewhere = tmp_path / 'elsewhere'
@@ -991,7 +990,6 @@ def test_moved_files_leave_the_list(mainwin, qtbot, user, music, drop_target, di
     drop_target.move = [str(paths[0]), str(paths[1])]
     drop_target.moved_to = str(elsewhere)
     drop_target.action = Qt.DropAction.MoveAction
-    dialogs.answer('QMessageBox.exec', QMessageBox.StandardButton.No)
     drag(qtbot, table, user, 1, 2)
     assert names(table) == ['03.mp3']
     assert sorted(p.name for p in elsewhere.iterdir()) == ['01.mp3', '02.mp3']
@@ -1000,7 +998,6 @@ def test_moved_files_leave_the_list(mainwin, qtbot, user, music, drop_target, di
     assert dialogs.calls == []
 
 
-@pytest.mark.xfail(strict=True, reason='trashes the file the drop left in place')
 def test_files_left_in_place_stay(mainwin, qtbot, user, music, drop_target, dialogs, tmp_path, empty_trash):
     table, paths = music
     before = stamps(paths[1:])
@@ -1011,7 +1008,6 @@ def test_files_left_in_place_stay(mainwin, qtbot, user, music, drop_target, dial
     drop_target.move = [str(paths[0])]
     drop_target.moved_to = str(elsewhere)
     drop_target.action = Qt.DropAction.MoveAction
-    dialogs.answer('QMessageBox.exec', QMessageBox.StandardButton.No)
     drag(qtbot, table, user, 1, 2)
     assert names(table) == ['02.mp3', '03.mp3']
     assert paths[1].exists() and paths[2].exists()
@@ -1020,7 +1016,6 @@ def test_files_left_in_place_stay(mainwin, qtbot, user, music, drop_target, dial
     untouched(before)
 
 
-@pytest.mark.xfail(strict=True, reason='warns that it cannot trash the moved file')
 def test_moved_files_edits_leave_undo(mainwin, qtbot, user, music, drop_target, dialogs, tmp_path, empty_trash):
     table, paths = music
     elsewhere = tmp_path / 'elsewhere'
@@ -1030,7 +1025,6 @@ def test_moved_files_edits_leave_undo(mainwin, qtbot, user, music, drop_target, 
     drop_target.move = [str(paths[0])]
     drop_target.moved_to = str(elsewhere)
     drop_target.action = Qt.DropAction.MoveAction
-    dialogs.answer('QMessageBox.warning', QMessageBox.StandardButton.Ok)
     drag(qtbot, table, user, 0, 2)
     assert not user.action('&Undo').isEnabled()
     assert names(table) == ['02.mp3', '03.mp3']
