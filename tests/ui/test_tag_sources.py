@@ -2090,3 +2090,165 @@ def test_click_on_the_album_keeps_the_exact_matches(mainwin, make_audio, tmp_pat
     qtbot.wait(200)
 
     assert previews(mainwin) == expected
+
+
+def arrow_pos(tree, index):
+    """The album's expand arrow: the branch area left of its row."""
+    rect = tree.visualRect(index)
+    return QPoint(rect.left() - tree.indentation() // 2, rect.center().y())
+
+
+def expand_with_the_arrow(user, window, album):
+    tree = window.listbox
+    user.click(tree.viewport(), arrow_pos(tree, album_index(window, album)))
+
+
+def track_rows(window, album):
+    model = window.listbox.model()
+    index = album_index(window, album)
+    return [model.index(row, 0, index).data() for row in range(model.rowCount(index))]
+
+
+def expand_with_the_right_key(user, window, album):
+    window.listbox.setCurrentIndex(album_index(window, album))
+    user.activate(window)
+    window.listbox.setFocus()
+    user.press(Key.Key_Right)
+
+
+@pytest.mark.parametrize('expand', [expand_with_the_arrow, expand_with_the_right_key], ids=['arrow', 'Right key'])
+def test_expand_arrow_lists_the_albums_tracks(expand, mainwin, make_audio, tmp_path, qtbot, user):
+    # tagsources.txt: "Lists the retrieved albums. Click on an album to
+    # retrieve metadata." The docs say nothing of the expand arrow; opening
+    # it lists the album's tracks without picking the album. Synthetic files
+    # and source.
+    window, _ = load(mainwin, make_audio, tmp_path, qtbot, user)
+    search(user, qtbot, window)
+
+    expand(user, window, 'Alpha')
+
+    qtbot.waitUntil(lambda: window.label.text() == 'Retrieval complete.')
+    assert the_source().retrieved == ['alpha']
+    assert window.listbox.isExpanded(album_index(window, 'Alpha'))
+    assert len(track_rows(window, 'Alpha')) == 3
+    assert previews(mainwin) == [{}, {}, {}]
+
+
+def fail_to_expand(user, qtbot, window, expand, error, label):
+    """Searches, makes the next retrieval raise the error, expands Alpha and
+    waits for the label to show the failure and the album to collapse."""
+    search(user, qtbot, window)
+    the_source().errors['retrieve'] = error
+    expand(user, window, 'Alpha')
+    qtbot.waitUntil(lambda: window.label.text() == label)
+    qtbot.waitUntil(window.listbox.isEnabled)
+    qtbot.waitUntil(lambda: not window.listbox.isExpanded(album_index(window, 'Alpha')))
+
+
+RETRIEVAL_ERROR = (RetrievalError('Synthetic failure'), 'An error occurred: Synthetic failure')
+UNHANDLED_ERROR = (RuntimeError('Synthetic crash'), 'An unhandled error occurred: Synthetic crash')
+
+
+@pytest.mark.xfail(strict=True, reason="An album whose retrieval failed can't be expanded again")
+@pytest.mark.parametrize('expand, error, label', [
+    pytest.param(expand_with_the_arrow, *RETRIEVAL_ERROR, id='arrow, retrieval error'),
+    pytest.param(expand_with_the_arrow, *UNHANDLED_ERROR, id='arrow, unhandled error'),
+    pytest.param(expand_with_the_right_key, *RETRIEVAL_ERROR, id='Right key, retrieval error'),
+    pytest.param(expand_with_the_right_key, *UNHANDLED_ERROR, id='Right key, unhandled error')])
+def test_expand_error_collapses_the_album_and_expands_again(expand, error, label, mainwin, make_audio, tmp_path,
+                                                            qtbot, user):
+    # The docs don't say what a failed retrieval does; this is what puddletag
+    # should do (the traceback on stderr is expected): one retrieval per
+    # expand, the error shown, and the next expand retrieves again.
+    # tagsources.txt's example plugin: "Raise puddlestuff.tagsources.RetrievalError
+    # if an error occurs." Synthetic source and error.
+    window, _ = load(mainwin, make_audio, tmp_path, qtbot, user)
+    fail_to_expand(user, qtbot, window, expand, error, label)
+    assert the_source().retrieved == ['alpha']
+    index = album_index(window, 'Alpha')
+    assert not window.listbox.isExpanded(index)
+    assert track_rows(window, 'Alpha') == []
+    assert window.listbox.model().hasChildren(index)
+
+    expand(user, window, 'Alpha')
+
+    qtbot.waitUntil(lambda: window.label.text() == 'Retrieval complete.')
+    assert window.listbox.isExpanded(index)
+    assert the_source().retrieved == ['alpha', 'alpha']
+    assert len(track_rows(window, 'Alpha')) == 3
+
+
+@pytest.mark.xfail(strict=True, reason="An album whose retrieval failed can't be expanded again")
+def test_click_on_the_album_after_a_failed_expand_retrieves_it(mainwin, make_audio, tmp_path, qtbot, user):
+    # tagsources.txt: "Lists the retrieved albums. Click on an album to
+    # retrieve metadata." A click works after a failed expand too, and the
+    # arrow then opens the retrieved tracks. Synthetic source and error.
+    window, _ = load(mainwin, make_audio, tmp_path, qtbot, user)
+    fail_to_expand(user, qtbot, window, expand_with_the_arrow, RetrievalError('Synthetic failure'),
+                   'An error occurred: Synthetic failure')
+
+    click_album(user, window, 'Alpha')
+
+    qtbot.waitUntil(lambda: window.label.text() == 'Retrieval complete.')
+    assert the_source().retrieved == ['alpha', 'alpha']
+    assert len(track_rows(window, 'Alpha')) == 3
+    expand_with_the_arrow(user, window, 'Alpha')
+    qtbot.waitUntil(lambda: window.listbox.isExpanded(album_index(window, 'Alpha')))
+    assert the_source().retrieved == ['alpha', 'alpha']
+
+
+def test_automatic_retrieval_with_no_matching_album(mainwin, make_audio, tmp_path, qtbot, user):
+    # tagsources.txt: "7. If checked, the album that best matches the
+    # retrieved albums will be automatically retrieved." Nothing matches, so
+    # nothing is retrieved; the docs don't give the message. Synthetic files
+    # and albums.
+    tags = [{'album': 'Nothing alike', 'artist': 'Nobody', 'title': f'Old {n}'} for n in (1, 2, 3)]
+    window, _ = load(mainwin, make_audio, tmp_path, qtbot, user, tags=tags)
+    user.click(box(window, 'Automatically retrieve matches.'))
+
+    user.click(window.searchButton)
+
+    qtbot.waitUntil(lambda: window.label.text() == 'No matching albums were found.')
+    assert the_source().retrieved == []
+    assert previews(mainwin) == [{}, {}, {}]
+    assert albums(window) == ['Band - Alpha', 'Band - Zeta']
+
+
+def test_automatic_retrieval_with_two_equal_albums(mainwin, make_audio, tmp_path, qtbot, user):
+    # tagsources.txt: "7. If checked, the album that best matches the
+    # retrieved albums will be automatically retrieved." Two albums match
+    # equally; the docs don't give the message. Synthetic files and albums.
+    window, _ = load(mainwin, make_audio, tmp_path, qtbot, user)
+    source = the_source()
+    source.albums = [({'#id': 'alpha', 'album': 'Alpha', 'artist': 'Band'}, []),
+                     ({'#id': 'zeta', 'album': 'Alpha', 'artist': 'Band'}, [])]
+    user.click(box(window, 'Automatically retrieve matches.'))
+
+    user.click(window.searchButton)
+
+    qtbot.waitUntil(lambda: window.label.text() == 'More than one album matches. None will be retrieved.')
+    assert source.retrieved == []
+    assert previews(mainwin) == [{}, {}, {}]
+
+
+@pytest.fixture
+def mp3tag_script_and_a_folder(clean_profile):
+    """A script that loads, and a folder with a script's name, which opening
+    raises on. Synthetic."""
+    (mp3tag_folder() / 'Synthetic Mp3tag.src').write_text(MP3TAG_SCRIPT)
+    (mp3tag_folder() / 'Synthetic Folder.src').mkdir()
+
+
+def test_mp3tag_script_that_raises_is_left_out(mp3tag_script_and_a_folder, mainwin, user, qtbot, caplog):
+    # tagsources.txt: "A tag source that can't be loaded is left out, and the
+    # reason is shown in the Tag Sources window and written to puddletag's
+    # log." The script and folder are synthetic.
+    user.click_menu('Tag Sources')
+    window = tag_sources_window()
+    qtbot.waitUntil(window.isVisible)
+    assert "Couldn't load Mp3tag script Synthetic Folder.src: [Errno 21] Is a directory" in window.label.text()
+    assert mp3tag_listed(window) == ['Synthetic Mp3tag [M]']
+    [message] = [r.getMessage() for r in caplog.get_records('setup')
+                 if r.levelno == logging.ERROR and 'Synthetic Folder' in r.getMessage()]
+    assert message.startswith(f"Couldn't load Mp3tag Tag Source {mp3tag_folder() / 'Synthetic Folder.src'}: "
+                              '[Errno 21] Is a directory')
