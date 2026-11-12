@@ -123,7 +123,10 @@ def rename_dir(filename, olddir, newdir):
     if newdir == olddir:
         return False
     try:
-        os.renames(olddir, newdir)
+        parent = os.path.dirname(newdir)
+        if parent and not os.path.exists(parent):
+            os.makedirs(parent)
+        os.rename(olddir, newdir)
         return True
     except EnvironmentError as e:
         if issubfolder(olddir, newdir, None):

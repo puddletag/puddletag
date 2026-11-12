@@ -78,7 +78,6 @@ def test_rename_directories_needs_a_selection(mainwin, make_audio, tmp_path, qtb
     assert not user.action('&Rename Directories').isEnabled()
 
 
-@pytest.mark.xfail(strict=True, reason='Tag to Dir deletes the folders the move leaves empty, the loaded one too')
 def test_emptied_folders_are_left(mainwin, make_audio, tmp_path, qtbot, user):
     # function.txt, Tag to Dir: "Works as Tag To Filename (below), but
     # renames/moves directories instead". Tag to filename leaves the folders
