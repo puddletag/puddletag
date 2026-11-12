@@ -49,12 +49,7 @@ REAL_MOUNTS = (
 @pytest.fixture
 def mounts(tmp_path, monkeypatch):
     """Writes the mount table's file for dirview to read, with its cache
-    empty, and returns the file.
-
-    The test calls it, not the fixture: pytest-qt processes Qt events after
-    the fixtures, and a DirModel an earlier test left alive then reads the
-    table, caching it before the test has written it.
-    """
+    empty, and returns the file."""
     path = tmp_path / 'mounts'
 
     def write(text):

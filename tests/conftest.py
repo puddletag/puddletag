@@ -39,8 +39,8 @@ os.environ['XDG_DATA_HOME'] = os.path.join(_HOME, '.local', 'share')
 os.environ['XDG_CACHE_HOME'] = os.path.join(_HOME, '.cache')
 os.environ.setdefault('QT_QPA_PLATFORM', 'offscreen')
 
-from PyQt6.QtCore import pyqtSignal  # noqa: E402
-from PyQt6.QtWidgets import QDialog, QFileDialog, QInputDialog, QMessageBox  # noqa: E402
+from PyQt6.QtCore import QEvent, pyqtSignal  # noqa: E402
+from PyQt6.QtWidgets import QApplication, QDialog, QFileDialog, QInputDialog, QMessageBox  # noqa: E402
 
 import puddlestuff.resource  # noqa: E402,F401  registers the data:/icons: search paths
 from puddlestuff import constants  # noqa: E402
@@ -619,6 +619,10 @@ def mainwin(qtbot, clean_profile, _translated_strings, dialogs):
     # saves into its previews while it's in Preview Mode: a later test in
     # this process would read and save files through it.
     audioinfo.Tag = tag
+    # pytest-qt has closed the window and called deleteLater, which would
+    # run in the next test's first wait: delete it now, with the Filesystem
+    # dock's folder model, so they can't answer that test's events.
+    QApplication.sendPostedEvents(None, QEvent.Type.DeferredDelete)
 
 
 @pytest.fixture

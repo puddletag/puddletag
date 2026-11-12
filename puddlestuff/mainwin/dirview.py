@@ -126,7 +126,7 @@ class DirView(QTreeView):
         self.setHeader(header)
         self.header().setSectionResizeMode(QHeaderView.ResizeMode.ResizeToContents)
 
-        self.setModel(DirModel())
+        self.setModel(DirModel(self))
         [self.hideColumn(column) for column in range(1, 4)]
 
         self.header().hide()
