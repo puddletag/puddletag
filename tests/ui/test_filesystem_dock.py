@@ -506,7 +506,6 @@ def test_refresh_directory(mainwin, music, tmp_path, qtbot, user):
     qtbot.waitUntil(lambda: 'new' in names())
 
 
-@pytest.mark.xfail(strict=True, reason="Refresh Directory doesn't read a listed folder again")
 def test_refresh_directory_lists_a_new_folder_the_watcher_missed(mainwin, music, tmp_path, qtbot, user):
     # "Right click on a directory and click on **Refresh Directory** to
     # refresh it." (menus.txt) The model doesn't watch for changes, as on a

@@ -1,6 +1,7 @@
 import os
 import re
 import time
+from pathlib import Path
 
 from PyQt6.QtCore import QDir, QDirIterator, QItemSelectionModel, QMutex, QSettings, QUrl, Qt, pyqtSignal
 from PyQt6.QtGui import QAction, QDesktopServices, QFileSystemModel
@@ -184,7 +185,7 @@ class DirView(QTreeView):
                                     'Refresh Directory'), self)
 
         index = self.indexAt(event.pos())
-        connect(refresh, lambda: self.model().fetchMore(index))
+        connect(refresh, lambda: self.refreshFolder(index))
 
         header = self.header()
         if self.header().isHidden():
@@ -206,6 +207,64 @@ class DirView(QTreeView):
 
         menu.exec(event.globalPos())
         super(DirView, self).contextMenuEvent(event)
+
+    def refreshFolder(self, index):
+        """Lists the folder again. Qt has no call that reads a listed folder
+        again (and a network share's changes never reach its watcher), so
+        the model is replaced, and the folders expanded stay expanded."""
+        if not index.isValid():
+            return
+        old = self.model()
+        folder = old.filePath(index)
+        selected = [old.filePath(i) for i in self.selectedIndexes()]
+        expanded = []
+
+        def collect(parent):
+            for row in range(old.rowCount(parent)):
+                child = old.index(row, 0, parent)
+                if self.isExpanded(child):
+                    expanded.append(old.filePath(child))
+                    collect(child)
+
+        collect(old.index(0, 0).parent())
+        model = DirModel(self)
+        model.setFilter(old.filter())
+        for option in QFileSystemModel.Option:
+            model.setOption(option, old.testOption(option))
+        self.setModel(model)
+        old.deleteLater()
+        [self.hideColumn(column) for column in range(1, 4)]
+        self._select = True
+        self.selectDirs(selected)
+        # A folder is expanded and listed only once its parent has been
+        # listed, or the model ignores it: parents come first in the sorted
+        # list, and each listing is waited for.
+        paths = {folder}
+        paths.update(expanded)
+        paths.update(str(parent) for path in list(paths) for parent in Path(path).parents)
+        paths = sorted(paths)
+        waiting = []
+
+        def advance(loaded=None):
+            if waiting and loaded != waiting[0]:
+                return
+            waiting.clear()
+            while paths:
+                path_index = model.index(paths.pop(0))
+                if not path_index.isValid():
+                    continue
+                # The view fetches a folder it expands: ask first.
+                unlisted = model.canFetchMore(path_index)
+                if unlisted:
+                    model.fetchMore(path_index)
+                self.expand(path_index)
+                if unlisted:
+                    waiting.append(model.filePath(path_index))
+                    return
+            model.directoryLoaded.disconnect(advance)
+
+        model.directoryLoaded.connect(advance)
+        advance()
 
     def dirMoved(self, dirs):
         if not self.isVisible():
