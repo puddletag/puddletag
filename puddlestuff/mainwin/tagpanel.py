@@ -116,7 +116,7 @@ class FrameCombo(QGroupBox):
         self.__indexFuncs = []
 
     def _disablePreview(self):
-        self.__disconnectIndexChanged
+        self.__disconnectIndexChanged()
         self.__indexFuncs = []
         for field, combo in self.combos.items():
             edit = QLineEdit()
@@ -131,6 +131,7 @@ class FrameCombo(QGroupBox):
             self.combos[z].setEnabled(False)
 
     def _enablePreview(self):
+        self.__disconnectIndexChanged()
         self.__indexFuncs = []
         for field, combo in self.combos.items():
             func = partial(self._emitChange, field)
@@ -146,7 +147,11 @@ class FrameCombo(QGroupBox):
 
     def __disconnectIndexChanged(self):
         for combo, func in self.__indexFuncs:
-            combo.disconnect(combo, func)
+            try:
+                combo.currentIndexChanged.disconnect(func)
+            except (RuntimeError, TypeError):
+                # The combo was rebuilt since.
+                pass
 
     def _emitChange(self, field, text):
         if type(text) is int:

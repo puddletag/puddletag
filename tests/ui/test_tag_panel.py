@@ -566,7 +566,6 @@ def test_keep_typed_before_any_folder_is_loaded(mainwin, user):
     assert edit.text() == '<keep>'
 
 
-@pytest.mark.xfail(strict=True, reason="each Preview Mode toggle connects the Tag Panel's fields again")
 def test_preview_mode_toggled_connects_the_fields_once(user, loaded, qtbot):
     # The docs don't say; one pick is one change.
     panel, paths = loaded
