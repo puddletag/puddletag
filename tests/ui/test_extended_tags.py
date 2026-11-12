@@ -586,8 +586,6 @@ def test_remove_keep_row(load, user, qtbot):
     user.activate()
 
 
-@pytest.mark.xfail(strict=True, reason='a case-only Add over a <keep> row replaces '
-                                       "each file's own values instead of joining them")
 def test_add_case_of_a_keep_row(load, user, qtbot):
     # menus.txt: "Open's the Extended Tags Dialog. With it you can edit/see
     # all the supported fields in a file." On one file the same Add keeps the

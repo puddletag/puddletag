@@ -1197,7 +1197,13 @@ class ExTags(QDialog):
                         try:
                             tb.item(row, 1).status = EDIT
                         except AttributeError:
-                            tb.cellWidget(row, 1).status = EDIT
+                            combo = tb.cellWidget(row, 1)
+                            combo.status = EDIT
+                            # Each file keeps its own values under the new
+                            # spelling; the added value joins them.
+                            if combo.currentText() == KEEP and item not in [
+                                    z for z, old in self._keep_renames]:
+                                self._keep_renames.append((item, text))
 
         tb.setSortingEnabled(True)
         return field_item

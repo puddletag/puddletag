@@ -220,7 +220,7 @@ def extended_tags(parent=None):
             for audio in files:
                 tags = val.copy()
                 for new, old in renames.items():
-                    tags[new] = list(audio.get(old, []))
+                    tags[new] = list(audio.get(old, [])) + val.get(new, [])
                 yield tags
 
         files = status['selectedfiles']
