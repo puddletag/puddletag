@@ -925,11 +925,12 @@ class ExTags(QDialog):
                 if val == KEEP:
                     continue
                 l_field = field.lower()
+                values = [z.strip() for z in val.split('\\') if z.strip()]
                 if l_field in lowered:
-                    tags[lowered[l_field]].append(val)
+                    tags[lowered[l_field]].extend(values)
                 else:
                     lowered[l_field] = field
-                    tags[field] = [z.strip() for z in val.split('\\') if z.strip()]
+                    tags[field] = values
             else:
                 if field.lower() not in lowered:
                     tags[field] = []

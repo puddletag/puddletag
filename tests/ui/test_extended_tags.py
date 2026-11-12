@@ -1033,7 +1033,6 @@ def test_next_writes_the_edit_first(load, user, qtbot):
     win.close()
 
 
-@pytest.mark.xfail(strict=True, reason='only the first row of a field is split at the backslashes')
 def test_second_row_of_a_field_is_split(load, user, qtbot):
     # tut3.txt (Tag Panel): "Entering any value like that will
     # automatically split it." Synthetic: Duplicate artist with B\\C.
