@@ -81,7 +81,7 @@ Copies the selected cells to the clipboard.
 
 Copy All Fields (Ctrl+Shift+C)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Copies the complete tag of the selected files. Note that only supported fields (I'm looking at you ID3) are copied.
+Copies the complete tag of the selected files. Note that only supported fields (I'm looking at you ID3) are copied. If the copied data is over 5 MB (covers can make it so), puddletag asks first: Yes copies everything, No (or Esc) copies nothing, and "Copy without images" copies the fields only.
 
 Paste (Ctrl+V)
 ^^^^^^^^^^^^^^
