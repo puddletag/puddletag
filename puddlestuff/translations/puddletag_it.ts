@@ -269,83 +269,83 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
   <context>
     <name>Artwork</name>
     <message>
-      <location filename="../puddleobjects.py" line="2003" />
-      <location filename="../puddleobjects.py" line="1628" />
+      <location filename="../puddleobjects.py" line="1971" />
+      <location filename="../puddleobjects.py" line="1596" />
       <source>Enter a description</source>
       <translation>Inserire una descrizione</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1633" />
+      <location filename="../puddleobjects.py" line="1601" />
       <source>&lt;p&gt;Enter a description for the current cover.&lt;/p&gt;&lt;p&gt;For ID3 tags the description has to be different for each cover as per the ID3 spec. If they don't differ then spaces are appended to the description when the tag is saved.&lt;/p&gt;</source>
       <translation>&lt;p&gt;Inserire una descrizione per la-copertina.&lt;/p&gt;&lt;p&gt;Per ID3 tags la descrizione deve-essere differente per ogni copertina come per l'ID3 spec. Se non differiscono, gli spazi vengono aggiunti alla descrizione quando il tag è salvato.&lt;/p&gt;</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1643" />
+      <location filename="../puddleobjects.py" line="1611" />
       <source>&amp;Description</source>
       <translation>&amp;Descrizione</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1651" />
+      <location filename="../puddleobjects.py" line="1619" />
       <source>&amp;Type</source>
       <translation>&amp;Tipo</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1663" />
+      <location filename="../puddleobjects.py" line="1631" />
       <source>&lt;p&gt;Select a cover type for the artwork.&lt;/p&gt;</source>
       <translation>&lt;p&gt;Selezionare un tipo di copertina.&lt;/p&gt;</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1755" />
+      <location filename="../puddleobjects.py" line="1723" />
       <source>&amp;Save cover to file</source>
       <translation>Salva la copertina nel file</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1758" />
+      <location filename="../puddleobjects.py" line="1726" />
       <source>&amp;Add cover</source>
       <translation>Aggiungi copertina</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1761" />
+      <location filename="../puddleobjects.py" line="1729" />
       <source>C&amp;opy cover</source>
       <translation>Copia copertina</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1764" />
+      <location filename="../puddleobjects.py" line="1732" />
       <source>&amp;Paste cover</source>
       <translation>Incolla-copertina</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1767" />
+      <location filename="../puddleobjects.py" line="1735" />
       <source>&amp;Remove cover</source>
       <translation>Rimuovi copertina</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1770" />
+      <location filename="../puddleobjects.py" line="1738" />
       <source>&amp;Change cover</source>
       <translation>Cambia copertina</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1837" />
+      <location filename="../puddleobjects.py" line="1805" />
       <source>Select Image...</source>
       <translation>Seleziona immagine...</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1838" />
+      <location filename="../puddleobjects.py" line="1806" />
       <source>JPEG &amp; PNG Images (*.jpg *.jpeg *.png);;JPEG Images (*.jpg *.jpeg);;PNG Images (*.png);;All Files(*.*)</source>
       <translation>JPEG &amp; PNG Images (*.jpg *.jpeg *.png);;JPEG Images (*.jpg *.jpeg);;PNG Images (*.png);;All Files(*.*)</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="2051" />
+      <location filename="../puddleobjects.py" line="2019" />
       <source>Save artwork as...</source>
       <translation>Salva immagine come...</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="2053" />
+      <location filename="../puddleobjects.py" line="2021" />
       <source>JPEG Images (*.jpg);;PNG Images (*.png);;All Files(*.*)</source>
       <translation>JPEG Images (*.jpg);;PNG Images (*.png);;All Files(*.*)</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="2063" />
+      <location filename="../puddleobjects.py" line="2031" />
       <source>Writing to &lt;b&gt;{}&lt;/b&gt; failed.</source>
       <translation>Scrittura su &lt;b&gt;{}&lt;/b&gt; fallita.</translation>
     </message>
@@ -363,7 +363,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
       <translation>Nessuna immagine</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1599" />
+      <location filename="../puddleobjects.py" line="1567" />
       <source>{}/{}</source>
       <translation>{}/{}</translation>
     </message>
@@ -372,18 +372,18 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
     <name>Autonumbering Wizard</name>
     <message>
       <location filename="../helperwin.py" line="56" />
-      <location filename="../functions_dialogs.py" line="35" />
+      <location filename="../functions_dialogs.py" line="33" />
       <source>&amp;Start: </source>
       <translation>Start: </translation>
     </message>
     <message>
       <location filename="../helperwin.py" line="66" />
-      <location filename="../functions_dialogs.py" line="43" />
+      <location filename="../functions_dialogs.py" line="41" />
       <source>Max length after padding with zeroes: </source>
       <translation>Massima-lunghezza-compresi-gli-zero: </translation>
     </message>
     <message>
-      <location filename="../functions_dialogs.py" line="51" />
+      <location filename="../functions_dialogs.py" line="49" />
       <source>&amp;Restart numbering at each directory.</source>
       <translation>Restart la-numerazione-in-ogni-cartella.</translation>
     </message>
@@ -424,21 +424,21 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
       <translation>Aggiungi Separatore di tracce [' / ']</translation>
     </message>
     <message>
-      <location filename="../mainwin/funcs.py" line="321" />
-      <location filename="../mainwin/funcs.py" line="314" />
+      <location filename="../mainwin/funcs.py" line="324" />
+      <location filename="../mainwin/funcs.py" line="317" />
       <location filename="../helperwin.py" line="158" />
       <location filename="../helperwin.py" line="150" />
       <source>Field empty...</source>
       <translation>Campo vuoto...</translation>
     </message>
     <message>
-      <location filename="../mainwin/funcs.py" line="315" />
+      <location filename="../mainwin/funcs.py" line="318" />
       <location filename="../helperwin.py" line="151" />
       <source>The field specified to use as a directory splitter was invalid. Please check your values.</source>
       <translation>Il campo specificato non era valido. Controllare valori.</translation>
     </message>
     <message>
-      <location filename="../mainwin/funcs.py" line="322" />
+      <location filename="../mainwin/funcs.py" line="325" />
       <location filename="../helperwin.py" line="167" />
       <location filename="../helperwin.py" line="159" />
       <source>The output field specified was invalid. Please check your values.</source>
@@ -539,30 +539,30 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
   <context>
     <name>Column Settings</name>
     <message>
-      <location filename="../tagmodel.py" line="385" />
+      <location filename="../puddleobjects.py" line="968" />
+      <source>Title</source>
+      <translation>Titolo</translation>
+    </message>
+    <message>
+      <location filename="../tagmodel.py" line="351" />
       <source>Columns</source>
       <translation>Colonne</translation>
     </message>
     <message>
-      <location filename="../tagmodel.py" line="414" />
+      <location filename="../tagmodel.py" line="380" />
       <source>Adjust visibility of columns.</source>
       <translation>Regolare la visibilità delle colonne.</translation>
     </message>
     <message>
-      <location filename="../tagmodel.py" line="1384" />
+      <location filename="../tagmodel.py" line="1233" />
       <source>&amp;Select Columns</source>
       <translation>&amp;Seleziona colonne</translation>
-    </message>
-    <message>
-      <location filename="../puddleobjects.py" line="1000" />
-      <source>Title</source>
-      <translation>Titolo</translation>
     </message>
   </context>
   <context>
     <name>Combo Box</name>
     <message>
-      <location filename="../puddleobjects.py" line="2318" />
+      <location filename="../puddleobjects.py" line="2286" />
       <source>Remove current item.</source>
       <translation>Rimuovi l'elemento corrente.</translation>
     </message>
@@ -570,12 +570,12 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
   <context>
     <name>Confirmations</name>
     <message>
-      <location filename="../puddletag.py" line="55" />
+      <location filename="../puddletag.py" line="53" />
       <source>Confirm when exiting preview mode.</source>
       <translation>Confermare quando si esce dalla modalità di anteprima.</translation>
     </message>
     <message>
-      <location filename="../puddletag.py" line="56" />
+      <location filename="../puddletag.py" line="54" />
       <source>Confirm when moving files to the trash.</source>
       <translation type="unfinished" />
     </message>
@@ -838,7 +838,8 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
   <context>
     <name>Defaults</name>
     <message>
-      <location filename="../findfunc.py" line="321" />
+      <location filename="../findfunc.py" line="289" />
+      <location filename="../findfunc.py" line="283" />
       <source>function does not exist.</source>
       <translation>Funzione inesistente.</translation>
     </message>
@@ -896,51 +897,32 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
       <translation>Artisti Vari</translation>
     </message>
     <message>
-      <location filename="../musiclib.py" line="216" />
-      <location filename="../puddleobjects.py" line="2062" />
-      <location filename="../puddleobjects.py" line="510" />
-      <location filename="../tagmodel.py" line="2212" />
-      <location filename="../tagmodel.py" line="2206" />
-      <location filename="../puddletag.py" line="561" />
-      <location filename="../puddletag.py" line="558" />
-      <location filename="../puddletag.py" line="551" />
-      <source>Error</source>
-      <translation>Errore</translation>
-    </message>
-    <message>
-      <location filename="../puddletag.py" line="864" />
-      <location filename="../puddletag.py" line="853" />
-      <location filename="../puddletag.py" line="837" />
-      <source>Writing </source>
-      <translation>Scrittura </translation>
-    </message>
-    <message>
-      <location filename="../util.py" line="29" />
+      <location filename="../util.py" line="30" />
       <source>&lt;p&gt;An error occured while renaming the directory &lt;b&gt;{}&lt;/b&gt; to &lt;i&gt;{}&lt;/i&gt;.&lt;/p&gt;&lt;p&gt;Reason: &lt;b&gt;{}&lt;/b&gt;&lt;br /&gt;File used: {}&lt;/p&gt;</source>
       <translation>&lt;p&gt;Un errore è avvenuto durante la rinominazione della cartella &lt;b&gt;{}&lt;/b&gt; a &lt;i&gt;{}&lt;/i&gt;.&lt;/p&gt;&lt;p&gt;Motivo: &lt;b&gt;{}&lt;/b&gt;&lt;br /&gt;File usato: {}&lt;/p&gt;</translation>
     </message>
     <message>
-      <location filename="../util.py" line="38" />
+      <location filename="../util.py" line="39" />
       <source>&lt;p&gt;An error occured while renaming the file &lt;b&gt;{}&lt;/b&gt; to &lt;i&gt;{}&lt;/i&gt;.&lt;/p&gt;&lt;p&gt;Reason: &lt;b&gt;{}&lt;/b&gt;&lt;/p&gt;</source>
       <translation>&lt;p&gt;Un errore è avvenuto durante la rinominazione del file &lt;b&gt;{}&lt;/b&gt; a &lt;i&gt;{}&lt;/i&gt;.&lt;/p&gt;&lt;p&gt;Motivo: &lt;b&gt;{}&lt;/b&gt;&lt;/p&gt;</translation>
     </message>
     <message>
-      <location filename="../util.py" line="45" />
+      <location filename="../util.py" line="46" />
       <source>&lt;p&gt;An error occured while writing to &lt;b&gt;{}&lt;/b&gt;.&lt;/p&gt;&lt;p&gt;Reason: &lt;b&gt;{}&lt;/b&gt;.&lt;/p&gt;&lt;p&gt;(&lt;i&gt;See {} for debug info.&lt;/i&gt;)&lt;/p&gt;</source>
       <translation>&lt;p&gt;Un errore è avvenuto scrivendo su &lt;b&gt;{}&lt;/b&gt;.&lt;/p&gt;&lt;p&gt;Motivo: &lt;b&gt;{}&lt;/b&gt;.&lt;/p&gt;&lt;p&gt;(&lt;i&gt;Vedi {} per debug info.&lt;/i&gt;)&lt;/p&gt;</translation>
     </message>
     <message>
-      <location filename="../util.py" line="56" />
+      <location filename="../util.py" line="57" />
       <source>&lt;p&gt;An error occured while writing to &lt;b&gt;{}&lt;/b&gt;.&lt;/p&gt;&lt;p&gt;Reason: &lt;b&gt;{}&lt;/b&gt; (&lt;i&gt;See {} for debug info.&lt;/i&gt;)&lt;/p&gt;</source>
       <translation>&lt;p&gt;Un errore è avvenuto su &lt;b&gt;{}&lt;/b&gt;.&lt;/p&gt;&lt;p&gt;Motivo: &lt;b&gt;{}&lt;/b&gt; (&lt;i&gt;Vedi {} Per debug info.&lt;/i&gt;)&lt;/p&gt;</translation>
     </message>
     <message>
-      <location filename="../util.py" line="180" />
+      <location filename="../util.py" line="178" />
       <source>{} images</source>
       <translation>{} immagini</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1446" />
+      <location filename="../puddleobjects.py" line="1414" />
       <location filename="../helperwin.py" line="1203" />
       <source>OK</source>
       <translation>OK</translation>
@@ -951,48 +933,67 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
       <translation>Non mostrare più questo messaggio.</translation>
     </message>
     <message>
-      <location filename="../tagmodel.py" line="1993" />
-      <source>Reading Directory: {}</source>
-      <translation>Lettura cartella: {}</translation>
+      <location filename="../mainwin/tagsources.py" line="146" />
+      <location filename="../actiondlg.py" line="216" />
+      <source>&amp;Fields</source>
+      <translation>Campi</translation>
     </message>
     <message>
-      <location filename="../tagmodel.py" line="1995" />
-      <source>Reading Directory: {} + others</source>
-      <translation>Lettura cartella: {} + altre</translation>
+      <location filename="../musiclib.py" line="216" />
+      <location filename="../tagmodel.py" line="2052" />
+      <location filename="../tagmodel.py" line="2046" />
+      <location filename="../puddletag.py" line="557" />
+      <location filename="../puddletag.py" line="554" />
+      <location filename="../puddletag.py" line="547" />
+      <location filename="../puddleobjects.py" line="2030" />
+      <location filename="../puddleobjects.py" line="478" />
+      <source>Error</source>
+      <translation>Errore</translation>
     </message>
     <message>
-      <location filename="../tagmodel.py" line="1997" />
-      <source>Reading Dir</source>
-      <translation>Lettura cartella</translation>
-    </message>
-    <message>
-      <location filename="../tagmodel.py" line="2078" />
-      <location filename="../tagmodel.py" line="2074" />
-      <source>Loading </source>
-      <translation>Caricamento </translation>
-    </message>
-    <message>
-      <location filename="../puddleobjects.py" line="511" />
+      <location filename="../puddleobjects.py" line="479" />
       <source>&lt;br /&gt; Do you want to continue?</source>
       <translation>&lt;br /&gt; Vuoi continuare?</translation>
     </message>
     <message>
       <location filename="../mainwin/tagpanel.py" line="430" />
-      <location filename="../puddleobjects.py" line="1002" />
+      <location filename="../puddleobjects.py" line="970" />
       <source>Field</source>
       <translation>Campo</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="2245" />
-      <location filename="../puddleobjects.py" line="1447" />
+      <location filename="../puddleobjects.py" line="2213" />
+      <location filename="../puddleobjects.py" line="1415" />
       <source>Cancel</source>
       <translation>Cancella</translation>
     </message>
     <message>
-      <location filename="../mainwin/tagsources.py" line="146" />
-      <location filename="../actiondlg.py" line="216" />
-      <source>&amp;Fields</source>
-      <translation>Campi</translation>
+      <location filename="../puddletag.py" line="860" />
+      <location filename="../puddletag.py" line="850" />
+      <location filename="../puddletag.py" line="839" />
+      <source>Writing </source>
+      <translation>Scrittura </translation>
+    </message>
+    <message>
+      <location filename="../tagmodel.py" line="1833" />
+      <source>Reading Directory: {}</source>
+      <translation>Lettura cartella: {}</translation>
+    </message>
+    <message>
+      <location filename="../tagmodel.py" line="1835" />
+      <source>Reading Directory: {} + others</source>
+      <translation>Lettura cartella: {} + altre</translation>
+    </message>
+    <message>
+      <location filename="../tagmodel.py" line="1837" />
+      <source>Reading Dir</source>
+      <translation>Lettura cartella</translation>
+    </message>
+    <message>
+      <location filename="../tagmodel.py" line="1918" />
+      <location filename="../tagmodel.py" line="1914" />
+      <source>Loading </source>
+      <translation>Caricamento </translation>
     </message>
     <message>
       <location filename="../mainwin/action_dialogs.py" line="83" />
@@ -1016,11 +1017,6 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
       <translation>Titolo</translation>
     </message>
     <message>
-      <location filename="../mainwin/tagtools.py" line="70" />
-      <source>An error occured while writing to &lt;b&gt;{}&lt;/b&gt;. ({})</source>
-      <translation>Un errore è avvenuto durante scrittura su  &lt;b&gt;{}&lt;/b&gt;. ({})</translation>
-    </message>
-    <message>
       <location filename="../mainwin/funcs.py" line="170" />
       <source>&amp;Yes</source>
       <translation>Si</translation>
@@ -1029,6 +1025,11 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
       <location filename="../mainwin/tagsources.py" line="361" />
       <source>&amp;Edit</source>
       <translation>Modifica</translation>
+    </message>
+    <message>
+      <location filename="../mainwin/tagtools.py" line="73" />
+      <source>An error occured while writing to &lt;b&gt;{}&lt;/b&gt;. ({})</source>
+      <translation>Un errore è avvenuto durante scrittura su  &lt;b&gt;{}&lt;/b&gt;. ({})</translation>
     </message>
     <message>
       <location filename="../masstag/dialogs.py" line="391" />
@@ -1120,7 +1121,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
       <translation>Azioni</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="2187" />
+      <location filename="../puddleobjects.py" line="2155" />
       <source>Album Art</source>
       <translation>Copertina dell'album</translation>
     </message>
@@ -1128,22 +1129,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
   <context>
     <name>Dir Renaming</name>
     <message>
-      <location filename="../puddletag.py" line="946" />
-      <source>An error occured while renaming &lt;b&gt;{}&lt;/b&gt; to &lt;b&gt;{}&lt;/b&gt;. ({})</source>
-      <translation>Errore durante la rinominazione &lt;b&gt;{}&lt;/b&gt; to &lt;b&gt;{}&lt;/b&gt;. ({})</translation>
-    </message>
-    <message>
-      <location filename="../puddletag.py" line="954" />
-      <source>Renaming </source>
-      <translation>Rinominazione </translation>
-    </message>
-    <message>
-      <location filename="../puddletag.py" line="970" />
-      <source>I couldn't rename: &lt;i&gt;{}&lt;/i&gt; to &lt;b&gt;{}&lt;/b&gt; ({})</source>
-      <translation>Non ho potuto rinominare: &lt;i&gt;{}&lt;/i&gt; in &lt;b&gt;{}&lt;/b&gt; ({})</translation>
-    </message>
-    <message>
-      <location filename="../mainwin/funcs.py" line="599" />
+      <location filename="../mainwin/funcs.py" line="602" />
       <source>Rename: &lt;b&gt;{}&lt;/b&gt; to: &lt;i&gt;{}&lt;/i&gt;</source>
       <translation>Rinomina: &lt;b&gt;{}&lt;/b&gt; in: &lt;i&gt;{}&lt;/i&gt;</translation>
     </message>
@@ -1298,24 +1284,24 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../findfunc.py" line="398" />
+      <location filename="../findfunc.py" line="366" />
       <source>No closing bracket found.</source>
       <translation>Nessuna parentesi di chiusura trovata.</translation>
     </message>
     <message>
-      <location filename="../puddletag.py" line="668" />
-      <source>Your filesystem encoding was detected as &lt;b&gt;ASCII&lt;/b&gt;. &lt;br /&gt;You won't be able to rename files using accented, &lt;br /&gt; cyrillic or any characters outside the ASCII alphabet.</source>
-      <translation>La codifica del file system è stata rilevata come &lt;b&gt;ASCII&lt;/b&gt;. &lt;br /&gt;Non sarà possibile rinominare i file utilizzando caratteri accentati, &lt;br /&gt; cirillico o altri caratteri al di fuori dell'alfabeto ASCII.</translation>
-    </message>
-    <message>
-      <location filename="../util.py" line="78" />
+      <location filename="../util.py" line="81" />
       <source>Couldn't create intermediate directory: {}</source>
       <translation>Impossibile creare la sottocartella: {}</translation>
     </message>
     <message>
-      <location filename="../util.py" line="102" />
+      <location filename="../util.py" line="133" />
       <source>Cannot move directory to a subdirectory within itself.</source>
       <translation>Impossibile spostare la cartella  in una sottocartella.</translation>
+    </message>
+    <message>
+      <location filename="../puddletag.py" line="664" />
+      <source>Your filesystem encoding was detected as &lt;b&gt;ASCII&lt;/b&gt;. &lt;br /&gt;You won't be able to rename files using accented, &lt;br /&gt; cyrillic or any characters outside the ASCII alphabet.</source>
+      <translation>La codifica del file system è stata rilevata come &lt;b&gt;ASCII&lt;/b&gt;. &lt;br /&gt;Non sarà possibile rinominare i file utilizzando caratteri accentati, &lt;br /&gt; cirillico o altri caratteri al di fuori dell'alfabeto ASCII.</translation>
     </message>
   </context>
   <context>
@@ -1344,57 +1330,57 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
   <context>
     <name>Fields</name>
     <message>
-      <location filename="../tagmodel.py" line="79" />
+      <location filename="../tagmodel.py" line="78" />
       <source>Filename</source>
       <translation>Filename</translation>
     </message>
     <message>
-      <location filename="../tagmodel.py" line="79" />
+      <location filename="../tagmodel.py" line="78" />
       <source>Artist</source>
       <translation>Artista</translation>
     </message>
     <message>
-      <location filename="../tagmodel.py" line="80" />
+      <location filename="../tagmodel.py" line="79" />
       <source>Title</source>
       <translation>Titolo</translation>
     </message>
     <message>
-      <location filename="../tagmodel.py" line="80" />
+      <location filename="../tagmodel.py" line="79" />
       <source>Album</source>
       <translation>Album</translation>
     </message>
     <message>
-      <location filename="../tagmodel.py" line="81" />
+      <location filename="../tagmodel.py" line="80" />
       <source>Track</source>
       <translation>Traccia</translation>
     </message>
     <message>
-      <location filename="../tagmodel.py" line="81" />
+      <location filename="../tagmodel.py" line="80" />
       <source>Length</source>
       <translation>Lunghezza</translation>
     </message>
     <message>
-      <location filename="../tagmodel.py" line="82" />
+      <location filename="../tagmodel.py" line="81" />
       <source>Year</source>
       <translation>Anno</translation>
     </message>
     <message>
-      <location filename="../tagmodel.py" line="82" />
+      <location filename="../tagmodel.py" line="81" />
       <source>Bitrate</source>
       <translation>Bitrate</translation>
     </message>
     <message>
-      <location filename="../tagmodel.py" line="83" />
+      <location filename="../tagmodel.py" line="82" />
       <source>Genre</source>
       <translation>Genere</translation>
     </message>
     <message>
-      <location filename="../tagmodel.py" line="83" />
+      <location filename="../tagmodel.py" line="82" />
       <source>Comment</source>
       <translation>Commento</translation>
     </message>
     <message>
-      <location filename="../tagmodel.py" line="84" />
+      <location filename="../tagmodel.py" line="83" />
       <source>Dirpath</source>
       <translation>Percorso</translation>
     </message>
@@ -1950,12 +1936,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../findfunc.py" line="60" />
-      <source>At most {} arguments expected. {} given.</source>
-      <translation>Sono previsti massimo {} argomenti. {} forniti.</translation>
-    </message>
-    <message>
-      <location filename="../findfunc.py" line="66" />
+      <location filename="../findfunc.py" line="63" />
       <source>At least {} arguments expected. {} given.</source>
       <translation>Sono previsti minimo {} argomenti. {} forniti.</translation>
     </message>
@@ -2090,52 +2071,52 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
   <context>
     <name>List Buttons</name>
     <message>
-      <location filename="../puddleobjects.py" line="1286" />
+      <location filename="../puddleobjects.py" line="1254" />
       <source>Add</source>
       <translation>Aggiungi</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1289" />
+      <location filename="../puddleobjects.py" line="1257" />
       <source>Remove</source>
       <translation>Rimuovi</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1293" />
+      <location filename="../puddleobjects.py" line="1261" />
       <source>Move Up</source>
       <translation>Sposta Su</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1296" />
+      <location filename="../puddleobjects.py" line="1264" />
       <source>Move Down</source>
       <translation>Sposta Giù</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1299" />
+      <location filename="../puddleobjects.py" line="1267" />
       <source>Edit</source>
       <translation>Modifica</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1302" />
+      <location filename="../puddleobjects.py" line="1270" />
       <source>Duplicate</source>
       <translation>Duplica</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1304" />
+      <location filename="../puddleobjects.py" line="1272" />
       <source>Copy to clipboard</source>
       <translation>Copia negli appunti</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1306" />
+      <location filename="../puddleobjects.py" line="1274" />
       <source>Paste from clipboard</source>
       <translation>Incolla dagli appunti</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1367" />
+      <location filename="../puddleobjects.py" line="1335" />
       <source>&amp;&gt;&gt;</source>
       <translation>&amp;&gt;&gt;</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="1368" />
+      <location filename="../puddleobjects.py" line="1336" />
       <source>&amp;&lt;&lt;</source>
       <translation>&amp;&lt;&lt;</translation>
     </message>
@@ -2156,17 +2137,17 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
   <context>
     <name>Main Window</name>
     <message>
-      <location filename="../puddletag.py" line="453" />
+      <location filename="../puddletag.py" line="449" />
       <source>puddletag: {} + others</source>
       <translation>puddletag: {} + altri</translation>
     </message>
     <message>
-      <location filename="../puddletag.py" line="455" />
+      <location filename="../puddletag.py" line="451" />
       <source>puddletag: {}</source>
       <translation>puddletag: {}</translation>
     </message>
     <message>
-      <location filename="../puddletag.py" line="465" />
+      <location filename="../puddletag.py" line="461" />
       <source>Import directory...</source>
       <translation>Importa Cartella...</translation>
     </message>
@@ -2465,7 +2446,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
   <context>
     <name>Menus</name>
     <message>
-      <location filename="../puddletag.py" line="215" />
+      <location filename="../puddletag.py" line="213" />
       <location filename="../errorhook.py" line="50" />
       <source>&amp;Report a problem</source>
       <translation>Rapporta un problema</translation>
@@ -2854,32 +2835,32 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
       <translation>Fin&amp;estre</translation>
     </message>
     <message>
-      <location filename="../puddletag.py" line="202" />
+      <location filename="../puddletag.py" line="200" />
       <source>Help</source>
       <translation>Aiuto</translation>
     </message>
     <message>
-      <location filename="../puddletag.py" line="207" />
+      <location filename="../puddletag.py" line="205" />
       <source>Online &amp;Documentation</source>
       <translation>Documentazione online</translation>
     </message>
     <message>
-      <location filename="../puddletag.py" line="211" />
+      <location filename="../puddletag.py" line="209" />
       <source>&amp;GitHub project</source>
       <translation>Progetto GitHub</translation>
     </message>
     <message>
-      <location filename="../puddletag.py" line="220" />
+      <location filename="../puddletag.py" line="218" />
       <source>About puddletag</source>
       <translation>Info su Puddletag</translation>
     </message>
     <message>
-      <location filename="../puddletag.py" line="223" />
+      <location filename="../puddletag.py" line="221" />
       <source>About Qt</source>
       <translation>Info su Qt</translation>
     </message>
     <message>
-      <location filename="../puddletag.py" line="351" />
+      <location filename="../puddletag.py" line="347" />
       <source>Toolbar</source>
       <translation>Barra degli strumenti</translation>
     </message>
@@ -3174,18 +3155,18 @@ Vuoi continuare?</translation>
       <translation>Libreria Artisti</translation>
     </message>
     <message>
-      <location filename="../mainwin/funcs.py" line="286" />
-      <location filename="../mainwin/funcs.py" line="260" />
+      <location filename="../mainwin/funcs.py" line="289" />
+      <location filename="../mainwin/funcs.py" line="263" />
       <source>No libraries found</source>
       <translation>Nessuna libreria trovata</translation>
     </message>
     <message>
-      <location filename="../mainwin/funcs.py" line="261" />
+      <location filename="../mainwin/funcs.py" line="264" />
       <source>Load a lib first.</source>
       <translation>Carica prima una libreria.</translation>
     </message>
     <message>
-      <location filename="../mainwin/funcs.py" line="287" />
+      <location filename="../mainwin/funcs.py" line="290" />
       <source>No supported music libraries were found. Most likely the required dependencies aren't installed. Visit the puddletag website, &lt;a href='http://puddletag.sourceforge.net'&gt;puddletag.sourceforge.net&lt;/a&gt; for more details.</source>
       <translation>Nessuna libreria musicale supportata è stata trovata. Molto probabilmente le dipendenze richieste non sono installate. Visita il website puddletag, &lt;a href='http://puddletag.sourceforge.net'&gt;puddletag.sourceforge.net&lt;/a&gt; per maggiori dettagli.</translation>
     </message>
@@ -3207,23 +3188,23 @@ Vuoi continuare?</translation>
   <context>
     <name>Playlist</name>
     <message>
-      <location filename="../puddletag.py" line="542" />
+      <location filename="../puddletag.py" line="538" />
       <source>Select m3u file...</source>
       <translation>Seleziona un file m3u...</translation>
     </message>
     <message>
-      <location filename="../puddletag.py" line="562" />
-      <location filename="../puddletag.py" line="552" />
+      <location filename="../puddletag.py" line="558" />
+      <location filename="../puddletag.py" line="548" />
       <source>An error occured while reading &lt;b&gt;{}&lt;/b&gt; ({})</source>
       <translation>Un errore è avvenuto mentre stavo leggendo &lt;b&gt;{}&lt;/b&gt; ({})</translation>
     </message>
     <message>
-      <location filename="../puddletag.py" line="559" />
+      <location filename="../puddletag.py" line="555" />
       <source>The playlist is not encoded in UTF-8</source>
       <translation>La Playlist non è codificata in UTF-8</translation>
     </message>
     <message>
-      <location filename="../puddletag.py" line="714" />
+      <location filename="../puddletag.py" line="710" />
       <source>Save Playlist...</source>
       <translation>Salva la Playlist...</translation>
     </message>
@@ -3282,52 +3263,52 @@ Vuoi continuare?</translation>
   <context>
     <name>Previews</name>
     <message>
-      <location filename="../puddletag.py" line="483" />
+      <location filename="../puddletag.py" line="479" />
       <source>Some files have uncommited previews. These changes will be lost once you exit puddletag. &lt;br /&gt;Do you want to exit without writing those changes?&lt;br /&gt;</source>
       <translation>Alcuni file hanno anteprime non salvate. Queste modifiche andranno perse una volta usciti da puddletag. &lt;br /&gt;Vuoi uscire senza salvare queste modifiche?&lt;br /&gt;</translation>
     </message>
     <message>
-      <location filename="../puddletag.py" line="526" />
-      <location filename="../puddletag.py" line="517" />
+      <location filename="../puddletag.py" line="522" />
+      <location filename="../puddletag.py" line="513" />
       <source>Preview Mode: Off</source>
       <translation>Modalità anteprima: Off</translation>
     </message>
     <message>
-      <location filename="../puddletag.py" line="524" />
+      <location filename="../puddletag.py" line="520" />
       <source>&lt;b&gt;Preview Mode: On&lt;/b&gt;</source>
       <translation>&lt;b&gt;Modalità anteprima: On&lt;/b&gt;</translation>
     </message>
     <message>
       <location filename="../mainwin/dirview.py" line="156" />
-      <location filename="../puddletag.py" line="590" />
+      <location filename="../puddletag.py" line="586" />
       <source>Some files have uncommited previews. Changes will be lost once you load a directory. &lt;br /&gt;Do you still want to load a new directory?&lt;br /&gt;</source>
       <translation>Alcuni files hanno anteprime non salvate. Le modifiche andranno perse una volta caricata una cartella. &lt;br /&gt;Vuoi comunque caricare una nuova cartella?&lt;br /&gt;</translation>
     </message>
     <message>
-      <location filename="../tagmodel.py" line="129" />
+      <location filename="../tagmodel.py" line="116" />
       <source>Do you want to exit Preview Mode? Unsaved changes will be discarded</source>
       <translation>Vuoi uscire dalla modalità anteprima? Cambiamenti non salvati saranno scartati</translation>
     </message>
     <message>
-      <location filename="../tagmodel.py" line="1617" />
+      <location filename="../tagmodel.py" line="1458" />
       <source>Some files have uncommited previews. Changes will be lost once you unload them. &lt;br /&gt;Do you still want to unload everything?&lt;br /&gt;</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../tagmodel.py" line="2268" />
-      <location filename="../tagmodel.py" line="2242" />
+      <location filename="../tagmodel.py" line="2110" />
+      <location filename="../tagmodel.py" line="2082" />
       <source>There are unsaved changes pending. Do you want to discard and reload?</source>
       <translation>Ci sono modifiche in sospeso non salvate. Vuoi ignorarle e ricaricarle?</translation>
-    </message>
-    <message>
-      <location filename="../mainwin/tagtools.py" line="56" />
-      <source>Disable Preview Mode first to enable tag deletion.</source>
-      <translation>Disabilita modalità anteprima prima di cancellare il Tag.</translation>
     </message>
     <message>
       <location filename="../mainwin/tagsources.py" line="676" />
       <source>Clea&amp;r preview</source>
       <translation>Pulisci anteprima</translation>
+    </message>
+    <message>
+      <location filename="../mainwin/tagtools.py" line="59" />
+      <source>Disable Preview Mode first to enable tag deletion.</source>
+      <translation>Disabilita modalità anteprima prima di cancellare il Tag.</translation>
     </message>
     <message>
       <location filename="../plugins/id3_tools/__init__.py" line="52" />
@@ -3493,12 +3474,12 @@ Vuoi continuare?</translation>
   <context>
     <name>Progress Dialog</name>
     <message>
-      <location filename="../puddleobjects.py" line="2225" />
+      <location filename="../puddleobjects.py" line="2193" />
       <source>Please Wait...</source>
       <translation>Prego aspettare...</translation>
     </message>
     <message>
-      <location filename="../puddleobjects.py" line="2226" />
+      <location filename="../puddleobjects.py" line="2194" />
       <source>{}{} of {}...</source>
       <translation>{}{} di {}...</translation>
     </message>
@@ -3597,7 +3578,7 @@ Vuoi continuare?</translation>
       <translation>Un errore è avvenuto mentre salvavo le impostazioni di &lt;b&gt;{}&lt;/b&gt;: {}</translation>
     </message>
     <message>
-      <location filename="../puddletag.py" line="363" />
+      <location filename="../puddletag.py" line="359" />
       <source>&amp;Windows</source>
       <translation>Finestre</translation>
     </message>
@@ -3633,7 +3614,7 @@ Vuoi continuare?</translation>
   <context>
     <name>Shortcut Settings</name>
     <message>
-      <location filename="../tagmodel.py" line="354" />
+      <location filename="../tagmodel.py" line="320" />
       <source>File Properties</source>
       <translation>Proprietà del File</translation>
     </message>
@@ -3724,12 +3705,12 @@ Vuoi continuare?</translation>
   <context>
     <name>Status Bar</name>
     <message>
-      <location filename="../mainwin/funcs.py" line="581" />
+      <location filename="../mainwin/funcs.py" line="584" />
       <source>&lt;b&gt;{}&lt;/b&gt;</source>
       <translation>&lt;b&gt;{}&lt;/b&gt;</translation>
     </message>
     <message>
-      <location filename="../mainwin/funcs.py" line="587" />
+      <location filename="../mainwin/funcs.py" line="590" />
       <source>New Filename: &lt;b&gt;{}&lt;/b&gt;</source>
       <translation>Nuovo nome File: &lt;b&gt;{}&lt;/b&gt;</translation>
     </message>
@@ -3737,54 +3718,54 @@ Vuoi continuare?</translation>
   <context>
     <name>Table</name>
     <message>
-      <location filename="../tagmodel.py" line="725" />
+      <location filename="../tagmodel.py" line="674" />
       <source>Preview: {}
 Real: {}</source>
       <translation>Anteprima: {}
 Vero: {}</translation>
     </message>
     <message>
-      <location filename="../tagmodel.py" line="1667" />
+      <location filename="../tagmodel.py" line="1508" />
       <source>Disable Preview Mode first to enable tag deletion.</source>
       <translation>Disabilita la modalità anteprima prima di abilitare la cancellazione del Tag.</translation>
     </message>
     <message>
-      <location filename="../tagmodel.py" line="1677" />
+      <location filename="../tagmodel.py" line="1526" />
       <source>An error occurred while deleting the tag of {}: &lt;b&gt;{}&lt;/b&gt;</source>
       <translation>Un errore è avvenuto mentre cancellavo il Tag di {}: &lt;b&gt;{}&lt;/b&gt;</translation>
     </message>
     <message>
-      <location filename="../tagmodel.py" line="1686" />
+      <location filename="../tagmodel.py" line="1535" />
       <source>There was an error deleting the tag of {}: &lt;b&gt;Tag deletion isn't supported for {} files.&lt;/b&gt;</source>
       <translation>un errore è avvenuto cancellando il Tag di {}: &lt;b&gt;La cancellazione del file non è supportata per {} files.&lt;/b&gt;</translation>
     </message>
     <message>
-      <location filename="../tagmodel.py" line="1694" />
+      <location filename="../tagmodel.py" line="1544" />
       <source>Deleting tag... </source>
       <translation>Cancella Tag... </translation>
     </message>
     <message>
-      <location filename="../tagmodel.py" line="1736" />
+      <location filename="../tagmodel.py" line="1578" />
       <source>Are you sure you want to move the selected files to the trash?</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../tagmodel.py" line="1765" />
+      <location filename="../tagmodel.py" line="1607" />
       <source>I couldn't move &lt;b&gt;{}&lt;/b&gt; to the trash ({})</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../tagmodel.py" line="1784" />
+      <location filename="../tagmodel.py" line="1626" />
       <source>Moving to the trash </source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../tagmodel.py" line="2207" />
+      <location filename="../tagmodel.py" line="2047" />
       <source>An error occurred while trying to play the selected files: &lt;b&gt;{}&lt;/b&gt;&lt;br /&gt;Does the music player you defined (&lt;b&gt;{}&lt;/b&gt;) exist?</source>
       <translation>Un errore è avvenuto mentre provavo ad avviare i files selezionati: &lt;b&gt;{}&lt;/b&gt;&lt;br /&gt;Il player musicale scelto (&lt;b&gt;{}&lt;/b&gt;) esiste?</translation>
     </message>
     <message>
-      <location filename="../tagmodel.py" line="2213" />
+      <location filename="../tagmodel.py" line="2053" />
       <source>It wasn't possible to play the selected files, because the music player you defined (&lt;b&gt;{}&lt;/b&gt;) does not exist.</source>
       <translation>Non èpossibile avviare i files selezionati perchè il player musicale scelto (&lt;b&gt;{}&lt;/b&gt;) non esiste.</translation>
     </message>
