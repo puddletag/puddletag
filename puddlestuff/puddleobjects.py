@@ -1706,6 +1706,8 @@ class PicWidget(QWidget):
             listbuttons.duplicateButton.hide()
             self.addpic = listbuttons.addButton
             self.removepic = listbuttons.removeButton
+            # The field list's Remove owns Delete; two would be ambiguous.
+            self.removepic.setShortcut(QKeySequence())
             self.editpic = listbuttons.editButton
             self.savepic = QToolButton()
             self.savepic.setIcon(get_icon('document-save'))

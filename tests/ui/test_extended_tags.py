@@ -951,8 +951,6 @@ def test_save_extended_leaves_covers_alone(dock, mainwin, load, user, qtbot):
     assert stored(paths[0]) == [FRONT]
 
 
-@pytest.mark.xfail(strict=True, reason="Delete is ambiguous with the picture's Remove shortcut when a "
-                   "cover is shown, so neither removes anything")
 def test_delete_removes_the_field_when_a_cover_is_shown(load, user, qtbot):
     # Docs silent; the maintainer's call: Delete removes the selected field
     # even when the file shows a cover, and the cover stays.
