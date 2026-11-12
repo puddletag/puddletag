@@ -500,14 +500,15 @@ class SettingsWin(QWidget):
             l = texts(row)
             l[2] = int(l[2])
             try:
-                d[l[2]].append(l[:-1])
+                d[l[2]].append(tuple(l[:-1]))
             except KeyError:
-                d[l[2]] = [l[:-1]]
+                d[l[2]] = [tuple(l[:-1])]
         d = dict([(i, d[v]) for i, v in enumerate(sorted(d))])  # consecutive rows
         if self._old == d:
             return
         savesettings(d)
         control.setCombos(d)
+        control.fillCombos()
 
     def edit(self):
         self._table.editItem(self._table.currentItem())

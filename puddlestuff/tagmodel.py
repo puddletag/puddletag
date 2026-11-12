@@ -402,6 +402,12 @@ class ColumnSettings(HeaderSetting):
         hidden = [i for i, z in enumerate(self.tags) if i not in checked]
 
         if control:
+            header = control.horizontalHeader()
+            shown_hidden = [i for i in range(len(self.tags)) if header.isSectionHidden(i)]
+            if [tuple(z) for z in control.model().headerdata] == [tuple(z) for z in self.tags] \
+                    and shown_hidden == hidden:
+                # Rebuilding the columns would drop the selection.
+                return
             control.horizontalHeader().reset()
             control.setHeaderTags(self.tags, hidden)
             control.restoreSelection()

@@ -500,7 +500,6 @@ def test_settings_buttons_greyed_out_without_rows(mainwin, user):
     user.close_preferences(window, 'Cancel')
 
 
-@pytest.mark.xfail(strict=True, reason="Preferences' OK empties the Tag Panel while files are selected")
 def test_ok_keeps_the_selected_files_in_the_panel(mainwin, user, loaded):
     # The docs don't say; the panel shows the selected files.
     panel, paths = loaded
@@ -511,8 +510,6 @@ def test_ok_keeps_the_selected_files_in_the_panel(mainwin, user, loaded):
     assert shown(panel) == before
 
 
-@pytest.mark.xfail(strict=True, reason="Preferences' OK with a new layout leaves the Tag Panel empty "
-                                       "while files are selected")
 def test_ok_with_a_new_layout_shows_the_selected_files(mainwin, user, loaded):
     # The docs don't say; the panel shows the selected files.
     panel, paths = loaded
