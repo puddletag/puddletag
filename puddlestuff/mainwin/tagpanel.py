@@ -114,6 +114,7 @@ class FrameCombo(QGroupBox):
         self._status = status
         self._originalValues = {}
         self.__indexFuncs = []
+        self._audios = []
 
     def _disablePreview(self):
         self.__disconnectIndexChanged()
@@ -222,6 +223,8 @@ class FrameCombo(QGroupBox):
 
     def save(self):
         """Writes the tags of the selected files to the values in self.combogroup.combos."""
+        if not self._audios:
+            return
         combos = self.combos
         tags = {}
 

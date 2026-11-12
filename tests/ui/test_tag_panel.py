@@ -551,8 +551,6 @@ def test_keep_in_preview_mode_keeps_each_files_value(user, loaded, qtbot):
     assert [audio.get('album') for audio in user.table.model().taginfo] == [['A1']] * 3
 
 
-@pytest.mark.xfail(strict=True, reason="the Tag Panel raises AttributeError for <keep> typed before "
-                                       "any file was selected")
 def test_keep_typed_before_any_folder_is_loaded(mainwin, user):
     # The docs don't say; this is what puddletag should do.
     user.activate()
