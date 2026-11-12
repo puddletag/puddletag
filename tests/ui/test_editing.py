@@ -58,6 +58,25 @@ def in_table(table):
     return [audioinfo.usertags(audio) for audio in table.model().taginfo]
 
 
+def case_insensitive(monkeypatch, folder):
+    """Makes folder look like one on a case-insensitive filesystem (#966's
+    reporter's network share; macOS and Windows by default), where two names
+    that differ only in case are the same file. CI has no such filesystem."""
+    exists, samefile = os.path.exists, os.path.samefile
+
+    def find(path):
+        parent, name = os.path.split(os.fspath(path))
+        if os.path.realpath(parent) != os.path.realpath(folder) or not os.path.isdir(parent):
+            return None
+        for entry in os.listdir(parent):
+            if entry.casefold() == name.casefold():
+                return os.path.join(parent, entry)
+        return None
+
+    monkeypatch.setattr(os.path, 'exists', lambda path: exists(find(path) or path))
+    monkeypatch.setattr(os.path, 'samefile', lambda a, b: samefile(find(a) or a, find(b) or b))
+
+
 def written(qtbot, path, field, value):
     """Enter writes once Qt's event loop runs again (the delegate commits
     the edit through a queued call)."""
@@ -305,6 +324,35 @@ def test_filename_without_extension(user, loaded, qtbot):
     assert table.model().taginfo[0].filepath == str(paths[0].with_name('Bare'))
 
 
+# "__filename_no_ext: The file's filename without extension. Can be written
+# to: the file is renamed and keeps its extension."
+
+@pytest.mark.xfail(strict=True, reason='typing into a __filename_no_ext cell renames nothing')
+def test_filename_no_ext_cell_typed(user, loaded, qtbot):
+    table, paths = loaded
+    table.setHeaderTags(table.model().headerdata + [('__filename_no_ext', '__filename_no_ext')])
+    edit(user, user.cell(0, '__filename_no_ext'), 'Renamed')
+    user.press(Key.Key_Return)
+    renamed = paths[0].with_name('Renamed.mp3')
+    qtbot.waitUntil(renamed.exists)
+    assert sorted(os.listdir(paths[0].parent)) == ['02.mp3', '03.mp3', 'Renamed.mp3']
+    assert table.model().taginfo[0].filepath == str(renamed)
+
+
+@pytest.mark.xfail(strict=True, reason='typing into a __filename_no_ext cell renames nothing')
+def test_filename_no_ext_of_a_file_without_extension(user, loaded, qtbot):
+    table, paths = loaded
+    table.setHeaderTags(table.model().headerdata + [('__filename_no_ext', '__filename_no_ext')])
+    edit(user, user.cell(0, '__filename'), 'Bare')
+    user.press(Key.Key_Return)
+    qtbot.waitUntil(paths[0].with_name('Bare').exists)
+    edit(user, user.cell(0, '__filename_no_ext'), 'X')
+    user.press(Key.Key_Return)
+    qtbot.waitUntil(paths[0].with_name('X').exists)
+    assert sorted(os.listdir(paths[0].parent)) == ['02.mp3', '03.mp3', 'X']
+    assert table.model().taginfo[0].filepath == str(paths[0].with_name('X'))
+
+
 def test_several_files_one_name(user, loaded, qtbot, dialogs):
     # The docs don't say; this is what puddletag does: the first file is
     # renamed, the second can't be (the name is taken), and nothing is
@@ -338,6 +386,42 @@ def test_rename_error_restores_the_cursor(user, loaded, qtbot, dialogs):
     assert QApplication.overrideCursor() is None
     assert sorted(os.listdir(paths[0].parent)) == ['01.mp3', '02.mp3', '03.mp3']
     assert in_file(paths[0]) == {'artist': ['Artist 1'], 'title': ['Title 1']}
+
+
+@pytest.mark.xfail(strict=True, reason='#966: a case-only rename says "File exists" on a case-insensitive filesystem')
+def test_case_only_rename(mainwin, make_audio, tmp_path, qtbot, user, monkeypatch, dialogs):
+    # tut3.txt: "Editing the Filename cell renames the file." Changing only
+    # the case of the name does too, on a filesystem that ignores case (#966).
+    music = tmp_path / 'music'
+    make_audio('filename.mp3', music, title='Title')
+    mainwin.openDir(str(music), False)
+    table = mainwin._table
+    qtbot.waitUntil(lambda: table.model().rowCount() == 1)
+    user.activate()
+    table.setFocus()
+    case_insensitive(monkeypatch, music)
+    dialogs.answer('QMessageBox.warning', QMessageBox.StandardButton.Ok)
+    edit(user, user.cell(0, '__filename'), 'fileNAME.mp3')
+    user.press(Key.Key_Return)
+    qtbot.waitUntil(lambda: os.listdir(music) == ['fileNAME.mp3'])
+    assert dialogs.calls == []
+    assert table.model().taginfo[0].filepath == str(music / 'fileNAME.mp3')
+    assert in_file(music / 'fileNAME.mp3') == {'title': ['Title']}
+
+
+def test_rename_onto_another_name_of_the_same_file(user, loaded, qtbot, dialogs):
+    # A name that is another name of the file (a hard link, synthetic) is
+    # taken, not a case change: it says "File exists" and nothing moves.
+    table, paths = loaded
+    os.link(paths[0], paths[0].with_name('linked.mp3'))
+    dialogs.answer('QMessageBox.warning', QMessageBox.StandardButton.Ok)
+    edit(user, user.cell(0, '__filename'), 'linked.mp3')
+    user.press(Key.Key_Return)
+    qtbot.waitUntil(lambda: len(dialogs.calls) == 1)
+    [(name, (parent, title, message), kwargs)] = dialogs.calls
+    assert 'File exists' in message
+    assert sorted(os.listdir(paths[0].parent)) == ['01.mp3', '02.mp3', '03.mp3', 'linked.mp3']
+    assert table.model().taginfo[0].filepath == str(paths[0])
 
 
 def test_filename_drops_reserved_characters(user, loaded, qtbot):

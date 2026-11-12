@@ -26,6 +26,7 @@ Alt = Qt.KeyboardModifier.AltModifier
 Ctrl = Qt.KeyboardModifier.ControlModifier
 NoModifier = Qt.KeyboardModifier.NoModifier
 Shift = Qt.KeyboardModifier.ShiftModifier
+No = QMessageBox.StandardButton.No
 Yes = QMessageBox.StandardButton.Yes
 
 
@@ -549,3 +550,26 @@ def test_write_previews_keeps_a_hidden_preview_it_cannot_write(mainwin, loaded, 
     assert in_file(paths[1])['title'] == ['Angel']
     enter_filter(user, mainwin, '')
     assert titles(table)['02.mp3'] == ['New']
+
+
+@pytest.mark.skipif(os.geteuid() == 0, reason='root can write a read-only file')
+def test_write_previews_stopped_keeps_the_previews_not_written(mainwin, loaded, dialogs, qtbot, user):
+    # menus.txt: "If preview mode has been enabled and some changes were
+    # made, they'll get written to the files, and Preview Mode is disabled."
+    # The docs are silent on stopping at a file that can't be written: the
+    # files not written, the hidden one included, keep their previews.
+    table, paths = loaded
+    preview_titles(qtbot, user, table, 0, 2)
+    enter_filter(user, mainwin, 'Maffin')
+    table.setFocus()
+    os.chmod(paths[0], 0o444)
+    dialogs.answer('QMessageBox.exec', No)
+    user.press(Key.Key_W, Ctrl)
+    qtbot.waitUntil(lambda: any(name == 'QMessageBox.exec' for name, *_ in dialogs.calls))
+    [args] = [args for name, args, kwargs in dialogs.calls if name == 'QMessageBox.exec']
+    assert str(paths[0]) in args[0].text()
+    user.activate()
+    assert table.model().previewMode
+    assert [in_file(p)['title'] for p in paths] == [['Monster'], ['Angel'], ['Monster (Live)']]
+    enter_filter(user, mainwin, '')
+    assert titles(table) == {'01.mp3': ['New'], '02.mp3': ['New'], '03.mp3': ['New']}

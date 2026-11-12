@@ -6,6 +6,7 @@ examples.
 """
 import pytest
 from PyQt6.QtCore import Qt
+from PyQt6.QtWidgets import QMessageBox
 
 from puddlestuff.mainwin.patterncombo import PatternCombo
 
@@ -28,6 +29,10 @@ def set_pattern(user, pattern):
     user.type(pattern)
     user.press(Key.Key_Delete)
     user.press(Key.Key_F8)
+
+
+def tree(root):
+    return sorted(str(p.relative_to(root)) for p in root.rglob('*'))
 
 
 @pytest.mark.parametrize('rename_directories', RENAME_DIRECTORIES.values(), ids=RENAME_DIRECTORIES.keys())
@@ -71,3 +76,46 @@ def test_rename_directories_needs_a_selection(mainwin, make_audio, tmp_path, qtb
     user.click_cell(user.cell(0, 'title'), Ctrl)
     qtbot.waitUntil(lambda: mainwin._table.selectedRows == [])
     assert not user.action('&Rename Directories').isEnabled()
+
+
+@pytest.mark.xfail(strict=True, reason='Tag to Dir deletes the folders the move leaves empty, the loaded one too')
+def test_emptied_folders_are_left(mainwin, make_audio, tmp_path, qtbot, user):
+    # function.txt, Tag to Dir: "Works as Tag To Filename (below), but
+    # renames/moves directories instead". Tag to filename leaves the folders
+    # a move empties. The absolute pattern is function.txt's
+    # /mnt/music/%album%/... example.
+    music = tmp_path / 'music'
+    make_audio('01.mp3', music / 'Indie' / 'unsorted', album='Fans like it', title='t')
+    mainwin.openDir(str(music), False)
+    qtbot.waitUntil(lambda: mainwin._table.model().rowCount() == 1)
+    user.activate()
+    mainwin._table.setFocus()
+    user.click_cell(user.cell(0, 'title'))
+    set_pattern(user, str(tmp_path / 'library') + '/%album%')
+    user.click_menu('&Rename Directories')
+    moved = tmp_path / 'library' / 'Fans like it' / '01.mp3'
+    qtbot.waitUntil(moved.exists)
+    assert tree(tmp_path) == ['library', 'library/Fans like it', 'library/Fans like it/01.mp3',
+                              'music', 'music/Indie']
+    assert mainwin._table.model().taginfo[0].filepath == str(moved)
+
+
+def test_into_its_own_subfolder(mainwin, make_audio, tmp_path, qtbot, user, dialogs):
+    # A folder can't be moved into itself: the error says so, and the tree
+    # is unchanged.
+    music = tmp_path / 'music'
+    path = make_audio('01.mp3', music / 'unsorted', album='Fans like it', title='t')
+    mainwin.openDir(str(music), False)
+    qtbot.waitUntil(lambda: mainwin._table.model().rowCount() == 1)
+    user.activate()
+    mainwin._table.setFocus()
+    user.click_cell(user.cell(0, 'title'))
+    dialogs.answer('QMessageBox.warning', QMessageBox.StandardButton.Ok)
+    set_pattern(user, str(music / 'unsorted' / 'sub'))
+    user.click_menu('&Rename Directories')
+    qtbot.waitUntil(lambda: len(dialogs.calls) == 1)
+    [(name, (parent, title, message), kwargs)] = dialogs.calls
+    assert str(music / 'unsorted') in message
+    assert 'Cannot move directory to a subdirectory within itself.' in message
+    assert tree(tmp_path) == ['music', 'music/unsorted', 'music/unsorted/01.mp3']
+    assert mainwin._table.model().taginfo[0].filepath == str(path)

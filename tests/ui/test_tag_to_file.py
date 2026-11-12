@@ -124,6 +124,54 @@ def test_read_only_folder(user, loaded, qtbot, dialogs):
     assert [audio.filepath for audio in table.model().taginfo] == [str(p) for p in paths]
 
 
+@pytest.mark.skipif(os.geteuid() == 0, reason='root can create folders in a read-only folder')
+def test_folder_that_cannot_be_created(mainwin, make_audio, tmp_path, qtbot, user, dialogs):
+    # function.txt, Tag to filename: "Intermediate directories will be
+    # created if they don't exist." When one can't be, the error says which,
+    # and nothing is moved.
+    music = tmp_path / 'music'
+    path = make_audio('01.mp3', music / 'unsorted', album='Fans like it', title='t')
+    table = load(mainwin, qtbot, user, [path])
+    user.click_cell(user.cell(0, 'title'))
+    set_pattern(user, '%album%/%title%')
+    dialogs.answer('QMessageBox.warning', QMessageBox.StandardButton.Ok)
+    os.chmod(music, 0o555)
+    try:
+        user.press(Key.Key_F, Ctrl)
+        qtbot.waitUntil(lambda: len(dialogs.calls) == 1)
+    finally:
+        os.chmod(music, 0o755)
+    [(name, (parent, title, message), kwargs)] = dialogs.calls
+    assert "Couldn't create intermediate directory: " + str(music / 'Fans like it') in message
+    assert os.listdir(music) == ['unsorted']
+    assert os.listdir(path.parent) == ['01.mp3']
+    assert table.model().taginfo[0].filepath == str(path)
+
+
+@pytest.mark.skipif(os.geteuid() == 0, reason='root can rename in a read-only folder')
+@pytest.mark.xfail(strict=True, reason='a move that fails after copying the file leaves the copy behind')
+def test_move_out_of_a_read_only_folder_leaves_no_copy(mainwin, make_audio, tmp_path, qtbot, user, dialogs):
+    # The docs are silent; a move that fails must not leave the file in
+    # both places. The destination folder is writable, the source's isn't.
+    music = tmp_path / 'music'
+    path = make_audio('01.mp3', music, album='Fans like it', title='t')
+    table = load(mainwin, qtbot, user, [path])
+    user.click_cell(user.cell(0, 'title'))
+    set_pattern(user, '%album%/%title%')
+    dialogs.answer('QMessageBox.warning', QMessageBox.StandardButton.Ok)
+    os.chmod(music, 0o555)
+    try:
+        user.press(Key.Key_F, Ctrl)
+        qtbot.waitUntil(lambda: len(dialogs.calls) == 1)
+    finally:
+        os.chmod(music, 0o755)
+    [(name, (parent, title, message), kwargs)] = dialogs.calls
+    assert 'Permission denied' in message
+    assert path.exists()
+    assert not (tmp_path / 'Fans like it' / 't.mp3').exists()
+    assert table.model().taginfo[0].filepath == str(path)
+
+
 def test_tag_to_file_with_a_syntax_error(user, loaded, mainwin, dialogs):
     # A pattern's syntax error is shown in a warning and no file is renamed.
     # Synthetic pattern, missing its closing bracket.

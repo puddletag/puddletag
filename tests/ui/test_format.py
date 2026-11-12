@@ -165,6 +165,22 @@ def test_extension_written_by_format(user, nested, qtbot):
     assert table.model().taginfo[0].filepath == str(renamed)
 
 
+@pytest.mark.xfail(strict=True, reason='Format into __filename_no_ext renames nothing')
+def test_filename_no_ext_written_by_format(user, nested, qtbot):
+    # __filename_no_ext: "The file's filename without extension. Can be
+    # written to: the file is renamed and keeps its extension."
+    table, path = nested
+    table.setHeaderTags(table.model().headerdata + [('__filename_no_ext', '__filename_no_ext')])
+    user.click_cell(user.cell(0, '__filename_no_ext'))
+    set_pattern(user, 'Renamed')
+    user.click_toolbar('&Format')
+    renamed = path.parent / 'Renamed.mp3'
+    qtbot.waitUntil(renamed.exists)
+    assert not path.exists()
+    assert table.model().taginfo[0].filepath == str(renamed)
+    assert in_file(renamed, 'title') == ['Song']
+
+
 def test_format_with_a_syntax_error(user, loaded, mainwin, dialogs):
     # Tag->File shows a pattern's syntax error in a warning and changes
     # nothing; Format does the same. Synthetic pattern, missing its closing
