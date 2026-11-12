@@ -259,11 +259,9 @@ class FrameCombo(QGroupBox):
 
         self._originalValues.update(originals)
         self.onetomany.emit(tags)
-        if 'genre' in combos:
-            combo = combos['genre']
-
+        if 'genre' in tags:
             genres = self._status['genres']
-            new_genres = [_f for _f in str(combo.currentText()).split(SEPARATOR) if _f]
+            new_genres = [_f for _f in tags['genre'] if _f]
 
             [genres.append(genre) for genre in new_genres
              if genre not in genres]

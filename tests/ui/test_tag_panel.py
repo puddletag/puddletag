@@ -591,7 +591,6 @@ def differing_genres(mainwin, make_audio, tmp_path, qtbot, user):
     return panel, paths
 
 
-@pytest.mark.xfail(strict=True, reason="Save adds <keep> to the genre list when the files' genres differ")
 def test_save_with_differing_genres_adds_no_keep(user, differing_genres, qtbot):
     # "A genre you save in the Tag Panel that isn't in the list is added to
     # it" (preferences.txt): <keep> is no genre.
