@@ -422,7 +422,6 @@ def questions(dialogs):
     return [args[1:] for name, args, kwargs in dialogs.calls if name == 'QMessageBox.question']
 
 
-@pytest.mark.xfail(strict=True, reason='Refresh Selected lists the hidden files and the new ones whatever the Filter says')
 def test_refresh_selected_keeps_the_filter(mainwin, loaded, make_audio, qtbot, user):
     # menus.txt, Refresh Selected: "Re-reads the folders of the selected
     # files: new files in them are added and deleted ones are removed."
@@ -442,7 +441,6 @@ def test_refresh_selected_keeps_the_filter(mainwin, loaded, make_audio, qtbot, u
     assert sorted(shown(table)) == ['01.mp3', '02.mp3', '03.mp3', '04.mp3', '05.mp3']
 
 
-@pytest.mark.xfail(strict=True, reason='Refresh Selected keeps a deleted hidden file')
 def test_refresh_selected_removes_a_deleted_hidden_file(mainwin, loaded, qtbot, user):
     # menus.txt, Refresh Selected: "Re-reads the folders of the selected
     # files: new files in them are added and deleted ones are removed."
@@ -458,7 +456,6 @@ def test_refresh_selected_removes_a_deleted_hidden_file(mainwin, loaded, qtbot, 
     assert shown(table) == ['01.mp3', '03.mp3']
 
 
-@pytest.mark.xfail(strict=True, reason="Refresh Selected doesn't ask about the previews of hidden files")
 def test_refresh_selected_asks_about_hidden_previews(mainwin, loaded, qtbot, user, dialogs):
     # menus.txt, Preview Mode: "If some files have previews that haven't
     # been written, disabling Preview Mode first asks whether to discard

@@ -776,22 +776,16 @@ class TagModel(QAbstractTableModel):
             if not hasattr(z, 'library'):
                 z.library = None
 
-        fns = dict((f.filepath, i) for i, f in enumerate(self.taginfo))
+        files = self.taginfo + self._filtered
+        fns = dict((f.filepath, i) for i, f in enumerate(files))
 
-        to_append = []
-
-        num_rows_to_insert = 0
-
-        first = self.rowCount()
         for t in tags:
             if t.filepath in fns:
-                self.taginfo[fns[t.filepath]] = t
+                files[fns[t.filepath]] = t
             else:
-                self.taginfo.append(t)
-                num_rows_to_insert = 1
+                files.append(t)
 
-        self.beginInsertRows(QModelIndex(), first, len(self.taginfo) - 1)
-        self.endInsertRows()
+        self.taginfo, self._filtered = self._splitFiltered(files)
 
     def load(self, taginfo, append=False):
         """Loads tags as in __init__.
@@ -2099,7 +2093,7 @@ class TagTable(QTableView):
 
         loaded_dirs = list(map(encode_fn, self.dirs))
         if files is None:
-            files = self.model().taginfo
+            files = self.model().taginfo + self.model()._filtered
 
         taginfo = self.model().taginfo
         dirs = set([taginfo[i].dirpath for i in self.selectedRows])
@@ -2128,6 +2122,8 @@ class TagTable(QTableView):
         with self.model().reset_context():
             self.model().taginfo = [z for z in self.model().taginfo if
                                     z not in to_remove]
+            self.model()._filtered = [z for z in self.model()._filtered if
+                                      z not in to_remove]
             self.fillTable(tags, None)
 
         self.filesloaded.emit(True)
