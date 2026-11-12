@@ -1,5 +1,5 @@
-from PyQt6.QtCore import pyqtSignal
-from PyQt6.QtGui import QAction
+from PyQt6.QtCore import QEvent, Qt, pyqtSignal
+from PyQt6.QtGui import QAction, QKeySequence
 
 from ...audioinfo import commontags
 from ...constants import (LEFTDOCK, SELECTIONCHANGED,
@@ -29,6 +29,10 @@ class ExTagsPlugin(ExTags):
         self.okcancel.okButton.hide()
         self.okcancel.cancelButton.hide()
 
+        # Delete elsewhere is Move to Trash's.
+        self.listbuttons.removeButton.setShortcut(QKeySequence())
+        self.table.installEventFilter(self)
+
         self.previewMode = False
         self.canceled = False
         self.filechanged = False
@@ -46,6 +50,17 @@ class ExTagsPlugin(ExTags):
             return k
 
         puddletag.add_shortcuts('&Plugins', [sep(), action, sep()])
+
+    def eventFilter(self, obj, event):
+        if (obj is self.table and event.type() in (
+                QEvent.Type.KeyPress, QEvent.Type.ShortcutOverride)
+                and event.key() == Qt.Key.Key_Delete):
+            # Taking the override keeps Move to Trash's Del from competing.
+            event.accept()
+            if event.type() == QEvent.Type.KeyPress:
+                self.listbuttons.removeButton.click()
+            return True
+        return super().eventFilter(obj, event)
 
     def addTag(self):
         win = EditField(parent=self, taglist=self.get_fieldlist)

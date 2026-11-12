@@ -877,8 +877,6 @@ def test_dock_drops_edits_on_a_new_selection(dock, mainwin, load, user, qtbot):
     assert all('genre' not in in_file(p) for p in paths)
 
 
-@pytest.mark.xfail(strict=True, reason="Delete is ambiguous between the dock's Remove shortcut "
-                                       "and Move to Trash, so neither fires")
 def test_delete_moves_files_to_the_trash_with_the_dock_shown(dock, mainwin, load, user, qtbot, dialogs):
     # menus.txt: "Move to Trash (Del)": "Moves the selected files to the
     # trash ... puddletag asks first". With the dock shown, Del on the
