@@ -7,10 +7,12 @@ import os
 
 import pytest
 from PyQt6.QtCore import Qt
-from PyQt6.QtWidgets import QApplication, QStyle, QStyleOptionComboBox
+from PyQt6.QtWidgets import QApplication, QLineEdit, QStyle, QStyleOptionComboBox, QToolButton
 
 from puddlestuff import audioinfo, constants
+from puddlestuff.mainwin import tagpanel
 from puddlestuff.mainwin.tagpanel import FrameCombo
+from puddlestuff.puddletag import status
 
 pytestmark = pytest.mark.ui
 
@@ -322,3 +324,285 @@ def test_nothing_selected(user, loaded):
     assert shown(panel) == dict.fromkeys(panel.combos, '')
     assert not any(combo.isEnabled() for combo in panel.combos.values())
     assert not user.action('&Save').isEnabled()
+
+
+def preview(user):
+    """Ctrl+Shift+P, Preview Mode's shortcut."""
+    user.press(Key.Key_P, Ctrl | Shift)
+
+
+def pick(user, qtbot, panel, field, text):
+    """Opens the field's list with its arrow and clicks text, as
+    test_pick_from_the_list does."""
+    combo = panel.combos[field]
+    option = QStyleOptionComboBox()
+    combo.initStyleOption(option)
+    arrow = combo.style().subControlRect(QStyle.ComplexControl.CC_ComboBox, option,
+                                         QStyle.SubControl.SC_ComboBoxArrow, combo)
+    user.click(combo, arrow.center())
+    view = combo.view()
+    qtbot.waitUntil(view.isVisible)
+    qtbot.wait(QApplication.doubleClickInterval() + 100)
+    user.click(view.viewport(), view.visualRect(combo.model().index(combo.findText(text), 0)).center())
+    qtbot.waitUntil(lambda: not view.isVisible())
+
+
+def settings_page(user):
+    """Edit > Preferences > Tag Panel: the window and its page."""
+    window = user.open_preferences('Tag Panel')
+    return window, window.stack.currentWidget()
+
+
+def page_button(page, tooltip):
+    [button] = [b for b in page.findChildren(QToolButton) if b.toolTip() == tooltip]
+    return button
+
+
+def rows(page):
+    table = page._table
+    return [table.texts(row) for row in range(table.rowCount())]
+
+
+def click_row(user, page, row, modifier=Qt.KeyboardModifier.NoModifier):
+    """Clicks the row's Title cell."""
+    table = page._table
+    user.click(table.viewport(), table.visualItemRect(table.item(row, 0)).center(), modifier)
+
+
+def type_into_editor(user, text):
+    """Types over the open cell editor's text and presses Enter."""
+    QApplication.focusWidget().selectAll()
+    user.type(text)
+    user.press(Key.Key_Return)
+
+
+def edit_cell(user, page, row, column, text):
+    """Double-clicks the cell and types over it."""
+    table = page._table
+    user.double_click(table.viewport(), table.visualItemRect(table.item(row, column)).center())
+    type_into_editor(user, text)
+
+
+def panel_rows(panel):
+    """The panel's fields, row by row, each row left to right."""
+    combos = sorted(panel.combos.items(), key=lambda item: (item[1].y(), item[1].x()))
+    shown = {}
+    for field, combo in combos:
+        shown.setdefault(combo.y(), []).append(field)
+    return list(shown.values())
+
+
+def editor_open(page):
+    editor = QApplication.focusWidget()
+    return isinstance(editor, QLineEdit) and editor.parent() is page._table.viewport()
+
+
+# Preferences > Tag Panel: "puddletag will show the Title above a combo box
+# that'll be populated using the field you specify in the Field column."
+# "Row refers to the row number in which to show the field. If more than
+# one row contains the same number, the fields will be listed on one row."
+# (preferences.txt)
+
+def test_settings_add_makes_a_field_on_a_new_row(mainwin, user):
+    # The docs don't say what Add does; this is what puddletag does.
+    window, page = settings_page(user)
+    user.click(page_button(page, 'Add'))
+    assert rows(page)[-1] == ['Title', 'field', '5']
+    assert editor_open(page)
+    type_into_editor(user, 'Disc')
+    edit_cell(user, page, 7, 1, 'discnumber')
+    user.close_preferences(window)
+    [panel] = mainwin.findChildren(FrameCombo)
+    assert panel_rows(panel) == [['artist'], ['title'], ['album'], ['track', 'year', 'genre'],
+                                 ['comment'], ['discnumber']]
+    assert panel.labels['discnumber'].text() == 'Disc'
+    assert tagpanel.loadsettings()[5] == [('Disc', 'discnumber')]
+
+
+def test_settings_edit_renames_a_title(mainwin, user):
+    window, page = settings_page(user)
+    click_row(user, page, 0)
+    user.click(page_button(page, 'Edit'))
+    type_into_editor(user, 'Band')
+    user.close_preferences(window)
+    [panel] = mainwin.findChildren(FrameCombo)
+    assert panel.labels['artist'].text() == 'Band'
+    assert panel_rows(panel) == [['artist'], ['title'], ['album'], ['track', 'year', 'genre'],
+                                 ['comment']]
+
+
+def test_settings_duplicate_puts_two_fields_on_one_row(mainwin, user):
+    window, page = settings_page(user)
+    click_row(user, page, 2)
+    user.click(page_button(page, 'Duplicate'))
+    assert rows(page)[-1] == ['Al&bum', 'album', '2']
+    assert editor_open(page)
+    type_into_editor(user, 'Album artist')
+    edit_cell(user, page, 7, 1, 'albumartist')
+    user.close_preferences(window)
+    [panel] = mainwin.findChildren(FrameCombo)
+    assert panel_rows(panel)[2] == ['album', 'albumartist']
+
+
+def test_settings_remove_drops_the_selected_rows(mainwin, user):
+    # The docs don't say what Remove does; the rows left make the panel.
+    window, page = settings_page(user)
+    click_row(user, page, 5)
+    click_row(user, page, 6, Ctrl)
+    user.click(page_button(page, 'Remove'))
+    assert [r[1] for r in rows(page)] == ['artist', 'title', 'album', 'track', 'year']
+    user.close_preferences(window)
+    [panel] = mainwin.findChildren(FrameCombo)
+    assert panel_rows(panel) == [['artist'], ['title'], ['album'], ['track', 'year']]
+
+
+def test_settings_remove_with_the_delete_key(mainwin, user, qtbot):
+    window, page = settings_page(user)
+    click_row(user, page, 6)
+    user.press(Key.Key_Delete)
+    # A shortcut presses the button with animateClick: a moment later.
+    qtbot.waitUntil(lambda: len(rows(page)) == 6)
+    assert [r[1] for r in rows(page)] == ['artist', 'title', 'album', 'track', 'year', 'genre']
+    user.close_preferences(window, 'Cancel')
+
+
+def test_settings_move_up_changes_the_order_on_a_row(mainwin, user):
+    # The docs don't say; this is what puddletag does: moving changes the
+    # order within a row, never the row.
+    window, page = settings_page(user)
+    click_row(user, page, 5)
+    user.click(page_button(page, 'Move Up'))
+    assert rows(page)[4:6] == [['&Genre', 'genre', '3'], ['&Year', 'year', '3']]
+    user.close_preferences(window)
+    [panel] = mainwin.findChildren(FrameCombo)
+    assert panel_rows(panel)[3] == ['track', 'genre', 'year']
+
+
+def test_settings_move_down_changes_the_order_on_a_row(mainwin, user):
+    # The docs don't say; this is what puddletag does.
+    window, page = settings_page(user)
+    click_row(user, page, 3)
+    user.click(page_button(page, 'Move Down'))
+    user.close_preferences(window)
+    [panel] = mainwin.findChildren(FrameCombo)
+    assert panel_rows(panel)[3] == ['year', 'track', 'genre']
+
+
+def test_settings_buttons_greyed_out_without_rows(mainwin, user):
+    # The docs don't say; this is what puddletag does.
+    window, page = settings_page(user)
+    for i in range(7):
+        click_row(user, page, 0)
+        user.click(page_button(page, 'Remove'))
+    assert rows(page) == []
+    assert [page_button(page, tip).isEnabled() for tip in ('Edit', 'Duplicate', 'Remove')] == [False] * 3
+    assert page_button(page, 'Add').isEnabled()
+    user.close_preferences(window, 'Cancel')
+
+
+@pytest.mark.xfail(strict=True, reason="Preferences' OK empties the Tag Panel while files are selected")
+def test_ok_keeps_the_selected_files_in_the_panel(mainwin, user, loaded):
+    # The docs don't say; the panel shows the selected files.
+    panel, paths = loaded
+    before = shown(panel)
+    window = user.open_preferences('General')
+    user.close_preferences(window)
+    [panel] = mainwin.findChildren(FrameCombo)
+    assert shown(panel) == before
+
+
+@pytest.mark.xfail(strict=True, reason="Preferences' OK with a new layout leaves the Tag Panel empty "
+                                       "while files are selected")
+def test_ok_with_a_new_layout_shows_the_selected_files(mainwin, user, loaded):
+    # The docs don't say; the panel shows the selected files.
+    panel, paths = loaded
+    window, page = settings_page(user)
+    click_row(user, page, 0)
+    user.click(page_button(page, 'Edit'))
+    type_into_editor(user, 'Band')
+    user.close_preferences(window)
+    [panel] = mainwin.findChildren(FrameCombo)
+    assert shown(panel)['artist'] == 'Same'
+
+
+# Preview Mode: "While in Preview Mode, you can edit fields as normal (via
+# the main view window, Tag Panel or Extended Tags view) before committing
+# any changes." (tut4.txt) "To remove a field, change the text to <blank>
+# and the field'll be removed upon saving." (tut1.txt)
+
+def test_blank_in_preview_mode_removes_the_field(user, loaded, qtbot):
+    panel, paths = loaded
+    preview(user)
+    pick(user, qtbot, panel, 'album', '<blank>')
+    assert [dict(audio.preview) for audio in user.table.model().taginfo] == [{'album': ''}] * 3
+    user.click_menu('&Write Previews')
+    qtbot.waitUntil(lambda: all(in_file(p).get('album') is None for p in paths[:2]))
+    assert [in_file(p).get('album') for p in paths] == [None] * 3
+
+
+@pytest.mark.xfail(strict=True, reason="<keep> in Preview Mode previews the text <keep>")
+def test_keep_in_preview_mode_keeps_each_files_value(user, loaded, qtbot):
+    # "<keep>, signifying that upon saving that field will remain unchanged
+    # for each file" (tut1.txt)
+    panel, paths = loaded
+    preview(user)
+    pick(user, qtbot, panel, 'album', 'A1')
+    pick(user, qtbot, panel, 'album', '<keep>')
+    assert [audio.get('album') for audio in user.table.model().taginfo] == [['A1']] * 3
+
+
+@pytest.mark.xfail(strict=True, reason="the Tag Panel raises AttributeError for <keep> typed before "
+                                       "any file was selected")
+def test_keep_typed_before_any_folder_is_loaded(mainwin, user):
+    # The docs don't say; this is what puddletag should do.
+    user.activate()
+    preview(user)
+    edit = mainwin.findChildren(FrameCombo)[0].combos['artist'].lineEdit()
+    user.click(edit)
+    user.type('<keep>')
+    # Leaving the field finishes the edit, which saves. Focus goes to the
+    # table: another field would save again when the window closes.
+    user.click(user.table.viewport())
+    assert edit.text() == '<keep>'
+
+
+@pytest.mark.xfail(strict=True, reason="each Preview Mode toggle connects the Tag Panel's fields again")
+def test_preview_mode_toggled_connects_the_fields_once(user, loaded, qtbot):
+    # The docs don't say; one pick is one change.
+    panel, paths = loaded
+    seen = []
+    panel.onetomanypreview.connect(seen.append)
+    for i in range(5):
+        preview(user)
+    pick(user, qtbot, panel, 'album', '<blank>')
+    assert seen == [{'album': ''}]
+
+
+@pytest.fixture
+def differing_genres(mainwin, make_audio, tmp_path, qtbot, user):
+    """Two MP3s with the genres Aa and Bb, both selected."""
+    music = tmp_path / 'genres'
+    paths = [make_audio('01.mp3', music, artist='Same', title='T1', genre='Aa'),
+             make_audio('02.mp3', music, artist='Same', title='T2', genre='Bb')]
+    mainwin.openDir(str(music), False)
+    qtbot.waitUntil(lambda: mainwin._table.model().rowCount() == 2)
+    user.activate()
+    user.click_cell(user.cell(0, 'title'))
+    user.click_cell(user.cell(1, 'title'), Shift)
+    assert mainwin._table.selectedRows == [0, 1]
+    user.press(Key.Key_B, Alt)
+    [panel] = mainwin.findChildren(FrameCombo)
+    return panel, paths
+
+
+@pytest.mark.xfail(strict=True, reason="Save adds <keep> to the genre list when the files' genres differ")
+def test_save_with_differing_genres_adds_no_keep(user, differing_genres, qtbot):
+    # "A genre you save in the Tag Panel that isn't in the list is added to
+    # it" (preferences.txt): <keep> is no genre.
+    panel, paths = differing_genres
+    assert shown(panel)['genre'] == '<keep>'
+    fill(user, panel, 'album', 'X')
+    user.press(Key.Key_S, Ctrl)
+    saved(qtbot, paths, 'album', ['X'])
+    assert '<keep>' not in status['genres']
+    assert [in_file(p)['genre'] for p in paths] == [['Aa'], ['Bb']]
