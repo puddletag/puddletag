@@ -73,7 +73,6 @@ def test_every_tag_in_the_file_is_listed(mainwin, make_audio, tmp_path, qtbot, u
 
 
 @pytest.mark.skipif(os.geteuid() == 0, reason='root can read a file without permissions')
-@pytest.mark.xfail(strict=True, reason='Stored Tags raises KeyError for a file it can\'t read')
 def test_file_that_cant_be_read(loaded, qtbot, user):
     # The docs are silent about a file puddletag can't read; this is what the
     # dock should show instead of failing: the error, in bold.
@@ -87,7 +86,6 @@ def test_file_that_cant_be_read(loaded, qtbot, user):
     assert bold(dock) == ['Error']
 
 
-@pytest.mark.xfail(strict=True, reason='Stored Tags raises the format\'s error for a file it can\'t read')
 def test_file_that_isnt_audio_any_more(loaded, qtbot, user):
     # The docs are silent about a listed file that was overwritten; the dock
     # should show the error, in bold. Synthetic: 4096 zero bytes.

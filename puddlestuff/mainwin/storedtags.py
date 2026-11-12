@@ -1,5 +1,6 @@
 import os
 
+from mutagen import MutagenError
 from PyQt6.QtCore import QMutex, Qt
 from PyQt6.QtGui import QFont
 from PyQt6.QtWidgets import QApplication, QGridLayout, QLabel, QScrollArea, QVBoxLayout, QWidget
@@ -8,6 +9,7 @@ from .. import audioinfo
 from ..audioinfo import tag_versions
 from ..constants import LEFTDOCK, SELECTIONCHANGED
 from ..puddleobjects import PuddleThread, natural_sort_key
+from ..translations import translate
 
 mutex = QMutex()
 
@@ -69,8 +71,8 @@ class StoredTags(QScrollArea):
             try:
                 audio = audioinfo._Tag(filepath)
                 tags = tag_versions.tags_in_file(filepath)
-            except (OSError, IOError) as e:
-                audio = {'Error': [e.strerror]}
+            except (OSError, MutagenError) as e:
+                return [(translate('Stored Tags', 'Error'), e.strerror if isinstance(e, OSError) else str(e))]
 
             if isinstance(audio, audioinfo.id3.Tag):
                 if 'ID3v2.4' in tags:
@@ -114,6 +116,11 @@ class StoredTags(QScrollArea):
                     t_label = QLabel(title)
                     t_label.setFont(self._boldfont)
                     grid.addWidget(t_label, offset - 1, 0)
+                    if isinstance(values, str):
+                        # A file that couldn't be read: the reason, under "Error".
+                        grid.addWidget(QLabel(values), offset, 0, 1, 2)
+                        offset += grid.rowCount() + 1
+                        continue
                     for row, (tag, value) in enumerate(values):
                         field = QLabel('%s:' % tag)
                         field.setAlignment(Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
