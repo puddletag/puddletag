@@ -741,7 +741,6 @@ def test_staged_cover_shown(load, mainwin, user, qtbot, dialogs, tmp_path):
     win.close()
 
 
-@pytest.mark.xfail(strict=True, reason='OK stages the fields nobody changed and the covers too')
 def test_untouched_fields_stay_unstaged(load, mainwin, user, qtbot):
     # menus.txt, Preview Mode: "Values that you've changed, but are the same
     # as the underlying value will be shown in italics." Only the added

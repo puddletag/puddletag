@@ -752,6 +752,7 @@ class ExTags(QDialog):
 
         self.canceled = False
         self.filechanged = False
+        self.imagechanged = False
         self.coversdiffer = False
 
         if row is not None and row >= 0 and files:
@@ -885,6 +886,7 @@ class ExTags(QDialog):
 
     def _imageChanged(self):
         self.filechanged = True
+        self.imagechanged = True
         # Adding a cover replaces the differing ones; removing one with
         # nothing shown is removePic's to handle.
         if self.piclabel.images:
@@ -938,6 +940,7 @@ class ExTags(QDialog):
         if self.filechanged:
             self.save()
         self.filechanged = False
+        self.imagechanged = False
         self.coversdiffer = False
         self.table.clearContents()
         self.table.setRowCount(0)
@@ -1114,6 +1117,7 @@ class ExTags(QDialog):
     def removePic(self):
         if self.coversdiffer:
             self.coversdiffer = False
+            self.imagechanged = True
             self.piclabel.context = 'No Images'
             self.piclabel.removepic.setEnabled(False)
             if not isinstance(self.piclabel.removepic, QAction):
@@ -1138,7 +1142,14 @@ class ExTags(QDialog):
             return
 
         tags = self.listtotag()
-        if not self.coversdiffer:
+        changed = set()
+        for row in range(self.table.rowCount()):
+            item = self.get_item(row, 0)
+            combo = self.table.cellWidget(row, 1)
+            if item.status is not None or (combo is not None and combo.currentIndex() != 0):
+                changed.add(item.text().lower())
+        tags = {k: v for k, v in tags.items() if k.lower() in changed}
+        if self.imagechanged and not self.coversdiffer:
             if not self.piclabel.images:
                 tags['__image'] = []
             else:
