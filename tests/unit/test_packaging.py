@@ -6,8 +6,6 @@ import sys
 import zipfile
 from pathlib import Path
 
-import pytest
-
 ROOT = Path(__file__).parents[2]
 # What setup.py reads, or installs besides the package.
 SETUP_FILES = ['README.md', 'puddletag', 'puddletag.1', 'puddletag.desktop', 'puddletag.png',
@@ -27,7 +25,6 @@ def wheel_files(tmp_path):
     return set(zipfile.ZipFile(wheel).namelist())
 
 
-@pytest.mark.xfail(strict=True, reason='setup.py ships no bundled plugin')
 def test_wheel_holds_every_bundled_plugin(tmp_path):
     # README: "There are several tools to install puddletag via PyPI"; plugins.txt: a
     # plugin is a folder holding __init__.py and info.
