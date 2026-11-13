@@ -709,7 +709,6 @@ def bundled_name_plugin(clean_profile):
     write_plugin('dupe_fields', 'Synthetic Dupe', source_code('Synthetic Dupe Source'))
 
 
-@pytest.mark.xfail(strict=True, reason="the user's plugin is listed next to the bundled one with its folder's name")
 def test_plugin_named_like_a_bundled_one_is_left_out(bundled_name_plugin, mainwin, user, qtbot, caplog):
     # The docs are silent: both would be imported as puddlestuff.plugins.dupe_fields,
     # so the plugin that comes with puddletag wins, and the other is left out with a

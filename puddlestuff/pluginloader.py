@@ -32,7 +32,11 @@ def get_plugins(plugindir):
     if not os.path.exists(plugindir):
         os.makedirs(plugindir)
     infos = []
+    bundled = os.listdir(os.path.dirname(plugins_package.__file__))
     for module in os.listdir(plugindir):
+        if plugindir == PLUGINDIR and module in bundled:
+            logging.warning(f"Plugin {module} not loaded: a plugin that comes with puddletag has its folder's name")
+            continue
         info_path = os.path.join(plugindir, module, 'info')
         if not exists(info_path):
             continue
