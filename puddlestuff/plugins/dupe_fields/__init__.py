@@ -50,7 +50,6 @@ def init(parent=None):
         lambda v: highlight_dupe_field(action) if v else remove_highlight())
     puddletag.add_shortcuts('&Plugins', [sep(), action, sep()])
 
-    global obj
     obj.receives = []
     obj.emits = ['highlight']
     connect_control(obj)

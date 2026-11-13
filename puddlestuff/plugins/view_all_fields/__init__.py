@@ -187,10 +187,3 @@ class Settings(ButtonsAndList):
 
         if state:
             show_all_fields()
-
-
-if __name__ == '__main__':
-    app = QApplication([])
-    win = Settings()
-    win.show()
-    app.exec()

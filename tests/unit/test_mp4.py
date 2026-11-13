@@ -407,9 +407,8 @@ def test_one_string_value(make_audio):
 
 def test_delete_cover_and_file_info(make_audio):
     # "__image: Refers to the album art present in the file." Plugins get
-    # these Tag objects (the export_tags plugin restores a tag dict the same
-    # way): deleting __image removes the covers on save, deleting __length
-    # does nothing. Synthetic file.
+    # these Tag objects: deleting __image removes the covers on save, deleting
+    # __length does nothing. Synthetic file.
     path = make_audio('song.m4a', title='Song')
     atoms, tag = save(path, {'__image': [FRONT]})
     assert 'covr' in atoms

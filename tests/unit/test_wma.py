@@ -182,8 +182,7 @@ def test_copy_of_a_tag(make_audio):
 def test_delete_cover_and_file_info(make_audio):
     # tags.txt: "__image: Refers to the album art present in the file." Deleting
     # it removes the covers on save; deleting a file field such as __length
-    # does nothing. Plugins get these Tag objects (the export_tags plugin
-    # restores a tag dict the same way). Synthetic file and cover.
+    # does nothing. Plugins get these Tag objects. Synthetic file and cover.
     path = make_audio('song.wma', title='Song')
     write(path, [FRONT])
     tag = audioinfo.Tag(str(path))

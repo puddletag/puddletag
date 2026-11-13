@@ -183,8 +183,8 @@ def test_ape_file_without_an_apev2_tag(make_audio):
 @pytest.mark.parametrize('ext', APE_FORMATS)
 def test_delete_cover_and_file_info(make_audio, ext):
     # tags.txt: "__image: Refers to the album art present in the file." Plugins
-    # get the Tag object and delete these keys (the export_tags plugin restores
-    # a tag dict the same way); the file information isn't saved. Synthetic.
+    # get the Tag object and delete these keys; the file information isn't
+    # saved. Synthetic.
     path = make_audio('song.' + ext, title='Song')
     write(path, [FRONT])
     tag = audioinfo.Tag(str(path))

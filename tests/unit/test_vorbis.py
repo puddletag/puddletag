@@ -202,9 +202,9 @@ def test_chapter_titles_still_read_by_ffprobe(make_audio):
 # clearing a field the file lacks.
 def test_delete_cover_and_file_info(make_audio, vorbis_file):
     # tags.txt: "__image: Refers to the album art present in the file."
-    # Plugins get these Tag objects and delete the keys from them (the
-    # export_tags plugin restores a tag dict the same way); the file keeps its
-    # length, and the save leaves no picture. Synthetic file and cover.
+    # Plugins get these Tag objects and delete the keys from them; the file
+    # keeps its length, and the save leaves no picture. Synthetic file and
+    # cover.
     write(vorbis_file, [FRONT])
     tag = audioinfo.Tag(str(vorbis_file))
     del tag['__image']
