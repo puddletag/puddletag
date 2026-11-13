@@ -7,7 +7,6 @@ import json
 import logging
 import os
 import re
-import sys
 import time
 from bisect import bisect_left, insort_left  # for unique function.
 from collections import defaultdict
@@ -398,10 +397,7 @@ def create_buddy(text, control, box=None):
 
 def issubfolder(parent, child, level=1):
     parent, child = removeslash(parent), removeslash(child)
-    if isinstance(parent, str):
-        sep = str(os.path.sep)
-    else:
-        sep = os.path.sep
+    sep = os.path.sep
     if level is not None:
         if child.startswith(parent + sep) and dirlevels(parent) + level == dirlevels(child):
             return True
@@ -1586,10 +1582,7 @@ class PicWidget(QWidget):
 
         self._image_desc = QLineEdit(self)
 
-        if (hasattr(self._image_desc, 'setPlaceholderText')):
-            self._image_desc.setPlaceholderText(translate("Artwork", 'Enter a description'))
-        else:
-            self._image_desc.setText('')
+        self._image_desc.setPlaceholderText(translate("Artwork", 'Enter a description'))
 
         self._image_desc.setToolTip(
             translate("Artwork",
@@ -2004,11 +1997,9 @@ class PicWidget(QWidget):
             if not tempfilename:
                 tempfilename = os.path.join(self.currentFile.dirpath,
                                             'folder.jpg')
-        elif self.lastfilename:
+        else:
             tempfilename = os.path.join(os.path.dirname(self.lastfilename),
                                         'folder.jpg')
-        else:
-            tempfilename = 'folder.jpg'
         if self.currentImage > -1:
             selectedFile = QFileDialog.getSaveFileName(
                 self,
@@ -2073,20 +2064,13 @@ class PicWidget(QWidget):
 
         for filename in filenames:
             image = QImage()
-            if filename.startswith(":/"):
-                ba = QByteArray()
-                data = QBuffer(ba)
-                data.open(QIODevice.OpenModeFlag.WriteOnly)
-                image.save(data, "JPG")
-                data = str(data.data())
-            else:
+            try:
+                data = urlopen(filename)
+            except (ValueError, RetrievalError):
                 try:
-                    data = urlopen(filename)
-                except (ValueError, RetrievalError):
-                    try:
-                        data = open(filename, 'rb').read()
-                    except EnvironmentError:
-                        continue
+                    data = open(filename, 'rb').read()
+                except EnvironmentError:
+                    continue
 
             if image.loadFromData(data):
                 pic = {'data': data, 'height': image.height(),
@@ -2096,18 +2080,6 @@ class PicWidget(QWidget):
                        'imagetype': 3}
                 images.append(pic)
 
-        return images
-
-    def picsFromData(self, *data):
-        images = []
-        for d in data:
-            image = QImage().fromData(d)
-            pic = {'data': d, 'height': image.height(),
-                   'width': image.width(), 'size': len(data),
-                   'mime': get_mime(d),
-                   'description': "",
-                   'imagetype': 3}
-            images.append(pic)
         return images
 
     def setImageTags(self, itags):
@@ -2455,10 +2427,7 @@ class PuddleThread(QThread):
             self.retval = 'STOP'
 
     def _finish(self) -> None:
-        if hasattr(self, 'retval'):
-            self.threadfinished.emit(self.retval)
-        else:
-            self.threadfinished.emit(None)
+        self.threadfinished.emit(self.retval)
 
 
 class ShortcutEditor(QLineEdit):
@@ -2510,25 +2479,3 @@ class ShortcutEditor(QLineEdit):
     def valid(self, value):
         self._valid = value
         self.validityChanged.emit(value)
-
-
-if __name__ == '__main__':
-    class MainWin(QDialog):
-        def __init__(self, parent=None):
-            QDialog.__init__(self, parent)
-            self.combo = PuddleCombo('patterncombo',
-                                     ['%artist% - $num(%track%, 2) - %title%', '%artist% - %title%', '%artist% - %album%', '%artist% - Track %track%', '%artist% - %title%', '%artist%'])
-
-            hbox = QHBoxLayout()
-            hbox.addWidget(self.combo)
-            self.setLayout(hbox)
-
-        def closeEvent(self, e):
-            self.combo.save()
-            QDialog.closeEvent(self, e)
-
-
-    app = QApplication(sys.argv)
-    widget = MainWin()
-    widget.show()
-    app.exec()
