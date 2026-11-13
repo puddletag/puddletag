@@ -1,5 +1,6 @@
 from functools import partial
 
+from mutagen import MutagenError
 from PyQt6.QtCore import QObject
 from PyQt6.QtGui import QAction
 from PyQt6.QtWidgets import QApplication, QMessageBox
@@ -15,6 +16,16 @@ obj = QObject()
 id3_tag = audioinfo.id3.Tag
 
 
+def _save(save):
+    """Runs save, raising the OSError a mutagen error wraps."""
+    try:
+        save()
+    except MutagenError as e:
+        if e.args and isinstance(e.args[0], OSError):
+            raise e.args[0] from e
+        raise
+
+
 def to_utf8(parent=None):
     if status['previewmode']:
         QMessageBox.information(parent, 'puddletag',
@@ -28,7 +39,7 @@ def to_utf8(parent=None):
         for row, f in zip(rows, files):
             try:
                 if isinstance(f, id3_tag):
-                    f.to_encoding(3)
+                    _save(lambda: f.to_encoding(3))
                     f.link(f.filepath)
                 yield None
             except (IOError, OSError) as e:
@@ -56,10 +67,10 @@ def update_to_24(parent=None):
     rows = status['selectedrows']
 
     def func():
-        for f in files:
+        for row, f in zip(rows, files):
             try:
                 if isinstance(f, id3_tag):
-                    f.save(v1=1, v2=4)
+                    _save(lambda: f.save(v1=1, v2=4))
                     f.link(f.filepath)
                 yield None
             except (IOError, OSError) as e:

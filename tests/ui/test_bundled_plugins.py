@@ -597,7 +597,6 @@ def test_id3_tools_leave_other_formats_alone(id3_tools, mainwin, user, make_audi
 
 
 @pytest.mark.skipif(os.geteuid() == 0, reason='root can write a read-only file')
-@pytest.mark.xfail(strict=True, reason="ID3 Tools miss mutagen's write error")
 @pytest.mark.parametrize('command, verb', [(UPDATE, 'updating'), (CONVERT, 'converting')])
 def test_id3_tools_on_a_read_only_file(id3_tools, mainwin, user, make_audio, qtbot, dialogs, tmp_path, command,
                                        verb):
