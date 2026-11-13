@@ -809,13 +809,13 @@ class MainWin(QMainWindow):
         def finished():
             self.__updateDirs = True
             self.updateDirs([])
-            if previews and failed_rows[1:]:
+            last_position = failed_rows[0]
+            # Files after the last one tried were cancelled: they keep their previews too.
+            unwritten = [p for p in previews if p > last_position] if previews else []
+            if previews and (failed_rows[1:] or unwritten):
                 model.previewMode = True
-                last_position = failed_rows[0]
-                [failed_rows.append(p) for p in previews if p > last_position]
+                failed_rows.extend(unwritten)
                 for position in failed_rows[1:]:
-                    if position not in previews:
-                        continue
                     audios[position].preview = previews[position]
 
                 shown_rows = [rows[p] for p in failed_rows if rows[p] is not None]

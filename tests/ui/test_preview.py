@@ -555,7 +555,6 @@ def test_emptying_a_changed_cell_previews_the_removal(mainwin, user, loaded, qtb
     qtbot.waitUntil(lambda: 'title' not in in_file(paths[1]))
 
 
-@pytest.mark.xfail(strict=True, reason="Cancel in Write Previews drops the previews of the files it didn't write")
 def test_cancel_keeps_the_previews_not_written(mainwin, user, loaded, qtbot, monkeypatch):
     # menus.txt, Write Previews: "If preview mode has been enabled and some
     # changes were made, they'll get written to the files, and Preview Mode
