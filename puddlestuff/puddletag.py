@@ -1,6 +1,5 @@
 import logging
 import os
-import sys
 from copy import deepcopy
 from functools import partial
 
@@ -53,7 +52,7 @@ confirmations.add('preview_mode', True, translate("Confirmations", 'Confirm when
 confirmations.add('trash_files', True, translate("Confirmations", 'Confirm when moving files to the trash.'))
 
 
-def create_tool_windows(parent, extra=None):
+def create_tool_windows(parent):
     """Creates the dock widgets for the main window (parent) using
     the modules stored in puddlestuff/mainwin.
 
@@ -70,26 +69,15 @@ def create_tool_windows(parent, extra=None):
 
     controls = [z.control for z in widgets]
     controls.extend(mainwin.action_dialogs.controls)
-    if extra:
-        controls.extend(extra)
     for z in controls:
         name = z[0]
-        try:
-            if not z[2]:
-                PuddleDock._controls[name] = z[1](status=status)
-                continue
-        except IndexError:
-            pass
+        if not z[2]:
+            PuddleDock._controls[name] = z[1](status=status)
+            continue
 
         p = PuddleDock(z[0], z[1], parent, status)
 
         parent.addDockWidget(z[2], p)
-
-        try:
-            if z[4]: p.setFloating(True)
-            p.move(parent.rect().center())
-        except IndexError:
-            pass
 
         p.setVisible(z[3])
         docks.append(p)
@@ -184,15 +172,6 @@ def connect_actions(actions, controls):
                 action.triggered.connect(action_triggered_slot(c, command))
             else:
                 logging.debug(action.command + ' slot not found for ' + action.text())
-
-
-def connect_action_shortcuts(actions):
-    cparser = PuddleConfig()
-    cparser.filename = ls.menu_path
-    for action in actions:
-        shortcut = cparser.get('shortcuts', str(action.text()), '')
-        if shortcut:
-            action.setShortcut(shortcut)
 
 
 def help_menu(parent):
@@ -352,18 +331,13 @@ class MainWin(QMainWindow):
         temp_winactions = winmenu.actions()
         [winmenu.addAction(a) for a in winactions if a not in temp_winactions]
 
-        if winmenu:
-            winmenu.addSeparator()
-            self._winmenu = winmenu
-        else:
-            self._winmenu = QMenu(translate("Settings", '&Windows'), self)
-            menubar.addMenu(self._winmenu)
+        winmenu.addSeparator()
+        self._winmenu = winmenu
         self.setMenuBar(menubar)
         menubar.addMenu(help_menu(self))
         mainfuncs.connect_status(actions)
 
         connect_actions(actions, controls)
-        connect_action_shortcuts(all_actions)
         create_context_menus(controls, all_actions)
         # A key only works for an action that is on a widget.
         self.addActions([a for a in all_actions if not a.associatedObjects()])
@@ -432,16 +406,10 @@ class MainWin(QMainWindow):
 
         dirs = [encode_fn(d) for d in dirs]
 
-        if self._lastdir:
-            initial = self._lastdir[0]
-        else:
-            initial = None
+        initial = self._lastdir[0]
 
         if initial not in dirs:
             initial = dirs[0]
-
-        if isinstance(initial, bytes):
-            initial = initial.decode('utf8', 'replace')
 
         if len(dirs) > 1:
             self.setWindowTitle(translate('Main Window', "puddletag: {} + others").format(initial))
@@ -569,13 +537,8 @@ class MainWin(QMainWindow):
             if not filename:
                 return
         else:
-            if not isinstance(filename, str):
-                filename = filename[0]
-
             filename = os.path.abspath(filename)
-
-            if isinstance(filename, str):
-                filename = encode_fn(filename)
+            filename = encode_fn(filename)
 
         if not append:
             msg = translate('Previews', 'Some files have uncommited previews. '
@@ -835,8 +798,6 @@ class MainWin(QMainWindow):
         s(self)
 
     def writeAction(self, tagiter, rows=None, state=None):
-        if state is None:
-            state = {}
         ret = self._write(tagiter, rows)
         if ret is None:
             return
@@ -926,20 +887,10 @@ class MainWin(QMainWindow):
 
         dirs = new_dirs
 
-        if self._lastdir:
-            last = self._lastdir[::]
-        else:
-            last = None
+        last = self._lastdir[::]
         for index, (olddir, newdir) in enumerate(dirs):
             self._table.changeFolder(olddir, newdir)
             if last and olddir in last:
                 last[last.index(olddir)] = newdir
         self.dirsmoved.emit(dirs)
         self._dirChanged(last)
-
-
-if __name__ == '__main__':
-    app = QApplication(sys.argv)
-    win = MainWin()
-    win.show()
-    app.exec()

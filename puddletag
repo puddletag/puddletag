@@ -61,10 +61,6 @@ def check_libs():
             errors.append(msg % lib)
             found = False
 
-    msg = "Error: %s module wasn't found. %s. Please check that it's " \
-          "installed properly. You can download it from your distro's " \
-          "repository (%s), or download directly from %s.\n"
-
     try:
         if not found:
             from PyQt6.QtWidgets import QApplication, QMessageBox
@@ -100,8 +96,6 @@ def init(options, qapp):
             font = qapp.font()
             font.setPointSize(size)
             app.setFont(font)
-        except IndexError:
-            logging.error('No fontsize specified.')
         except (OverflowError, ValueError):
             logging.error('Invalid fontsize specified.')
 
@@ -228,26 +222,6 @@ def splashscreen():
     painter.end()
 
     return QSplashScreen(pixmap)
-
-
-class StdOut(object):
-    """Class to redirect stdout/in/err."""
-
-    def __init__(self, old_write, new_write):
-        """old_write should be the original sys.stdout.out
-        new_write is a function is what sys.stdout.out will be replaced with.
-
-        Text will be passed to both functions."""
-        self._old_write = old_write
-        self._new_write = new_write
-
-    def write(self, text):
-
-        self._old_write(text)
-        try:
-            self._new_write(text)
-        except:
-            pass
 
 
 if __name__ == '__main__':
