@@ -1851,7 +1851,7 @@ class PicWidget(QWidget):
             self.addImages([pic])
 
     def copyImage(self):
-        if self.images and self.currentImage:
+        if self.images and self.currentImage > -1:
             cover = self.images[self.currentImage]
             image = QImage()
             image.loadFromData(cover["data"])

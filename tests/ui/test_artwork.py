@@ -971,7 +971,6 @@ def test_save_keeps_a_broken_cover_shown_after_a_good_one(mainwin, user, load, q
     assert [(c['description'], c['data']) for c in stored(paths[1])] == [('Broken', b'not an image')]
 
 
-@pytest.mark.xfail(strict=True, reason='Copy cover skips the first cover (index 0 is falsy)')
 def test_copy_the_first_cover(qtbot):
     # Synthetic: no window shows a Copy button on a list that starts at
     # its first cover today (Extended Tags builds one but never shows it).
