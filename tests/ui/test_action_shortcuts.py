@@ -933,8 +933,6 @@ KEY_TEXTS = [  # pairs: what is held, and how the menus name it
 ]
 
 
-@pytest.mark.xfail(strict=True, reason='the shortcut editor orders modifiers at random: keycmp '
-                                       'compares with Qt.Modifier, not Qt.KeyboardModifier')
 def test_key_text_names_modifiers_as_the_menus_do(loaded, qtbot, user, monkeypatch, mainwin):
     # menus.txt names keys "Copy All Fields (Ctrl+Shift+C)" and "Select Column
     # (Meta+Alt+C)": the menus show Qt's text, in Qt's order, Meta+Ctrl+Alt+Shift.

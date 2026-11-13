@@ -66,16 +66,10 @@ mod_keys = {
 
 
 def keycmp(modifier):
-    if modifier == Qt.Modifier.CTRL:
-        return 4
-    elif modifier == Qt.Modifier.SHIFT:
-        return 3
-    elif modifier == Qt.Modifier.ALT:
-        return 2
-    elif modifier == Qt.Modifier.META:
-        return 1
-    else:
-        return 0
+    # Qt's own order, the one menus show: Meta+Ctrl+Alt+Shift.
+    order = [Qt.KeyboardModifier.MetaModifier, Qt.KeyboardModifier.ControlModifier,
+             Qt.KeyboardModifier.AltModifier, Qt.KeyboardModifier.ShiftModifier]
+    return order.index(modifier) if modifier in order else len(order)
 
 
 modifiers = {}
