@@ -141,7 +141,6 @@ def test_every_bundled_plugin_ticked_starts_without_errors(every_plugin, mainwin
     assert user.action('&Update to ID3v2.4').isEnabled()
 
 
-@pytest.mark.xfail(strict=True, reason='a bundled plugin binds add_shortcuts to the first window when imported')
 def test_bundled_plugins_commands_are_in_the_window_started_again(five_plugins, mainwin, restart):
     # plugins.txt: "then restart puddletag."
     new = restart()

@@ -579,8 +579,8 @@ def test_example_archive_is_built_from_its_folder():
 @pytest.fixture
 def modified_time_plugin(clean_profile, monkeypatch):
     """The Modtime + 2sec plugin ticked before mainwin builds the window.
-    It adds its action at import time, so an import made by an earlier
-    test's window is dropped."""
+    Python keeps a module it imported; dropping it makes the test start
+    as a new process does."""
     tick('modified_time')
     monkeypatch.delitem(sys.modules, 'puddlestuff.plugins.modified_time', raising=False)
 

@@ -7,7 +7,7 @@ from PyQt6.QtGui import QAction
 from PyQt6.QtWidgets import QFileDialog
 
 from .. import status
-from ...puddletag import add_shortcuts
+from ... import puddletag
 
 last_fn = {'fn': '~'}
 
@@ -41,4 +41,4 @@ def init(parent=None):
 
     action = QAction('Export tags', parent)
     action.triggered.connect(export_tags)
-    add_shortcuts('&Plugins', [sep(), action, sep()])
+    puddletag.add_shortcuts('&Plugins', [sep(), action, sep()])

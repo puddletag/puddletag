@@ -9,7 +9,7 @@ from .. import status
 from ... import audioinfo
 from ...audioinfo import lngtime
 from ...puddleobjects import progress
-from ...puddletag import add_shortcuts
+from ... import puddletag
 
 
 def init(parent=None):
@@ -22,7 +22,7 @@ def init(parent=None):
         k.setSeparator(True)
         return k
 
-    add_shortcuts('&Plugins', [sep(), action, sep()])
+    puddletag.add_shortcuts('&Plugins', [sep(), action, sep()])
 
 
 def add_seconds(parent=None):

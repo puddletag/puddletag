@@ -3,7 +3,7 @@ from PyQt6.QtGui import QAction
 from PyQt6.QtWidgets import QInputDialog
 
 from .. import status, connect_control
-from ...puddletag import add_shortcuts
+from ... import puddletag
 
 
 class _SignalObject(QObject):
@@ -56,7 +56,7 @@ def init(parent=None):
     action.setCheckable(True)
     action.toggled.connect(
         lambda v: highlight_dupe_field() if v else remove_highlight())
-    add_shortcuts('&Plugins', [sep(), action, sep()])
+    puddletag.add_shortcuts('&Plugins', [sep(), action, sep()])
 
     global obj
     obj.receives = []

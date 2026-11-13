@@ -6,7 +6,8 @@ from PyQt6.QtWidgets import QAbstractItemView, QApplication, QFrame, QHBoxLayout
     QPushButton, QVBoxLayout
 
 from ...puddlesettings import add_config_widget
-from ...puddletag import add_shortcuts, status
+from ... import puddletag
+from ...puddletag import status
 from ...constants import SAVEDIR
 from ...puddleobjects import (natural_sort_key, ListButtons,
                               ListBox, PuddleConfig)
@@ -75,7 +76,7 @@ def init(parent=None):
     action = QAction('Show all fields', parent)
     action.setCheckable(True)
     action.toggled.connect(show_fields)
-    add_shortcuts('&Plugins', [sep(), action, sep()])
+    puddletag.add_shortcuts('&Plugins', [sep(), action, sep()])
     add_config_widget(Settings)
 
 

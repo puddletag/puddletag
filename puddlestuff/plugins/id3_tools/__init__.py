@@ -8,7 +8,7 @@ from .. import connect_shortcut, status
 from ... import audioinfo
 from ...constants import FILESSELECTED
 from ...puddleobjects import progress
-from ...puddletag import add_shortcuts
+from ... import puddletag
 from ...util import separator
 
 obj = QObject()
@@ -86,4 +86,4 @@ def init(parent=None):
     connect_shortcut(convert, FILESSELECTED)
     convert.triggered.connect(partial(to_utf8, parent))
 
-    add_shortcuts('Ta&g Tools', [separator(), action, convert, separator()])
+    puddletag.add_shortcuts('Ta&g Tools', [separator(), action, convert, separator()])
