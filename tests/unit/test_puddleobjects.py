@@ -161,8 +161,6 @@ def test_thread_command_raising_stop_iteration(qtbot):
     thread.wait()
 
 
-@pytest.mark.xfail(strict=True, raises=TypeError,
-                   reason='PuddleHeader() without a parent raises TypeError')
 def test_header_without_a_parent(qapp):
     # Synthetic: no window builds the header this way (the Filesystem dock
     # passes a parent and no actions).
@@ -171,8 +169,6 @@ def test_header_without_a_parent(qapp):
     assert header.sectionsMovable()
 
 
-@pytest.mark.xfail(strict=True, raises=AttributeError,
-                   reason='getMenu with actions calls addSeperator, which QMenu lacks')
 def test_header_menu_with_extra_actions(qapp):
     # Synthetic: no window builds the header this way (the Filesystem dock
     # passes a parent and no actions).

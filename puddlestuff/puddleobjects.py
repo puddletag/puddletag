@@ -1750,6 +1750,8 @@ class PicWidget(QWidget):
 
         self.win = PicWin(parent=self)
         self._currentImage = -1
+        self.images = []
+        self._lastdata = None
 
         if not images:
             images = []
@@ -1758,8 +1760,6 @@ class PicWidget(QWidget):
             imagetags = []
 
         self.setImages(images, imagetags)
-
-        self._lastdata = None
 
     @property
     def context(self):
@@ -2369,10 +2369,7 @@ class PuddleDock(QDockWidget):
 
 class PuddleHeader(QHeaderView):
     def __init__(self, orientation=Qt.Orientation.Horizontal, parent=None):
-        if parent:
-            super(PuddleHeader, self).__init__(orientation, parent)
-        else:
-            super(PuddleHeader, self).__init__()
+        super(PuddleHeader, self).__init__(orientation, parent)
 
         self.setSortIndicatorShown(True)
         self.setSortIndicator(0, Qt.SortOrder.AscendingOrder)
@@ -2406,7 +2403,7 @@ class PuddleHeader(QHeaderView):
         menu = QMenu(self)
         if actions:
             [menu.addAction(a) for a in actions]
-            menu.addSeperator()
+            menu.addSeparator()
         [menu.addAction(a) for a in header_actions]
         return menu
 

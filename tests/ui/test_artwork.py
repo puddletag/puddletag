@@ -983,7 +983,6 @@ def test_copy_the_first_cover(qtbot):
     assert QApplication.clipboard().image().width() == 10
 
 
-@pytest.mark.xfail(strict=True, reason='PicWidget(images, imagetags) raises AttributeError')
 def test_picture_built_with_covers(qtbot):
     # Synthetic: a picture built with its covers and their field names.
     pic = PicWidget(images=[dict(FRONT)], imagetags=audioinfo.IMAGETAGS)
