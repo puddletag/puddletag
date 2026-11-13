@@ -190,7 +190,6 @@ def test_fontsize_on_a_first_start(make_audio, tmp_path):
 
 
 @pytest.mark.parametrize('size', ['-inf', 'inf'])
-@pytest.mark.xfail(strict=True, reason='--fontsize inf fails the start with an OverflowError')
 def test_fontsize_that_is_not_a_size_keeps_the_font(make_audio, tmp_path, size):
     # puddletag.1: "--fontsize=FONTSIZE Default font size to use (in
     # points)." The docs are silent on a value that isn't a size: it is

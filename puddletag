@@ -102,7 +102,7 @@ def init(options, qapp):
             app.setFont(font)
         except IndexError:
             logging.error('No fontsize specified.')
-        except ValueError:
+        except (OverflowError, ValueError):
             logging.error('Invalid fontsize specified.')
 
 
