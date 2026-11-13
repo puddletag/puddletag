@@ -1,7 +1,6 @@
 import logging
 import os
 import shutil
-import traceback
 import uuid
 from collections import defaultdict
 from copy import copy, deepcopy
@@ -26,7 +25,7 @@ ALBUM = 'album'
 
 def rename_error_msg(e, filename):
     if isinstance(e, DirRenameError):
-        traceback.print_exc()
+        logging.error('Rename failed: %s', e.strerror, exc_info=e)
         m = translate('Defaults',
                       "<p>An error occured while renaming the directory <b>{}</b> to <i>{}</i>.</p>"
                       "<p>Reason: <b>{}</b><br />"
@@ -35,14 +34,13 @@ def rename_error_msg(e, filename):
         return m
 
     elif isinstance(e, RenameError):
-        traceback.print_exc()
+        logging.error('Rename failed: %s', e.strerror, exc_info=e)
         m = translate('Defaults',
                       "<p>An error occured while renaming the file <b>{}</b> to <i>{}</i>.</p>"
                       "<p>Reason: <b>{}</b></p>"
                       ).format(e.oldpath, e.newpath, e.strerror)
         return m
     elif isinstance(e, PermissionError):
-        traceback.print_exc()
         m = translate('Defaults',
                       "<p>An error occured while writing to <b>{}</b>.</p>"
                       "<p>Reason: <b>{}</b>.</p>"
@@ -53,7 +51,6 @@ def rename_error_msg(e, filename):
                                )
         return m
     elif isinstance(e, EnvironmentError):
-        traceback.print_exc()
         m = translate('Defaults',
                       "<p>An error occured while writing to <b>{}</b>.</p>"
                       "<p>Reason: <b>{}</b> ("

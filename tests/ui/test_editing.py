@@ -467,7 +467,6 @@ def test_edit_keeps_frames_puddletag_does_not_list(mainwin, make_audio, tmp_path
     assert in_table(table) == [{'artist': ['Artist 1'], 'title': ['New']}]
 
 
-@pytest.mark.xfail(strict=True, reason="a failed rename isn't logged, and an empty traceback goes to stderr")
 def test_rename_error_is_logged(user, loaded, qtbot, dialogs, caplog, capfd):
     # A rename that fails is written to puddletag's log with its traceback,
     # as a failed write is (the maintainer's decision; the docs are silent).
@@ -482,7 +481,6 @@ def test_rename_error_is_logged(user, loaded, qtbot, dialogs, caplog, capfd):
     assert 'NoneType: None' not in capfd.readouterr().err
 
 
-@pytest.mark.xfail(strict=True, reason="an empty traceback goes to stderr")
 def test_write_error_is_logged_once(user, loaded, qtbot, dialogs, caplog, capfd):
     # The message for a file that can't be written says "See ... for debug
     # info": the log holds that error once, with nothing empty on stderr.
