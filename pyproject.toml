@@ -11,3 +11,4 @@ timeout = 60
 
 [tool.coverage.run]
 source = ["puddlestuff"]
+patch = ["subprocess"]
