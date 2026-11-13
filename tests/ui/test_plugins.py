@@ -14,14 +14,14 @@ from pathlib import Path
 
 import pytest
 from PyQt6.QtCore import QModelIndex, Qt
-from PyQt6.QtWidgets import QApplication, QPushButton, QStyle, QStyleOptionViewItem
+from PyQt6.QtWidgets import QApplication, QPushButton, QStyle, QStyleOptionViewItem, QToolBar
 
 from puddlestuff import audioinfo, tagsources
 from puddlestuff.constants import PLUGINDIR
 from puddlestuff.mainwin.tagsources import SimpleDialog
 from puddlestuff.masstag.dialogs import MassTagEdit, MassTagWindow, MTProfileEdit, TSProfileEdit
 from puddlestuff.pluginloader import InfoWidget
-from puddlestuff.puddleobjects import PuddleConfig
+from puddlestuff.puddleobjects import PuddleConfig, PuddleDock
 
 pytestmark = pytest.mark.ui
 
@@ -599,3 +599,105 @@ def test_add_two_seconds_to_one_file(modified_time_plugin, mainwin, user, qtbot,
     user.press(Key.Key_M, Ctrl)
 
     qtbot.waitUntil(lambda: os.stat(path).st_mtime == 1_000_000_002)
+
+
+# Starting plugins.
+
+WINDOW_CODE = '''from PyQt6.QtWidgets import QLabel
+from puddlestuff.constants import RIGHTDOCK
+
+
+class Widget(QLabel):
+    def __init__(self, parent=None, status=None):
+        super().__init__('Synthetic window', parent)
+        self.emits = []
+        self.receives = []{failure}
+
+
+dialogs = [('Synthetic Window', Widget, RIGHTDOCK, False)]
+'''
+
+TOOLBAR_CODE = '''from PyQt6.QtGui import QAction
+from puddlestuff.puddletag import add_shortcuts
+
+
+def init(parent=None):
+    add_shortcuts('&Plugins', [QAction('Synthetic Command', parent)], toolbar=True)
+'''
+
+
+@pytest.fixture
+def init_fails(clean_profile):
+    write_plugin('init_fails', 'Init Fails',
+                 "def init(parent=None):\n    raise RuntimeError('synthetic init failure')\n\n\n"
+                 + source_code('Init Fails Source'))
+    tick('init_fails')
+
+
+@pytest.fixture
+def window_plugin(clean_profile):
+    write_plugin('window_plugin', 'Window Plugin', WINDOW_CODE.format(failure=''))
+    tick('window_plugin')
+
+
+@pytest.fixture
+def failing_window_plugin(clean_profile):
+    failure = "\n        raise RuntimeError('synthetic window failure')"
+    write_plugin('window_plugin', 'Window Plugin', WINDOW_CODE.format(failure=failure))
+    tick('window_plugin')
+
+
+@pytest.fixture
+def toolbar_plugin(clean_profile):
+    write_plugin('toolbar_plugin', 'Toolbar Plugin', TOOLBAR_CODE)
+    tick('toolbar_plugin')
+
+
+@pytest.mark.xfail(strict=True, reason="a plugin's failing init is printed to stderr, not logged")
+def test_plugin_whose_init_fails_is_logged_and_puddletag_starts(init_fails, mainwin, user, qtbot, caplog):
+    # plugins.txt: "A plugin that can't be loaded is left out, and the
+    # reason is written to puddletag's log." The docs don't say what a
+    # plugin whose init fails gets; as the maintainer decided, the error is
+    # logged with its traceback and the rest of the plugin stays. The plugin
+    # is synthetic.
+    [message] = [m for m in startup_errors(caplog, 'setup') if 'init_fails' in m]
+    [record] = [r for r in caplog.get_records('setup') if r.getMessage() == message]
+
+    assert str(record.exc_info[1]) == 'synthetic init failure'
+    assert mainwin.isVisible()
+    assert 'Init Fails Source' in listed_sources()
+
+
+def test_plugin_window_is_listed_in_the_windows_menu(window_plugin, mainwin, user, qtbot):
+    # The docs are silent: a plugin's window becomes a tool window, listed
+    # last in the Windows menu and hidden because its entry says so. The
+    # plugin is synthetic.
+    [dock] = [d for d in mainwin.findChildren(PuddleDock) if d.objectName() == 'Synthetic Window']
+
+    assert mainwin._winmenu.actions()[-1].text() == 'Synthetic Window'
+    assert not dock.isVisible()
+
+    user.click_menu('Synthetic Window')
+
+    assert dock.isVisible()
+
+
+def test_plugin_window_that_fails_is_logged_and_puddletag_starts(failing_window_plugin, mainwin, user, qtbot,
+                                                                 caplog):
+    # plugins.txt: "A plugin that can't be loaded is left out, and the
+    # reason is written to puddletag's log." The plugin is synthetic: its
+    # window raises when built.
+    assert 'Error while loading Plugin dialog.' in startup_errors(caplog, 'setup')
+    assert 'Synthetic Window' not in [a.text() for a in mainwin._winmenu.actions()]
+    assert mainwin.isVisible()
+
+
+@pytest.mark.xfail(strict=True, reason="a plugin's command can't be added to the toolbar")
+def test_plugin_command_added_to_the_toolbar(toolbar_plugin, mainwin, user, qtbot):
+    # The docs are silent (the plugin API isn't documented): a plugin that
+    # adds a command with toolbar=True finds it in its menu and on the
+    # toolbar. The plugin is synthetic.
+    [toolbar] = mainwin.findChildren(QToolBar)
+
+    assert 'Synthetic Command' in [a.text() for a in toolbar.actions()]
+    assert user.action('Synthetic Command') in mainwin._menus['&Plugins'][0].actions()
