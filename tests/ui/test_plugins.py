@@ -729,7 +729,6 @@ def test_plugin_named_like_a_bundled_one_is_left_out(bundled_name_plugin, mainwi
 FUNCTION_EXAMPLE = DOCS / 'source' / 'functionplugin.tar.gz'
 
 
-@pytest.mark.xfail(strict=True, reason='the archive has drifted from its folder')
 def test_function_example_archive_is_built_from_its_folder():
     # plugins.txt: "The Function plugin example contains a short tutorial on
     # writing scripting functions"; the download is built from the folder
