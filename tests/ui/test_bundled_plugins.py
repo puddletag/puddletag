@@ -197,7 +197,6 @@ def test_dupe_highlight_clicked_again_clears_the_colour(dupe_highlight, mainwin,
     assert [in_file(p) for p in three_files] == before
 
 
-@pytest.mark.xfail(strict=True, reason='Cancel at the prompt leaves Dupe highlight ticked')
 def test_dupe_highlight_cancelled_stays_unticked(dupe_highlight, mainwin, user, qtbot, dialogs,
                                                  three_files, tmp_path):
     # The plugin's info: "Adds shortcut to Plugins to highlight files which
@@ -214,7 +213,6 @@ def test_dupe_highlight_cancelled_stays_unticked(dupe_highlight, mainwin, user, 
     assert [in_file(p) for p in three_files] == before
 
 
-@pytest.mark.xfail(strict=True, reason='with one file selected, Dupe highlight stays ticked')
 def test_dupe_highlight_with_one_file_selected_stays_unticked(dupe_highlight, mainwin, user, qtbot, dialogs,
                                                               three_files, tmp_path):
     # The plugin's info: "Adds shortcut to Plugins to highlight files which

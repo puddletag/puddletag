@@ -13,14 +13,16 @@ class _SignalObject(QObject):
 obj = _SignalObject()
 
 
-def highlight_dupe_field():
+def highlight_dupe_field(action):
     field, ok = QInputDialog.getText(None, 'puddletag', 'Field to compare')
     if not ok:
+        action.setChecked(False)
         return
 
     field = str(field)
     files = status['selectedfiles']
     if not files or len(files) <= 1:
+        action.setChecked(False)
         return
 
     highlight = []
@@ -38,12 +40,10 @@ def highlight_dupe_field():
         value = f.get(field)
         prev = f
     obj.highlight.emit(highlight)
-    obj.sender().setChecked(True)
 
 
 def remove_highlight():
     obj.highlight.emit([])
-    obj.sender().setChecked(False)
 
 
 def init(parent=None):
@@ -55,7 +55,7 @@ def init(parent=None):
     action = QAction('Dupe highlight', parent)
     action.setCheckable(True)
     action.toggled.connect(
-        lambda v: highlight_dupe_field() if v else remove_highlight())
+        lambda v: highlight_dupe_field(action) if v else remove_highlight())
     puddletag.add_shortcuts('&Plugins', [sep(), action, sep()])
 
     global obj
