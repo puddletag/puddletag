@@ -252,8 +252,6 @@ def test_langfile_that_isnt_qm_keeps_the_chosen_language(tmp_path):
     assert 'puddletag_fr.qm' in shown['translators']
 
 
-@pytest.mark.xfail(strict=True,
-                   reason="a --langfile .qm that doesn't load drops the chosen language")
 def test_langfile_that_doesnt_load_keeps_the_chosen_language(tmp_path):
     # puddletag.1: "Path to a translation (.qm) file. If valid, this
     # file'll be used to translate puddletag. Otherwise the last translation

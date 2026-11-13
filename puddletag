@@ -118,7 +118,8 @@ def load_language(qapp, langfile=None):
     translators = []
 
     if langfile:
-        if not langfile.endswith('.qm'):
+        if (not langfile.endswith('.qm')
+                or not QTranslator().load(os.path.basename(langfile), os.path.dirname(langfile))):
             print(translate('Defaults', 'Invalid translation file.'))
             langargs = None
         else:
