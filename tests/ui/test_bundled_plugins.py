@@ -521,7 +521,6 @@ def test_update_to_id3v24(id3_tools, mainwin, user, make_audio, qtbot, tmp_path)
     assert [a['__tag'] for a in mainwin._table.model().taginfo] == ['ID3v2.4'] * 2
 
 
-@pytest.mark.xfail(strict=True, reason='Update to ID3v2.4 saves with the ID3v2.3 preference')
 def test_update_to_id3v24_with_the_id3v23_preference(id3_tools, id3v23_preference, mainwin, user, make_audio,
                                                      qtbot, tmp_path):
     # ID3 Tools (info): "Extra functions for handling ID3 tags added to the

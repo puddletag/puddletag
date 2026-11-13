@@ -59,7 +59,7 @@ def update_to_24(parent=None):
         for f in files:
             try:
                 if isinstance(f, id3_tag):
-                    f.save(v1=1)
+                    f.save(v1=1, v2=4)
                     f.link(f.filepath)
                 yield None
             except (IOError, OSError) as e:
