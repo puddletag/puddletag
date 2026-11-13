@@ -887,8 +887,6 @@ def test_exit_with_previews_asks(answer, visible, loaded, mainwin, qtbot, user, 
     assert in_file(paths[0])['title'] == ['Title 1']
 
 
-@pytest.mark.xfail(strict=True, reason="Open Folder forces Qt's own folder dialog, which "
-                   "lacks the desktop's mounts and the Flatpak portal (#1088, #1089)")
 @pytest.mark.parametrize('open_folder', [OPEN['File menu'], ADD['File menu']],
                          ids=['Open Folder', 'Add Folder'])
 def test_folder_dialog_is_the_desktops(mainwin, make_audio, tmp_path, qtbot, user, dialogs, loaded,
