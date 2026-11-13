@@ -592,7 +592,7 @@ def _disconnect_all(qobject):
 
 @pytest.fixture
 def mainwin(qtbot, clean_profile, _translated_strings, dialogs):
-    from puddlestuff import audioinfo
+    from puddlestuff import audioinfo, puddlesettings
     from puddlestuff.mainwin import previews
     from puddlestuff.puddletag import MainWin, status
     tag = audioinfo.Tag
@@ -612,6 +612,9 @@ def mainwin(qtbot, clean_profile, _translated_strings, dialogs):
         _disconnect_all(emitter)
     # Each MainWin adds its Preview Mode menu's receiver to this list.
     previews.obj.receives.clear()
+    # A plugin adds its Preferences page to this list each time a MainWin
+    # starts it (View All Fields does).
+    puddlesettings.config_widgets.clear()
     # The Functions window opens on the last function run, kept in this
     # module-level dict.
     status['prevfunc'] = None

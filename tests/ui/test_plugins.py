@@ -17,6 +17,7 @@ from PyQt6.QtCore import QModelIndex, Qt
 from PyQt6.QtWidgets import QApplication, QPushButton, QStyle, QStyleOptionViewItem, QToolBar
 
 from puddlestuff import audioinfo, tagsources
+from puddlestuff.actiondlg import CreateFunction
 from puddlestuff.constants import PLUGINDIR
 from puddlestuff.mainwin.tagsources import SimpleDialog
 from puddlestuff.masstag.dialogs import MassTagEdit, MassTagWindow, MTProfileEdit, TSProfileEdit
@@ -699,3 +700,80 @@ def test_plugin_command_added_to_the_toolbar(toolbar_plugin, mainwin, user, qtbo
 
     assert 'Synthetic Command' in [a.text() for a in toolbar.actions()]
     assert user.action('Synthetic Command') in mainwin._menus['&Plugins'][0].actions()
+
+
+# A plugin named like one that comes with puddletag.
+
+@pytest.fixture
+def bundled_name_plugin(clean_profile):
+    write_plugin('dupe_fields', 'Synthetic Dupe', source_code('Synthetic Dupe Source'))
+
+
+@pytest.mark.xfail(strict=True, reason="the user's plugin is listed next to the bundled one with its folder's name")
+def test_plugin_named_like_a_bundled_one_is_left_out(bundled_name_plugin, mainwin, user, qtbot, caplog):
+    # The docs are silent: both would be imported as puddlestuff.plugins.dupe_fields,
+    # so the plugin that comes with puddletag wins, and the other is left out with a
+    # warning in the log. The plugin is synthetic.
+    dialog = user.open_preferences('Plugins')
+    page = dialog.stack.currentWidget()
+    names = [name for name, ticked in listed_plugins(page)]
+
+    assert 'Highlight duplicate fields' in names
+    assert 'Synthetic Dupe' not in names
+    assert startup_errors(caplog, 'setup', logging.WARNING) == [
+        "Plugin dupe_fields not loaded: a plugin that comes with puddletag has its folder's name"]
+    user.close_preferences(dialog)
+
+
+# The docs' example function plugin.
+
+FUNCTION_EXAMPLE = DOCS / 'source' / 'functionplugin.tar.gz'
+
+
+@pytest.mark.xfail(strict=True, reason='the archive has drifted from its folder')
+def test_function_example_archive_is_built_from_its_folder():
+    # plugins.txt: "The Function plugin example contains a short tutorial on
+    # writing scripting functions"; the download is built from the folder
+    # docsrc/source/functionplugin.
+    spec = importlib.util.spec_from_file_location('make_functionplugin_example',
+                                                  DOCS / 'make_functionplugin_example.py')
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+
+    assert gzip.decompress(FUNCTION_EXAMPLE.read_bytes()) == module.tar_bytes()
+    with tarfile.open(FUNCTION_EXAMPLE) as archive:
+        assert archive.getnames() == ['functionplugin', 'functionplugin/__init__.py', 'functionplugin/info']
+
+
+def test_example_function_is_a_scripting_function(mainwin, make_audio, tmp_path, qtbot, user, restart, new_process):
+    # The example's comments: "append_text will now be available as the
+    # scripting function '$append'"; it returns the artist plus its text
+    # argument. plugins.txt: extract the archive into the plugins folder, tick
+    # the plugin on the Plugins page and restart. The file is synthetic.
+    path = make_audio('01.mp3', tmp_path / 'music', artist='Artist', title='Song')
+    with tarfile.open(FUNCTION_EXAMPLE) as archive:
+        archive.extractall(PLUGINDIR, filter='data')
+    dialog = user.open_preferences('Plugins')
+    click_check_box(user, dialog.stack.currentWidget(), 'Example Functions')
+    user.close_preferences(dialog)
+    new = start_again(restart, new_process)
+    user = type(user)(qtbot, new)
+    new.openDir(str(tmp_path / 'music'), False)
+    qtbot.waitUntil(lambda: new._table.model().rowCount() == 1)
+    user.activate()
+    user.click_cell(user.cell(0, 'title'))
+
+    user.click_menu('&Functions')
+    function = opened(qtbot, CreateFunction)
+    pick(user, qtbot, function.functions, 'Format value')
+    user.activate(function)
+    widget = function.stack.currentWidget()
+    for line_edit, text in [(widget.tagcombo.lineEdit(), 'genre'),
+                            (widget.controls[0].combo.lineEdit(), '$append(_live,One,False)')]:
+        user.click(line_edit)
+        user.press(Key.Key_A, Ctrl)
+        user.type(text)
+        assert line_edit.text() == text
+    user.click(function.okcancel.okButton)
+
+    qtbot.waitUntil(lambda: in_file(path).get('genre') == ['Artist_live'])
