@@ -29,7 +29,6 @@ from . import constants, shortcutsettings
 
 from . import findfunc, tagsources, confirmations
 from . import action_shortcuts
-import traceback
 from . import plugins
 from .translations import translate
 
@@ -373,10 +372,8 @@ class MainWin(QMainWindow):
             if hasattr(m, 'init'):
                 try:
                     m.init(parent=self)
-                except:
-
-                    traceback.print_exc()
-                    continue
+                except Exception:
+                    logging.exception('Failed to start plugin %s', m.__name__)
 
         for win in plugin_dialogs:
             try:

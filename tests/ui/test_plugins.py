@@ -653,7 +653,6 @@ def toolbar_plugin(clean_profile):
     tick('toolbar_plugin')
 
 
-@pytest.mark.xfail(strict=True, reason="a plugin's failing init is printed to stderr, not logged")
 def test_plugin_whose_init_fails_is_logged_and_puddletag_starts(init_fails, mainwin, user, qtbot, caplog):
     # plugins.txt: "A plugin that can't be loaded is left out, and the
     # reason is written to puddletag's log." The docs don't say what a
