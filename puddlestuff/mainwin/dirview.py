@@ -140,6 +140,7 @@ class DirView(QTreeView):
         self.setDropIndicatorShown(True)
         self._dropaction = Qt.DropAction.MoveAction
         self._threadRunning = False
+        self._dirthread = None
 
         self._select = True
 
@@ -399,7 +400,14 @@ class DirView(QTreeView):
 
         dirthread = PuddleThread(func, self)
         dirthread.threadfinished.connect(finished)
+        self._dirthread = dirthread
         dirthread.start()
+
+    def waitForThread(self):
+        """Returns once the thread selecting folders is done: Qt aborts the
+        process when it is destroyed while running."""
+        if self._dirthread is not None:
+            self._dirthread.wait()
 
     def saveSettings(self):
         settings = QSettings(QT_CONFIG, QSettings.Format.IniFormat)
@@ -493,6 +501,7 @@ class DirViewWidget(QWidget):
 
     def saveSettings(self):
         self.dirview.saveSettings()
+        self.dirview.waitForThread()
 
     def applyGenSettings(self, d, startlevel=None):
         self.subfolderCheck.blockSignals(True)

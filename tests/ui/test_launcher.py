@@ -134,8 +134,6 @@ def test_paths_given_are_loaded(make_audio, tmp_path):
     assert sorted(shown['files']) == sorted(str(path) for path in paths)
 
 
-@pytest.mark.xfail(strict=True, reason='quitting while the Filesystem dock is still selecting the '
-                                       'folder aborts the process')
 def test_quitting_while_the_filesystem_dock_selects_the_folder_exits_cleanly(make_audio, tmp_path):
     # The docs are silent: a user who quits while the Filesystem dock is
     # still selecting the folder just loaded should get a clean exit. The
