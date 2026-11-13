@@ -14,7 +14,7 @@ from send2trash import send2trash
 
 from PyQt6.QtCore import QAbstractTableModel, QEvent, QItemSelection, QItemSelectionModel, \
     QMetaObject, QMimeData, QModelIndex, QPoint, QUrl, Qt, pyqtSignal, pyqtSlot, Q_ARG
-from PyQt6.QtGui import QColor, QFont, QDrag, QPalette
+from PyQt6.QtGui import QColor, QFont, QDrag, QPalette, QStandardItemModel
 from PyQt6.QtWidgets import QAbstractItemDelegate, QAbstractItemView, QApplication, QDialog, QGridLayout, QGroupBox, \
     QHBoxLayout, QHeaderView, QLabel, QLineEdit, QMenu, QMessageBox, QPushButton, QStyledItemDelegate, QTableView, \
     QVBoxLayout
@@ -360,8 +360,7 @@ class ColumnSettings(HeaderSetting):
             table = status['table']
 
         if table is not None:
-            tags = table.model().headerdata
-            hd = table.horizontalHeader()
+            tags, hd = table.columns()
 
             tags = ([hd.visualIndex(i), z, hd.isSectionHidden(i)] for i, z in
                     enumerate(tags))
@@ -1296,6 +1295,10 @@ class TagTable(QTableView):
         QTableView.__init__(self, parent)
         self.setSelectionMode(QAbstractItemView.SelectionMode.ExtendedSelection)
         self.settingsdialog = ColumnSettings
+        # While a plugin shows other columns (View All Fields), the user's
+        # own: the header data and the header's saved state. The Columns
+        # settings and quitting use these, not the columns shown.
+        self.user_columns = None
         if not headerdata:
             headerdata = []
         header = TableHeader(Qt.Orientation.Horizontal, self)
@@ -2312,8 +2315,19 @@ class TagTable(QTableView):
             self.dirs = list(set(self.dirs).difference(dirs))
             self.model().removeFolders(dirs, valid)
 
-    def setHeaderTags(self, tags, hidden=None):
+    def columns(self):
+        """The user's columns and a header holding their order and the
+        hidden ones: those shown, or those a plugin's view replaced."""
+        if self.user_columns is None:
+            return self.model().headerdata, self.horizontalHeader()
+        headerdata, state = self.user_columns
+        header = QHeaderView(Qt.Orientation.Horizontal, self)
+        header.setModel(QStandardItemModel(0, len(headerdata), header))
+        header.restoreState(state)
+        return headerdata, header
 
+    def setHeaderTags(self, tags, hidden=None):
+        self.user_columns = None
         self.saveSelection()
         old_column_sizes = {val[0]: self.horizontalHeader().sectionSize(idx)
             for idx,val in enumerate(self.model().headerdata)

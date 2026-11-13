@@ -438,7 +438,6 @@ def test_view_all_fields_page_applies_to_the_shown_fields(song, mainwin, user, d
     assert headers(mainwin) == ['__filename', '__dirpath', 'genre', 'artist', 'title']
 
 
-@pytest.mark.xfail(strict=True, reason='OK in Preferences saves the shown fields as the columns')
 def test_preferences_ok_keeps_the_columns_while_all_fields_are_shown(song, mainwin, user, restart):
     # preferences.txt, Columns: "In this panel you can modify the columns
     # listed in the file-view." plugins.txt: "Click it again to get your
@@ -459,7 +458,6 @@ def test_preferences_ok_keeps_the_columns_while_all_fields_are_shown(song, mainw
     assert headers(restart()) == before
 
 
-@pytest.mark.xfail(strict=True, reason="quitting while all fields are shown loses the columns' layout")
 def test_quitting_while_all_fields_are_shown_keeps_the_columns(song, mainwin, user, restart):
     # preferences.txt, Columns: "Any unchecked columns will not be shown."
     before = headers(mainwin)

@@ -461,7 +461,8 @@ class MainWin(QMainWindow):
         cparser.set("main", "maximized", self.isMaximized())
         settings.setValue('main/state', self.saveState())
 
-        headstate = self._table.horizontalHeader().saveState()
+        user_columns = self._table.user_columns
+        headstate = user_columns[1] if user_columns else self._table.horizontalHeader().saveState()
         settings.setValue('table/header', headstate)
         genres.save_genres(status['genres'])
         e.accept()

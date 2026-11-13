@@ -26,15 +26,22 @@ def load_fields():
                        ['__filename', '__dirpath'])
 
 
-def restore_view(state):
+def restore_view():
     tb = status['table']
+    if tb.user_columns is None:
+        return
+    headerdata, headerstate = tb.user_columns
+    tb.user_columns = None
     header = tb.horizontalHeader()
-    tb.model().setHeader(state['headerdata'])
+    tb.model().setHeader(headerdata)
     QApplication.processEvents()
-    header.restoreState(state['headerstate'])
+    header.restoreState(headerstate)
 
 
 def show_all_fields(fields=None):
+    tb = status['table']
+    if tb.user_columns is None:
+        tb.user_columns = (tb.model().headerdata[:], tb.horizontalHeader().saveState())
     files = status['allfiles']
     keys = set()
     for f in files:
@@ -48,7 +55,6 @@ def show_all_fields(fields=None):
             keys.remove(f)
 
     data = [(k, k) for k in fields + sorted(keys, key=natural_sort_key)]
-    tb = status['table']
     tb.model().setHeader(data)
     hd = TableHeader(Qt.Orientation.Horizontal)
     tb.setHorizontalHeader(hd)
@@ -63,13 +69,10 @@ def init(parent=None):
 
     def show_fields(checked):
         if checked:
-            tb = status['table']
-            header = tb.horizontalHeader()
-            state['headerdata'] = tb.model().headerdata[:]
-            state['headerstate'] = header.saveState()
+            state['shown'] = True
             show_all_fields()
         else:
-            restore_view(state)
+            restore_view()
             state.clear()
 
     action = QAction('Show all fields', parent)
