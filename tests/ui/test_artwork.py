@@ -950,7 +950,6 @@ def test_drop_a_cover_in_extended_tags(load, user, qtbot, tmp_path):
                              'imagetype': 3, 'mime': 'image/png'}]
 
 
-@pytest.mark.xfail(strict=True, reason='Save removes a broken cover once a good cover was shown before it')
 def test_save_keeps_a_broken_cover_shown_after_a_good_one(mainwin, user, load, qtbot):
     from puddlestuff.mainwin.tagpanel import FrameCombo
     # tut3.txt: "covers you modify aren't saved automatically. You still

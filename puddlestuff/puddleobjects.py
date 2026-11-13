@@ -2033,6 +2033,7 @@ class PicWidget(QWidget):
         self._image_size.setText("")
         self.pixmap = None
         self.images = []
+        self._currentImage = -1
         self._image_desc.setEnabled(False)
         self._image_type.setEnabled(False)
         [action.setEnabled(False) for action in
