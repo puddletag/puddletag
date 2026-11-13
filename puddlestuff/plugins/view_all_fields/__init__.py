@@ -56,8 +56,6 @@ def show_all_fields(fields=None):
 
 
 def init(parent=None):
-    state = {}
-
     def sep():
         k = QAction(parent)
         k.setSeparator(True)
@@ -72,6 +70,7 @@ def init(parent=None):
             show_all_fields()
         else:
             restore_view(state)
+            state.clear()
 
     action = QAction('Show all fields', parent)
     action.setCheckable(True)

@@ -428,7 +428,6 @@ def test_view_all_fields_page_adds_a_field(song, mainwin, user, dialogs):
     assert headers(mainwin) == before
 
 
-@pytest.mark.xfail(strict=True, reason="the View All Fields page's OK doesn't refresh the columns")
 def test_view_all_fields_page_applies_to_the_shown_fields(song, mainwin, user, dialogs):
     # Docs silent: with Show all fields ticked, the fields saved on the page
     # are the ones shown first.
