@@ -35,6 +35,18 @@ Plugins will be imported using **modulename**, as such only valid in Python modu
 
 Your plugin will not be loaded unless all this information is present. A plugin that can't be loaded is left out, and the reason is written to puddletag's log. A plugin whose `init` function fails stays loaded, and the error is written to the log. A tag source of a plugin that can't be started is left out too, and the reason is shown in the **Tag Sources** window and written to puddletag's log. To use a plugin, tick it on the Plugins page of Edit->Preferences, then restart puddletag.
 
+Plugins that come with puddletag
+--------------------------------
+
+puddletag comes with these plugins. Tick one on the Plugins page of Edit->Preferences and restart puddletag to use it.
+
++ **Extended Tags**: the Extended Tags dialog as a tool window (Windows->Extended Tags). It shows the fields of the selected files; **Plugins->Save Extended** (Ctrl+Shift+S) writes your changes to them.
++ **Highlight duplicate fields**: **Plugins->Dupe highlight** asks for a field and colours every selected file that has the same value for it as another selected file. Click it again to remove the colours. Nothing is written to the files.
++ **ID3 Tools**: two commands in the Tag Tools menu, for the selected MP3 files. **Update to ID3v2.4** saves their tags as ID3v2.4, whatever the ID3 version chosen on the Tags page of Edit->Preferences. **Convert to UTF-8** saves every text field encoded as UTF-8, which only ID3v2.4 has, so the tag becomes ID3v2.4 too. Other files are left as they are. Neither works in Preview Mode.
++ **Modtime + 2sec**: **Plugins->Add 2 seconds to modified time** (Ctrl+M) adds two seconds to the selected files' modification time, without touching their tags. It doesn't work in Preview Mode.
++ **Save tags**: **Plugins->Export tags** saves the selected files' tags, as the mutagen library reads them, to a file you choose (a Python pickle), to send along with a bug report.
++ **View All Fields**: **Plugins->Show all fields** replaces the columns with one per field the loaded files have, led by the fields listed on its page in Edit->Preferences (by default the filename and the folder). Click it again to get your columns back.
+
 Plugin Examples:
 ----------------
 

@@ -145,7 +145,7 @@ puddletag writes only ID3v2 tags. For the ID3v1 tag, choose what saving does:
 Plugins
 -------
 
-Plugins are a means with which to extend puddletag. If you want to install one drop it into "~/.local/share/puddletag/plugins". Enable it, then restart.
+Plugins are a means with which to extend puddletag. If you want to install one drop it into "~/.local/share/puddletag/plugins". Enable it, then restart. The plugins that come with puddletag are described in :doc:`plugins`.
 
 **Plugins are executable code akin to installing a program on you PC. Do not use any that aren't from trustworthy sources.**
 
