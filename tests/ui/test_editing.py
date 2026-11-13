@@ -497,7 +497,6 @@ def test_write_error_is_logged_once(user, loaded, qtbot, dialogs, caplog, capfd)
     assert 'NoneType: None' not in capfd.readouterr().err
 
 
-@pytest.mark.xfail(strict=True, reason='a write that fails with an OSError is not logged')
 def test_os_error_on_write_is_logged(user, loaded, qtbot, dialogs, caplog, monkeypatch):
     # The message for a file that can't be written says "See ... for debug
     # info", so the log holds that error. Synthetic: a disk that is full.

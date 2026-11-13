@@ -339,9 +339,12 @@ def write(audio, tags, save_mtime=True, justrename=False):
                 audio.save()
             elif not user_only and not renamed:
                 return {}
-    except EnvironmentError:
+    except EnvironmentError as e:
         audio.update(undo)
         audio.preview = preview
+        # A rename error is logged where the user is told of it.
+        if not isinstance(e, RenameError):
+            logging.exception(e)
         raise
     
     except Exception as e:
