@@ -254,7 +254,6 @@ def modtime(clean_profile, monkeypatch):
     tick(monkeypatch, 'modified_time')
 
 
-@pytest.mark.xfail(strict=True, reason='the new modification time drops the fraction of a second')
 def test_add_two_seconds_keeps_the_fraction(modtime, mainwin, user, qtbot, make_audio, tmp_path):
     # The plugin's info: "Add a shortcut to the plugins menu that increases
     # the selected files' modified time by two seconds." The docs are silent

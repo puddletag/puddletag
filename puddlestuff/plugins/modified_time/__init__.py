@@ -1,13 +1,10 @@
 import os
-import time
-from datetime import timedelta, datetime
 
 from PyQt6.QtGui import QAction
 from PyQt6.QtWidgets import QApplication, QMessageBox
 
 from .. import status
 from ... import audioinfo
-from ...audioinfo import lngtime
 from ...puddleobjects import progress
 from ... import puddletag
 
@@ -37,11 +34,9 @@ def add_seconds(parent=None):
 
     def func():
         for row, f in zip(rows, files):
-            modified_time = lngtime(f['__modified'])
-            modified_time = datetime.fromtimestamp(modified_time) + timedelta(seconds=2)
-            accessed_time = lngtime(f['__accessed'])
             try:
-                os.utime(f.filepath, (accessed_time, time.mktime(modified_time.timetuple())))
+                stat = os.stat(f.filepath)
+                os.utime(f.filepath, ns=(stat.st_atime_ns, stat.st_mtime_ns + 2_000_000_000))
             except (IOError, OSError) as e:
                 filename = f[audioinfo.PATH]
                 m = str(QApplication.translate('Defaults',
