@@ -230,7 +230,6 @@ def test_dupe_highlight_with_one_file_selected_stays_unticked(dupe_highlight, ma
     assert [in_file(p) for p in three_files] == before
 
 
-@pytest.mark.xfail(strict=True, reason='Dupe highlight colours a file only when the file above it has the same value')
 def test_dupe_highlight_colours_same_values_apart(dupe_highlight, mainwin, user, qtbot, dialogs,
                                                   make_audio, tmp_path):
     # The plugin's info: "Adds shortcut to Plugins to highlight files which

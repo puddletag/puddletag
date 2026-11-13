@@ -1,3 +1,5 @@
+from collections import Counter
+
 from PyQt6.QtCore import QObject, pyqtSignal
 from PyQt6.QtGui import QAction
 from PyQt6.QtWidgets import QInputDialog
@@ -25,20 +27,10 @@ def highlight_dupe_field(action):
         action.setChecked(False)
         return
 
-    highlight = []
-    prev = files[0]
-    value = prev.get(field)
-
-    for f in files[1:]:
-        if f.get(field) == value:
-            if value is not None:
-                if highlight and highlight[-1] != prev:
-                    highlight.append(prev)
-                elif not highlight:
-                    highlight.append(prev)
-                highlight.append(f)
-        value = f.get(field)
-        prev = f
+    values = [f.get(field) for f in files]
+    keys = [None if value is None else tuple(value) for value in values]
+    counts = Counter(keys)
+    highlight = [f for f, key in zip(files, keys) if key is not None and counts[key] > 1]
     obj.highlight.emit(highlight)
 
 
