@@ -148,7 +148,6 @@ def test_quitting_while_the_filesystem_dock_selects_the_folder_exits_cleanly(mak
     assert shown['files'] == [str(music / '01.mp3')]
 
 
-@pytest.mark.xfail(strict=True, reason='the launcher builds the main window before it checks the paths')
 def test_missing_path_stops_before_the_window(tmp_path):
     # The docs are silent on a missing path; this is what puddletag does,
     # as the maintainer decided: the message and exit code 1, without

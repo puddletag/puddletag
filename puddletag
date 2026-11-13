@@ -271,6 +271,11 @@ if __name__ == '__main__':
     options, filenames = parse_cmd_options()
     init(options, app)
 
+    for filename in filenames:
+        if not os.path.exists(filename):
+            print('Directory or file %s does not exist.' % filename)
+            sys.exit(1)
+
     # Depends on init being called first.
     from puddlestuff.puddletag import MainWin
     from puddlestuff.puddlesettings import load_gen_settings
@@ -295,10 +300,6 @@ if __name__ == '__main__':
 
     # Check if dirnames passed on command line.
     if filenames:
-        for filename in filenames:
-            if not os.path.exists(filename):
-                print('Directory or file %s does not exist.' % filename)
-                sys.exit(1)
         win.openFiles(filenames, False)
     elif load_gen_settings([('&Load last folder at startup', False)])[0][1]:
         if win._lastdir and os.path.exists(win._lastdir[0]):
