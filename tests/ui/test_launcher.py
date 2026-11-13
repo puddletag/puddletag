@@ -222,8 +222,6 @@ def test_autodetect_follows_a_hebrew_system(tmp_path):
     assert 'qt_he.qm' in shown['translators']
 
 
-@pytest.mark.xfail(strict=True,
-                   reason="the Default language loads Qt's translation for the system's locale")
 def test_default_language_is_english(tmp_path):
     # preferences.txt, Language: "Default is English".
     PuddleConfig().set('main', 'lang', 'default')
