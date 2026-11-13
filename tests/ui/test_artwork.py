@@ -8,14 +8,16 @@ file. Synthetic files and images.
 """
 import mutagen.flac
 import mutagen.id3
+import mutagen.mp4
 import pytest
-from PyQt6.QtCore import QBuffer, QIODevice, Qt
-from PyQt6.QtGui import QImage
+from PyQt6.QtCore import QBuffer, QIODevice, QMimeData, QPointF, Qt, QUrl
+from PyQt6.QtGui import QDragEnterEvent, QDragMoveEvent, QDropEvent, QImage
 from PyQt6.QtWidgets import QApplication, QMessageBox, QPushButton
 
 from puddlestuff import audioinfo
 from puddlestuff.helperwin import EditField, ExTags
 from puddlestuff.mainwin.artwork import ArtworkWidget
+from puddlestuff.puddleobjects import PicWidget
 
 pytestmark = pytest.mark.ui
 
@@ -38,6 +40,29 @@ def image(form, width):
 
 FRONT = {'data': image('PNG', 10), 'description': 'Front', 'imagetype': 3, 'mime': 'image/png'}
 BACK = {'data': image('PNG', 20), 'description': 'Back', 'imagetype': 4, 'mime': 'image/png'}
+
+
+def drag_onto(label, mime):
+    """Drags mime data over a picture and drops it there, as a file manager
+    does: enter, move, drop, on the picture's viewport. Returns whether the
+    picture took the drag."""
+    viewport = label.viewport()
+    pos = QPointF(viewport.rect().center())
+    action, button, none = (Qt.DropAction.CopyAction, Qt.MouseButton.LeftButton,
+                            Qt.KeyboardModifier.NoModifier)
+    enter = QDragEnterEvent(pos.toPoint(), action, mime, button, none)
+    QApplication.sendEvent(viewport, enter)
+    if not enter.isAccepted():
+        return False
+    QApplication.sendEvent(viewport, QDragMoveEvent(pos.toPoint(), action, mime, button, none))
+    QApplication.sendEvent(viewport, QDropEvent(pos, action, mime, button, none))
+    return True
+
+
+def file_urls(*paths):
+    mime = QMimeData()
+    mime.setUrls([QUrl.fromLocalFile(str(path)) for path in paths])
+    return mime
 
 
 def put(path, *covers):
@@ -679,3 +704,290 @@ def test_rename_field_of_files_sharing_a_value(mainwin, make_audio, tmp_path, qt
     qtbot.waitUntil(lambda: all('quodlibet::bailable' in in_file(p) for p in paths))
     assert [in_file(p)['quodlibet::bailable'] for p in paths] == [['Maybe'], ['Maybe']]
     assert all('bailable' not in in_file(p) for p in paths)
+
+
+def test_drop_an_image_file_adds_a_cover(mainwin, user, load, qtbot, tmp_path):
+    # The docs don't say; this is what puddletag does (synthetic: a PNG
+    # file dropped on the picture is added as a cover, like Add cover).
+    # tut3.txt: "With it you can add/remove/edit artwork".
+    [path] = load('mp3', [])
+    png = tmp_path / 'cover.png'
+    png.write_bytes(image('PNG', 10))
+    pic = artwork(user, mainwin, qtbot)
+    select(user, 1)
+    assert pic.context == '2/2'
+
+    assert drag_onto(pic.label, file_urls(png))
+    assert pic.context == '3/3'
+    assert pic.images[2]['data'] == image('PNG', 10)
+
+    user.activate()
+    user.click_menu('&Save')
+    qtbot.waitUntil(lambda: bool(stored(path)))
+    assert stored(path) == [{'data': image('PNG', 10), 'description': '', 'imagetype': 3,
+                             'mime': 'image/png'}]
+
+
+def test_dragged_text_is_refused(mainwin, user, load, qtbot):
+    # The docs don't say; this is what puddletag does (synthetic: text
+    # dragged onto the picture isn't taken).
+    load('mp3', [])
+    pic = artwork(user, mainwin, qtbot)
+    select(user, 1)
+    mime = QMimeData()
+    mime.setText('cover')
+    assert not drag_onto(pic.label, mime)
+    assert pic.context == '2/2'
+
+
+def test_dropped_file_that_is_not_an_image(mainwin, user, load, qtbot, tmp_path):
+    # The docs don't say; this is what puddletag does (synthetic: a text
+    # file dropped on the picture adds nothing).
+    load('mp3', [])
+    notes = tmp_path / 'notes.txt'
+    notes.write_text('not a picture')
+    pic = artwork(user, mainwin, qtbot)
+    select(user, 1)
+    assert drag_onto(pic.label, file_urls(notes))
+    assert pic.context == '2/2'
+    assert len(pic.images) == 2
+
+
+def test_dropped_file_that_is_gone(mainwin, user, load, qtbot, tmp_path):
+    # The docs don't say; this is what puddletag does (synthetic: a file
+    # that doesn't exist, dropped on the picture, adds nothing).
+    load('mp3', [])
+    pic = artwork(user, mainwin, qtbot)
+    select(user, 1)
+    assert drag_onto(pic.label, file_urls(tmp_path / 'missing.png'))
+    assert pic.context == '2/2'
+
+
+def test_click_shows_the_cover_full_size(mainwin, user, load, qtbot):
+    # The docs don't say; this is what puddletag does (synthetic: clicking
+    # the picture opens it full size, clicking it again closes it).
+    load('mp3', [FRONT])
+    pic = artwork(user, mainwin, qtbot)
+    select(user, 1)
+    viewport = pic.label.viewport()
+    user.click(viewport, viewport.rect().center())
+    qtbot.waitUntil(pic.win.isVisible)
+    assert pic.win.windowTitle() == 'Album Art: 10x1'
+
+    user.click(viewport, viewport.rect().center())
+    qtbot.waitUntil(lambda: not pic.win.isVisible())
+
+
+def test_full_size_window_of_a_cover_bigger_than_the_screen(mainwin, user, load, qtbot):
+    # The docs don't say; this is what puddletag does (synthetic: a 4000
+    # pixel wide cover is shown no bigger than the screen).
+    load('mp3', [{**FRONT, 'data': image('PNG', 4000)}])
+    pic = artwork(user, mainwin, qtbot)
+    select(user, 1)
+    viewport = pic.label.viewport()
+    user.click(viewport, viewport.rect().center())
+    qtbot.waitUntil(pic.win.isVisible)
+    assert 4000 > pic.win.screen().availableGeometry().width()
+    assert pic.win.maximumSize() == pic.win.screen().availableGeometry().size()
+
+
+def test_add_cover_cancelled(load, mainwin, user, qtbot, dialogs):
+    # Synthetic: the docs (tut3.txt) don't say what cancelling the file
+    # dialog does; puddletag leaves the covers as they were.
+    load('mp3', [FRONT])
+    pic = artwork(user, mainwin, qtbot)
+    select(user, 1)
+    dialogs.answer('QFileDialog.getOpenFileName', ('', ''))
+    right_click(user, pic, '&Add cover')
+
+    assert shown_cover(pic) == ('3/3', 'Front')
+
+
+def test_save_cover_to_file_cancelled(load, mainwin, user, qtbot, dialogs, tmp_path):
+    # Synthetic: the docs don't describe Save cover to file; cancelling
+    # its dialog writes nothing.
+    load('mp3', [FRONT])
+    pic = artwork(user, mainwin, qtbot)
+    select(user, 1)
+    before = sorted(tmp_path.rglob('*'))
+    dialogs.answer('QFileDialog.getSaveFileName', ('', ''))
+    right_click(user, pic, '&Save cover to file')
+
+    assert sorted(tmp_path.rglob('*')) == before
+
+
+def test_save_cover_to_file_fails(load, mainwin, user, qtbot, dialogs, tmp_path):
+    # Synthetic: the docs don't describe Save cover to file; a folder that
+    # doesn't exist makes the write fail, and puddletag says so.
+    load('mp3', [FRONT])
+    pic = artwork(user, mainwin, qtbot)
+    select(user, 1)
+    out = tmp_path / 'missing' / 'cover.png'
+    dialogs.answer('QFileDialog.getSaveFileName', (str(out), ''))
+    dialogs.answer('QMessageBox.critical', QMessageBox.StandardButton.Ok)
+    right_click(user, pic, '&Save cover to file')
+
+    [(name, args, kwargs)] = [c for c in dialogs.calls if c[0] == 'QMessageBox.critical']
+    assert args[1:] == ('Error', f'Writing to <b>{out}</b> failed.')
+
+
+def test_save_cover_from_extended_tags_of_two_files(load, user, qtbot, dialogs):
+    # Synthetic: the docs don't describe Save cover to file, and don't say
+    # what name it suggests; puddletag suggests the cover pattern in the
+    # files' folder with the cover's own extension (synthetic PNG covers).
+    paths = load('mp3', [FRONT], [FRONT])
+    select(user, 2)
+    user.press(Key.Key_E, Ctrl)
+    win = extended_tags(qtbot)
+    dialogs.answer('QFileDialog.getSaveFileName', ('', ''))
+    user.click(win.piclabel.savepic)
+
+    [(name, args, kwargs)] = [c for c in dialogs.calls if c[0] == 'QFileDialog.getSaveFileName']
+    assert args[2] == str(paths[0].parent / 'folder.png')
+    win.close()
+
+
+def test_paste_an_image_from_another_program(load, mainwin, user, qtbot):
+    # Issues #428 and #1042 ask for copy and paste. An image copied from
+    # another program has no cover bytes, so puddletag saves it as JPEG.
+    [path] = load('mp3', [])
+    pic = artwork(user, mainwin, qtbot)
+    select(user, 1)
+    picture = QImage(10, 1, QImage.Format.Format_RGB32)
+    picture.fill(0)
+    QApplication.clipboard().setImage(picture)
+    right_click(user, pic, '&Paste cover')
+
+    assert pic.context == '3/3'
+    user.activate()
+    user.click_menu('&Save')
+    qtbot.waitUntil(lambda: bool(stored(path)))
+    [cover] = stored(path)
+    assert cover['mime'] == 'image/jpeg'
+    assert QImage.fromData(cover['data']).width() == 10
+
+
+def test_remove_the_first_of_three_covers(mainwin, user, load, qtbot):
+    # tut3.txt: "options for adding/removing artwork".
+    [path] = load('mp3', [FRONT, BACK, THIRD])
+    pic = artwork(user, mainwin, qtbot)
+    select(user, 1)
+    assert shown_cover(pic) == ('3/5', 'Front')
+
+    right_click(user, pic, '&Remove cover')
+    assert shown_cover(pic) == ('3/4', 'Back')
+
+    user.click_menu('&Save')
+    qtbot.waitUntil(lambda: len(stored(path)) == 2)
+    assert stored(path) == [BACK, THIRD]
+
+
+def test_cover_type_outside_the_list(mainwin, user, load, qtbot):
+    # Synthetic: a FLAC picture of type 30, which the 21 types of the
+    # picture-type list don't include. The docs are silent on what is shown.
+    load('flac', [dict(FRONT, imagetype=30)])
+    pic = artwork(user, mainwin, qtbot)
+    select(user, 1)
+    assert pic._image_type.text() == 'CF'
+
+
+def test_mp4_cover_has_no_description_or_type(mainwin, make_audio, tmp_path, qtbot, user):
+    # tags.txt: "MP4 tags also support multiple pictures per file, but not
+    # setting descriptions." The docs are silent on the type.
+    path = make_audio('01.m4a', tmp_path / 'music', album='Album', title='Title 1')
+    audio = mutagen.mp4.MP4(str(path))
+    audio['covr'] = [mutagen.mp4.MP4Cover(image('PNG', 10),
+                                          imageformat=mutagen.mp4.MP4Cover.FORMAT_PNG)]
+    audio.save()
+    mainwin.openDir(str(path.parent), False)
+    qtbot.waitUntil(lambda: mainwin._table.model().rowCount() == 1)
+    user.activate()
+    pic = artwork(user, mainwin, qtbot)
+    select(user, 1)
+    assert pic.context == '3/3'
+    assert not pic._image_desc.isEnabled()
+    assert not pic._image_type.isEnabled()
+    assert pic._image_type.text() == 'CF'
+
+
+def test_broken_cover_shows_no_images(mainwin, user, load, qtbot):
+    # Synthetic: a cover whose data is not an image. The docs are silent on
+    # what is shown for it.
+    load('mp3', [dict(FRONT, data=b'not an image', description='Broken')])
+    pic = artwork(user, mainwin, qtbot)
+    select(user, 1)
+    assert pic.context == 'No Images'
+    assert pic.images == []
+
+
+def test_remove_the_only_cover_in_extended_tags(load, user, qtbot):
+    # menus.txt, Extended Tags: "With it you can edit/see all the supported
+    # fields in a file."
+    [path] = load('mp3', [FRONT])
+    user.click_cell(user.cell(0, 'title'))
+    user.press(Key.Key_E, Ctrl)
+    win = extended_tags(qtbot)
+    user.click(win.piclabel.removepic)
+    assert win.piclabel.context == 'No Images'
+    user.click(win.okcancel.okButton)
+    qtbot.waitUntil(lambda: stored(path) == [])
+
+
+def test_drop_a_cover_in_extended_tags(load, user, qtbot, tmp_path):
+    # menus.txt, Extended Tags: "With it you can edit/see all the supported
+    # fields in a file."
+    [path] = load('mp3', [])
+    png = tmp_path / 'cover.png'
+    png.write_bytes(image('PNG', 10))
+    user.click_cell(user.cell(0, 'title'))
+    user.press(Key.Key_E, Ctrl)
+    win = extended_tags(qtbot)
+    assert drag_onto(win.piclabel.label, file_urls(png))
+    assert win.piclabel.context == '1/1'
+    user.click(win.okcancel.okButton)
+    qtbot.waitUntil(lambda: bool(stored(path)))
+    assert stored(path) == [{'data': image('PNG', 10), 'description': '',
+                             'imagetype': 3, 'mime': 'image/png'}]
+
+
+@pytest.mark.xfail(strict=True, reason='Save removes a broken cover once a good cover was shown before it')
+def test_save_keeps_a_broken_cover_shown_after_a_good_one(mainwin, user, load, qtbot):
+    from puddlestuff.mainwin.tagpanel import FrameCombo
+    # tut3.txt: "covers you modify aren't saved automatically. You still
+    # need to use Save from the File menu." and "<keep> will leave artwork
+    # unmodified for each file." Synthetic: the second file's cover is not
+    # an image.
+    paths = load('mp3', [FRONT], [dict(FRONT, data=b'not an image', description='Broken')])
+    pic = artwork(user, mainwin, qtbot)
+    user.click_cell(user.cell(0, 'title'))
+    user.click_cell(user.cell(1, 'title'))
+    assert pic.context == 'No Images'
+
+    [panel] = mainwin.findChildren(FrameCombo)
+    user.click(panel.combos['album'].lineEdit())
+    user.press(Key.Key_A, Ctrl)
+    user.type('New')
+    user.click_menu('&Save')
+    qtbot.waitUntil(lambda: in_file(paths[1]).get('album') == ['New'])
+    assert [(c['description'], c['data']) for c in stored(paths[1])] == [('Broken', b'not an image')]
+
+
+@pytest.mark.xfail(strict=True, reason='Copy cover skips the first cover (index 0 is falsy)')
+def test_copy_the_first_cover(qtbot):
+    # Synthetic: no window shows a Copy button on a list that starts at
+    # its first cover today (Extended Tags builds one but never shows it).
+    pic = PicWidget(buttons=True)
+    qtbot.addWidget(pic)
+    pic.setImageTags(audioinfo.IMAGETAGS)
+    pic.setImages([dict(FRONT)])
+    QApplication.clipboard().clear()
+    pic.copypic.click()
+    assert QApplication.clipboard().image().width() == 10
+
+
+@pytest.mark.xfail(strict=True, reason='PicWidget(images, imagetags) raises AttributeError')
+def test_picture_built_with_covers(qtbot):
+    # Synthetic: a picture built with its covers and their field names.
+    pic = PicWidget(images=[dict(FRONT)], imagetags=audioinfo.IMAGETAGS)
+    qtbot.addWidget(pic)
+    assert pic.context == '1/1'

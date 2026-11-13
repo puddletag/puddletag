@@ -510,23 +510,29 @@ def test_remove_tag_on_a_read_only_file(mainwin, make_audio, tmp_path, qtbot, us
 
 
 @pytest.mark.skipif(os.geteuid() == 0, reason='root can write a read-only file')
+@pytest.mark.xfail(strict=True, reason='the progress window asks whether to continue '
+                   'at the last failing file too, ignoring the count the command yields')
 def test_remove_tag_on_read_only_files(mainwin, make_audio, tmp_path, qtbot, user, dialogs):
     # Remove Tag: "Removes the tags of selected files." and Undo: "When
     # there's nothing left to undo, Undo is greyed out." With several files
     # selected, as the program behaves (the docs are silent) and as Move to
-    # Trash does: it asks whether to go on after each file that can't be
-    # changed, the last one included. Synthetic files, read-only (0444).
+    # Trash does: it asks whether to go on after a file that can't be
+    # changed, and gives a plain warning for the last one. Synthetic files,
+    # read-only (0444).
     paths = two_files(make_audio, tmp_path)
     table = load(mainwin, qtbot, user, paths)
     read_only(*paths)
     select(user, [0, 1])
     dialogs.answer('QMessageBox.exec', Yes, Yes)
+    dialogs.answer('QMessageBox.warning', Ok)
 
     user.press(Key.Key_R, Ctrl)
     user.activate()
 
     assert [args[0].text() for name, args, kwargs in dialogs.calls if name == 'QMessageBox.exec'] \
-        == [removal_error(path) + '<br /> Do you want to continue?' for path in paths]
+        == [removal_error(paths[0]) + '<br /> Do you want to continue?']
+    assert [args[1:] for name, args, kwargs in dialogs.calls if name == 'QMessageBox.warning'] \
+        == [('Error', removal_error(paths[1]))]
     original = [{'artist': [f'Artist {i}'], 'title': [f'Title {i}']} for i in (1, 2)]
     assert [in_file(p) for p in paths] == original
     assert in_table(table) == original
@@ -561,6 +567,8 @@ def test_remove_tag_goes_on_after_a_read_only_file(mainwin, make_audio, tmp_path
 
 
 @pytest.mark.skipif(os.geteuid() == 0, reason='root can write a read-only file')
+@pytest.mark.xfail(strict=True, reason='the progress window asks whether to continue '
+                   'at the last failing file too, ignoring the count the command yields')
 def test_edit_undone_after_remove_tag_failed(mainwin, make_audio, tmp_path, qtbot, user, dialogs):
     # Undo: "Undo's the last edit" and "When there's nothing left to undo,
     # Undo is greyed out." A Remove Tag that changed no file isn't an edit,
@@ -573,11 +581,13 @@ def test_edit_undone_after_remove_tag_failed(mainwin, make_audio, tmp_path, qtbo
     read_only(paths[0], paths[1])
     select(user, [0, 1])
     dialogs.answer('QMessageBox.exec', Yes, Yes)
+    dialogs.answer('QMessageBox.warning', Ok)
 
     user.press(Key.Key_R, Ctrl)
     user.activate()
     user.press(Key.Key_Z, Ctrl)
 
+    assert [name for name, args, kwargs in dialogs.calls] == ['QMessageBox.exec', 'QMessageBox.warning']
     assert in_file(paths[2])['title'] == ['Title 3']
     assert in_table(table)[2]['title'] == ['Title 3']
     assert not user.action('&Undo').isEnabled()

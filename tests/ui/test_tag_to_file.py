@@ -102,14 +102,17 @@ def test_non_ascii_names(user, mainwin, make_audio, tmp_path, qtbot):
 
 
 @pytest.mark.skipif(os.geteuid() == 0, reason='root can rename in a read-only folder')
+@pytest.mark.xfail(strict=True, reason='the progress window asks whether to continue '
+                   'at the last failing file too, ignoring the count the command yields')
 def test_read_only_folder(user, loaded, qtbot, dialogs):
     # A file Tag->File can't rename is reported, with the question whether
-    # to go on with the others, and it keeps its name, on disk and in the
-    # table.
+    # to go on with the others (a plain warning for the last one), and it
+    # keeps its name, on disk and in the table.
     table, paths = loaded
     folder = paths[0].parent
     names = sorted(os.listdir(folder))
     dialogs.answer('QMessageBox.exec', *[QMessageBox.StandardButton.Yes] * 3)
+    dialogs.answer('QMessageBox.warning', QMessageBox.StandardButton.Ok)
     os.chmod(folder, 0o555)
     try:
         select_all_rows(user, 3)
@@ -118,8 +121,11 @@ def test_read_only_folder(user, loaded, qtbot, dialogs):
         qtbot.waitUntil(lambda: len(dialogs.calls) == 3)
     finally:
         os.chmod(folder, 0o755)
-    messages = [box.text() for name, (box,), kwargs in dialogs.calls]
-    assert all('Permission denied' in m and 'Do you want to continue?' in m for m in messages)
+    questions = [box.text() for name, (box,), kwargs in dialogs.calls if name == 'QMessageBox.exec']
+    warnings = [args[2] for name, args, kwargs in dialogs.calls if name == 'QMessageBox.warning']
+    assert len(questions) == 2 and len(warnings) == 1
+    assert all('Permission denied' in m and 'Do you want to continue?' in m for m in questions)
+    assert 'Permission denied' in warnings[0]
     assert sorted(os.listdir(folder)) == names
     assert [audio.filepath for audio in table.model().taginfo] == [str(p) for p in paths]
 

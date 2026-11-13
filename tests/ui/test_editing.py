@@ -351,20 +351,24 @@ def test_filename_no_ext_of_a_file_without_extension(user, loaded, qtbot):
     assert table.model().taginfo[0].filepath == str(paths[0].with_name('X'))
 
 
+@pytest.mark.xfail(strict=True, reason='the progress window asks whether to continue '
+                   'at the last failing file too, ignoring the count the command yields')
 def test_several_files_one_name(user, loaded, qtbot, dialogs):
     # The docs don't say; this is what puddletag does: the first file is
-    # renamed, the second can't be (the name is taken), and nothing is
-    # overwritten.
+    # renamed, the second, the last, can't be (the name is taken) and gets
+    # a plain warning, and nothing is overwritten.
     table, paths = loaded
     user.click_cell(user.cell(0, '__filename'))
     user.click_cell(user.cell(1, '__filename'), Shift)
+    dialogs.answer('QMessageBox.warning', QMessageBox.StandardButton.Ok)
     dialogs.answer('QMessageBox.exec', QMessageBox.StandardButton.Yes)
     user.press(Key.Key_F2)
     user.type('Same.mp3')
     user.press(Key.Key_Return)
     qtbot.waitUntil(lambda: len(dialogs.calls) == 1)
-    [(name, (box,), kwargs)] = dialogs.calls
-    assert 'File exists' in box.text() and '02.mp3' in box.text()
+    [(name, (parent, title, message), kwargs)] = dialogs.calls
+    assert name == 'QMessageBox.warning'
+    assert 'File exists' in message and '02.mp3' in message
     assert sorted(os.listdir(paths[0].parent)) == ['02.mp3', '03.mp3', 'Same.mp3']
     assert in_file(paths[0].with_name('Same.mp3')) == {'artist': ['Artist 1'], 'title': ['Title 1']}
     assert in_file(paths[1]) == {'artist': ['Artist 2'], 'title': ['Title 2']}

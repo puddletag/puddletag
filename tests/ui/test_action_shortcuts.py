@@ -21,7 +21,10 @@ from puddlestuff.shortcutsettings import ActionEditorWidget
 pytestmark = pytest.mark.ui
 
 Key = Qt.Key
+Alt = Qt.KeyboardModifier.AltModifier
 Ctrl = Qt.KeyboardModifier.ControlModifier
+Meta = Qt.KeyboardModifier.MetaModifier
+Shift = Qt.KeyboardModifier.ShiftModifier
 LEFT = Qt.MouseButton.LeftButton
 
 FIELDS = ['album', 'artist', 'title']
@@ -876,3 +879,84 @@ def test_preferences_ok_after_a_shortcut_assigned_meanwhile(loaded, mainwin, use
     saved = PuddleConfig(os.path.join(constants.CONFIGDIR, 'user_shortcuts'))
     assert saved.get('shortcuts', '&Preferences', None) == 'Ctrl+L'
     assert saved.get('shortcuts', 'Case Conversion', None) == 'Ctrl+1'
+
+
+def test_clear_takes_the_key_off_a_shortcut(loaded, mainwin, user, qtbot, monkeypatch):
+    # The docs don't say; this is what puddletag does: Clear in a shortcut's
+    # Edit Shortcut window empties its key field, and the shortcut is left
+    # with no key, which no longer runs the action.
+    table, paths = loaded
+    window = open_actions(user, qtbot)
+    check(user, window, 'Case Conversion')
+    assign(user, monkeypatch, window, pressing(user, Key.Key_1))
+    editor = edit_shortcuts(user, qtbot, window)
+    dialog = edit_item(user, qtbot, editor, 0)
+    assert dialog._shortcut.text() == 'Ctrl+1'
+    user.click(button(dialog, '&Clear'))
+    assert dialog._shortcut.text() == ''
+    user.click(dialog._ok)
+    user.activate(editor)
+    user.click(button(editor, 'OK'))
+    close(user, window)
+    assert shortcuts_on_menu(mainwin) == [('Case Conversion', '')]
+    user.press(Key.Key_1, Ctrl)
+    nothing_ran(qtbot, user, paths)
+
+
+def test_key_without_a_modifier(loaded, mainwin, user, qtbot, monkeypatch):
+    # The docs don't say; this is what puddletag does: a key pressed with no
+    # modifier, F9 (free in data/shortcuts), can be a shortcut's key, and it
+    # runs the action.
+    table, paths = loaded
+    window = open_actions(user, qtbot)
+    check(user, window, 'Case Conversion')
+    assign(user, monkeypatch, window, pressing(user, Key.Key_F9, Qt.KeyboardModifier.NoModifier))
+    close(user, window)
+    assert shortcuts_on_menu(mainwin) == [('Case Conversion', 'F9')]
+    user.press(Key.Key_F9)
+    written(qtbot, paths[0], mixed(1))
+    assert in_files(paths) == [mixed(1), tags(2)]
+
+
+KEY_TEXTS = [  # pairs: what is held, and how the menus name it
+    (Ctrl | Shift, 'Ctrl+Shift+1'),
+    (Ctrl | Alt, 'Ctrl+Alt+1'),
+    (Ctrl | Meta, 'Meta+Ctrl+1'),
+    (Alt | Shift, 'Alt+Shift+1'),
+    (Meta | Shift, 'Meta+Shift+1'),
+    (Alt | Meta, 'Meta+Alt+1'),
+    (Ctrl | Alt | Shift, 'Ctrl+Alt+Shift+1'),
+    (Ctrl | Meta | Shift, 'Meta+Ctrl+Shift+1'),
+    (Alt | Ctrl | Meta, 'Meta+Ctrl+Alt+1'),
+    (Alt | Meta | Shift, 'Meta+Alt+Shift+1'),
+    (Alt | Ctrl | Meta | Shift, 'Meta+Ctrl+Alt+Shift+1'),
+]
+
+
+@pytest.mark.xfail(strict=True, reason='the shortcut editor orders modifiers at random: keycmp '
+                                       'compares with Qt.Modifier, not Qt.KeyboardModifier')
+def test_key_text_names_modifiers_as_the_menus_do(loaded, qtbot, user, monkeypatch, mainwin):
+    # menus.txt names keys "Copy All Fields (Ctrl+Shift+C)" and "Select Column
+    # (Meta+Alt+C)": the menus show Qt's text, in Qt's order, Meta+Ctrl+Alt+Shift.
+    # The editor refuses a key a menu command has, as in test_taken_key_is_refused.
+    # All the keys in one test: the order today is random per process, so one key
+    # would pass about half the time.
+    table, paths = loaded
+    window = open_actions(user, qtbot)
+    check(user, window, 'Case Conversion')
+    seen = []
+
+    def steps(dialog):
+        ok = button(dialog, 'OK')
+        user.press(Key.Key_C, Ctrl | Shift)  # Copy All Fields' key
+        seen.append((dialog._text.text(), ok.isEnabled()))
+        for modifier, text in KEY_TEXTS:
+            user.press(Key.Key_1, modifier)
+            seen.append((dialog._text.text(), ok.isEnabled()))
+        user.press(Key.Key_1, Ctrl)
+        user.click(ok)
+
+    assign(user, monkeypatch, window, steps)
+    close(user, window)
+
+    assert seen == [('Ctrl+Shift+C', False)] + [(text, True) for modifier, text in KEY_TEXTS]

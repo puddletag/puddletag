@@ -184,18 +184,22 @@ def test_yes_to_all_asks_once(three, user, qtbot, dialogs):
 
 
 @pytest.mark.skipif(os.geteuid() == 0, reason='root can write a read-only file')
-def test_the_last_file_is_asked_too(three, user, qtbot, dialogs):
-    # puddletag asks this for every file that fails among several, the last
-    # one included, though nothing is left to continue with; the docs don't
-    # say.
+@pytest.mark.xfail(strict=True, reason='the progress window asks whether to continue '
+                   'at the last failing file too, ignoring the count the command yields')
+def test_the_last_file_gets_a_plain_warning(three, user, qtbot, dialogs):
+    # Undo: "If a file can't be written, puddletag says so as it does for
+    # any write and goes on with the other files"; nothing is left to go on
+    # with after the last file, so it gets a plain warning, as Undo's does.
     model, paths = three
     os.chmod(paths[2], 0o444)
+    dialogs.answer('QMessageBox.warning', QMessageBox.StandardButton.Ok)
     dialogs.answer('QMessageBox.exec', QMessageBox.StandardButton.Yes)
     title_all(user)
     qtbot.waitUntil(lambda: len(dialogs.calls) == 1)
     user.activate()
-    [question] = questions(dialogs)
-    assert str(paths[2]) in question and 'Do you want to continue?' in question
+    assert questions(dialogs) == []
+    [(name, args, kwargs)] = dialogs.calls
+    assert name == 'QMessageBox.warning' and str(paths[2]) in args[2]
     assert titles_in_files(paths) == [['New'], ['New'], ['Three']]
 
 

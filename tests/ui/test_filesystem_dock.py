@@ -634,3 +634,20 @@ def test_a_write_during_a_load_doesnt_load_the_folder_again(mainwin, make_audio,
     qtbot.wait(200)
     assert table.model().taginfo[0] is audio
     assert user.action('&Undo').isEnabled()
+
+
+def test_untick_a_header_column(mainwin, music, tmp_path, qtbot, user):
+    # Hiding a column is docs-silent; menus.txt: "**Show Header** will show
+    # the Filesystem header which displays extra info." Ticking Size shows
+    # it, unticking hides it again.
+    view = tree(mainwin)
+    right_click_folder(user, qtbot, view, tmp_path / 'a', 'Show Header')
+    assert not view.isHeaderHidden()
+    header = view.header()
+    # The tree may be scrolled sideways, so section 0 can start left of the
+    # viewport: aim at the viewport's own left edge.
+    point = QPoint(5, header.height() // 2)
+    right_click(user, qtbot, header.viewport(), point, 'Size')
+    assert not header.isSectionHidden(1)
+    right_click(user, qtbot, header.viewport(), point, 'Size')
+    assert header.isSectionHidden(1)

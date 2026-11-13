@@ -7,7 +7,8 @@ import os
 
 import pytest
 from PyQt6.QtCore import Qt
-from PyQt6.QtWidgets import QApplication, QCheckBox, QLabel, QMessageBox, QStyle, QStyleOptionButton
+from PyQt6.QtWidgets import (QApplication, QCheckBox, QFileDialog, QLabel, QMessageBox, QStyle,
+                             QStyleOptionButton)
 
 from puddlestuff import audioinfo
 from puddlestuff.puddleobjects import PuddleConfig
@@ -884,3 +885,20 @@ def test_exit_with_previews_asks(answer, visible, loaded, mainwin, qtbot, user, 
     qtbot.waitUntil(lambda: not dialogs.unused_answers())
     assert mainwin.isVisible() == visible
     assert in_file(paths[0])['title'] == ['Title 1']
+
+
+@pytest.mark.xfail(strict=True, reason="Open Folder forces Qt's own folder dialog, which "
+                   "lacks the desktop's mounts and the Flatpak portal (#1088, #1089)")
+@pytest.mark.parametrize('open_folder', [OPEN['File menu'], ADD['File menu']],
+                         ids=['Open Folder', 'Add Folder'])
+def test_folder_dialog_is_the_desktops(mainwin, make_audio, tmp_path, qtbot, user, dialogs, loaded,
+                                       open_folder):
+    # #1088: "No option to select any mounted drive". #1089: in a
+    # Flatpak "you can only move up or down in the folder structure".
+    # Add Folder is enabled only once files are loaded, hence `loaded`.
+    p3 = make_audio('03.mp3', tmp_path / 'other', title='Title 3')
+    dialogs.answer(GET_DIRECTORY, str(p3.parent))
+    open_folder(user)
+    qtbot.waitUntil(lambda: p3.name in [os.path.basename(a.filepath) for a in mainwin._table.model().taginfo])
+    [(name, (parent, caption, folder, options), kwargs)] = dialogs.calls
+    assert options == QFileDialog.Option.ShowDirsOnly | QFileDialog.Option.DontResolveSymlinks

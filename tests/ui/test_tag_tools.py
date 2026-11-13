@@ -161,22 +161,27 @@ def test_tag_tool_on_a_read_only_file(mainwin, user, make_audio, qtbot, dialogs,
 
 
 @pytest.mark.skipif(os.geteuid() == 0, reason='root can write a read-only file')
+@pytest.mark.xfail(strict=True, reason='the progress window asks whether to continue '
+                   'at the last failing file too, ignoring the count the command yields')
 def test_tag_tool_on_read_only_files(mainwin, user, make_audio, qtbot, dialogs, tmp_path):
     # Tag Tools: "Deleting 'official' tags can be undone"; Undo: "When
     # there's nothing left to undo, Undo is greyed out." Synthetic files,
-    # both read-only (0444): as Move to Trash does, every failing file asks
-    # whether to go on, the last one too, and there is nothing to undo.
+    # both read-only (0444): as Move to Trash does, the first failing file
+    # asks whether to go on, the last gets a plain warning, and there is
+    # nothing to undo.
     paths = [make_audio(name, tmp_path, title='Title', artist='Artist') for name in ('01.mp3', '02.mp3')]
     before = [in_file(path) for path in paths]
     for path in paths:
         os.chmod(path, 0o444)
     load(mainwin, user, qtbot, tmp_path, 2)
     dialogs.answer('QMessageBox.exec', Yes, Yes)
+    dialogs.answer('QMessageBox.warning', Ok)
     user.click_menu(MENU['remove_id3'])
     user.activate()
     assert [args[0].text() for args in calls(dialogs, 'QMessageBox.exec')] == [
-        writing_error(path) + '<br /> Do you want to continue?' for path in paths]
-    assert calls(dialogs, 'QMessageBox.warning') == []
+        writing_error(paths[0]) + '<br /> Do you want to continue?']
+    assert [args[1:] for args in calls(dialogs, 'QMessageBox.warning')] == [
+        ('Error', writing_error(paths[1]))]
     assert [in_file(path) for path in paths] == before
     assert not user.action('&Undo').isEnabled()
 

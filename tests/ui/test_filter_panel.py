@@ -528,23 +528,28 @@ def test_write_previews_with_hidden_files_undone_at_once(mainwin, loaded, qtbot,
 
 
 @pytest.mark.skipif(os.geteuid() == 0, reason='root can write a read-only file')
+@pytest.mark.xfail(strict=True, reason='the progress window asks whether to continue '
+                   'at the last failing file too, ignoring the count the command yields')
 def test_write_previews_keeps_a_hidden_preview_it_cannot_write(mainwin, loaded, dialogs, qtbot, user):
     # menus.txt: "If preview mode has been enabled and some changes were
     # made, they'll get written to the files, and Preview Mode is disabled."
     # The docs are silent on a file that can't be written: its change stays
-    # previewed, as it does for a shown file, and the user is asked whether
-    # to go on, as for any file that can't be written among several.
+    # previewed, as it does for a shown file, and, being the last file
+    # written, it gets a plain warning, as any last file that can't be
+    # written does.
     table, paths = loaded
     preview_titles(qtbot, user, table, 0, 2)
     enter_filter(user, mainwin, 'Maffin')
     table.setFocus()
     os.chmod(paths[1], 0o444)
+    dialogs.answer('QMessageBox.warning', QMessageBox.StandardButton.Ok)
     dialogs.answer('QMessageBox.exec', Yes)
     user.press(Key.Key_W, Ctrl)
     qtbot.waitUntil(lambda: in_file(paths[2])['title'] == ['New'])
-    qtbot.waitUntil(lambda: any(name == 'QMessageBox.exec' for name, *_ in dialogs.calls))
-    [args] = [args for name, args, kwargs in dialogs.calls if name == 'QMessageBox.exec']
-    assert str(paths[1]) in args[0].text()
+    qtbot.waitUntil(lambda: any(name == 'QMessageBox.warning' for name, *_ in dialogs.calls))
+    [args] = [args for name, args, kwargs in dialogs.calls if name == 'QMessageBox.warning']
+    assert str(paths[1]) in args[2]
+    assert not any(name == 'QMessageBox.exec' for name, *_ in dialogs.calls)
     user.activate()
     assert table.model().previewMode
     assert in_file(paths[1])['title'] == ['Angel']
@@ -573,3 +578,18 @@ def test_write_previews_stopped_keeps_the_previews_not_written(mainwin, loaded, 
     assert [in_file(p)['title'] for p in paths] == [['Monster'], ['Angel'], ['Monster (Live)']]
     enter_filter(user, mainwin, '')
     assert titles(table) == {'01.mp3': ['New'], '02.mp3': ['New'], '03.mp3': ['New']}
+
+
+def test_remove_button_drops_the_current_entry(mainwin, loaded, user, restart):
+    # The docs are silent; the button's tooltip is "Remove current item.".
+    enter_filter(user, mainwin, 'one')
+    enter_filter(user, mainwin, 'two')
+    box = filter_box(mainwin)
+    assert [box.itemText(i) for i in range(box.count())] == ['one', 'two']
+    assert box.currentText() == 'two'
+    [view] = mainwin.findChildren(FilterView)
+    user.click(view.combo.remove)
+    assert [box.itemText(i) for i in range(box.count())] == ['one']
+    win = restart()
+    box = filter_box(win)
+    assert [box.itemText(i) for i in range(box.count())] == ['one']

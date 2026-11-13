@@ -436,6 +436,84 @@ def test_select_columns_duplicate_keeps_the_check_box(mainwin, qtbot, user, musi
     untouched(before)
 
 
+def column_titles(window):
+    listbox = window.listbox
+    return [listbox.item(i).text() for i in range(listbox.count())]
+
+
+def test_select_columns_remove(mainwin, qtbot, user, music):
+    # preferences.txt, Columns: "In this panel you can modify the columns
+    # listed in the file-view." The docs don't say what Remove does or which
+    # row is current afterwards; this is what puddletag does (synthetic).
+    table, paths = music
+    before = stamps(paths)
+    window = select_columns(mainwin, qtbot, user)
+    click_column_title(user, window, 'Album')
+    user.click(tool_button(window, 'Remove'))
+    assert column_titles(window) == ['Filename', 'Artist', 'Title', 'Track', 'Length', 'Year',
+                                     'Bitrate', 'Genre', 'Comment', 'Dirpath']
+    assert (window.listbox.currentRow(), window.textname.text()) == (3, 'Track')
+    click_ok(qtbot, user, window)
+    assert shown(table) == [f for f in COLUMNS if f != 'album']
+    assert 'Album' not in titles(table)
+    untouched(before)
+
+
+def test_select_columns_remove_the_last_column(mainwin, qtbot, user, music):
+    # preferences.txt, Columns: "In this panel you can modify the columns
+    # listed in the file-view." The docs don't say which row is current
+    # after Remove; this is what puddletag does (synthetic).
+    table, paths = music
+    before = stamps(paths)
+    window = select_columns(mainwin, qtbot, user)
+    click_column_title(user, window, 'Dirpath')
+    user.click(tool_button(window, 'Remove'))
+    assert window.listbox.currentItem().text() == 'Comment'
+    assert window.textname.text() == 'Comment'
+    click_ok(qtbot, user, window)
+    assert shown(table) == COLUMNS[:-1]
+    untouched(before)
+
+
+def test_select_columns_move_up(mainwin, qtbot, user, music):
+    # preferences.txt, Columns: "In this panel you can modify the columns
+    # listed in the file-view." The docs don't describe the Move buttons;
+    # this is what puddletag does (synthetic).
+    table, paths = music
+    before = stamps(paths)
+    window = select_columns(mainwin, qtbot, user)
+    click_column_title(user, window, 'Album')
+    user.click(tool_button(window, 'Move Up'))
+    assert column_titles(window) == ['Filename', 'Artist', 'Album', 'Title', 'Track', 'Length',
+                                     'Year', 'Bitrate', 'Genre', 'Comment', 'Dirpath']
+    click_ok(qtbot, user, window)
+    assert shown(table) == ['__filename', 'artist', 'album', 'title', 'track', '__length',
+                            'year', '__bitrate', 'genre', 'comment', '__dirpath']
+    untouched(before)
+
+
+def test_select_columns_move_down_two_apart(mainwin, qtbot, user, music):
+    # preferences.txt, Columns: "In this panel you can modify the columns
+    # listed in the file-view." The docs don't describe the Move buttons or
+    # selecting several columns; this is what puddletag does (synthetic).
+    table, paths = music
+    before = stamps(paths)
+    window = select_columns(mainwin, qtbot, user)
+    click_column_title(user, window, 'Artist')
+    listbox = window.listbox
+    user.click(listbox.viewport(), listbox.visualItemRect(column_item(window, 'Album')).center(), Ctrl)
+    # Title and Field belong to one column.
+    assert not window.textname.isEnabled()
+    assert not window.tag.isEnabled()
+    user.click(tool_button(window, 'Move Down'))
+    assert column_titles(window) == ['Filename', 'Title', 'Artist', 'Track', 'Album', 'Length',
+                                     'Year', 'Bitrate', 'Genre', 'Comment', 'Dirpath']
+    click_ok(qtbot, user, window)
+    assert shown(table) == ['__filename', 'title', 'artist', 'track', 'album', '__length',
+                            'year', '__bitrate', 'genre', 'comment', '__dirpath']
+    untouched(before)
+
+
 def test_hidden_column_stays_hidden_after_a_restart(mainwin, qtbot, user, music, restart):
     # The docs don't cover keeping columns across sessions (synthetic
     # expectation: preferences.txt: "Any unchecked columns will not be
