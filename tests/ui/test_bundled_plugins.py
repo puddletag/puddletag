@@ -98,7 +98,6 @@ def five_plugins(clean_profile, monkeypatch):
     tick(monkeypatch, 'dupe_fields', 'id3_tools', 'modified_time', 'save_tags', 'view_all_fields')
 
 
-@pytest.mark.xfail(strict=True, reason='the info names of Highlight duplicate fields and ID3 Tools end in a period')
 def test_plugins_page_lists_the_bundled_plugins(user):
     # preferences.txt, Plugins: "Plugins are a means with which to extend
     # puddletag... Enable it, then restart." The docs are silent on the
@@ -110,7 +109,6 @@ def test_plugins_page_lists_the_bundled_plugins(user):
     user.close_preferences(dialog, 'Cancel')
 
 
-@pytest.mark.xfail(strict=True, reason='the info name of Highlight duplicate fields ends in a period')
 def test_bundled_plugin_ticked_on_the_plugins_page_starts_after_a_restart(monkeypatch, mainwin, user, qtbot, restart):
     # plugins.txt: "To use a plugin, tick it on the Plugins page of
     # Edit->Preferences, then restart puddletag."

@@ -2,5 +2,5 @@
 author = concentricpuddle
 version = 1.0
 puddletag_version = 1.0.0
-description = Adds shortcut to Plugins menu to save currently loaded files for debugging purposes.
+description = Adds shortcut to Plugins menu to save the selected files' tags for debugging purposes.
 name = Save tags
