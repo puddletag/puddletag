@@ -3,6 +3,8 @@ double-click a cell (or press F2, or start typing), type, press Enter
 (tut3.txt, "The File-View"). Each edit is checked in the table and in the
 file. Synthetic files.
 """
+import errno
+import logging
 import os
 
 import mutagen.id3
@@ -12,6 +14,7 @@ from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QAbstractItemView, QApplication, QMessageBox
 
 from puddlestuff import audioinfo
+from puddlestuff.util import RenameError
 
 pytestmark = pytest.mark.ui
 
@@ -462,3 +465,57 @@ def test_edit_keeps_frames_puddletag_does_not_list(mainwin, make_audio, tmp_path
     assert sorted(mutagen.id3.ID3(str(path)).keys()) == [
         'CHAP:c1', 'CTOC:toc', 'PRIV:example.org:private', 'TIT2', 'TPE1']
     assert in_table(table) == [{'artist': ['Artist 1'], 'title': ['New']}]
+
+
+@pytest.mark.xfail(strict=True, reason="a failed rename isn't logged, and an empty traceback goes to stderr")
+def test_rename_error_is_logged(user, loaded, qtbot, dialogs, caplog, capfd):
+    # A rename that fails is written to puddletag's log with its traceback,
+    # as a failed write is (the maintainer's decision; the docs are silent).
+    table, paths = loaded
+    dialogs.answer('QMessageBox.warning', QMessageBox.StandardButton.Ok)
+    edit(user, user.cell(0, '__filename'), '02.mp3')
+    user.press(Key.Key_Return)
+    qtbot.waitUntil(lambda: len(dialogs.calls) == 1)
+    [record] = [r for r in caplog.records if r.levelno >= logging.ERROR]
+    assert isinstance(record.exc_info[1], RenameError)
+    assert record.exc_info[1].strerror == 'File exists'
+    assert 'NoneType: None' not in capfd.readouterr().err
+
+
+@pytest.mark.xfail(strict=True, reason="an empty traceback goes to stderr")
+def test_write_error_is_logged_once(user, loaded, qtbot, dialogs, caplog, capfd):
+    # The message for a file that can't be written says "See ... for debug
+    # info": the log holds that error once, with nothing empty on stderr.
+    table, paths = loaded
+    os.chmod(paths[2], 0o444)  # blocks writes for the CI user, not for root
+    dialogs.answer('QMessageBox.warning', QMessageBox.StandardButton.Ok)
+    edit(user, user.cell(2, 'title'), 'New')
+    user.press(Key.Key_Return)
+    qtbot.waitUntil(lambda: len(dialogs.calls) == 1)
+    [(name, (parent, title, message), kwargs)] = dialogs.calls
+    assert 'puddletag.log for debug info' in message
+    [record] = [r for r in caplog.records if r.levelno >= logging.ERROR]
+    assert 'Permission denied' in record.getMessage()
+    assert 'NoneType: None' not in capfd.readouterr().err
+
+
+@pytest.mark.xfail(strict=True, reason='a write that fails with an OSError is not logged')
+def test_os_error_on_write_is_logged(user, loaded, qtbot, dialogs, caplog, monkeypatch):
+    # The message for a file that can't be written says "See ... for debug
+    # info", so the log holds that error. Synthetic: a disk that is full.
+    table, paths = loaded
+    full = OSError(errno.ENOSPC, 'No space left on device')
+
+    def save(self, *args, **kwargs):
+        raise full
+
+    monkeypatch.setattr(audioinfo.id3.Tag, 'save', save)
+    dialogs.answer('QMessageBox.warning', QMessageBox.StandardButton.Ok)
+    edit(user, user.cell(2, 'title'), 'New')
+    user.press(Key.Key_Return)
+    qtbot.waitUntil(lambda: len(dialogs.calls) == 1)
+    [(name, (parent, title, message), kwargs)] = dialogs.calls
+    assert 'puddletag.log for debug info' in message
+    assert 'No space left on device' in message
+    [record] = [r for r in caplog.records if r.levelno >= logging.ERROR]
+    assert record.exc_info[1] is full

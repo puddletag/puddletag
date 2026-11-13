@@ -7,12 +7,12 @@ import threading
 
 import pytest
 from PyQt6.QtCore import Qt
-from PyQt6.QtWidgets import QApplication, QLabel, QMessageBox
+from PyQt6.QtWidgets import QApplication, QLabel, QMessageBox, QPushButton
 
 from puddlestuff import audioinfo
 from puddlestuff.mainwin.storedtags import StoredTags
 from puddlestuff.mainwin.tagpanel import FrameCombo
-from puddlestuff.puddleobjects import PuddleThread
+from puddlestuff.puddleobjects import ProgressWin, PuddleThread
 from puddlestuff.puddletag import PreviewLabel
 
 pytestmark = pytest.mark.ui
@@ -553,3 +553,57 @@ def test_emptying_a_changed_cell_previews_the_removal(mainwin, user, loaded, qtb
     user.activate()
     user.press(Key.Key_W, Ctrl)
     qtbot.waitUntil(lambda: 'title' not in in_file(paths[1]))
+
+
+@pytest.mark.xfail(strict=True, reason="Cancel in Write Previews drops the previews of the files it didn't write")
+def test_cancel_keeps_the_previews_not_written(mainwin, user, loaded, qtbot, monkeypatch):
+    # menus.txt, Write Previews: "If preview mode has been enabled and some
+    # changes were made, they'll get written to the files, and Preview Mode
+    # is disabled." It says nothing about Cancel: the files not written keep
+    # their previews and Preview Mode stays on, as when a file fails to
+    # write (the maintainer's decision). The slowdown is synthetic: the only
+    # way to click Cancel while the files are being written.
+    table, paths = loaded
+    toggle(user)
+    for row in range(3):
+        edit(user, qtbot, row, 'title', f'New {row + 1}')
+    model = table.model()
+    real, first, go = model.setRowData, threading.Event(), threading.Event()
+
+    def held(*args, **kwargs):
+        if first.is_set():
+            go.wait(5)
+        result = real(*args, **kwargs)
+        first.set()
+        return result
+
+    monkeypatch.setattr(model, 'setRowData', held)
+    try:
+        user.press(Key.Key_W, Ctrl)
+        qtbot.waitUntil(first.is_set)
+        [win] = [w for w in mainwin.findChildren(ProgressWin) if w.isVisible()]
+        [cancel] = [b for b in win.findChildren(QPushButton) if b.text() == 'Cancel']
+        user.click(cancel)
+    finally:
+        go.set()
+    user.activate()
+
+    # The file being written when Cancel came is finished.
+    assert titles_in_files(paths) == [['New 1'], ['New 2'], ['Title 3']]
+    assert preview_mode(mainwin)
+    assert shown(user, 0, 'title') == ('New 1', 'plain')
+    assert shown(user, 1, 'title') == ('New 2', 'plain')
+    assert shown(user, 2, 'title') == ('New 3', 'bold')
+
+
+def test_write_previews_with_nothing_staged(mainwin, user, loaded, qtbot):
+    # menus.txt, Write Previews: "If preview mode has been enabled and some
+    # changes were made, they'll get written to the files, and Preview Mode
+    # is disabled." It says nothing for no changes: nothing is written and
+    # Preview Mode stays on (the maintainer's decision).
+    table, paths = loaded
+    toggle(user)
+    user.press(Key.Key_W, Ctrl)
+    assert preview_mode(mainwin)
+    assert titles_in_files(paths) == [['Title 1'], ['Title 2'], ['Title 3']]
+    assert not [w for w in mainwin.findChildren(ProgressWin) if w.isVisible()]
