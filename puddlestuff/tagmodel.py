@@ -1518,7 +1518,10 @@ class TagTable(QTableView):
         removed = []
 
         def func():
-            for row in self.selectedRows:
+            rows = self.selectedRows
+            for i, row in enumerate(rows):
+                # 1 marks the last file: nothing is left to go on with.
+                count = 1 if i == len(rows) - 1 else len(rows)
                 try:
                     try:
                         deltag(row)
@@ -1532,15 +1535,14 @@ class TagTable(QTableView):
                     msg = translate('Table',
                                     "An error occurred while deleting the tag of {}: <b>{}</b>"
                                     ).format(e.filename, e.strerror)
-                    yield msg, len(self.selectedRows)
+                    yield msg, count
                 except NotImplementedError as e:
                     f = self.model().taginfo[row]
                     filename = f[PATH]
                     ext = f[EXTENSION]
-                    rowlen = len(self.selectedRows)
                     yield translate("Table", "There was an error deleting the "
                                              "tag of {}: <b>Tag deletion isn't supported "
-                                             "for {} files.</b>").format(filename, ext), rowlen
+                                             "for {} files.</b>").format(filename, ext), count
 
         def fin():
             self.selectionChanged()
@@ -1612,7 +1614,7 @@ class TagTable(QTableView):
                 except (OSError, IOError) as detail:
                     msg = translate("Table", "I couldn't move <b>{}</b> to the trash ({})").format(
                         filename, detail.strerror or str(detail))
-                    if row == temprows[-1]:
+                    if i == len(selectedRows) - 1:
                         yield msg, 1
                     else:
                         yield msg, len(selectedRows)

@@ -179,8 +179,6 @@ def test_no_cancel_button(parent):
     assert not cancel_button(win).isVisible()
 
 
-@pytest.mark.xfail(strict=True, reason='the progress window asks whether to continue '
-                   'at the last failing file too, ignoring the count the command yields')
 def test_last_file_that_fails_gets_a_plain_warning(parent, qtbot, dialogs):
     # Synthetic. menus.txt, Undo: "If a file can't be written, puddletag
     # says so as it does for any write and goes on with the other files",
@@ -192,7 +190,6 @@ def test_last_file_that_fails_gets_a_plain_warning(parent, qtbot, dialogs):
         yield 'Failed <b>02.mp3</b>', 1
 
     dialogs.answer('QMessageBox.warning', Ok)
-    dialogs.answer('QMessageBox.exec', Yes)
     progress(func, 'Writing ', 2, lambda: done.append(True))(parent)
     qtbot.waitUntil(lambda: bool(done))
     assert [(name, args[1:]) for name, args, kwargs in dialogs.calls] == [

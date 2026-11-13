@@ -161,8 +161,6 @@ def test_tag_tool_on_a_read_only_file(mainwin, user, make_audio, qtbot, dialogs,
 
 
 @pytest.mark.skipif(os.geteuid() == 0, reason='root can write a read-only file')
-@pytest.mark.xfail(strict=True, reason='the progress window asks whether to continue '
-                   'at the last failing file too, ignoring the count the command yields')
 def test_tag_tool_on_read_only_files(mainwin, user, make_audio, qtbot, dialogs, tmp_path):
     # Tag Tools: "Deleting 'official' tags can be undone"; Undo: "When
     # there's nothing left to undo, Undo is greyed out." Synthetic files,
@@ -174,7 +172,7 @@ def test_tag_tool_on_read_only_files(mainwin, user, make_audio, qtbot, dialogs, 
     for path in paths:
         os.chmod(path, 0o444)
     load(mainwin, user, qtbot, tmp_path, 2)
-    dialogs.answer('QMessageBox.exec', Yes, Yes)
+    dialogs.answer('QMessageBox.exec', Yes)
     dialogs.answer('QMessageBox.warning', Ok)
     user.click_menu(MENU['remove_id3'])
     user.activate()

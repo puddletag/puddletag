@@ -528,8 +528,6 @@ def test_write_previews_with_hidden_files_undone_at_once(mainwin, loaded, qtbot,
 
 
 @pytest.mark.skipif(os.geteuid() == 0, reason='root can write a read-only file')
-@pytest.mark.xfail(strict=True, reason='the progress window asks whether to continue '
-                   'at the last failing file too, ignoring the count the command yields')
 def test_write_previews_keeps_a_hidden_preview_it_cannot_write(mainwin, loaded, dialogs, qtbot, user):
     # menus.txt: "If preview mode has been enabled and some changes were
     # made, they'll get written to the files, and Preview Mode is disabled."
@@ -543,7 +541,6 @@ def test_write_previews_keeps_a_hidden_preview_it_cannot_write(mainwin, loaded, 
     table.setFocus()
     os.chmod(paths[1], 0o444)
     dialogs.answer('QMessageBox.warning', QMessageBox.StandardButton.Ok)
-    dialogs.answer('QMessageBox.exec', Yes)
     user.press(Key.Key_W, Ctrl)
     qtbot.waitUntil(lambda: in_file(paths[2])['title'] == ['New'])
     qtbot.waitUntil(lambda: any(name == 'QMessageBox.warning' for name, *_ in dialogs.calls))

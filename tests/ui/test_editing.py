@@ -351,8 +351,6 @@ def test_filename_no_ext_of_a_file_without_extension(user, loaded, qtbot):
     assert table.model().taginfo[0].filepath == str(paths[0].with_name('X'))
 
 
-@pytest.mark.xfail(strict=True, reason='the progress window asks whether to continue '
-                   'at the last failing file too, ignoring the count the command yields')
 def test_several_files_one_name(user, loaded, qtbot, dialogs):
     # The docs don't say; this is what puddletag does: the first file is
     # renamed, the second, the last, can't be (the name is taken) and gets
@@ -361,7 +359,6 @@ def test_several_files_one_name(user, loaded, qtbot, dialogs):
     user.click_cell(user.cell(0, '__filename'))
     user.click_cell(user.cell(1, '__filename'), Shift)
     dialogs.answer('QMessageBox.warning', QMessageBox.StandardButton.Ok)
-    dialogs.answer('QMessageBox.exec', QMessageBox.StandardButton.Yes)
     user.press(Key.Key_F2)
     user.type('Same.mp3')
     user.press(Key.Key_Return)

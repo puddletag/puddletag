@@ -901,7 +901,7 @@ def progress(func: Callable[..., Generator[Optional[Tuple[str, int]], None, None
                 return
             elif isinstance(args[0], str):
                 if parent.showmessage:
-                    ret = errormsg(parent, args[0], maximum)
+                    ret = errormsg(parent, args[0], args[1])
                     if ret is True:
                         parent.showmessage = False
                     elif ret is False:
