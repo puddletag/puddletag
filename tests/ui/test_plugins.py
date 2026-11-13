@@ -691,7 +691,6 @@ def test_plugin_window_that_fails_is_logged_and_puddletag_starts(failing_window_
     assert mainwin.isVisible()
 
 
-@pytest.mark.xfail(strict=True, reason="a plugin's command can't be added to the toolbar")
 def test_plugin_command_added_to_the_toolbar(toolbar_plugin, mainwin, user, qtbot):
     # The docs are silent (the plugin API isn't documented): a plugin that
     # adds a command with toolbar=True finds it in its menu and on the

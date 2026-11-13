@@ -345,6 +345,7 @@ class MainWin(QMainWindow):
         toolbar = ls.toolbar(toolgroup, all_actions, controls)
         toolbar.setObjectName(translate("Menus", 'Toolbar'))
         self.addToolBar(toolbar)
+        self.toolbar = toolbar
 
         menubar, winmenu, self._menus = ls.menubar(menus, all_actions)
 
