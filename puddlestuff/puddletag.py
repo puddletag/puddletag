@@ -277,7 +277,7 @@ class MainWin(QMainWindow):
                          ('dirschanged', self._dirChanged),
                          ('writepreview', self._writePreview),
                          ('clearpreview', self._clearPreview),
-                         ('playlistchanged', self._dirChanged),
+                         ('playlistchanged', self._playlistChanged),
                          ('adddock', self.addDock),
                          ('writeaction', self.writeAction),
                          ('onetomanypreview', self.writeSinglePreview),
@@ -417,6 +417,9 @@ class MainWin(QMainWindow):
             self.setWindowTitle(translate('Main Window', "puddletag: {}").format(initial))
 
         self._lastdir = dirs
+
+    def _playlistChanged(self, path):
+        self._dirChanged(os.path.dirname(path))
 
     def _getDir(self):
         dirname = self._lastdir[0] if self._lastdir else QDir.homePath()

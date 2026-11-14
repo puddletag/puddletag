@@ -271,7 +271,6 @@ def test_load_playlist_starts_in_the_last_folder(music, user, dialogs, tmp_path)
     assert dialogs.calls[-1][1][2:] == (str(tmp_path / 'music'),)
 
 
-@pytest.mark.xfail(strict=True, reason='after Load playlist the last folder is the playlist file')
 def test_save_playlist_after_load_playlist_starts_in_its_folder(music_and_playlist, user, dialogs, tmp_path):
     # preferences.txt: "the last folder that was loaded upon closing
     # puddletag will be re-opened when puddletag is started." The last
@@ -283,7 +282,6 @@ def test_save_playlist_after_load_playlist_starts_in_its_folder(music_and_playli
     assert dialogs.calls[-1][1][2] == str(tmp_path / 'lists' / 'puddletag.m3u')
 
 
-@pytest.mark.xfail(strict=True, reason='after Load playlist the last folder is the playlist file')
 def test_open_folder_after_load_playlist_starts_in_its_folder(music_and_playlist, user, dialogs, tmp_path):
     # preferences.txt: "the last folder that was loaded upon closing
     # puddletag will be re-opened when puddletag is started." The last
@@ -294,7 +292,6 @@ def test_open_folder_after_load_playlist_starts_in_its_folder(music_and_playlist
     assert dialogs.calls[-1][1][2] == str(tmp_path / 'lists')
 
 
-@pytest.mark.xfail(strict=True, reason='after Load playlist the last folder is the playlist file')
 def test_exit_after_load_playlist_saves_its_folder(music_and_playlist, mainwin, user, qtbot, tmp_path):
     # preferences.txt: "the last folder that was loaded upon closing
     # puddletag will be re-opened when puddletag is started." The last
