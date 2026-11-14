@@ -48,10 +48,10 @@ body:
       Example:
         Puddletag: 2.0.1
         OS: Ubuntu 20.04
-        Display Server: X11
+        Display Server: x11
         Desktop Environment: GNOME
-        Python: 13.14.0
-        PyQt: 7.6.3
+        Python: 3.14.0
+        PyQt: 6.11.0
 
       Tip: This section is automatically filled when using the "Report a problem" function in the "Help" menu of the application.
     value: |-
