@@ -283,7 +283,6 @@ class MainWin(QMainWindow):
                          ('onetomanypreview', self.writeSinglePreview),
                          ('manypreview', self.writeManyPreview)]
         self.gensettings = [('&Load last folder at startup', False, 1)]
-        self._playlist = None
         plugin_dialogs, plugin_modules = load_plugins()
 
         self.setWindowTitle("puddletag")
@@ -663,10 +662,7 @@ class MainWin(QMainWindow):
         if not tags:
             return
         settings = PuddleConfig()
-        try:
-            dirname = self._lastdir[0]
-        except IndexError:
-            dirname = constants.HOMEDIR
+        dirname = self._lastdir[0]
         filepattern = settings.get('playlist', 'filepattern', 'puddletag.m3u')
         default = encode_fn(findfunc.tagtofilename(filepattern, tags[0]))
         selectedFile = QFileDialog.getSaveFileName(self,

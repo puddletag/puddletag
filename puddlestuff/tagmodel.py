@@ -1325,7 +1325,6 @@ class TagTable(QTableView):
         self._selectedRows = []
         self._selectedColumns = []
         self._select = True
-        self._playlist = False
         self.filespec = ''
         self.contextMenu = None
         self.setHorizontalScrollMode(QAbstractItemView.ScrollMode.ScrollPerPixel)
@@ -2099,8 +2098,7 @@ class TagTable(QTableView):
             return
 
         kept_dirs = self.dirs[::]
-        self.loadFiles(None, dirs, False, self.subFolders,
-                       self._playlist,
+        self.loadFiles(None, dirs, False, self.subFolders, None,
                        lambda t, a, f: self.__processReload(t, a, f, sub_files, kept_dirs))
 
     def __processReload(self, tags, append, filepath, sub_files, kept_dirs):
@@ -2131,11 +2129,7 @@ class TagTable(QTableView):
         files = [z.filepath for z in self.model().taginfo if z.dirpath
                  not in dirs]
         libfiles = [z for z in self.model().taginfo if '__library' in z]
-        if self._playlist:
-            self.loadFiles(files, dirs, False, self.subFolders)
-        else:
-            self.loadFiles(files, dirs, False, self.subFolders,
-                           self._playlist)
+        self.loadFiles(files, dirs, False, self.subFolders)
         self.model().load(libfiles, append=True)
 
     def rowTags(self, row):

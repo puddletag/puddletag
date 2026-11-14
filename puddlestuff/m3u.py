@@ -1,12 +1,8 @@
 import csv
 import os
-import sys
 from os.path import abspath, dirname, normpath
 from os.path import join as path_join
 
-from PyQt6.QtWidgets import QFileDialog, QApplication
-
-from . import audioinfo
 from .audioinfo.util import lnglength, encode_fn
 from .findfunc import tagtofilename
 
@@ -71,23 +67,3 @@ def exportm3u(tags, tofile, format=None, reldir=False, winsep=False):
 
     with open(tofile, 'w', encoding='utf-8') as playlist:
         playlist.write(text)
-
-
-if __name__ == '__main__':
-    app = QApplication(sys.argv)
-    filedlg = QFileDialog()
-    filedlg.setFileMode(QFileDialog.FileMode.Directory)
-    filedlg.setOption(QFileDialog.Option.ShowDirsOnly)
-    filename = str(filedlg.getExistingDirectory(None,
-                                                'Open Folder'))
-    tags = []
-    for z in os.listdir(filename):
-        try:
-            tag = audioinfo.Tag(os.path.join(filename, z))
-            if tag:
-                tags.append(tag)
-        except Exception as e:
-            str(e)
-    folder = str(filedlg.getSaveFileName(None,
-                                         'Save File'))
-    exportm3u(tags, folder)
