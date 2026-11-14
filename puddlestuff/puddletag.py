@@ -175,7 +175,7 @@ def connect_actions(actions, controls):
 
 
 def help_menu(parent):
-    menu = QMenu(translate("Menus", 'Help'), parent)
+    menu = QMenu(translate("Menus", '&Help'), parent)
     open_url = lambda url: QDesktopServices.openUrl(QUrl(url))
 
     connect = lambda c, s: c.triggered.connect(s)

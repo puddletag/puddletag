@@ -2801,7 +2801,7 @@ Double cliquer pour changer la couleur&lt;/p&gt;</translation>
     </message>
     <message>
       <location filename="../puddletag.py" line="200" />
-      <source>Help</source>
+      <source>&amp;Help</source>
       <translation>Aide</translation>
     </message>
     <message>

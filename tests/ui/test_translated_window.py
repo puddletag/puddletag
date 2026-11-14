@@ -124,7 +124,6 @@ def test_tag_removal_progress_is_translated(mainwin, user, qtbot, make_audio, tm
         QApplication.removeTranslator(translator)
 
 
-@pytest.mark.xfail(strict=True, reason='the Help menu has no Alt letter')
 def test_help_menu_has_an_alt_letter(mainwin, user, qtbot):
     # Every other menu of the menu bar has an Alt letter; Help gets &Help,
     # so Alt+H opens it.

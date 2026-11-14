@@ -2801,7 +2801,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
     </message>
     <message>
       <location filename="../puddletag.py" line="200" />
-      <source>Help</source>
+      <source>&amp;Help</source>
       <translation>Ayuda</translation>
     </message>
     <message>
