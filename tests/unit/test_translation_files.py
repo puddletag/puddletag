@@ -95,7 +95,7 @@ def test_translations_keep_their_sources_leading_and_trailing_space(ts):
             if text and edges(text) != edges(source)] == []
 
 
-@pytest.mark.parametrize('ts', every_file(failing=ALL, reason='the .qm was built from an older .ts'))
+@pytest.mark.parametrize('ts', every_file())
 def test_qm_shows_the_translations_of_its_ts(qapp, ts):
     # translate.txt: "To test your translation, generate a .qm file using
     # File->Release in Qt Linguist." QApplication.translate gives the source
