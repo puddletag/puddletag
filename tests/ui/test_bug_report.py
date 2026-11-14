@@ -4,6 +4,8 @@ for review before it goes to GitHub's issue form
 and sends it. The browser is caught before it gets the address.
 """
 import platform
+import sys
+import types
 import urllib.parse
 
 import pytest
@@ -11,7 +13,7 @@ from PyQt6.QtCore import PYQT_VERSION_STR, Qt, QUrl
 from PyQt6.QtWidgets import QApplication, QLineEdit, QMessageBox, QPlainTextEdit, QPushButton
 
 from puddlestuff import changeset, version_string
-from puddlestuff.bugreport import MAX_URL_LENGTH, ReviewWindow
+from puddlestuff.bugreport import MAX_URL_LENGTH, STEPS_HEADER, ReviewWindow, drop_oldest_step, trim_traceback
 
 pytestmark = pytest.mark.ui
 
@@ -252,3 +254,102 @@ def test_a_window_opened_is_a_step(mainwin, qtbot, user):
     review = open_review(mainwin, qtbot, user)
 
     assert steps_text(review).splitlines()[1:] == ['1. Preferences (openPrefs)', '2. Opened window: puddletag settings']
+
+
+def system_lines(mainwin, qtbot, user):
+    """Help > Report a problem: the system field's lines by name, then
+    Cancel."""
+    window = open_review(mainwin, qtbot, user)
+    lines = box(window, 'Information about your system').toPlainText().splitlines()
+    user.click(button(window, 'Cancel'))
+    return dict(line.split(': ', 1) for line in lines)
+
+
+@pytest.mark.parametrize('release, shown', [
+    ({'NAME': 'Synth Linux', 'VERSION': '9 (Sandy)'}, 'Synth Linux 9 (Sandy)'),
+    ({'ID': 'synth', 'VERSION_ID': '9'}, 'synth 9'),
+    ({'ID': 'synth', 'VERSION_CODENAME': 'sandy'}, 'synth sandy'),
+    ({}, 'Linux'),
+])
+def test_os_line_without_a_pretty_name(mainwin, qtbot, user, monkeypatch, release, shown):
+    # menus.txt, Help: "filled in with your system (puddletag's version, your
+    # OS, display server and desktop, ...)"; bug_report.yaml's example is
+    # "OS: Ubuntu 20.04". Synthetic: os-release files without PRETTY_NAME.
+    with monkeypatch.context() as m:
+        m.setitem(sys.modules, 'distro', None)
+        m.setattr(platform, 'system', lambda: 'Linux')
+        m.setattr(platform, 'freedesktop_os_release', lambda: release)
+        lines = system_lines(mainwin, qtbot, user)
+
+    assert lines['OS'] == shown
+
+
+def test_os_line_from_the_distro_package(mainwin, qtbot, user, monkeypatch):
+    # menus.txt, Help: "filled in with your system (puddletag's version, your
+    # OS, display server and desktop, ...)"; bug_report.yaml's example is
+    # "OS: Ubuntu 20.04". Synthetic: a fake distro package.
+    distro = types.SimpleNamespace(name=lambda pretty=False: 'Synth Linux 9 (Sandy)' if pretty else 'Synth Linux')
+    with monkeypatch.context() as m:
+        m.setitem(sys.modules, 'distro', distro)
+        m.setattr(platform, 'system', lambda: 'Linux')
+        lines = system_lines(mainwin, qtbot, user)
+
+    assert lines['OS'] == 'Synth Linux 9 (Sandy)'
+
+
+@pytest.mark.parametrize('system, shown', [
+    ('Darwin', 'macOS 15.1'),
+    ('FreeBSD', 'FreeBSD 14.1-RELEASE FreeBSD 14.1-RELEASE GENERIC'),
+    ('Windows', 'Windows 11'),
+])
+def test_os_line_on_other_systems(mainwin, qtbot, user, monkeypatch, system, shown):
+    # menus.txt, Help: "filled in with your system (puddletag's version, your
+    # OS, display server and desktop, ...)"; bug_report.yaml's example is
+    # "OS: Ubuntu 20.04". Synthetic: the platform module reports another
+    # system.
+    with monkeypatch.context() as m:
+        m.setattr(platform, 'system', lambda: system)
+        m.setattr(platform, 'win32_ver', lambda: ('11', '10.0.26100', 'SP0', 'Multiprocessor Free'))
+        m.setattr(platform, 'mac_ver', lambda: ('15.1', ('', '', ''), 'arm64'))
+        m.setattr(platform, 'release', lambda: '14.1-RELEASE')
+        m.setattr(platform, 'version', lambda: 'FreeBSD 14.1-RELEASE GENERIC')
+        lines = system_lines(mainwin, qtbot, user)
+
+    assert lines['OS'] == shown
+
+
+@pytest.mark.parametrize('name, env, shown', [
+    ('', {}, 'unknown'),
+    ('wayland', {}, 'wayland'),
+    ('xcb', {}, 'x11'),
+    ('xcb', {'WAYLAND_DISPLAY': 'wayland-0'}, 'xwayland'),
+    ('xcb', {'XDG_SESSION_TYPE': 'wayland'}, 'xwayland'),
+])
+def test_display_server_line(mainwin, qtbot, user, monkeypatch, name, env, shown):
+    # menus.txt, Help: "filled in with your system (puddletag's version, your
+    # OS, display server and desktop, ...)"; bug_report.yaml's example is
+    # "Display Server: x11". Synthetic: Qt's platform name and the session's
+    # environment.
+    with monkeypatch.context() as m:
+        m.delenv('WAYLAND_DISPLAY', raising=False)
+        m.delenv('XDG_SESSION_TYPE', raising=False)
+        for variable, value in env.items():
+            m.setenv(variable, value)
+        m.setattr(QApplication, 'platformName', lambda *args: name)
+        lines = system_lines(mainwin, qtbot, user)
+
+    assert lines['Display Server'] == shown
+
+
+def test_dropping_the_oldest_step_renumbers_the_rest():
+    # menus.txt, Help: "the last 20 commands you ran, windows you opened and
+    # folders you loaded". Synthetic steps; the docs are silent on how a
+    # report too long for the address is shortened.
+    assert drop_oldest_step(f'{STEPS_HEADER}\n1. a\n2. b\n3. c') == f'{STEPS_HEADER}\n1. b\n2. c'
+    assert drop_oldest_step(f'{STEPS_HEADER}\n1. a') == ''
+
+
+def test_text_that_isnt_a_traceback_is_left_whole():
+    # Synthetic: the docs are silent on how a long error is shortened; text
+    # without a traceback has nothing to trim.
+    assert trim_traceback('ValueError: synthetic error\n', 1) == 'ValueError: synthetic error\n'

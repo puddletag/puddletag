@@ -13,7 +13,7 @@ from pathlib import Path
 
 import pytest
 
-from puddlestuff import loadshortcuts, version_string
+from puddlestuff import constants, loadshortcuts, version_string
 from puddlestuff.puddleobjects import PuddleConfig
 
 pytestmark = pytest.mark.ui
@@ -66,6 +66,72 @@ sys.argv = [{launcher!r}] + sys.argv[1:]
 runpy.run_path({launcher!r}, run_name='__main__')
 '''
 
+# Runs the launcher with the start broken: once the error hook is in,
+# puddletag.load_plugins raises, so building the window fails. The
+# message's text and buttons are printed as one JSON line and CLICK's
+# button clicked; after "&Report a problem" the report window, if still
+# open 300 ms later, is printed and cancelled.
+START_ERROR_WRAPPER = '''import json, os, runpy, sys
+sys.path.insert(0, {root!r})
+from PyQt6.QtCore import QTimer
+from PyQt6.QtWidgets import QApplication, QMessageBox
+import puddlestuff.errorhook as errorhook
+
+install = errorhook.install
+
+
+def visible(kind):
+    return [w for w in QApplication.topLevelWidgets() if isinstance(w, kind) and w.isVisible()]
+
+
+def review():
+    from puddlestuff.bugreport import ReviewWindow
+    [window] = visible(ReviewWindow)
+    print('REVIEW ' + json.dumps({{
+        'current': window.field('Current Behavior').toPlainText(),
+        'title': window.field('Title').text(),
+        'window_title': window.windowTitle()}}), flush=True)
+    window.reject()
+
+
+def message(tries=200):
+    boxes = visible(QMessageBox)
+    if not boxes:
+        if tries:
+            QTimer.singleShot(50, lambda: message(tries - 1))
+        return
+    [box] = boxes
+    print('MESSAGE ' + json.dumps({{
+        'buttons': sorted(b.text() for b in box.buttons()),
+        'details': box.detailedText(),
+        'icon': box.icon().name,
+        'informative': box.informativeText(),
+        'modal': QApplication.activeModalWidget() is box,
+        'text': box.text(),
+        'title': box.windowTitle()}}), flush=True)
+    [button] = [b for b in box.buttons() if b.text() == os.environ['CLICK']]
+    button.click()
+    if os.environ['CLICK'] == '&Report a problem':
+        QTimer.singleShot(300, review)
+
+
+def install_and_break(app):
+    hook = install(app)
+    import puddlestuff.puddletag
+
+    def synthetic_error(*args, **kwargs):
+        raise ValueError('synthetic error')
+
+    puddlestuff.puddletag.load_plugins = synthetic_error
+    QTimer.singleShot(0, message)
+    return hook
+
+
+errorhook.install = install_and_break
+sys.argv = [{launcher!r}] + sys.argv[1:]
+runpy.run_path({launcher!r}, run_name='__main__')
+'''
+
 
 @pytest.fixture(autouse=True)
 def fresh_profile(clean_profile):
@@ -89,6 +155,19 @@ def start(tmp_path, *args, rows=0, env=None):
     assert result.returncode == 0, result.stderr
     [line] = [line for line in result.stdout.splitlines() if line.startswith('SHOWN ')]
     return json.loads(line[len('SHOWN '):]), result.stdout
+
+
+def start_with_an_error(tmp_path, click):
+    """Starts puddletag with building its window broken and clicks this
+    button in the error message: (exit code, the message, the report
+    window or None)."""
+    wrapper = tmp_path / 'start_error.py'
+    wrapper.write_text(START_ERROR_WRAPPER.format(root=str(ROOT), launcher=LAUNCHER))
+    result = subprocess.run([sys.executable, str(wrapper)], capture_output=True, text=True,
+                            timeout=60, env=dict(os.environ, CLICK=click))
+    lines = {line.split(' ', 1)[0]: json.loads(line.split(' ', 1)[1])
+             for line in result.stdout.splitlines() if line.startswith(('MESSAGE ', 'REVIEW '))}
+    return result.returncode, lines.get('MESSAGE'), lines.get('REVIEW')
 
 
 def locale_env(**variables):
@@ -257,3 +336,45 @@ def test_langfile_that_doesnt_load_keeps_the_chosen_language(tmp_path):
     shown, stdout = start(tmp_path, '--langfile', str(tmp_path / 'missing.qm'))
     assert 'Invalid translation file.' in stdout
     assert 'puddletag_fr.qm' in shown['translators']
+
+
+def test_error_that_stops_the_start_is_shown_and_logged(tmp_path):
+    # menus.txt, "When something goes wrong": "If puddletag runs into an
+    # error it doesn't handle, it shows the error in a message instead of
+    # closing, and writes it to its log (``~/.config/puddletag/puddletag.log``).
+    # **Show Details...** shows the full traceback; **Report a problem**
+    # opens the report above, with the error filled in." Synthetic error: a
+    # startup step replaced by one that raises.
+    code, shown, review = start_with_an_error(tmp_path, 'Close')
+    assert code == 1
+    assert shown['title'] == 'puddletag'
+    assert shown['text'] == 'ValueError: synthetic error'
+    assert shown['icon'] == 'Critical' and shown['modal']
+    assert shown['buttons'] == ['&Report a problem', 'Close', 'Show Details...']
+    assert shown['details'].startswith('Traceback (most recent call last):')
+    assert shown['details'].rstrip().endswith('ValueError: synthetic error')
+    assert review is None
+    assert 'ValueError: synthetic error' in Path(constants.LOG_FILENAME).read_text()
+
+
+@pytest.mark.xfail(strict=True, reason="The start-up error message says puddletag keeps running")
+def test_error_that_stops_the_start_says_so(tmp_path):
+    # menus.txt, "When something goes wrong": "If the error stops puddletag
+    # from starting, it closes once you close the message." Synthetic error:
+    # a startup step replaced by one that raises.
+    code, shown, review = start_with_an_error(tmp_path, 'Close')
+    assert shown['informative'] == "puddletag ran into an error it didn't expect and can't start."
+
+
+@pytest.mark.xfail(strict=True, reason="The report opened from the start error closes with puddletag "
+                                       "before it can be read")
+def test_report_a_problem_from_the_start_error_opens_the_report(tmp_path):
+    # menus.txt: "**Report a problem** opens the report above, with the
+    # error filled in." and "Check and edit the text, then click **Open on
+    # GitHub**". Synthetic error: a startup step replaced by one that raises.
+    code, shown, review = start_with_an_error(tmp_path, '&Report a problem')
+    assert review is not None
+    assert review['window_title'] == 'Report a problem'
+    assert review['title'] == 'ValueError: synthetic error'
+    assert review['current'].startswith('puddletag showed this error:\n\n```\nTraceback (most recent call last):')
+    assert code == 1

@@ -8,6 +8,7 @@ import importlib.metadata
 import platform
 import re
 import sys
+import types
 import urllib.parse
 from pathlib import Path
 
@@ -230,6 +231,51 @@ def test_about_puddletag_says_when_a_library_is_not_installed(mainwin, qtbot, us
     user.click_menu('About puddletag')
 
     [window] = shown
+    assert by_name(window['tabs']['&Libraries'].splitlines()) == expected
+
+
+@pytest.mark.parametrize('commit', [None, '0123456789abcdef0123456789abcdef01234567'],
+                         ids=['release', 'checkout'])
+def test_about_puddletag_heading_with_and_without_a_changeset(mainwin, qtbot, user, monkeypatch, commit):
+    # about.txt: "About puddletag" heading. The docs are silent on the
+    # changeset: an install that isn't a git checkout (PyPI, distro
+    # packages) has none, so the heading is the version alone. Synthetic:
+    # the commit.
+    monkeypatch.setattr('puddlestuff.about.changeset', commit)
+    exec_for_real(monkeypatch)
+    shown = while_open(user, about_puddletag)
+    user.click_menu('About puddletag')
+
+    [window] = shown
+    assert window['heading'] == ['puddletag', version_string] + (['Changeset', commit] if commit else [])
+
+
+@pytest.mark.parametrize('own, shown', [(None, 'unknown version'), ('9.9.synthetic', '9.9.synthetic')])
+def test_about_puddletag_shows_a_librarys_own_version_without_its_metadata(
+        mainwin, qtbot, user, monkeypatch, own, shown):
+    # The docs are silent: a library installed without its package metadata
+    # (copied in, or a distro package without dist-info) shows the version
+    # the module reports, else "unknown version". Synthetic: Unidecode
+    # without package metadata.
+    expected = libraries()
+    expected['unidecode'] = shown
+    installed = importlib.metadata.version
+
+    def version(name):
+        if name == 'unidecode':
+            raise importlib.metadata.PackageNotFoundError(name)
+        return installed(name)
+
+    module = types.ModuleType('unidecode')
+    if own:
+        module.__version__ = own
+    monkeypatch.setattr(importlib.metadata, 'version', version)
+    monkeypatch.setitem(sys.modules, 'unidecode', module)
+    exec_for_real(monkeypatch)
+    windows = while_open(user, about_puddletag)
+    user.click_menu('About puddletag')
+
+    [window] = windows
     assert by_name(window['tabs']['&Libraries'].splitlines()) == expected
 
 

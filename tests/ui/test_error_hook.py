@@ -10,6 +10,8 @@ import re
 import subprocess
 import sys
 import threading
+import traceback
+import types
 import urllib.parse
 from pathlib import Path
 
@@ -570,3 +572,69 @@ def test_puddletag_quits_cleanly(tmp_path):
     result = subprocess.run([sys.executable, '-c', code], env=env, cwd=tmp_path, timeout=60)
 
     assert result.returncode == 0
+
+
+def test_thread_ended_by_sys_exit_shows_nothing(error_hook, mainwin, qtbot, caplog):
+    # menus.txt, Help, "When something goes wrong": "If puddletag runs into
+    # an error it doesn't handle, it shows the error in a message". The docs
+    # are silent on a thread that ends with sys.exit(): as Python's own
+    # threading hook does, it is not an error, so nothing is shown or logged.
+    # Synthetic: threads of the test's own.
+    for target, args in ((sys.exit, (3,)), (synthetic_error, ())):
+        thread = threading.Thread(target=target, args=args)
+        thread.start()
+        thread.join()
+
+    message = error_message(qtbot)
+    assert message.text() == SUMMARY
+    assert message.informativeText() == INFORMATIVE
+    assert errors_logged(caplog) == [(ValueError, 'synthetic error')]
+
+
+def test_error_that_cant_be_shown_goes_to_pythons_hook(error_hook, mainwin, qtbot, user, monkeypatch):
+    # menus.txt, Help, "When something goes wrong": "it shows the error in a
+    # message instead of closing". The docs are silent on an error that can't
+    # be shown: Python's own hook prints it and no message opens. Synthetic:
+    # formatting the error fails.
+    passed_on = []
+    monkeypatch.setattr(sys, '__excepthook__', lambda t, v, tb: passed_on.append((t, str(v))))
+    monkeypatch.setattr(errorhook, 'traceback', types.SimpleNamespace(
+        format_exception=traceback.format_exception,
+        format_exception_only=synthetic_error))
+    monkeypatch.setattr(about, 'AboutPuddletag', raising('cannot show'))
+
+    user.click_menu('About puddletag')
+
+    qtbot.waitUntil(lambda: bool(passed_on))
+    assert passed_on == [(ValueError, 'cannot show')]
+    qtbot.wait(200)
+    assert shown_messages() == []
+
+
+def test_error_too_long_for_the_address_goes_through_the_clipboard(error_hook, mainwin, qtbot, user, opened,
+                                                                   monkeypatch, dialogs):
+    # menus.txt, Help: "**Report a problem** opens the report above, with the
+    # error filled in." and "Copy puts the text on the clipboard". An issue
+    # address has a length limit (GitHub's docs: "a URL that exceeds the
+    # server limit returns a 414 URI Too Long"). Synthetic: an error message
+    # of 8000 characters, longer than the address allows.
+    text = 'x' * 8000
+    monkeypatch.setattr(about, 'AboutPuddletag', raising(text))
+    user.click_menu('About puddletag')
+
+    window, _ = report_from_message(qtbot, user)
+
+    assert text_of(window, 'Title') == f'ValueError: {text}'[:100]
+    current = text_of(window, 'Current Behavior')
+    assert current.endswith(f'ValueError: {text}\n```')
+    assert 'frames left out' not in current
+    assert text_of(window, 'Steps To Reproduce') == ''
+    dialogs.answer('QMessageBox.information', QMessageBox.StandardButton.Ok)
+
+    user.click(button(window, 'Open on GitHub'))
+
+    [url] = opened
+    assert len(url) <= MAX_URL_LENGTH
+    assert fields(url)['current'] == ('The report was too long for the address, so puddletag put it on the '
+                                      'clipboard: paste it here.')
+    assert text in QApplication.clipboard().text()
