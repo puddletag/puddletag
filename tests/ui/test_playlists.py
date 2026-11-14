@@ -302,8 +302,6 @@ def test_exit_after_load_playlist_saves_its_folder(music_and_playlist, mainwin, 
     assert PuddleConfig().get('main', 'lastfolder', None) == str(tmp_path / 'lists')
 
 
-@pytest.mark.xfail(strict=True,
-                   reason='Load playlist forgets the folders loaded before it, so Refresh misses their new files')
 def test_refresh_after_load_playlist_rereads_the_folders(music_and_playlist, make_audio, user, qtbot, tmp_path):
     # menus.txt: Refresh "Refreshes the files currently loaded in the
     # File-View. If any directories are loaded, they'll be re-read and

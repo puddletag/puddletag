@@ -1833,7 +1833,7 @@ class TagTable(QTableView):
             else:
                 self.removeFolders([z for z in dirs if z in self.dirs], False)
             self.dirs.extend(dirs)
-        else:
+        elif append is not None:
             self.dirs = dirs
 
         if not files and not dirs:
