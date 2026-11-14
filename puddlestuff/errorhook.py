@@ -63,11 +63,14 @@ def _message(summary, details, parent):
 
 def report_startup_error(exc_type, exc_value, exc_tb):
     """Logs an error that stopped puddletag from starting and shows it,
-    waiting for the user to close the message."""
+    waiting for the user to close the message and any report opened from it."""
     logging.getLogger(__name__).error('Unhandled error', exc_info=(exc_type, exc_value, exc_tb))
     summary = ''.join(traceback.format_exception_only(exc_type, exc_value)).strip()
     details = ''.join(traceback.format_exception(exc_type, exc_value, exc_tb))
     _message(summary, details, None).exec()
+    from . import bugreport
+    for window in list(bugreport._windows):
+        window.exec()
 
 
 class ErrorHook(QObject):

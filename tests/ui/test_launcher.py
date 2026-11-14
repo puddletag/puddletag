@@ -366,8 +366,6 @@ def test_error_that_stops_the_start_says_so(tmp_path):
     assert shown['informative'] == "puddletag ran into an error it didn't expect and can't start."
 
 
-@pytest.mark.xfail(strict=True, reason="The report opened from the start error closes with puddletag "
-                                       "before it can be read")
 def test_report_a_problem_from_the_start_error_opens_the_report(tmp_path):
     # menus.txt: "**Report a problem** opens the report above, with the
     # error filled in." and "Check and edit the text, then click **Open on
