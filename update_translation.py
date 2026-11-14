@@ -122,6 +122,17 @@ def get_translation_files(new_lang):
     return sorted(translation_files), new_filename
 
 
+def get_source_files():
+    """Return the files pylupdate6 reads, sorted.
+
+    Given a folder, pylupdate6 reads its files in the order the file system
+    lists them, which can change whenever a file is rewritten, and the .ts
+    files keep each context's texts in that order.
+    """
+    return sorted(glob.glob(os.path.join('puddlestuff', '**', '*.py'),
+                            recursive=True))
+
+
 verbose = True
 
 try:
@@ -157,7 +168,7 @@ try:
         for file in translation_files:
             yield '--ts'
             yield file
-        yield 'puddlestuff'
+        yield from get_source_files()
     subprocess.run(argument_generator(), check=True)
 except OSError:
     print('Error: pylupdate6 is not installed.')
