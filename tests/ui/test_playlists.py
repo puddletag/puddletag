@@ -377,7 +377,6 @@ def test_save_playlist_with_every_row_filtered_out(mainwin, user, dialogs, music
 
 
 @pytest.mark.parametrize('kind', ['empty folder', 'playlist of missing files'])
-@pytest.mark.xfail(strict=True, reason='a load that finds no file emits dataChanged with an invalid range')
 def test_loading_no_files_gives_no_qt_warning(mainwin, user, dialogs, qtbot, qtlog, tmp_path, monkeypatch, kind):
     # menus.txt, Load playlist: "Opens a dialog to import an m3u playlist
     # into puddletag." A load that finds no file to show gives no Qt warning

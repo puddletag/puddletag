@@ -1947,9 +1947,10 @@ class TagTable(QTableView):
             self.restoreSelection(self._restore)
 
         model = self.model()
-        start_index = model.index(0, 0)
-        end_index = model.index(model.rowCount() - 1, model.columnCount() - 1)
-        model.dataChanged.emit(start_index, end_index)
+        if model.rowCount():
+            start_index = model.index(0, 0)
+            end_index = model.index(model.rowCount() - 1, model.columnCount() - 1)
+            model.dataChanged.emit(start_index, end_index)
         self.selectionChanged()
 
     def load_tags(self, tags):
