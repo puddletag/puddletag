@@ -107,7 +107,6 @@ def test_plugin_commands_are_translated(plugins_in_another_language, mainwin):
     assert not set(PLUGIN_COMMANDS) & commands(mainwin)
 
 
-@pytest.mark.xfail(strict=True, reason='the tag removal text is filled in before it is translated')
 def test_tag_removal_progress_is_translated(mainwin, user, qtbot, make_audio, tmp_path):
     # menus.txt, Tag Tools: "Deleting 'official' tags can be undone"; the
     # progress window of a removal is shown in the chosen language

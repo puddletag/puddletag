@@ -85,7 +85,7 @@ def remove_tag(tag, parent):
             status['model'].undolevel += 1
 
     s = progress(func, translate("Tag Tools",
-                                 'Removing %s tag: ' % tag), len(files), fin)
+                                 'Removing %s tag: ') % tag, len(files), fin)
     s(parent)
 
 
