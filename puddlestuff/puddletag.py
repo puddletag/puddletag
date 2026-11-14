@@ -499,7 +499,8 @@ class MainWin(QMainWindow):
     def loadPlayList(self):
         dirname = self._lastdir[0] if self._lastdir else QDir.homePath()
         selectedFile = QFileDialog.getOpenFileName(self,
-                                                   translate("Playlist", translate("Playlist", 'Select m3u file...')),)
+                                                   translate("Playlist", 'Select m3u file...'),
+                                                   dirname)
         filename = selectedFile[0]
         if not filename:
             return

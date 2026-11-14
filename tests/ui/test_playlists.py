@@ -262,7 +262,6 @@ def music_and_playlist(music, make_audio, tmp_path, qtbot, user, dialogs):
     return table, paths, p9
 
 
-@pytest.mark.xfail(strict=True, reason="Load playlist's dialog ignores the last folder")
 def test_load_playlist_starts_in_the_last_folder(music, user, dialogs, tmp_path):
     # menus.txt (Load playlist): "Opens a dialog to import an m3u playlist
     # into puddletag." It says nothing about where the dialog starts: in the
