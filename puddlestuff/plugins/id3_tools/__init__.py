@@ -45,7 +45,7 @@ def to_utf8(parent=None):
             except (IOError, OSError) as e:
                 filename = f[audioinfo.PATH]
                 m = str(QApplication.translate('Defaults',
-                                               "An error occured while converting <b>{}</b>. ({})"
+                                               "An error occurred while converting <b>{}</b>. ({})"
                                                ).format(filename, e.strerror))
                 if row == rows[-1]:
                     yield m, 1
@@ -76,7 +76,7 @@ def update_to_24(parent=None):
             except (IOError, OSError) as e:
                 filename = f[audioinfo.PATH]
                 m = str(QApplication.translate('Defaults',
-                                               "An error occured while updating <b>{}</b>. ({})"
+                                               "An error occurred while updating <b>{}</b>. ({})"
                                                ).format(filename, e.strerror))
                 if row == rows[-1]:
                     yield m, 1

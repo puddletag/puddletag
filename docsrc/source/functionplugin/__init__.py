@@ -47,7 +47,7 @@ functions = {'append': append_text}
 #5. If the function wasn't sucessful for any reason, return None 
 #   (not something equivalent, None).
 #6. Errors aren't handled, so catch any you can.
-#9. If an error occured that the user should be notified of raise 
+#9. If an error occurred that the user should be notified of raise 
 #   FuncError(message).
 
 #Use the PluginFunction class to register your function as a Function.

@@ -27,7 +27,7 @@ def rename_error_msg(e, filename):
     if isinstance(e, DirRenameError):
         logging.error('Rename failed: %s', e.strerror, exc_info=e)
         m = translate('Defaults',
-                      "<p>An error occured while renaming the directory <b>{}</b> to <i>{}</i>.</p>"
+                      "<p>An error occurred while renaming the directory <b>{}</b> to <i>{}</i>.</p>"
                       "<p>Reason: <b>{}</b><br />"
                       "File used: {}</p>"
                       ).format(e.oldpath, e.newpath, e.strerror, filename)
@@ -36,13 +36,13 @@ def rename_error_msg(e, filename):
     elif isinstance(e, RenameError):
         logging.error('Rename failed: %s', e.strerror, exc_info=e)
         m = translate('Defaults',
-                      "<p>An error occured while renaming the file <b>{}</b> to <i>{}</i>.</p>"
+                      "<p>An error occurred while renaming the file <b>{}</b> to <i>{}</i>.</p>"
                       "<p>Reason: <b>{}</b></p>"
                       ).format(e.oldpath, e.newpath, e.strerror)
         return m
     elif isinstance(e, PermissionError):
         m = translate('Defaults',
-                      "<p>An error occured while writing to <b>{}</b>.</p>"
+                      "<p>An error occurred while writing to <b>{}</b>.</p>"
                       "<p>Reason: <b>{}</b>.</p>"
                       "<p>(<i>See {} for debug info.</i>)</p>"
                       ).format(filename,
@@ -52,7 +52,7 @@ def rename_error_msg(e, filename):
         return m
     elif isinstance(e, EnvironmentError):
         m = translate('Defaults',
-                      "<p>An error occured while writing to <b>{}</b>.</p>"
+                      "<p>An error occurred while writing to <b>{}</b>.</p>"
                       "<p>Reason: <b>{}</b> ("
                       "<i>See {} for debug info.</i>)</p>"
                       ).format(filename,

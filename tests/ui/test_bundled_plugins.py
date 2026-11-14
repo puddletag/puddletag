@@ -288,7 +288,6 @@ def test_add_two_seconds_refused_in_preview_mode(modtime, mainwin, user, qtbot, 
     assert os.stat(path).st_mtime == 1_000_000_000
 
 
-@pytest.mark.xfail(strict=True, reason='puddletag spells "occurred" as "occured"')
 def test_add_two_seconds_to_a_file_gone_from_disk(modtime, mainwin, user, qtbot, make_audio, tmp_path, dialogs):
     # The plugin's info: "Add a shortcut to the plugins menu that increases
     # the selected files' modified time by two seconds." The docs are silent
@@ -597,7 +596,6 @@ def test_id3_tools_leave_other_formats_alone(id3_tools, mainwin, user, make_audi
     assert flac.read_bytes() == flac_bytes
 
 
-@pytest.mark.xfail(strict=True, reason='puddletag spells "occurred" as "occured"')
 @pytest.mark.skipif(os.geteuid() == 0, reason='root can write a read-only file')
 @pytest.mark.parametrize('command, verb', [(UPDATE, 'updating'), (CONVERT, 'converting')])
 def test_id3_tools_on_a_read_only_file(id3_tools, mainwin, user, make_audio, qtbot, dialogs, tmp_path, command,

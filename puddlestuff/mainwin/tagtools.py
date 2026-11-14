@@ -71,7 +71,7 @@ def remove_tag(tag, parent):
             except (IOError, OSError) as e:
                 filename = f[audioinfo.PATH]
                 m = translate('Defaults',
-                              "An error occured while writing to <b>{}</b>. ({})"
+                              "An error occurred while writing to <b>{}</b>. ({})"
                               ).format(filename, e.strerror)
                 if row == rows[-1]:
                     yield m, 1

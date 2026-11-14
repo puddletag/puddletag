@@ -894,22 +894,22 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
     </message>
     <message>
       <location filename="../util.py" line="30" />
-      <source>&lt;p&gt;An error occured while renaming the directory &lt;b&gt;{}&lt;/b&gt; to &lt;i&gt;{}&lt;/i&gt;.&lt;/p&gt;&lt;p&gt;Reason: &lt;b&gt;{}&lt;/b&gt;&lt;br /&gt;File used: {}&lt;/p&gt;</source>
+      <source>&lt;p&gt;An error occurred while renaming the directory &lt;b&gt;{}&lt;/b&gt; to &lt;i&gt;{}&lt;/i&gt;.&lt;/p&gt;&lt;p&gt;Reason: &lt;b&gt;{}&lt;/b&gt;&lt;br /&gt;File used: {}&lt;/p&gt;</source>
       <translation>&lt;p&gt;Wystąpił błąd podczas zmiany nazwy katalogu &lt;b&gt;{}&lt;/b&gt; na &lt;i&gt;{}&lt;/i&gt;.&lt;/p&gt;&lt;p&gt;Powód: &lt;b&gt;{}&lt;/b&gt;&lt;br /&gt;Użyty plik: {}&lt;/p&gt;</translation>
     </message>
     <message>
       <location filename="../util.py" line="39" />
-      <source>&lt;p&gt;An error occured while renaming the file &lt;b&gt;{}&lt;/b&gt; to &lt;i&gt;{}&lt;/i&gt;.&lt;/p&gt;&lt;p&gt;Reason: &lt;b&gt;{}&lt;/b&gt;&lt;/p&gt;</source>
+      <source>&lt;p&gt;An error occurred while renaming the file &lt;b&gt;{}&lt;/b&gt; to &lt;i&gt;{}&lt;/i&gt;.&lt;/p&gt;&lt;p&gt;Reason: &lt;b&gt;{}&lt;/b&gt;&lt;/p&gt;</source>
       <translation>&lt;p&gt;Wystąpił błąd podczas zmiany nazwy pliku &lt;b&gt;{}&lt;/b&gt; na &lt;i&gt;{}&lt;/i&gt;.&lt;/p&gt;&lt;p&gt;Powód: &lt;b&gt;{}&lt;/b&gt;&lt;/p&gt;</translation>
     </message>
     <message>
       <location filename="../util.py" line="46" />
-      <source>&lt;p&gt;An error occured while writing to &lt;b&gt;{}&lt;/b&gt;.&lt;/p&gt;&lt;p&gt;Reason: &lt;b&gt;{}&lt;/b&gt;.&lt;/p&gt;&lt;p&gt;(&lt;i&gt;See {} for debug info.&lt;/i&gt;)&lt;/p&gt;</source>
+      <source>&lt;p&gt;An error occurred while writing to &lt;b&gt;{}&lt;/b&gt;.&lt;/p&gt;&lt;p&gt;Reason: &lt;b&gt;{}&lt;/b&gt;.&lt;/p&gt;&lt;p&gt;(&lt;i&gt;See {} for debug info.&lt;/i&gt;)&lt;/p&gt;</source>
       <translation>&lt;p&gt;Wystąpił błąd podczas zapisu do &lt;b&gt;{}&lt;/b&gt;.&lt;/p&gt;&lt;p&gt;Powód: &lt;b&gt;{}&lt;/b&gt;.&lt;/p&gt;&lt;p&gt;(&lt;i&gt;Zobacz {}, aby uzyskać informacje dotyczące debugowania.&lt;/i&gt;)&lt;/p&gt;</translation>
     </message>
     <message>
       <location filename="../util.py" line="57" />
-      <source>&lt;p&gt;An error occured while writing to &lt;b&gt;{}&lt;/b&gt;.&lt;/p&gt;&lt;p&gt;Reason: &lt;b&gt;{}&lt;/b&gt; (&lt;i&gt;See {} for debug info.&lt;/i&gt;)&lt;/p&gt;</source>
+      <source>&lt;p&gt;An error occurred while writing to &lt;b&gt;{}&lt;/b&gt;.&lt;/p&gt;&lt;p&gt;Reason: &lt;b&gt;{}&lt;/b&gt; (&lt;i&gt;See {} for debug info.&lt;/i&gt;)&lt;/p&gt;</source>
       <translation>&lt;p&gt;Wystąpił błąd podczas zapisu do &lt;b&gt;{}&lt;/b&gt;.&lt;/p&gt;&lt;p&gt;Powód: &lt;b&gt;{}&lt;/b&gt; (&lt;i&gt;Zobacz {}, aby uzyskać informacje dotyczące debugowania.&lt;/i&gt;)&lt;/p&gt;</translation>
     </message>
     <message>
@@ -1013,7 +1013,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
     </message>
     <message>
       <location filename="../mainwin/tagtools.py" line="73" />
-      <source>An error occured while writing to &lt;b&gt;{}&lt;/b&gt;. ({})</source>
+      <source>An error occurred while writing to &lt;b&gt;{}&lt;/b&gt;. ({})</source>
       <translation>Wystąpił błąd podczas zapisu do &lt;b&gt;{}&lt;/b&gt;. ({})</translation>
     </message>
     <message>
@@ -1028,17 +1028,17 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
     </message>
     <message>
       <location filename="../plugins/modified_time/__init__.py" line="47" />
-      <source>An error occured while setting the modification time of &lt;b&gt;{}&lt;/b&gt;. ({})</source>
+      <source>An error occurred while setting the modification time of &lt;b&gt;{}&lt;/b&gt;. ({})</source>
       <translation>Wystąpił błąd podczas ustawiania czasu modyfikacji &lt;b&gt;{}&lt;/b&gt;. ({})</translation>
     </message>
     <message>
       <location filename="../plugins/id3_tools/__init__.py" line="36" />
-      <source>An error occured while converting &lt;b&gt;{}&lt;/b&gt;. ({})</source>
+      <source>An error occurred while converting &lt;b&gt;{}&lt;/b&gt;. ({})</source>
       <translation>Wystąpił błąd podczas konwersji &lt;b&gt;{}&lt;/b&gt;. ({})</translation>
     </message>
     <message>
       <location filename="../plugins/id3_tools/__init__.py" line="67" />
-      <source>An error occured while updating &lt;b&gt;{}&lt;/b&gt;. ({})</source>
+      <source>An error occurred while updating &lt;b&gt;{}&lt;/b&gt;. ({})</source>
       <translation>Wystąpił błąd podczas aktualizacji &lt;b&gt;{}&lt;/b&gt;. ({})</translation>
     </message>
     <message>
@@ -3120,7 +3120,7 @@ Czy chcesz kontynuować?</translation>
     </message>
     <message>
       <location filename="../musiclib.py" line="212" />
-      <source>An error occured while loading the {} library: &lt;b&gt;{}&lt;/b&gt;</source>
+      <source>An error occurred while loading the {} library: &lt;b&gt;{}&lt;/b&gt;</source>
       <translation>Wystąpił błąd podczas ładowania biblioteki {}: &lt;b&gt;{}&lt;/b&gt;</translation>
     </message>
     <message>
@@ -3186,7 +3186,7 @@ Czy chcesz kontynuować?</translation>
     <message>
       <location filename="../puddletag.py" line="558" />
       <location filename="../puddletag.py" line="548" />
-      <source>An error occured while reading &lt;b&gt;{}&lt;/b&gt; ({})</source>
+      <source>An error occurred while reading &lt;b&gt;{}&lt;/b&gt; ({})</source>
       <translation>Wystąpił błąd podczas odczytu &lt;b&gt;{}&lt;/b&gt; ({})</translation>
     </message>
     <message>

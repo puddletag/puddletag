@@ -510,7 +510,7 @@ class MainWin(QMainWindow):
             QMessageBox.information(self._table,
                                     translate("Defaults", 'Error'),
                                     translate('Playlist',
-                                              "An error occured while reading <b>{}</b> ({})"
+                                              "An error occurred while reading <b>{}</b> ({})"
                                               ).format(filename, e.strerror)
                                     )
         except (UnicodeError) as e:
@@ -520,7 +520,7 @@ class MainWin(QMainWindow):
         except Exception as e:
             QMessageBox.information(self._table, translate("Defaults", 'Error'),
                                     translate('Playlist',
-                                              "An error occured while reading <b>{}</b> ({})"
+                                              "An error occurred while reading <b>{}</b> ({})"
                                               ).format(filename, str(e))
                                     )
 

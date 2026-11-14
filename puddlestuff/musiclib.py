@@ -210,7 +210,7 @@ class LibChooseDialog(QDialog):
         if isinstance(library, str):
             error_msg = library
             msg = translate('MusicLib',
-                            "An error occured while loading the {} library: <b>{}</b>"
+                            "An error occurred while loading the {} library: <b>{}</b>"
                             ).format(self.currentlib['name'], error_msg)
 
             QMessageBox.critical(self, translate('Defaults', "Error"), msg)

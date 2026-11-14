@@ -40,7 +40,7 @@ def add_seconds(parent=None):
             except (IOError, OSError) as e:
                 filename = f[audioinfo.PATH]
                 m = str(QApplication.translate('Defaults',
-                                               "An error occured while setting the modification time of <b>{}</b>. ({})"
+                                               "An error occurred while setting the modification time of <b>{}</b>. ({})"
                                                ).format(filename, e.strerror))
                 if row == rows[-1]:
                     yield m, 1

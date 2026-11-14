@@ -46,7 +46,6 @@ def every_file(failing=(), reason=''):
 ALL = ('afr', 'cs', 'de', 'es_ES', 'fr', 'it', 'nl-nl', 'pl_PL', 'pt_BR', 'ru_RU', 'sv')
 TEN = ALL[1:]  # all but afr
 TWO = ('it', 'pl_PL')
-OCCURRED = 'puddletag spells "occurred" as "occured"'
 
 # The languages that translated each message before it was corrected.
 CORRECTED = [
@@ -109,12 +108,11 @@ def test_qm_shows_the_translations_of_its_ts(qapp, ts):
     assert shown == {(c, s): text or s for c, s, text in messages(ts)}
 
 
-@pytest.mark.parametrize('ts', every_file(failing=ALL, reason=OCCURRED))
+@pytest.mark.parametrize('ts', every_file())
 def test_no_text_misspells_occurred(ts):
     assert [source for _, source, _ in messages(ts) if 'occured' in source] == []
 
 
-@pytest.mark.xfail(strict=True, reason=OCCURRED)
 @pytest.mark.parametrize('context, source, languages', CORRECTED)
 def test_corrected_messages_keep_their_translations(context, source, languages):
     # The languages that translate a message today keep their translation

@@ -133,7 +133,6 @@ def load(mainwin, user, qtbot, folder, count):
         qtbot.waitUntil(lambda: len(table.selectedRows) == count)
 
 
-@pytest.mark.xfail(strict=True, reason='puddletag spells "occurred" as "occured"')
 @pytest.mark.skipif(os.geteuid() == 0, reason='root can write a read-only file')
 @pytest.mark.parametrize('kind, tool', [
     ('aiff', 'remove_id3'),
@@ -161,7 +160,6 @@ def test_tag_tool_on_a_read_only_file(mainwin, user, make_audio, qtbot, dialogs,
     assert not user.action('&Undo').isEnabled()
 
 
-@pytest.mark.xfail(strict=True, reason='puddletag spells "occurred" as "occured"')
 @pytest.mark.skipif(os.geteuid() == 0, reason='root can write a read-only file')
 def test_tag_tool_on_read_only_files(mainwin, user, make_audio, qtbot, dialogs, tmp_path):
     # Tag Tools: "Deleting 'official' tags can be undone"; Undo: "When
