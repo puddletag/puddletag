@@ -196,7 +196,6 @@ def test_save_then_load_relative_playlist(mainwin, music, user, dialogs, qtbot, 
     wait_for_rows(qtbot, table, paths)
 
 
-@pytest.mark.xfail(strict=True, reason='a name with quotes in it is read as csv quoting')
 def test_load_playlist_keeps_quotes_in_names(mainwin, make_audio, user, dialogs, qtbot, tmp_path):
     # "Opens a dialog to import an m3u playlist into puddletag." A name is
     # read as written, and one no file has is read as csv quoting (the
@@ -225,7 +224,6 @@ def test_load_playlist_reads_a_csv_quoted_entry(mainwin, make_audio, user, dialo
     wait_for_rows(qtbot, mainwin._table, [p1])
 
 
-@pytest.mark.xfail(strict=True, reason='csv quoting wins over the name as written')
 def test_load_playlist_prefers_the_name_as_written(mainwin, make_audio, user, dialogs, qtbot, tmp_path):
     # "Opens a dialog to import an m3u playlist into puddletag." A name is
     # read as written, and one no file has is read as csv quoting (the

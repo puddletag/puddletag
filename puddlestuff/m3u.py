@@ -77,30 +77,30 @@ def relpath(target, base_path=os.curdir):
 
 def readm3u(path):
     # From http://forums.fedoraforum.org/showthread.php?p=1224109
-    olddir = os.path.abspath(os.curdir)
+    folder = dirname(abspath(path))
+
+    def resolve(entry):
+        if os.sep == '/':
+            # Playlists written on Windows separate folders with \
+            entry = entry.replace('\\', '/')
+        return normpath(path_join(folder, entry))
 
     # List of mp3files
     mp3Files = []
 
     with open(path, 'r', encoding='utf-8-sig') as fileHandle:
-        os.chdir(os.path.dirname(path))
-        try:
-            for row in csv.reader(fileHandle):
-                if len(row) < 1:
-                    # Skip blanks
-                    continue
-                elif row[0].startswith("#"):
-                    # Ignore comments
-                    continue
-                else:
-                    # store rule
-                    entry = ','.join(row)
-                    if os.sep == '/':
-                        # Playlists written on Windows separate folders with \
-                        entry = entry.replace('\\', '/')
-                    mp3Files.append(normpath(abspath(entry)))
-        finally:
-            os.chdir(olddir)
+        for line in fileHandle:
+            line = line.rstrip('\r\n')
+            if not line.strip() or line.startswith('#'):
+                # Skip blanks and comments
+                continue
+            # A name is read as written; one no file has is read as csv quoting
+            entry = resolve(line)
+            if not os.path.exists(entry):
+                quoted = resolve(','.join(next(csv.reader([line]))))
+                if os.path.exists(quoted):
+                    entry = quoted
+            mp3Files.append(entry)
 
     return mp3Files
 
