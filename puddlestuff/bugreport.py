@@ -50,24 +50,6 @@ def get_os():
         version = next((osrel[k] for k in ['VERSION', 'VERSION_ID', 'VERSION_CODENAME'] if k in osrel), '')
         return '%s %s' % (name, version)
 
-    def read_osrelease():
-        """Naive re-implementation of freedesktop_os_release."""
-        for filepath in ['/etc/os-release', '/usr/lib/os-release']:
-            osrelease_dict = {}
-            try:
-                with open(filepath, 'r', -1, 'utf-8') as file:
-                    for line in file:
-                        line = line.strip()
-                        if line.startswith('#'):
-                            continue
-                        name, value = line.split('=', 1)
-                        osrelease_dict[name.strip()] = value.strip('"\'').strip()
-            except OSError:
-                pass
-            else:
-                return osrelease_dict
-        raise OSError('No file to read found')
-
     def get_linux_name():
         """Returns the name of the linux distribution. Hopefully."""
         # First try: The optional distro package (should always work if available)
@@ -78,22 +60,9 @@ def get_os():
         else:
             return distro.name(True)
 
-        # Second try: the new function in platform (py v3.10+ only)
-        if hasattr(platform, 'freedesktop_os_release'):
-            try:
-                return osrelease_dict_to_str(platform.freedesktop_os_release())
-            except OSError:
-                pass
-
-        # Third try: the old function in platform (until py v3.7 only)
-        if hasattr(platform, 'linux_distribution'):
-            linux_dist = platform.linux_distribution()
-            if any((x for x in linux_dist if x)):
-                return '%s %s' % (linux_dist[0], linux_dist[1])
-
-        # Fourth try: read the os-release file directly (to fill the gap btw. 3.7 and 3.10)
+        # Second try: the function in platform
         try:
-            return osrelease_dict_to_str(read_osrelease())
+            return osrelease_dict_to_str(platform.freedesktop_os_release())
         except OSError:
             pass
 

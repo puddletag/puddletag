@@ -353,3 +353,21 @@ def test_text_that_isnt_a_traceback_is_left_whole():
     # Synthetic: the docs are silent on how a long error is shortened; text
     # without a traceback has nothing to trim.
     assert trim_traceback('ValueError: synthetic error\n', 1) == 'ValueError: synthetic error\n'
+
+
+def test_os_line_without_os_release(mainwin, qtbot, user, monkeypatch):
+    # menus.txt, Help: "filled in with your system (puddletag's version, your
+    # OS, display server and desktop, ...)"; bug_report.yaml's example is
+    # "OS: Ubuntu 20.04". Synthetic: a Linux system with no os-release file.
+    def no_os_release():
+        raise OSError('synthetic')
+
+    with monkeypatch.context() as m:
+        m.setitem(sys.modules, 'distro', None)
+        m.setattr(platform, 'system', lambda: 'Linux')
+        m.setattr(platform, 'freedesktop_os_release', no_os_release)
+        m.setattr(platform, 'release', lambda: '6.1.0-synth')
+        m.setattr(platform, 'version', lambda: '#1 SMP synthetic')
+        lines = system_lines(mainwin, qtbot, user)
+
+    assert lines['OS'] == 'Linux 6.1.0-synth #1 SMP synthetic'

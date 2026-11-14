@@ -4,7 +4,7 @@ from importlib import import_module
 from platform import python_version
 from PyQt6.QtCore import PYQT_VERSION_STR, Qt, QUrl, qVersion
 from PyQt6.QtGui import QDesktopServices, QPixmap
-from PyQt6.QtWidgets import QApplication, QDialog, QHBoxLayout, QLabel, QScrollArea, QTabWidget, QVBoxLayout, QWidget
+from PyQt6.QtWidgets import QDialog, QHBoxLayout, QLabel, QScrollArea, QTabWidget, QVBoxLayout, QWidget
 
 from . import version_string, changeset
 from .puddleobjects import OKCancel
@@ -136,10 +136,3 @@ class AboutPuddletag(QDialog):
         vbox.addLayout(ok)
         ok.ok.connect(self.close)
         self.setLayout(vbox)
-
-
-if __name__ == '__main__':
-    app = QApplication([])
-    win = AboutPuddletag()
-    win.show()
-    app.exec()
