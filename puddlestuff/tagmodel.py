@@ -1754,6 +1754,21 @@ class TagTable(QTableView):
         else:
             self.viewfilled.emit(False)
 
+    def edit(self, index, trigger=QAbstractItemView.EditTrigger.AllEditTriggers, event=None):
+        """Opens the editor as Qt does, which selects the cell's whole text.
+        A Filename cell's editor then selects the name up to its extension
+        (#293), so a typed name keeps the extension. An edit started by
+        typing is left alone: Qt has already passed it the key, which
+        replaced the selected text."""
+        opened = QTableView.edit(self, index, trigger, event)
+        if opened and self.model().headerdata[index.column()][1] == FILENAME:
+            editor = self.indexWidget(index)
+            if isinstance(editor, QLineEdit) and editor.selectedText() == editor.text():
+                name = path.splitext(editor.text())[0]
+                if name:
+                    editor.setSelection(0, len(name))
+        return opened
+
     def highlight(self, rows):
         self.model().setColors(rows)
 
