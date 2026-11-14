@@ -394,7 +394,6 @@ def test_loading_no_files_gives_no_qt_warning(mainwin, user, dialogs, qtbot, qtl
     assert not [r.message for r in qtlog.records if 'dataChanged' in r.message]
 
 
-@pytest.mark.xfail(strict=True, reason="Save playlist to a folder it can't write raises")
 def test_save_playlist_unwritable(user, dialogs, music, tmp_path, request):
     # menus.txt, Save playlist: "Save's the selected files of the File_view
     # to a playlist, or every file when none is selected." A folder it can't

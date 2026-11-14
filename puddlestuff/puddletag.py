@@ -680,7 +680,14 @@ class MainWin(QMainWindow):
 
             reldir = settings.get('playlist', 'reldir', 0, True)
             windows_separator = settings.get('playlist', 'windows_separator', 0, False)
-            m3u.exportm3u(tags, f, pattern, reldir, windows_separator)
+            try:
+                m3u.exportm3u(tags, f, pattern, reldir, windows_separator)
+            except OSError as e:
+                QMessageBox.information(self._table,
+                                        translate("Defaults", 'Error'),
+                                        translate('Playlist',
+                                                  "An error occurred while writing <b>{}</b> ({})"
+                                                  ).format(f, e.strerror))
 
     def _viewFilled(self, val):
         self.viewfilled.emit(val)
