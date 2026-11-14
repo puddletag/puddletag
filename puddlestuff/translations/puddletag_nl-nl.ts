@@ -245,7 +245,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
     <message>
       <location filename="../actiondlg.py" line="966" />
       <source>Edit Action: </source>
-      <translation>Actie wijzigen:</translation>
+      <translation>Actie wijzigen: </translation>
     </message>
     <message>
       <location filename="../actiondlg.py" line="1025" />
@@ -983,7 +983,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
       <location filename="../tagmodel.py" line="1924" />
       <location filename="../tagmodel.py" line="1920" />
       <source>Loading </source>
-      <translation>Laden</translation>
+      <translation>Laden </translation>
     </message>
     <message>
       <location filename="../mainwin/action_dialogs.py" line="83" />

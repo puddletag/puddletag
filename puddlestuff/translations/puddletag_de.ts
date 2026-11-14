@@ -380,7 +380,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
       <location filename="../helperwin.py" line="65" />
       <location filename="../functions_dialogs.py" line="41" />
       <source>Max length after padding with zeroes: </source>
-      <translation>Max. Länge nach Auffüllen mit Nullen:</translation>
+      <translation>Max. Länge nach Auffüllen mit Nullen: </translation>
     </message>
     <message>
       <location filename="../functions_dialogs.py" line="49" />
@@ -1024,7 +1024,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
     <message>
       <location filename="../masstag/dialogs.py" line="391" />
       <source>Fields: </source>
-      <translation>Felder:</translation>
+      <translation>Felder: </translation>
     </message>
     <message>
       <location filename="../plugins/modified_time/__init__.py" line="47" />
@@ -3068,7 +3068,8 @@ Wollen Sie fortfahren?</translation>
       <location filename="../musiclib.py" line="131" />
       <source>Error loading {}: {}
 </source>
-      <translation>Ladefehler {}: {}</translation>
+      <translation>Ladefehler {}: {}
+</translation>
     </message>
     <message>
       <location filename="../musiclib.py" line="139" />
@@ -3325,7 +3326,7 @@ Wollen Sie fortfahren?</translation>
     <message>
       <location filename="../mainwin/tagsources.py" line="426" />
       <source>Match tracks using &amp;fields: </source>
-      <translation type="unfinished">Ordne Track nach folgenden &amp;Feldern zu:</translation>
+      <translation type="unfinished">Ordne Track nach folgenden &amp;Feldern zu: </translation>
     </message>
     <message>
       <location filename="../masstag/dialogs.py" line="265" />
@@ -3391,7 +3392,7 @@ Wollen Sie fortfahren?</translation>
     <message>
       <location filename="../masstag/dialogs.py" line="262" />
       <source>Match tracks using fields: </source>
-      <translation>Suche Tracks nach Feld:</translation>
+      <translation>Suche Tracks nach Feld: </translation>
     </message>
     <message>
       <location filename="../masstag/dialogs.py" line="365" />
@@ -3426,7 +3427,7 @@ Wollen Sie fortfahren?</translation>
     <message>
       <location filename="../masstag/dialogs.py" line="444" />
       <source>&amp;If no results found: </source>
-      <translation>&amp;Wenn keine Ergebnisse gefunden werden:</translation>
+      <translation>&amp;Wenn keine Ergebnisse gefunden werden: </translation>
     </message>
     <message>
       <location filename="../masstag/dialogs.py" line="446" />
@@ -3713,7 +3714,7 @@ Tatsächlich: {}</translation>
     <message>
       <location filename="../tagmodel.py" line="1550" />
       <source>Deleting tag... </source>
-      <translation>Lösche Tag...</translation>
+      <translation>Lösche Tag... </translation>
     </message>
     <message>
       <location filename="../tagmodel.py" line="1584" />
@@ -3869,7 +3870,7 @@ Tatsächlich: {}</translation>
     <message>
       <location filename="../mainwin/tagsources.py" line="622" />
       <source>Sour&amp;ce: </source>
-      <translation type="unfinished">&amp;Quelle:</translation>
+      <translation type="unfinished">&amp;Quelle: </translation>
     </message>
     <message>
       <location filename="../mainwin/tagsources.py" line="628" />

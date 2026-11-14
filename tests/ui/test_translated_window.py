@@ -51,7 +51,6 @@ def russian():
     QApplication.removeTranslator(translator)
 
 
-@pytest.mark.xfail(strict=True, reason='#588: the Russian translation of "Loading " drops its space')
 def test_russian_loading_text_keeps_its_space(mainwin, russian, make_audio, tmp_path, qtbot):
     # #588: "There must be a space after translated word": the progress
     # window shows the Russian for "Loading " followed by the count.

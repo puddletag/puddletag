@@ -85,9 +85,7 @@ def test_every_text_listed_for_translators_is_in_every_ts_file(ts, monkeypatch):
     assert {pair for pair in listed if pair[1]} - sources == set()
 
 
-@pytest.mark.parametrize('ts', every_file(
-    failing={'afr', 'cs', 'de', 'es_ES', 'fr', 'nl-nl', 'pt_BR', 'ru_RU', 'sv'},
-    reason='these translations drop or add spaces at the ends of the text: #588'))
+@pytest.mark.parametrize('ts', every_file())
 def test_translations_keep_their_sources_leading_and_trailing_space(ts):
     # #588 "There must be a space after translated word" (Russian
     # 'Loading ' -> 'Загрузка'); the docs are silent on the other texts.
@@ -127,8 +125,6 @@ def test_corrected_messages_keep_their_translations(context, source, languages):
     assert set(languages) <= translated
 
 
-@pytest.mark.xfail(strict=True, reason='the Russian rename errors misspell "во время", '
-                                       'and the file one ends with <br /> instead of </p>')
 def test_russian_rename_errors():
     # The translator's own text, typo fixed (the docs are silent).
     ru = TRANSLATIONS / 'puddletag_ru_RU.ts'

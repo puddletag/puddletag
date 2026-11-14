@@ -3069,7 +3069,8 @@ Esto puedo causar el bloque de su ordenador.
       <location filename="../musiclib.py" line="131" />
       <source>Error loading {}: {}
 </source>
-      <translation>Error cargando {}: {}</translation>
+      <translation>Error cargando {}: {}
+</translation>
     </message>
     <message>
       <location filename="../musiclib.py" line="139" />
@@ -3326,7 +3327,7 @@ Esto puedo causar el bloque de su ordenador.
     <message>
       <location filename="../mainwin/tagsources.py" line="426" />
       <source>Match tracks using &amp;fields: </source>
-      <translation>Coincidir pistas usando &amp;campos:</translation>
+      <translation>Coincidir pistas usando &amp;campos: </translation>
     </message>
     <message>
       <location filename="../masstag/dialogs.py" line="265" />
@@ -3392,7 +3393,7 @@ Esto puedo causar el bloque de su ordenador.
     <message>
       <location filename="../masstag/dialogs.py" line="262" />
       <source>Match tracks using fields: </source>
-      <translation>Coincidir pistas usando campos:</translation>
+      <translation>Coincidir pistas usando campos: </translation>
     </message>
     <message>
       <location filename="../masstag/dialogs.py" line="365" />
@@ -3412,7 +3413,7 @@ Esto puedo causar el bloque de su ordenador.
     <message>
       <location filename="../masstag/dialogs.py" line="414" />
       <source>Fields to replace: </source>
-      <translation>Campos a reemplazar:</translation>
+      <translation>Campos a reemplazar: </translation>
     </message>
     <message>
       <location filename="../masstag/dialogs.py" line="416" />
@@ -3812,8 +3813,7 @@ Real: {}</translation>
 se usarán los archivos seleccionados.&lt;/p&gt;
 &lt;ul&gt;&lt;li&gt;&lt;b&gt;artista;álbum&lt;/b&gt; búsqueda para la combinación de artista/álbum especificada.&lt;/li&gt;
 &lt;li&gt;Para listar los álbumes de un artista deje en blanco su parte, pero manteniendo el punto y coma (p.ej. &lt;b&gt;Ratatat;&lt;/b&gt;).
-Para un álbum deje sin nada la parte de artista (&lt;b&gt;;Resurrection&lt;/b&gt;).&lt;/li&gt;&lt;/ul&gt;
-</translation>
+Para un álbum deje sin nada la parte de artista (&lt;b&gt;;Resurrection&lt;/b&gt;).&lt;/li&gt;&lt;/ul&gt;</translation>
     </message>
     <message>
       <location filename="../mainwin/tagsources.py" line="39" />

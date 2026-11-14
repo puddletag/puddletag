@@ -380,7 +380,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
       <location filename="../helperwin.py" line="65" />
       <location filename="../functions_dialogs.py" line="41" />
       <source>Max length after padding with zeroes: </source>
-      <translation>Největší délka po vyplnění nulami:</translation>
+      <translation>Největší délka po vyplnění nulami: </translation>
     </message>
     <message>
       <location filename="../functions_dialogs.py" line="49" />
@@ -1024,7 +1024,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
     <message>
       <location filename="../masstag/dialogs.py" line="391" />
       <source>Fields: </source>
-      <translation>Pole:</translation>
+      <translation>Pole: </translation>
     </message>
     <message>
       <location filename="../plugins/modified_time/__init__.py" line="47" />
@@ -3068,7 +3068,8 @@ Chcete pokračovat?</translation>
       <location filename="../musiclib.py" line="131" />
       <source>Error loading {}: {}
 </source>
-      <translation>Chyba při nahrávání {}: {}</translation>
+      <translation>Chyba při nahrávání {}: {}
+</translation>
     </message>
     <message>
       <location filename="../musiclib.py" line="139" />
@@ -3325,7 +3326,7 @@ Chcete pokračovat?</translation>
     <message>
       <location filename="../mainwin/tagsources.py" line="426" />
       <source>Match tracks using &amp;fields: </source>
-      <translation type="unfinished">Roztřídit stopy pomocí &amp;polí:</translation>
+      <translation type="unfinished">Roztřídit stopy pomocí &amp;polí: </translation>
     </message>
     <message>
       <location filename="../masstag/dialogs.py" line="265" />
@@ -3713,7 +3714,7 @@ Skutečný: {}</translation>
     <message>
       <location filename="../tagmodel.py" line="1550" />
       <source>Deleting tag... </source>
-      <translation>Maže se značka...</translation>
+      <translation>Maže se značka... </translation>
     </message>
     <message>
       <location filename="../tagmodel.py" line="1584" />
@@ -3869,7 +3870,7 @@ Skutečný: {}</translation>
     <message>
       <location filename="../mainwin/tagsources.py" line="622" />
       <source>Sour&amp;ce: </source>
-      <translation type="unfinished">&amp;Zdroj:</translation>
+      <translation type="unfinished">&amp;Zdroj: </translation>
     </message>
     <message>
       <location filename="../mainwin/tagsources.py" line="628" />

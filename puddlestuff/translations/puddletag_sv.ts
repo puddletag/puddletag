@@ -982,7 +982,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
       <location filename="../tagmodel.py" line="1924" />
       <location filename="../tagmodel.py" line="1920" />
       <source>Loading </source>
-      <translation>Läser in</translation>
+      <translation>Läser in </translation>
     </message>
     <message>
       <location filename="../mainwin/action_dialogs.py" line="83" />
@@ -1023,7 +1023,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
     <message>
       <location filename="../masstag/dialogs.py" line="391" />
       <source>Fields: </source>
-      <translation>Fält:</translation>
+      <translation>Fält: </translation>
     </message>
     <message>
       <location filename="../plugins/modified_time/__init__.py" line="47" />
@@ -3067,7 +3067,8 @@ Vill du fortsätta?</translation>
       <location filename="../musiclib.py" line="131" />
       <source>Error loading {}: {}
 </source>
-      <translation>Fel vid inläsning av {}: {}</translation>
+      <translation>Fel vid inläsning av {}: {}
+</translation>
     </message>
     <message>
       <location filename="../musiclib.py" line="139" />

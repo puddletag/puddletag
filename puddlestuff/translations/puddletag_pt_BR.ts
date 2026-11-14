@@ -962,7 +962,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
       <location filename="../puddletag.py" line="850" />
       <location filename="../puddletag.py" line="839" />
       <source>Writing </source>
-      <translation>Gravando</translation>
+      <translation>Gravando </translation>
     </message>
     <message>
       <location filename="../tagmodel.py" line="1839" />
@@ -983,7 +983,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
       <location filename="../tagmodel.py" line="1924" />
       <location filename="../tagmodel.py" line="1920" />
       <source>Loading </source>
-      <translation>Carregando</translation>
+      <translation>Carregando </translation>
     </message>
     <message>
       <location filename="../mainwin/action_dialogs.py" line="83" />
@@ -994,7 +994,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
     <message>
       <location filename="../mainwin/filterwin.py" line="20" />
       <source>Filter: </source>
-      <translation>Filtro:</translation>
+      <translation>Filtro: </translation>
     </message>
     <message>
       <location filename="../mainwin/filterwin.py" line="21" />
@@ -3412,7 +3412,7 @@ Você quer continuar?</translation>
     <message>
       <location filename="../masstag/dialogs.py" line="414" />
       <source>Fields to replace: </source>
-      <translation>Campos para substituir:</translation>
+      <translation>Campos para substituir: </translation>
     </message>
     <message>
       <location filename="../masstag/dialogs.py" line="416" />
@@ -4035,8 +4035,7 @@ Real: {}</translation>
     <message>
       <location filename="../helperwin.py" line="352" />
       <source>The file &lt;b&gt;{}&lt;/b&gt; couldn't be loaded.&lt;br /&gt; Do you want to choose another?</source>
-      <translation>O arquivo &lt;b&gt;{}&lt;/b&gt; não pôde ser carregado. &lt;br /&gt; Você deseja escolher outro?
-</translation>
+      <translation>O arquivo &lt;b&gt;{}&lt;/b&gt; não pôde ser carregado. &lt;br /&gt; Você deseja escolher outro?</translation>
     </message>
     <message>
       <location filename="../helperwin.py" line="358" />

@@ -380,7 +380,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
       <location filename="../helperwin.py" line="65" />
       <location filename="../functions_dialogs.py" line="41" />
       <source>Max length after padding with zeroes: </source>
-      <translation>Longueur maximale (y compris les zéros):</translation>
+      <translation>Longueur maximale (y compris les zéros): </translation>
     </message>
     <message>
       <location filename="../functions_dialogs.py" line="49" />
@@ -995,7 +995,7 @@ Double cliquer pour changer la couleur&lt;/p&gt;</translation>
     <message>
       <location filename="../mainwin/filterwin.py" line="20" />
       <source>Filter: </source>
-      <translation>Filtre:</translation>
+      <translation>Filtre: </translation>
     </message>
     <message>
       <location filename="../mainwin/filterwin.py" line="21" />
@@ -1025,7 +1025,7 @@ Double cliquer pour changer la couleur&lt;/p&gt;</translation>
     <message>
       <location filename="../masstag/dialogs.py" line="391" />
       <source>Fields: </source>
-      <translation>Champs:</translation>
+      <translation>Champs: </translation>
     </message>
     <message>
       <location filename="../plugins/modified_time/__init__.py" line="47" />
@@ -3069,7 +3069,8 @@ Continuer ?</translation>
       <location filename="../musiclib.py" line="131" />
       <source>Error loading {}: {}
 </source>
-      <translation>Erreur de chargement de {}: {}</translation>
+      <translation>Erreur de chargement de {}: {}
+</translation>
     </message>
     <message>
       <location filename="../musiclib.py" line="139" />
@@ -3272,7 +3273,7 @@ Continuer ?</translation>
     <message>
       <location filename="../mainwin/tagtools.py" line="59" />
       <source>Disable Preview Mode first to enable tag deletion.</source>
-      <translation>Désactivez le mode Aperçu avant de pouvoir supprimer des tags. </translation>
+      <translation>Désactivez le mode Aperçu avant de pouvoir supprimer des tags.</translation>
     </message>
     <message>
       <location filename="../plugins/id3_tools/__init__.py" line="52" />

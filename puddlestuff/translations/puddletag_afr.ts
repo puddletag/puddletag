@@ -242,7 +242,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
     <message>
       <location filename="../actiondlg.py" line="966" />
       <source>Edit Action: </source>
-      <translation>Verander Aksie:</translation>
+      <translation>Verander Aksie: </translation>
     </message>
     <message>
       <location filename="../actiondlg.py" line="1025" />
@@ -3386,7 +3386,7 @@ Do you want to go ahead?</source>
     <message>
       <location filename="../masstag/dialogs.py" line="262" />
       <source>Match tracks using fields: </source>
-      <translation>Match liedjies met velde:</translation>
+      <translation>Match liedjies met velde: </translation>
     </message>
     <message>
       <location filename="../masstag/dialogs.py" line="365" />
@@ -3421,7 +3421,7 @@ Do you want to go ahead?</source>
     <message>
       <location filename="../masstag/dialogs.py" line="444" />
       <source>&amp;If no results found: </source>
-      <translation>&amp;As geen resultate gevind is nie:</translation>
+      <translation>&amp;As geen resultate gevind is nie: </translation>
     </message>
     <message>
       <location filename="../masstag/dialogs.py" line="446" />
@@ -3708,7 +3708,7 @@ Egte: {}</translation>
     <message>
       <location filename="../tagmodel.py" line="1550" />
       <source>Deleting tag... </source>
-      <translation>Besig om tags te verwyder...</translation>
+      <translation>Besig om tags te verwyder... </translation>
     </message>
     <message>
       <location filename="../tagmodel.py" line="1584" />
@@ -3864,7 +3864,7 @@ Egte: {}</translation>
     <message>
       <location filename="../mainwin/tagsources.py" line="622" />
       <source>Sour&amp;ce: </source>
-      <translation>&amp;Bron:</translation>
+      <translation>&amp;Bron: </translation>
     </message>
     <message>
       <location filename="../mainwin/tagsources.py" line="628" />

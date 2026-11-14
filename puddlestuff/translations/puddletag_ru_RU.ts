@@ -895,12 +895,12 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
     <message>
       <location filename="../util.py" line="30" />
       <source>&lt;p&gt;An error occured while renaming the directory &lt;b&gt;{}&lt;/b&gt; to &lt;i&gt;{}&lt;/i&gt;.&lt;/p&gt;&lt;p&gt;Reason: &lt;b&gt;{}&lt;/b&gt;&lt;br /&gt;File used: {}&lt;/p&gt;</source>
-      <translation>&lt;p&gt;Произошла ошибка во ремя переименования директории &lt;b&gt;{}&lt;/b&gt; в &lt;i&gt;{}&lt;/i&gt;.&lt;/p&gt;&lt;p&gt;Причина: &lt;b&gt;{}&lt;/b&gt;&lt;br /&gt;Используемый файл: {}&lt;/p&gt;</translation>
+      <translation>&lt;p&gt;Произошла ошибка во время переименования директории &lt;b&gt;{}&lt;/b&gt; в &lt;i&gt;{}&lt;/i&gt;.&lt;/p&gt;&lt;p&gt;Причина: &lt;b&gt;{}&lt;/b&gt;&lt;br /&gt;Используемый файл: {}&lt;/p&gt;</translation>
     </message>
     <message>
       <location filename="../util.py" line="39" />
       <source>&lt;p&gt;An error occured while renaming the file &lt;b&gt;{}&lt;/b&gt; to &lt;i&gt;{}&lt;/i&gt;.&lt;/p&gt;&lt;p&gt;Reason: &lt;b&gt;{}&lt;/b&gt;&lt;/p&gt;</source>
-      <translation>&lt;p&gt;Произошла ошибка во ремя переименования файла &lt;b&gt;{}&lt;/b&gt; в &lt;i&gt;{}&lt;/i&gt;.&lt;/p&gt;&lt;p&gt;Причина: &lt;b&gt;{}&lt;/b&gt;&lt;br /&gt;</translation>
+      <translation>&lt;p&gt;Произошла ошибка во время переименования файла &lt;b&gt;{}&lt;/b&gt; в &lt;i&gt;{}&lt;/i&gt;.&lt;/p&gt;&lt;p&gt;Причина: &lt;b&gt;{}&lt;/b&gt;&lt;/p&gt;</translation>
     </message>
     <message>
       <location filename="../util.py" line="46" />
@@ -962,7 +962,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
       <location filename="../puddletag.py" line="850" />
       <location filename="../puddletag.py" line="839" />
       <source>Writing </source>
-      <translation>Запись</translation>
+      <translation>Запись </translation>
     </message>
     <message>
       <location filename="../tagmodel.py" line="1839" />
@@ -983,7 +983,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
       <location filename="../tagmodel.py" line="1924" />
       <location filename="../tagmodel.py" line="1920" />
       <source>Loading </source>
-      <translation>Загрузка</translation>
+      <translation>Загрузка </translation>
     </message>
     <message>
       <location filename="../mainwin/action_dialogs.py" line="83" />
@@ -994,7 +994,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
     <message>
       <location filename="../mainwin/filterwin.py" line="20" />
       <source>Filter: </source>
-      <translation>Фильтр:</translation>
+      <translation>Фильтр: </translation>
     </message>
     <message>
       <location filename="../mainwin/filterwin.py" line="21" />
@@ -3065,7 +3065,8 @@ Do you want to go ahead?</source>
       <location filename="../musiclib.py" line="131" />
       <source>Error loading {}: {}
 </source>
-      <translation>Ошибка при загрузке {}: {}</translation>
+      <translation>Ошибка при загрузке {}: {}
+</translation>
     </message>
     <message>
       <location filename="../musiclib.py" line="139" />
@@ -3322,7 +3323,7 @@ Do you want to go ahead?</source>
     <message>
       <location filename="../mainwin/tagsources.py" line="426" />
       <source>Match tracks using &amp;fields: </source>
-      <translation type="unfinished">&amp;Распознать треки, используя поля:</translation>
+      <translation type="unfinished">&amp;Распознать треки, используя поля: </translation>
     </message>
     <message>
       <location filename="../masstag/dialogs.py" line="265" />
@@ -3388,7 +3389,7 @@ Do you want to go ahead?</source>
     <message>
       <location filename="../masstag/dialogs.py" line="262" />
       <source>Match tracks using fields: </source>
-      <translation>Распознать треки, используя поля:</translation>
+      <translation>Распознать треки, используя поля: </translation>
     </message>
     <message>
       <location filename="../masstag/dialogs.py" line="365" />
@@ -3408,7 +3409,7 @@ Do you want to go ahead?</source>
     <message>
       <location filename="../masstag/dialogs.py" line="414" />
       <source>Fields to replace: </source>
-      <translation>Поля для замены:</translation>
+      <translation>Поля для замены: </translation>
     </message>
     <message>
       <location filename="../masstag/dialogs.py" line="416" />
@@ -3423,7 +3424,7 @@ Do you want to go ahead?</source>
     <message>
       <location filename="../masstag/dialogs.py" line="444" />
       <source>&amp;If no results found: </source>
-      <translation>&amp;Если не найдено ни одного результата, то:</translation>
+      <translation>&amp;Если не найдено ни одного результата, то: </translation>
     </message>
     <message>
       <location filename="../masstag/dialogs.py" line="446" />
