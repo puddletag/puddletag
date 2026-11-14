@@ -316,8 +316,6 @@ def test_refresh_after_load_playlist_rereads_the_folders(music_and_playlist, mak
     qtbot.waitUntil(lambda: sorted(loaded_paths(table)) == sorted(map(str, [*paths, p3, p9])))
 
 
-@pytest.mark.xfail(strict=True,
-                   reason='with Subfolders off, Refresh drops a file from a subfolder of a loaded folder')
 def test_refresh_keeps_a_playlist_file_from_a_subfolder(mainwin, make_audio, user, qtbot, tmp_path, dialogs):
     # tut2.txt: "If you've added files ad hoc to puddletag, it re-reads those
     # files again"; menus.txt (Refresh): "Refreshes the files currently

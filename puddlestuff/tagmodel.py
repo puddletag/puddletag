@@ -65,9 +65,12 @@ def _default_audio_player():
     return "clementine -p"
 
 
-def not_in_dirs(files, dirs):
+def not_in_dirs(files, dirs, subfolders=True):
     if not dirs:
         return files
+    if not subfolders:
+        folders = set(map(encode_fn, dirs))
+        return [z for z in files if os.path.dirname(z) not in folders]
     prefixes = tuple(os.path.join(encode_fn(d), '') for d in dirs)
     return [z for z in files if not z.startswith(prefixes)]
 
@@ -1808,9 +1811,9 @@ class TagTable(QTableView):
 
         dirs = list(map(encode_fn, dirs))
 
-        files = not_in_dirs(files, dirs)
+        files = not_in_dirs(files, dirs, subfolders)
         if append:
-            files = not_in_dirs(files, self.dirs)
+            files = not_in_dirs(files, self.dirs, subfolders)
 
         if subfolders:
             new_dirs = []
