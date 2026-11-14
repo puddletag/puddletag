@@ -6,6 +6,7 @@ from PyQt6.QtWidgets import QInputDialog
 
 from .. import status, connect_control
 from ... import puddletag
+from ...translations import translate
 
 
 class _SignalObject(QObject):
@@ -44,7 +45,7 @@ def init(parent=None):
         k.setSeparator(True)
         return k
 
-    action = QAction('Dupe highlight', parent)
+    action = QAction(translate('Menus', 'Dupe highlight'), parent)
     action.setCheckable(True)
     action.toggled.connect(
         lambda v: highlight_dupe_field(action) if v else remove_highlight())

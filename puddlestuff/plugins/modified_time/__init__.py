@@ -7,10 +7,11 @@ from .. import status
 from ... import audioinfo
 from ...puddleobjects import progress
 from ... import puddletag
+from ...translations import translate
 
 
 def init(parent=None):
-    action = QAction('Add 2 seconds to modified time', parent)
+    action = QAction(translate('Menus', 'Add 2 seconds to modified time'), parent)
     action.triggered.connect(lambda: add_seconds(parent))
     action.setShortcut('Ctrl+M')
 

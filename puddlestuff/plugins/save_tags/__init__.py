@@ -8,6 +8,7 @@ from PyQt6.QtWidgets import QFileDialog
 
 from .. import status
 from ... import puddletag
+from ...translations import translate
 
 last_fn = {'fn': '~'}
 
@@ -39,6 +40,6 @@ def init(parent=None):
         k.setSeparator(True)
         return k
 
-    action = QAction('Export tags', parent)
+    action = QAction(translate('Menus', 'Export tags'), parent)
     action.triggered.connect(export_tags)
     puddletag.add_shortcuts('&Plugins', [sep(), action, sep()])

@@ -7,6 +7,7 @@ from ...constants import (LEFTDOCK, SELECTIONCHANGED,
 from ...helperwin import BOLD, UNCHANGED, ExTags
 from ... import puddletag
 from ...puddleobjects import (settaglist)
+from ...translations import translate
 
 
 class ExTagsPlugin(ExTags):
@@ -39,7 +40,7 @@ class ExTagsPlugin(ExTags):
         if files:
             self.loadFiles(files)
 
-        action = QAction('Save Extended', self)
+        action = QAction(translate('Menus', 'Save Extended'), self)
         action.triggered.connect(self.save)
         action.setShortcut('Ctrl+Shift+S')
 

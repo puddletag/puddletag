@@ -91,7 +91,6 @@ def plugins_in_another_language(clean_profile, monkeypatch):
     QApplication.removeTranslator(translator)
 
 
-@pytest.mark.xfail(strict=True, reason="the Plugins menu's title is never translated")
 def test_plugins_menu_title_is_translated(plugins_in_another_language, mainwin):
     # translate.txt: "Open this file in Qt Linguist and translate to your
     # heart's content." Like the menu bar's other titles, the Plugins
@@ -100,7 +99,6 @@ def test_plugins_menu_title_is_translated(plugins_in_another_language, mainwin):
     assert '&Plugins' not in menu_titles(mainwin)
 
 
-@pytest.mark.xfail(strict=True, reason="the bundled plugins' command names are never translated")
 def test_plugin_commands_are_translated(plugins_in_another_language, mainwin):
     # plugins.txt names the commands under the Plugins menu, e.g.
     # "**Plugins->Dupe highlight**"; like every other menu command, they

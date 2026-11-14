@@ -75,7 +75,7 @@ def init(parent=None):
             restore_view()
             state.clear()
 
-    action = QAction('Show all fields', parent)
+    action = QAction(translate('Menus', 'Show all fields'), parent)
     action.setCheckable(True)
     action.toggled.connect(show_fields)
     puddletag.add_shortcuts('&Plugins', [sep(), action, sep()])

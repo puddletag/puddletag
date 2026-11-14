@@ -10,6 +10,7 @@ from ... import audioinfo
 from ...constants import FILESSELECTED
 from ...puddleobjects import progress
 from ... import puddletag
+from ...translations import translate
 from ...util import separator
 
 obj = QObject()
@@ -89,11 +90,11 @@ def update_to_24(parent=None):
 
 
 def init(parent=None):
-    action = QAction('&Update to ID3v2.4', parent)
+    action = QAction(translate('Menus', '&Update to ID3v2.4'), parent)
     connect_shortcut(action, FILESSELECTED)
     action.triggered.connect(partial(update_to_24, parent))
 
-    convert = QAction('&Convert to UTF-8', parent)
+    convert = QAction(translate('Menus', '&Convert to UTF-8'), parent)
     connect_shortcut(convert, FILESSELECTED)
     convert.triggered.connect(partial(to_utf8, parent))
 
