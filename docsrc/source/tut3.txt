@@ -24,7 +24,7 @@ It lists the the metadata for the fields you've selected to display.
 + You can write to multiple files at once. Just select the files. Choose the field you want to write to and write as normal. All selected files will be updated, and **Edit→Undo** puts them all back at once.
 + Multiple-valued fields are shown like **value1\\\\value2**. Enter a value like that and puddletag will assume you want some multiple values.
 + Empty a cell to remove that field from the file.
-+ Editing the **Filename** cell renames the file. The name includes the extension: leave it out and the file is renamed without one. If the name contains any of the characters, **\\\*?"|:/**, then they will be removed.
++ Editing the **Filename** cell renames the file. The name includes the extension: leave it out and the file is renamed without one. When its editor opens (F2, a double-click, or Enter from the cell above), the name is selected up to the extension, so a name you type keeps it. If the name contains any of the characters, **\\\*?"|:/**, then they will be removed.
 + Editing a **Dirname** cell renames the file's folder, and every file in it moves along. Editing an **Extension** cell renames the file with that extension; the audio isn't converted.
 + Some cells show file information that can't be changed, such as **Length**, **Bitrate** and **Dirpath**: what you type in them is dropped.
 + Right Click on it to get the context menu. Menu items are just as described in :doc:`menus`.
