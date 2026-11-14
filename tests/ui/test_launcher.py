@@ -357,7 +357,6 @@ def test_error_that_stops_the_start_is_shown_and_logged(tmp_path):
     assert 'ValueError: synthetic error' in Path(constants.LOG_FILENAME).read_text()
 
 
-@pytest.mark.xfail(strict=True, reason="The start-up error message says puddletag keeps running")
 def test_error_that_stops_the_start_says_so(tmp_path):
     # menus.txt, "When something goes wrong": "If the error stops puddletag
     # from starting, it closes once you close the message." Synthetic error:

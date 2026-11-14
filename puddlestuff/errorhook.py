@@ -39,11 +39,11 @@ def _parent():
             return window
 
 
-def _message(summary, details, parent):
+def _message(summary, details, parent, informative=None):
     message = QMessageBox(QMessageBox.Icon.Critical, 'puddletag', summary, parent=parent)
     message.setWindowModality(Qt.WindowModality.ApplicationModal)
     message.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose)
-    message.setInformativeText(translate(
+    message.setInformativeText(informative or translate(
         'Errors', "puddletag ran into an error it didn't expect. It keeps running, but the command "
                   "that failed may have stopped part way: check the files it was working on."))
     message.setDetailedText(details)
@@ -67,7 +67,8 @@ def report_startup_error(exc_type, exc_value, exc_tb):
     logging.getLogger(__name__).error('Unhandled error', exc_info=(exc_type, exc_value, exc_tb))
     summary = ''.join(traceback.format_exception_only(exc_type, exc_value)).strip()
     details = ''.join(traceback.format_exception(exc_type, exc_value, exc_tb))
-    _message(summary, details, None).exec()
+    _message(summary, details, None, translate(
+        'Errors', "puddletag ran into an error it didn't expect and can't start.")).exec()
     from . import bugreport
     for window in list(bugreport._windows):
         window.exec()
