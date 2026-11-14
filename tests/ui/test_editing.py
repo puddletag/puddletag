@@ -327,6 +327,59 @@ def test_filename_without_extension(user, loaded, qtbot):
     assert table.model().taginfo[0].filepath == str(paths[0].with_name('Bare'))
 
 
+# "When its editor opens (F2, a double-click, or Enter from the cell
+# above), the name is selected up to the extension, so a name you type
+# keeps it." (#293) A name without an
+# extension is selected whole, and an edit started by typing replaces the
+# whole name, as before.
+
+@pytest.mark.parametrize('start', ['F2', 'double-click'])
+def test_filename_editor_selects_the_name_before_the_extension(user, loaded, qtbot, start):
+    table, paths = loaded
+    index = user.cell(0, '__filename')
+    if start == 'F2':
+        user.click_cell(index)
+        user.press(Key.Key_F2)
+    else:
+        user.double_click_cell(index)
+    editor = open_editor(table, index)
+    assert (editor.text(), editor.selectedText()) == ('01.mp3', '01')
+    user.type('Renamed')
+    user.press(Key.Key_Return)
+    qtbot.waitUntil(paths[0].with_name('Renamed.mp3').exists)
+    assert sorted(os.listdir(paths[0].parent)) == ['02.mp3', '03.mp3', 'Renamed.mp3']
+
+
+def test_enter_opens_the_next_filename_with_its_name_selected(user, loaded, qtbot):
+    table, paths = loaded
+    user.click_cell(user.cell(0, '__filename'))
+    user.press(Key.Key_F2)
+    user.type('X')
+    user.press(Key.Key_Return)
+    qtbot.waitUntil(paths[0].with_name('X.mp3').exists)
+    assert open_editor(table, user.cell(1, '__filename')).selectedText() == '02'
+
+
+def test_filename_editor_selects_a_name_without_extension_whole(user, loaded, qtbot):
+    table, paths = loaded
+    edit(user, user.cell(0, '__filename'), 'Bare')
+    user.press(Key.Key_Return)
+    qtbot.waitUntil(paths[0].with_name('Bare').exists)
+    index = user.cell(0, '__filename')
+    user.click_cell(index)
+    user.press(Key.Key_F2)
+    assert open_editor(table, index).selectedText() == 'Bare'
+
+
+def test_filename_edit_started_by_typing_replaces_the_whole_name(user, loaded, qtbot):
+    table, paths = loaded
+    user.click_cell(user.cell(0, '__filename'))
+    user.type('Typed')
+    user.press(Key.Key_Return)
+    qtbot.waitUntil(paths[0].with_name('Typed').exists)
+    assert sorted(os.listdir(paths[0].parent)) == ['02.mp3', '03.mp3', 'Typed']
+
+
 # "__filename_no_ext: The file's filename without extension. Can be written
 # to: the file is renamed and keeps its extension."
 
@@ -363,7 +416,7 @@ def test_several_files_one_name(user, loaded, qtbot, dialogs):
     user.click_cell(user.cell(1, '__filename'), Shift)
     dialogs.answer('QMessageBox.warning', QMessageBox.StandardButton.Ok)
     user.press(Key.Key_F2)
-    user.type('Same.mp3')
+    user.type('Same')  # F2 selects the name up to .mp3 (#293)
     user.press(Key.Key_Return)
     qtbot.waitUntil(lambda: len(dialogs.calls) == 1)
     [(name, (parent, title, message), kwargs)] = dialogs.calls
