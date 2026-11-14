@@ -25,7 +25,6 @@ def dont_execute():
     translate("Menus", 'Clear Selected &Files')
     translate("Menus", '&Write Previews')
     translate("Menus", '&Undo Last Clear')
-    translate("Menus", 'Sort &By')
     translate("Menus", 'Clear Selected &Cells')
     translate("Menus", "&Plugins")
     translate("Menus", "Sort &By")

@@ -29,7 +29,6 @@ def parse_dialogs():
         s = s.replace('"', r'\"')
         return 'translate("Dialogs", "%s")' % s
 
-    dialog_strings = []
     controls = [z.control for z in [tagpanel, artwork, dirview, filterwin,
                                     tagsources, storedtags, logdialog, masstag]]
 

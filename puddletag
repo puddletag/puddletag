@@ -114,7 +114,7 @@ def load_language(qapp, langfile=None):
     if langfile:
         if (not langfile.endswith('.qm')
                 or not QTranslator().load(os.path.basename(langfile), os.path.dirname(langfile))):
-            print(translate('Defaults', 'Invalid translation file.'))
+            print('Invalid translation file.')
             langargs = None
         else:
             langargs = os.path.basename(langfile), os.path.dirname(langfile)
@@ -198,11 +198,9 @@ def print_info():
     """Print program info."""
     from puddlestuff import version_string, changeset
     if changeset:
-        print(translate('Defaults', "puddletag Version: {}, Changeset: {}")
-              .format(version_string, changeset))
+        print("puddletag Version: {}, Changeset: {}".format(version_string, changeset))
     else:
-        print(translate('Defaults', 'puddletag Version: {}'
-              .format(version_string)))
+        print('puddletag Version: {}'.format(version_string))
 
 
 def splashscreen():
@@ -240,7 +238,6 @@ if __name__ == '__main__':
 
     migrate_settings()
     from puddlestuff.puddleobjects import get_icon, get_languages, PuddleConfig
-    from puddlestuff.translations import translate
 
     # Init.
     print_info()
