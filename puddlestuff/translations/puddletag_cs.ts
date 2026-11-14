@@ -469,32 +469,32 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../bugreport.py" line="273" />
+      <location filename="../bugreport.py" line="242" />
       <source>Report a problem</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../bugreport.py" line="289" />
+      <location filename="../bugreport.py" line="258" />
       <source>Open on GitHub</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../bugreport.py" line="292" />
+      <location filename="../bugreport.py" line="261" />
       <source>&amp;Copy</source>
       <translation type="unfinished">&amp;Kopírovat</translation>
     </message>
     <message>
-      <location filename="../bugreport.py" line="295" />
+      <location filename="../bugreport.py" line="264" />
       <source>Cancel</source>
       <translation type="unfinished">Zrušit</translation>
     </message>
     <message>
-      <location filename="../bugreport.py" line="320" />
+      <location filename="../bugreport.py" line="289" />
       <source>The report was too long for the address, so puddletag put it on the clipboard: paste it here.</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../bugreport.py" line="325" />
+      <location filename="../bugreport.py" line="294" />
       <source>The report is too long to send in the address, so puddletag put it on the clipboard: paste it into the issue.</source>
       <translation type="unfinished" />
     </message>
@@ -1269,7 +1269,12 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../errorhook.py" line="122" />
+      <location filename="../errorhook.py" line="70" />
+      <source>puddletag ran into an error it didn't expect and can't start.</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../errorhook.py" line="126" />
       <source>{} more errors happened while this message was open; they are in the log.</source>
       <translation type="unfinished" />
     </message>
