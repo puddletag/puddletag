@@ -115,8 +115,6 @@ def unclosed(caught, path):
 
 # Reading and writing ---------------------------------------------------------
 
-@pytest.mark.xfail(strict=True, reason="a playlist that isn't UTF-8 leaves the working folder at the "
-                                       "playlist's folder")
 def test_load_playlist_not_utf8_leaves_the_working_folder(mainwin, user, dialogs, tmp_path, monkeypatch):
     # Synthetic (docs-silent): a playlist that isn't UTF-8 says so and leaves
     # the working folder as it was.
@@ -133,7 +131,6 @@ def test_load_playlist_not_utf8_leaves_the_working_folder(mainwin, user, dialogs
     assert mainwin._table.model().rowCount() == 0
 
 
-@pytest.mark.xfail(strict=True, reason='the playlist is left open after Load playlist')
 @pytest.mark.parametrize('content, encoding', [('#EXTM3U\nmusic/01.mp3\n', 'utf-8'),
                                                ('#EXTM3U\nÖlü.mp3\n', 'latin-1')],
                          ids=['UTF-8', 'not UTF-8'])
