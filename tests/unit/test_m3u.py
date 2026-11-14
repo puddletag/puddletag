@@ -8,8 +8,6 @@ import subprocess
 import sys
 from pathlib import Path
 
-import pytest
-
 ROOT = Path(__file__).resolve().parents[2]
 # PYTHONUTF8=0 also turns off Python 3.15's UTF-8 mode; without
 # PYTHONCOERCECLOCALE=0 the C locale would become C.UTF-8.
@@ -28,7 +26,6 @@ def run_m3u(code, *args):
     return json.loads(done.stdout)
 
 
-@pytest.mark.xfail(strict=True, reason="playlists are read in the locale's encoding, not UTF-8")
 def test_reads_a_utf8_playlist_whatever_the_locale(tmp_path):
     # Docs-silent: puddletag says "The playlist is not encoded in UTF-8", so
     # it reads UTF-8.
@@ -38,7 +35,6 @@ def test_reads_a_utf8_playlist_whatever_the_locale(tmp_path):
         str(tmp_path / 'música' / '01.mp3')]
 
 
-@pytest.mark.xfail(strict=True, reason="playlists are written in the locale's encoding, not UTF-8")
 def test_writes_a_utf8_playlist_whatever_the_locale(tmp_path):
     # Docs-silent: the playlist is read as UTF-8, so it is written as UTF-8.
     # A SimpleNamespace stands in for a tag: without a pattern exportm3u reads

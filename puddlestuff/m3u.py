@@ -82,7 +82,7 @@ def readm3u(path):
     # List of mp3files
     mp3Files = []
 
-    with open(path, 'r') as fileHandle:
+    with open(path, 'r', encoding='utf-8-sig') as fileHandle:
         os.chdir(os.path.dirname(path))
         try:
             for row in csv.reader(fileHandle):
@@ -126,9 +126,8 @@ def exportm3u(tags, tofile, format=None, reldir=False, winsep=False):
         [text.extend([z, y]) for z, y in zip(extinfo, filenames)]
         text = '\n'.join(text)
 
-    playlist = open(tofile, 'w')
-    playlist.write(text)
-    playlist.close()
+    with open(tofile, 'w', encoding='utf-8') as playlist:
+        playlist.write(text)
 
 
 if __name__ == '__main__':
