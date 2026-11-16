@@ -14,7 +14,7 @@ from send2trash import send2trash
 
 from PyQt6.QtCore import QAbstractTableModel, QEvent, QItemSelection, QItemSelectionModel, \
     QMetaObject, QMimeData, QModelIndex, QPoint, QUrl, Qt, pyqtSignal, pyqtSlot, Q_ARG
-from PyQt6.QtGui import QColor, QFont, QDrag, QPalette, QStandardItemModel
+from PyQt6.QtGui import QColor, QDesktopServices, QFont, QDrag, QPalette, QStandardItemModel
 from PyQt6.QtWidgets import QAbstractItemDelegate, QAbstractItemView, QApplication, QDialog, QGridLayout, QGroupBox, \
     QHBoxLayout, QHeaderView, QLabel, QLineEdit, QMenu, QMessageBox, QPushButton, QStyledItemDelegate, QTableView, \
     QVBoxLayout
@@ -1570,6 +1570,11 @@ class TagTable(QTableView):
 
     def unloadSelected(self):
         self._unload(self.selectedRows)
+
+    def openFolder(self):
+        """Opens the topmost selected file's folder in the desktop's file manager."""
+        if self.selectedRows:
+            QDesktopServices.openUrl(QUrl.fromLocalFile(self.selectedTags[0].dirpath))
 
     def _unload(self, rows):
         selected = [self.model().taginfo[row] for row in rows]
