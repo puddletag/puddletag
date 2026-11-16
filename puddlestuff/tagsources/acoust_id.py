@@ -1,4 +1,5 @@
 import os
+import shutil
 import traceback
 from itertools import chain, product, starmap
 
@@ -259,25 +260,6 @@ def retrieve_album_info(album, tracks):
     return info, new_tracks
 
 
-def which(program):
-
-    # http://stackoverflow.com/questions/377017/test-if-executable-exists-in-python
-    def is_exe(fpath):
-        return os.path.isfile(fpath) and os.access(fpath, os.X_OK)
-
-    fpath, fname = os.path.split(program)
-    if fpath:
-        if is_exe(program):
-            return program
-    else:
-        for path in os.environ["PATH"].split(os.pathsep):
-            exe_file = os.path.join(path, program)
-            if is_exe(exe_file):
-                return exe_file
-
-    return None
-
-
 class AcoustID(object):
     name = 'AcoustID'
     group_by = ['album', None]
@@ -298,10 +280,7 @@ class AcoustID(object):
 
         fns_len = len(fns)
         for i, fn in enumerate(fns):
-            try:
-                disp_fn = audioinfo.decode_fn(fn.filepath)
-            except AttributeError:
-                disp_fn = fn['__path']
+            disp_fn = audioinfo.decode_fn(fn.filepath)
             write_log(disp_fn)
             try:
 
@@ -415,7 +394,7 @@ class AcoustID(object):
         self.__user_key = args[1]
 
 
-if not which('fpcalc'):
+if not shutil.which('fpcalc'):
     raise ImportError("fpcalc not found on system")
 
 info = AcoustID

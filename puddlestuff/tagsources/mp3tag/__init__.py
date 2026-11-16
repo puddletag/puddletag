@@ -245,10 +245,6 @@ class Cursor(object):
         self.url = None
 
     @property
-    def char(self):
-        return self.line[self.charno]
-
-    @property
     def debug_file(self):
         return self._debug_file
 

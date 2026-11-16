@@ -175,24 +175,6 @@ def parse_artist_relation(relations):
     return ret
 
 
-def parse_artist_search(xml):
-    doc = minidom.parseString(xml)
-    nodes = doc.getElementsByTagName('artist-list')[0].childNodes
-    ret = []
-    for node in nodes:
-        if istext(node):
-            continue
-        info = dict(list(node.attributes.items()))
-        for ch in node.childNodes:
-            if istext(node):
-                continue
-            info[ch.tagName] = node_to_text(ch)
-        info = convert_dict(info, ARTIST_KEYS)
-        info['#artist_id'] = info['mbrainz_artist_id']
-        ret.append(info)
-    return ret
-
-
 def parse_label_list(release_node):
     labels = parse_node(release_node, 'label-info-list', 'label-info',
                         'label')
@@ -298,10 +280,6 @@ def parse_track_list(node):
         if 'isrc-list' in track:
             track['isrc'] = to_list(track.pop('isrc-list')['id'])
 
-        if 'puid-list' in track:
-            track['musicip_puid'] = track['puid-list']['id']
-            del (track['puid-list'])
-
         if not isempty(track.get('relation-list')):
             for r in to_list(track['relation-list']):
                 track.update(parse_track_relation(r))
@@ -371,7 +349,7 @@ def mb_urlopen(url):
 
 def retrieve_album(album_id):
     url = SERVER + 'release/' + album_id + \
-          '?inc=recordings+artist-credits+labels+puids+isrcs+tags+ratings' \
+          '?inc=recordings+artist-credits+labels+isrcs+tags+ratings' \
           '+artist-rels+recording-rels+release-rels+release-group-rels' \
           '+url-rels+work-rels+recording-level-rels+work-level-rels'
 
@@ -459,15 +437,6 @@ def search_album(album=None, artist=None, limit=25, offset=0, own=False):
 
     return SERVER + 'release/?query=' + query.replace('%3A', '') + \
            '&limit=%d&offset=%d' % (limit, offset)
-
-
-def search_artist(artist, limit=25, offset=0):
-    query = urllib.parse.urlencode({
-        'query': solr_escape(artist),
-        'limit': limit,
-        'offset': offset,
-    })
-    return SERVER + 'artist?' + query.replace('%3A', '')
 
 
 def to_list(v, arg=None):

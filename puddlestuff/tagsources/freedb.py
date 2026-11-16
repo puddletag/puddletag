@@ -1,11 +1,10 @@
 from . import CDDB
 
 CDDB.proto = 6  # utf8 instead of latin1
-from collections import defaultdict
 
 from puddlestuff import version_string
 from puddlestuff import audioinfo
-from puddlestuff.util import to_string
+from puddlestuff.util import split_by_tag, to_string
 from puddlestuff.tagsources import RetrievalError
 from puddlestuff.util import translate
 import time
@@ -169,8 +168,6 @@ def search(tracklist):
 def search_by_id(discid):
     try:
         stat, discs = CDDB.query(discid, **CLIENTINFO)
-    except RetrievalError:
-        raise
     except EnvironmentError as e:
         raise RetrievalError(str(e))
     except ValueError:
@@ -183,17 +180,6 @@ def search_by_id(discid):
             discs = [discs]
         return [(convert_info(info), []) for info in discs]
     return []
-
-
-def split_by_tag(tracks, main='artist', secondary='album'):
-    if secondary:
-        ret = defaultdict(lambda: defaultdict(lambda: []))
-        [ret[to_string(track.get(main))]
-         [to_string(track.get(secondary))].append(track) for track in tracks]
-    else:
-        ret = defaultdict(lambda: [])
-        [ret[to_string(track.get(main))].append(track) for track in tracks]
-    return ret
 
 
 _last_request = None

@@ -45,7 +45,7 @@ serves back from a local web server (the `web_server` fixture in
 does and cuts them down; the tests never run it.
 
 `musicbrainz/release-<id>.xml` is
-`https://musicbrainz.org/ws/2/release/<id>?inc=recordings+artist-credits+labels+puids+isrcs+tags+ratings+artist-rels+recording-rels+release-rels+release-group-rels+url-rels+work-rels+recording-level-rels+work-level-rels`,
+`https://musicbrainz.org/ws/2/release/<id>?inc=recordings+artist-credits+labels+isrcs+tags+ratings+artist-rels+recording-rels+release-rels+release-group-rels+url-rels+work-rels+recording-level-rels+work-level-rels`,
 the request puddletag sends when a release is chosen in the Tag Sources
 window:
 

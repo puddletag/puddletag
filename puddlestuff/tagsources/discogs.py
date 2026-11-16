@@ -86,8 +86,6 @@ def capture_dict_values(d):
     for key, v in d.items():
         if key in RELEASE_PROPERTIES_TO_IGNORE or isempty(v) or isinstance(v, dict):
             continue
-        elif isinstance(v, bytes):
-            ret[key] = v.decode('utf8')
         elif isinstance(v, numbers.Number):
             ret[key] = str(v)
         else:

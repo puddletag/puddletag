@@ -18,7 +18,7 @@ OUT = Path(__file__).parent / 'musicbrainz'
 SERVER = 'https://musicbrainz.org/ws/2/'
 USER_AGENT = 'puddletag-tests (https://github.com/puddletag/puddletag)'
 # What puddletag's retrieve_album asks for.
-INC = ('recordings+artist-credits+labels+puids+isrcs+tags+ratings'
+INC = ('recordings+artist-credits+labels+isrcs+tags+ratings'
        '+artist-rels+recording-rels+release-rels+release-group-rels'
        '+url-rels+work-rels+recording-level-rels+work-level-rels')
 RELEASES = [
