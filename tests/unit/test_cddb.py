@@ -353,3 +353,16 @@ def test_hello_user_without_a_login_name():
     # Synthetic: a user id with no password entry, as in a container started
     # with --user 4242.
     assert imported_hello({}, 'os.getuid = os.geteuid = lambda: 4242; ') == ['user', 'my.host.com']
+
+
+# Corner cases ----------------------------------------------------------------
+
+@pytest.mark.xfail(strict=True, reason='a hit line without an id or title raises IndexError')
+def test_hit_line_without_an_id_or_title(web_server, cddb):
+    # CDDBPROTO: each hit is "category discid dtitle". Synthetic: one hit
+    # line has only a category.
+    body = reply("211 Found inexact matches, list follows (until terminating `.')", 'data',
+                 'rock 0c025603 Some Artist / Some Album', '.')
+
+    assert served_query(web_server, cddb, body) == [211, [
+        {'category': 'rock', 'disc_id': '0c025603', 'title': 'Some Artist / Some Album'}]]

@@ -455,3 +455,34 @@ def test_sources_share_the_gap(gnudb, clock, make_audio, tmp_path):
     freedb.FreeDB().search('Old', files)
     freedb.FreeDB().search('Old', files)
     assert clock.sleeps == [1]
+
+
+# Corner cases ----------------------------------------------------------------
+
+def test_ttitle_without_a_number_is_ignored(gnudb):
+    # DBFORMAT: "TTITLEN=" is a track's title, "N" its number. The docs are
+    # silent on a key without one; this is what puddletag does. Synthetic
+    # entry.
+    answer_read(gnudb, entry(f'DTITLE={ALBUM}', 'TTITLE0=One', 'TTITLEX=Junk'))
+
+    assert freedb.retrieve('data', DISC_ID)[1] == [{'title': 'One', 'track': '1'}]
+
+
+def test_http_error_on_read(gnudb):
+    # Synthetic: the server answers a read with an HTTP error, which is
+    # reported as the query's is.
+    gnudb.add(CGI, '', status=500, content_type='text/plain')
+
+    with pytest.raises(RetrievalError) as excinfo:
+        freedb.retrieve('data', DISC_ID)
+
+    assert str(excinfo.value) == 'HTTP Error 500: Internal Server Error'
+
+
+def test_list_without_hits_finds_nothing(gnudb):
+    # CDDBPROTO: "211 Found inexact matches, list follows (until terminating
+    # marker)". Synthetic: no hit before the marker.
+    answer_queries(gnudb, reply("211 Found inexact matches, list follows (until terminating `.')",
+                                '.'))
+
+    assert freedb.search_by_id(TRACK_INFO) == []
