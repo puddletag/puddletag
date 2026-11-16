@@ -327,11 +327,11 @@ def test_filename_without_extension(user, loaded, qtbot):
     assert table.model().taginfo[0].filepath == str(paths[0].with_name('Bare'))
 
 
-# "When its editor opens (F2, a double-click, or Enter from the cell
-# above), the name is selected up to the extension, so a name you type
-# keeps it." (#293) A name without an
-# extension is selected whole, and an edit started by typing replaces the
-# whole name, as before.
+# "When its editor opens (F2, a double-click, or moving into it from
+# another cell with Enter, Shift+Enter, Tab or Shift+Tab), the name is
+# selected up to the extension, so a name you type keeps it." (#293) A
+# name without an extension is selected whole, and an edit started by
+# typing replaces the whole name, as before.
 
 @pytest.mark.parametrize('start', ['F2', 'double-click'])
 def test_filename_editor_selects_the_name_before_the_extension(user, loaded, qtbot, start):
@@ -358,6 +358,22 @@ def test_enter_opens_the_next_filename_with_its_name_selected(user, loaded, qtbo
     user.press(Key.Key_Return)
     qtbot.waitUntil(paths[0].with_name('X.mp3').exists)
     assert open_editor(table, user.cell(1, '__filename')).selectedText() == '02'
+
+
+# Filename is the first column, so Shift+Tab from Artist moves into it;
+# Tab reaches it only from the end of the row above.
+@pytest.mark.parametrize('start, key', [
+    ((1, '__filename'), Key.Key_Return),
+    ((0, 'artist'), Key.Key_Backtab),
+], ids=['Shift+Enter', 'Shift+Tab'])
+def test_moving_back_into_a_filename_selects_its_name(user, loaded, qtbot, start, key):
+    table, paths = loaded
+    user.click_cell(user.cell(*start))
+    user.press(Key.Key_F2)
+    user.press(key, Shift)
+    index = user.cell(0, '__filename')
+    qtbot.waitUntil(lambda: table.indexWidget(index) is not None)
+    assert open_editor(table, index).selectedText() == '01'
 
 
 def test_filename_editor_selects_a_name_without_extension_whole(user, loaded, qtbot):
