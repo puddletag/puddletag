@@ -484,9 +484,9 @@ def masstag(mtp, files=None, flag=None, mtp_error_func=None,
 
     if not_found and found and not stopped and not flag.stop:
         set_status(RECHECKING.format(found[0].tag_source.name))
-        audios_copy = []
-        for t, m in zip(list(map(deepcopy, files)), found[0].result.merged):
-            audios_copy.append(combine_tracks(t, m))
+        merged = found[0].result.merged
+        audios_copy = [combine_tracks(t, merged[i] if i < len(merged) else found[0].result.info)
+                       for i, t in enumerate(map(deepcopy, files))]
 
         new_mtp = MassTagProfile(translate("Masstagging", 'Rechecking'),
                                  files=audios_copy, profiles=not_found,

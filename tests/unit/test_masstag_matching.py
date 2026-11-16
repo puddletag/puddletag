@@ -1106,8 +1106,6 @@ def test_matching_by_track_renumbers_n_of_total_files_disc_by_disc():
         '03.mp3': ['Disc 2 Track 1'], '04.mp3': ['Disc 2 Track 2']}
 
 
-@pytest.mark.xfail(strict=True, reason="the recheck pairs the files with the found album's tracks "
-                                       "by position and drops the files past its end")
 def test_the_recheck_compares_every_selected_file():
     """tut5.txt, How it works: "If a match wasn't found for one Tag Source,
     but for another the Tag Source will be polled again using the data
