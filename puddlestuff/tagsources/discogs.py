@@ -159,13 +159,7 @@ def parse_album_json(data):
     for fmt in data.get('formats', []):
         if fmt.get('name'):
             media.append(fmt['name'])
-        desc = fmt.get('descriptions', fmt.get('name', ''))
-        if not desc:
-            continue
-        if isinstance(desc, str):
-            formats.append(desc)
-        else:
-            formats.extend(desc)
+        formats.extend(fmt.get('descriptions', []))
 
     if formats:
         info['format'] = list(dict.fromkeys(formats))

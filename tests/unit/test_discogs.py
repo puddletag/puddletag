@@ -943,8 +943,6 @@ def test_artists_without_a_join_are_joined_with_an_ampersand(source, web_server)
     assert retrieve(source, EXISTENCE)[1][1]['artist'] == 'Roy Engel & Yonatan Marcow'
 
 
-@pytest.mark.xfail(strict=True, reason='a format without descriptions puts its '
-                   'media name in format')
 def test_format_without_descriptions(source, web_server):
     """tagsources.txt: "**format**: The format description (eg. Album,
     Single, etc.)" and "**discogs_format**: The album's release media".
