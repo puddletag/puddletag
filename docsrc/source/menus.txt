@@ -30,6 +30,10 @@ Play (Ctrl+P)
 ^^^^^^^^^^^^^
 Play's the currently selected files using the player defined in Preferences.
 
+Open Folder in File Manager
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Opens the selected file's folder in the desktop's file manager. With several files selected, it opens the folder of the topmost one in the list.
+
 Remove from List
 ^^^^^^^^^^^^^^^^
 Removes the selected files from the list without asking, and leaves them as they are on disk. Their edits drop out of the undo history, and in preview mode their unsaved edits are dropped with them.
