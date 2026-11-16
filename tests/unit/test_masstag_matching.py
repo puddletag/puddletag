@@ -1056,8 +1056,6 @@ def test_an_error_handler_that_returns_true_stops_on_a_retrieval_error():
         masstag(mtp, files, None, None, lambda error, tsp: True)
 
 
-@pytest.mark.xfail(strict=True, reason="a track written n/total isn't read as a number, "
-                                       "so the highest track number rule never applies")
 def test_an_album_with_as_many_tracks_as_the_highest_n_of_total_fits():
     """tut5.txt, Minimum percentage required for album matches: "A matching
     album, once retrieved, is used only if it has as many tracks as the files

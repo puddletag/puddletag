@@ -135,7 +135,7 @@ def check_result(result, audios):
         max_num = 0
         for num in track_nums:
             try:
-                num = int(num)
+                num = int(num.split('/')[0])
             except (TypeError, ValueError):
                 continue
             max_num = num if num > max_num else max_num

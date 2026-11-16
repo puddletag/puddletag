@@ -1957,8 +1957,6 @@ def test_a_failing_source_set_to_stop_ends_the_lookup(mainwin, user, album, qtbo
     no_previews(mainwin)
 
 
-@pytest.mark.xfail(strict=True, reason="a track written n/total isn't read as a number, "
-                                       "so the highest track number rule never applies")
 def test_an_mp3_numbered_n_of_total_fits_an_album_by_its_highest_number(
         mainwin, make_audio, user, qtbot, tmp_path):
     # tut5:95: "A matching album, once retrieved, is used only if it has as
