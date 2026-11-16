@@ -103,9 +103,7 @@ def parse_track(t, title_prefix=''):
     featuring = []
     for person in t.get('extraartists', {}):
         name = person['name']
-        if person.get('join'):
-            title = title + ' ' + person.get('join') + ' ' + name
-        elif person.get('role', '') == 'Featuring':
+        if person.get('role', '') == 'Featuring':
             featuring.append(name)
         else:
             people.append("%s:%s" % (person['name'], person['role']))

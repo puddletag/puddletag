@@ -916,8 +916,6 @@ def test_api_key_is_not_sent_elsewhere(source, web_server):
 
 # Corner cases ----------------------------------------------------------------
 
-@pytest.mark.xfail(strict=True, reason='a credit with a join goes into the title, '
-                   'not into involvedpeople_track')
 def test_credit_with_a_join(source, web_server):
     """tagsources.txt: "**involvedpeople_track**: People involved with the
     relevant track. Taken from the track's extraartists node". Synthetic: a
