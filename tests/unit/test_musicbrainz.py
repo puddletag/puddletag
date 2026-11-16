@@ -8,6 +8,7 @@ are synthetic.
 import json
 import re
 from pathlib import Path
+from xml.dom import minidom
 
 import pytest
 
@@ -929,3 +930,164 @@ def test_an_empty_user_agent_is_read_as_the_default(monkeypatch):
     monkeypatch.setattr(tagsources, 'useragent', tagsources.useragent)
     tagsources.set_useragent('')
     assert tagsources.get_useragent() == DEFAULT_USERAGENT
+
+
+# Corner cases ----------------------------------------------------------------
+
+def test_pretty_printed_responses_give_the_same_fields(source, web_server):
+    """The docs are silent (MusicBrainz serves compact XML). A release and a
+    search served pretty-printed, with whitespace between their elements,
+    give what the compact ones give."""
+    compact_info, compact_tracks = retrieve(source, ABBEY_ROAD)
+    compact_search = source.keyword_search('Abbey Road')
+    web_server.add(release_path(ABBEY_ROAD),
+                   minidom.parseString(recorded(ABBEY_ROAD).encode()).toprettyxml(),
+                   content_type='application/xml')
+    web_server.add('/ws/2/release/',
+                   minidom.parseString((DATA / 'search-abbey-road-the-beatles.xml').read_bytes()
+                                       ).toprettyxml(),
+                   content_type='application/xml')
+    assert retrieve(source, ABBEY_ROAD) == (compact_info, compact_tracks)
+    assert source.keyword_search('Abbey Road') == compact_search
+
+
+def test_release_without_an_artist_credit(source, web_server):
+    """tagsources.txt: "**albumartist**: The release's artists" and
+    "**artist**: The track's artists on the release". Synthetic: Abbey Road's
+    release-level <artist-credit> removed. The tracks keep their recordings'
+    credits."""
+    text = recorded(ABBEY_ROAD)
+    edited = re.sub(r'<artist-credit>.*?</artist-credit>', '', text, count=1, flags=re.S)
+    assert edited != text
+    web_server.add(release_path(ABBEY_ROAD), edited, content_type='application/xml')
+    info, tracks = retrieve(source, ABBEY_ROAD)
+    assert 'albumartist' not in info
+    assert 'artist' not in info
+    assert tracks[0]['artist'] == 'The Beatles'
+    assert len(tracks) == 17
+
+
+def test_release_without_media(source, web_server):
+    """The docs are silent on a release with no discs; this is what puddletag
+    does. Synthetic: Abbey Road's <medium-list> removed. The album comes back
+    with no discs, no format and no tracks."""
+    text = recorded(ABBEY_ROAD)
+    edited = re.sub(r'<medium-list[^>]*>.*</medium-list>', '', text, flags=re.S)
+    assert edited != text
+    web_server.add(release_path(ABBEY_ROAD), edited, content_type='application/xml')
+    info, tracks = retrieve(source, ABBEY_ROAD)
+    assert info['album'] == 'Abbey Road'
+    assert 'discs' not in info
+    assert 'format' not in info
+    assert tracks == []
+
+
+def test_related_recording_without_an_artist_credit(source, web_server):
+    """tagsources.txt: "Other recordings, by title and artist, as in **music
+    video**: **Come Together by The Beatles**". The docs are silent on a
+    related recording with no artist; this is what puddletag does. Synthetic:
+    the related recording's <artist-credit> removed. It is listed by its title
+    alone."""
+    text = recorded(ABBEY_ROAD)
+    edited = re.sub(r'(<relation type="music video"[^>]*>.*?<recording [^>]*>.*?)'
+                    r'<artist-credit>.*?</artist-credit>', r'\1', text, count=1, flags=re.S)
+    assert edited != text
+    web_server.add(release_path(ABBEY_ROAD), edited, content_type='application/xml')
+    _, tracks = retrieve(source, ABBEY_ROAD)
+    assert values(tracks[0], 'music video') == ['Come Together']
+
+
+def test_a_work_relationship_adds_no_field(source, web_server):
+    """tagsources.txt names only artist and recording relationships ("The
+    people credited on a track's recording, and its relationships to other
+    recordings"). Synthetic: a relationship to a work added to Come
+    Together's recording. The track comes back as it did without it."""
+    start = f'<recording id="{COME_TOGETHER}">'
+    text = recorded(ABBEY_ROAD)
+    assert start in text
+    _, plain = retrieve(source, ABBEY_ROAD)
+    work = ('<relation-list target-type="work"><relation type="performance" '
+            'type-id="synthetic"><target>synthetic-work</target>'
+            '<direction>forward</direction><work id="synthetic-work">'
+            '<title>Come Together</title></work></relation></relation-list>')
+    web_server.add(release_path(ABBEY_ROAD), text.replace(start, start + work, 1),
+                   content_type='application/xml')
+    _, tracks = retrieve(source, ABBEY_ROAD)
+    assert tracks[0] == plain[0]
+
+
+@pytest.mark.parametrize('count', [0, 1])
+def test_cover_server_error(covers, web_server, log, count):
+    """The docs are silent on a Cover Art Archive that fails; this is what
+    puddletag does. Synthetic: it answers HTTP 500. The album comes back
+    without a cover, and the log says why, for the front cover and for
+    All."""
+    web_server.add(f'/release/{ABBEY_ROAD}', b'', status=500, content_type='text/plain')
+    web_server.add(f'/release/{ABBEY_ROAD}/front', b'', status=500, content_type='text/plain')
+    covers.applyPrefs([True, 2, count])
+    info, tracks = covers.retrieve(ABBEY_ROAD)
+    assert '__image' not in info
+    assert len(tracks) == 17
+    assert 'Error retrieving image: HTTP Error 500: Internal Server Error' in log
+
+
+@pytest.mark.xfail(strict=True, reason='a catalog number whose release has no label is dropped')
+def test_catalog_number_without_a_label(source, web_server):
+    """tagsources.txt: "**catalognumber**: Catalog numbers of the album."
+    Synthetic: a second label-info with a catalog number and no label. Its
+    number is listed; the labels stay the recorded one's."""
+    text = recorded(ABBEY_ROAD)
+    edited = text.replace('</label-info-list>', '<label-info><catalog-number>SYNTH-1'
+                          '</catalog-number></label-info></label-info-list>', 1)
+    assert edited != text
+    web_server.add(release_path(ABBEY_ROAD), edited, content_type='application/xml')
+    info, _ = retrieve(source, ABBEY_ROAD)
+    assert values(info, 'catalognumber') == ['CP35‐3016', 'SYNTH-1']
+    assert values(info, 'label') == ['EMI‐Odeon']
+
+
+@pytest.mark.xfail(strict=True, reason="a disc without a format gets the first disc's format")
+def test_disc_without_a_format(source, web_server):
+    """tagsources.txt: "**format**: The format of the disc the track is on
+    (eg. **CD**)." Synthetic: the first of Nine Symphonies' five discs has no
+    format. Its tracks have none, and the other discs keep theirs."""
+    text = recorded(NINE_SYMPHONIES)
+    edited = re.sub(r'<format[^>]*>[^<]*</format>', '', text, count=1)
+    assert edited != text
+    web_server.add(release_path(NINE_SYMPHONIES), edited, content_type='application/xml')
+    _, tracks = retrieve(source, NINE_SYMPHONIES)
+    first = [t for t in tracks if t['discnumber'] == '1']
+    others = [t for t in tracks if t['discnumber'] != '1']
+    assert first and others
+    assert not any('format' in t for t in first)
+    assert all('format' in t for t in others)
+
+
+@pytest.mark.xfail(strict=True, reason='a forward relationship puts its attributes last')
+def test_forward_artist_relationship_with_attributes(source, web_server):
+    """tagsources.txt: "come back as fields named after the relationship,
+    with its attributes first". Synthetic: a relationship with an attribute,
+    read forward, added to Come Together's artist relationships."""
+    start = f'<recording id="{COME_TOGETHER}">'
+    artists = '<relation-list target-type="artist">'
+    relation = ('<relation type="synthetic role" type-id="synthetic">'
+                '<target>synthetic-artist</target><direction>forward</direction>'
+                '<attribute-list><attribute>guest</attribute></attribute-list>'
+                '<artist id="synthetic-artist"><name>Synthetic Artist</name>'
+                '<sort-name>Synthetic Artist</sort-name></artist></relation>')
+    text = recorded(ABBEY_ROAD)
+    at = text.index(artists, text.index(start)) + len(artists)
+    web_server.add(release_path(ABBEY_ROAD), text[:at] + relation + text[at:],
+                   content_type='application/xml')
+    _, tracks = retrieve(source, ABBEY_ROAD)
+    assert values(tracks[0], 'guest synthetic role') == ['Synthetic Artist']
+
+
+@pytest.mark.xfail(strict=True, reason='a search of only "|" sends nothing')
+def test_search_of_a_lone_bar(source, web_server):
+    """tagsources.txt: "Anything else is searched as an album title." A
+    search of only "|" is one album search."""
+    results = source.keyword_search('|')
+    [request] = web_server.requests
+    assert request.path == '/ws/2/release/'
+    assert [info['mbrainz_album_id'] for info, tracks in results] == SEARCH_RESULTS
