@@ -918,3 +918,53 @@ def test_real_fpcalc_refuses_a_second_of_silence(real_fpcalc, make_audio):
     path = make_audio('a.flac')
     with pytest.raises(acoustid.FingerprintGenerationError, match='^fpcalc exited with status 2$'):
         real_fpcalc.fingerprint_file(str(path))
+
+
+# Corner cases ----------------------------------------------------------------
+
+def test_release_of_another_year_is_another_album(source, acoustid_service, make_audio):
+    # The docs don't say; this is what puddletag does. Synthetic: the first file's recording is
+    # on a release of 1987 and on Abbey Road (1969), the second's on Abbey Road only.
+    paths = [make_audio(f'{n}.flac', acoustid_fingerprint=f'AQAB{n}') for n in (1, 2)]
+    later = dict(release('later-release'), date={'year': 1987})
+    first = dict(release(), date={'year': 1969, 'month': 9, 'day': 26})
+    answer(acoustid_service, reply(recording(releases=[later, first])), fingerprint='AQAB1')
+    answer(acoustid_service, reply(recording('Something', SOMETHING, [first])), fingerprint='AQAB2')
+    [(album, tracks)] = list(source.search('', tags(*paths)))
+    assert album['album'] == 'Abbey Road'
+    assert [t['title'] for t in exact(tracks)] == ['Come Together', 'Something']
+    releases = [r.path for r in acoustid_service.requests if r.path.startswith('/ws/2/release/')]
+    assert releases == [ABBEY_ROAD_PATH]
+
+
+def test_recording_without_a_releases_key_has_no_album(source, acoustid_service, make_audio):
+    # The docs don't say. Synthetic: a recording with no releases key at all.
+    paths = [make_audio('a.flac')]
+    rec = recording()
+    del rec['releases']
+    answer(acoustid_service, reply(rec))
+    files = tags(*paths)
+    [(album, tracks)] = list(source.search('', files))
+    assert album == {}
+    assert [t['#exact'] for t in tracks] == files
+    assert not [r for r in acoustid_service.requests if r.path.startswith('/ws/2/')]
+
+
+def test_recording_is_found_by_its_title(source, acoustid_service, make_audio):
+    # The docs don't say. Synthetic: the recording's id is on no track of the release, but its
+    # title is a track's.
+    path = make_audio('a.flac')
+    answer(acoustid_service, reply(recording('Come Together', 'synthetic-recording-id')))
+    [(album, tracks)] = list(source.search('', tags(path)))
+    assert len(tracks) == 17
+    assert tracks[0]['title'] == 'Come Together'
+    assert '#exact' in tracks[0]
+
+
+def test_retrieve_adds_nothing_to_a_search(source, acoustid_service, make_audio):
+    # The docs don't say. Mass Tagging asks each source to retrieve the album it matched;
+    # AcoustID's search already gave its tracks.
+    path = make_audio('a.flac')
+    answer(acoustid_service, reply(recording()))
+    [(album, tracks)] = list(source.search('', tags(path)))
+    assert source.retrieve(album) is None
