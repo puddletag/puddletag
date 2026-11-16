@@ -32,7 +32,7 @@ pyqt6-sip==13.13.0
     # via pyqt6
 requests==2.34.2
     # via pyacoustid
-send2trash==2.1.0
+send2trash==2.2.0
     # via -r requirements.in
 standard-aifc==3.13.0
     # via audioread
