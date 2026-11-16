@@ -1045,7 +1045,6 @@ def test_catalog_number_without_a_label(source, web_server):
     assert values(info, 'label') == ['EMI‐Odeon']
 
 
-@pytest.mark.xfail(strict=True, reason="a disc without a format gets the first disc's format")
 def test_disc_without_a_format(source, web_server):
     """tagsources.txt: "**format**: The format of the disc the track is on
     (eg. **CD**)." Synthetic: the first of Nine Symphonies' five discs has no

@@ -221,11 +221,7 @@ def parse_medium_list(r_node):
     if not count:
         return {}
 
-    info = {'discs': str(count)}
-    formats = parse_node(r_node, 'medium-list', 'medium', 'format')
-    if formats:
-        info['format'] = formats[0]['format']
-    return info
+    return {'discs': str(count)}
 
 
 def parse_node(node, header_tag, sub_tag, check_tag):
