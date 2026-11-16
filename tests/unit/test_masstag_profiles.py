@@ -265,3 +265,29 @@ def test_a_profile_file_without_brute_force_loads_with_it_off(tmp_path):
     path = tmp_path / 'Old.mtp'
     path.write_text(json.dumps({'info': {'name': 'Old', 'numsources': 0}}))
     assert mtp_from_file(str(path), SOURCES).jfdi is False
+
+
+def test_profiles_loaded_without_tag_sources_keep_each_source_by_name(tmp_path):
+    """tut5.txt, Tag Sources: "A tag source puddletag doesn't have (one
+    removed in an update, say) is listed with **(not found)** after its
+    name. It's kept when the profile is saved, and searches skip it." With no
+    tag sources at all, every source of a profile is one puddletag lacks."""
+    write_profiles(tmp_path, {'One.mtp': profile('One')})
+
+    [mtp] = load_all_mtps(str(tmp_path))
+
+    assert [(tsp.tag_source, tsp.missing_source) for tsp in mtp.profiles] == [
+        (None, 'First Source')]
+
+
+def test_a_profile_file_read_without_tag_sources_keeps_each_source_by_name(tmp_path):
+    """tut5.txt, Tag Sources: "A tag source puddletag doesn't have (one
+    removed in an update, say) is listed with **(not found)** after its
+    name. It's kept when the profile is saved, and searches skip it." With no
+    tag sources at all, every source of a profile is one puddletag lacks."""
+    write_profiles(tmp_path, {'One.mtp': profile('One')})
+
+    mtp = mtp_from_file(str(tmp_path / 'One.mtp'))
+
+    assert [(tsp.tag_source, tsp.missing_source) for tsp in mtp.profiles] == [
+        (None, 'First Source')]

@@ -1786,3 +1786,265 @@ def test_the_chosen_profile_stays_chosen_after_a_move_and_a_restart(mainwin, use
     new = restart()
     [window2] = new.findChildren(MassTagWindow)
     assert window2.profileCombo.currentText() == 'B'
+
+
+def test_files_of_several_artists_are_searched_as_various_artists(
+        mainwin, make_audio, user, qtbot, tmp_path):
+    # tut5:91: "An album will be considered a match if its album name and its
+    # artist both match the files' by at least the percentage specified here."
+    # The docs don't describe which artist a compilation's files have; it
+    # pins what the program does: Various Artists. Synthetic files and album.
+    artists = ('Artist A', 'Artist B', 'Artist A')
+    folder = tmp_path / 'music' / 'Album C'
+    files = [make_audio(f'0{n}.mp3', folder, album='Album C', artist=a, title=f'Song {n}',
+                        tracknumber=str(n)) for n, a in enumerate(artists, 1)]
+    load(mainwin, qtbot, tmp_path / 'music', 3)
+    SyntheticSource.albums = [({'album': 'Album C', 'artist': 'Various Artists'},
+                               [dict(t, artist=a) for t, a in zip(tracks(genre='Comp'), artists)])]
+    window = open_mass_tagging(user, mainwin, qtbot)
+    create_profile(user, qtbot, window, 'Synthetic', [{'source': 'Synthetic Source'}])
+
+    log = search(user, qtbot, mainwin, window)
+
+    assert 'artist=Various Artists' in log
+    assert 'album=Album C' in log
+    assert SyntheticSource.searches == [('Album C', ['Artist A', 'Artist B'])]
+    for f in files:
+        assert previews(mainwin)[str(f)]['genre'] == ['Comp']
+    write_previews(user, window)
+    qtbot.waitUntil(lambda: all(in_file(f).get('genre') == ['Comp'] for f in files))
+    assert [in_file(f)['artist'] for f in files] == [[a] for a in artists]
+
+
+@pytest.mark.parametrize('tags, lines, searched', [
+    ({'artist': 'Artist A'}, ['artist=Artist A', 'album=No album name found.'],
+     ('', ['Artist A'])),
+    ({'album': 'Album A'}, ['album=Album A', 'artist=No artist found.'], ('Album A', [''])),
+    ({}, ['No artist or album info found in files. Starting search.'], ('', [''])),
+], ids=['artist only', 'album only', 'neither'])
+def test_the_log_says_what_the_files_lack(
+        mainwin, make_audio, user, qtbot, tmp_path, tags, lines, searched):
+    # The docs don't describe this; it pins what the program does: a file
+    # with only one of artist and album is searched with the other empty, and
+    # the log says which is missing. Synthetic files, in a folder and with
+    # names the filename pattern finds nothing in.
+    for n in (1, 2, 3):
+        make_audio(f'0{n}.mp3', tmp_path / 'music' / 'plain', **tags)
+    load(mainwin, qtbot, tmp_path / 'music', 3)
+    window = open_mass_tagging(user, mainwin, qtbot)
+    create_profile(user, qtbot, window, 'Synthetic', [{'source': 'Synthetic Source'}])
+
+    log = search(user, qtbot, mainwin, window)
+
+    for line in lines:
+        assert line in log
+    assert SyntheticSource.searches == [searched]
+    assert 'No results were found.' in log
+    no_previews(mainwin)
+
+
+def test_a_profile_without_tag_sources_finds_nothing(
+        mainwin, make_audio, user, qtbot, tmp_path):
+    # The docs don't describe this; it pins what the program does: a profile
+    # with no tag source polls nothing and previews nothing. Synthetic files.
+    load_album_a(make_audio, mainwin, qtbot, tmp_path)
+    window = open_mass_tagging(user, mainwin, qtbot)
+    create_profile(user, qtbot, window, 'Empty', [])
+
+    log = search(user, qtbot, mainwin, window)
+
+    assert 'No valid matches were found for the album.' in log
+    assert 'Polling' not in log
+    no_previews(mainwin)
+
+
+def test_an_album_retrieved_without_tracks_is_not_used(
+        mainwin, make_audio, user, qtbot, tmp_path):
+    # tut5:95: "A matching album, once retrieved, is used only if it has as
+    # many tracks as the files you selected or as their highest track number.
+    # Otherwise the next matching album is retrieved, and when none is left
+    # the tag source counts as having found no match". Synthetic files and
+    # album.
+    load_album_a(make_audio, mainwin, qtbot, tmp_path)
+    SyntheticSource.albums = [(ALBUM_A, [])]
+    window = open_mass_tagging(user, mainwin, qtbot)
+    create_profile(user, qtbot, window, 'Synthetic', [{'source': 'Synthetic Source'}])
+
+    log = search(user, qtbot, mainwin, window)
+
+    assert SyntheticSource.retrieved == ['Album A']
+    assert 'No matches found for tag source Synthetic Source' in log
+    no_previews(mainwin)
+
+
+def test_a_source_that_identifies_each_file_tags_files_without_metadata(
+        mainwin, make_audio, user, qtbot, tmp_path, monkeypatch):
+    # tagsources.txt:46 (AcoustID): "It works by calculating a unique
+    # fingerprint for your audio files and trying to match it to data in the
+    # AcoustID database. This allows you to find information for tracks that
+    # have no metadata!" The docs don't describe how the results reach the
+    # files; it pins what the program does: a track tied to a file goes to
+    # that file. Synthetic files, and a source that works as AcoustID's does:
+    # its search gives the tracks and its retrieve gives nothing.
+    files = [make_audio(f'0{n}.mp3', tmp_path / 'music' / 'plain') for n in (1, 2, 3)]
+    load(mainwin, qtbot, tmp_path / 'music', 3)
+
+    def identifying_search(self, album, artists):
+        copies = sorted((f for group in artists.values() for f in group),
+                        key=lambda f: f['__filename'])
+        return [({'album': 'Album X', 'artist': 'Artist X'},
+                 [{'title': f'Found {n}', '#exact': f} for n, f in zip((3, 2, 1), copies)])]
+
+    monkeypatch.setattr(SyntheticSource, 'search', identifying_search)
+    monkeypatch.setattr(SyntheticSource, 'retrieve', lambda self, info: None)
+    window = open_mass_tagging(user, mainwin, qtbot)
+    create_profile(user, qtbot, window, 'Synthetic', [{'source': 'Synthetic Source'}])
+
+    search(user, qtbot, mainwin, window)
+
+    for f, n in zip(files, (3, 2, 1)):
+        assert previews(mainwin)[str(f)] == {
+            'album': ['Album X'], 'artist': ['Artist X'], 'title': [f'Found {n}']}
+    write_previews(user, window)
+    qtbot.waitUntil(lambda: all(in_file(f).get('title') for f in files))
+    for f, n in zip(files, (3, 2, 1)):
+        assert in_file(f)['title'] == [f'Found {n}']
+        assert '#exact' not in in_file(f)
+
+
+def test_a_web_source_that_fails_is_logged_and_the_next_source_polled(
+        mp3tag_script, mainwin, make_audio, user, qtbot, tmp_path):
+    # tut5 "If no results found:": "you can choose to either Continue with the
+    # other tag sources in the list or Stop the lookup"; Continue is the
+    # default. The docs don't describe a web error; it pins what the program
+    # does: the error is logged and the next source is polled. Once it finds
+    # the album the failed source is polled again (tut5:19), and fails again.
+    # Synthetic script and album.
+    mp3tag_script.add('/search', status=503)
+    files = synthetic_album(make_audio, mainwin, qtbot, tmp_path)
+    window = open_mass_tagging(user, mainwin, qtbot)
+    create_profile(user, qtbot, window, 'Web',
+                   [{'source': 'Synthetic Mp3tag [M]'}, {'source': 'Synthetic Source'}])
+
+    log = search(user, qtbot, mainwin, window)
+
+    error = 'An error occurred during the search: HTTP Error 503: Service Unavailable'
+    assert log.count(error) == 2
+    assert 'Polling: Synthetic Source' in log
+    for f in files:
+        assert previews(mainwin)[str(f)]['genre'] == ['Synth']
+    assert [r.path for r in mp3tag_script.requests] == ['/search', '/search']
+
+
+def test_a_failing_source_set_to_stop_ends_the_lookup(mainwin, user, album, qtbot):
+    # tut5 "If no results found:": "you can choose to either Continue with the
+    # other tag sources in the list or Stop the lookup and use any previously
+    # retrieved results". The docs don't describe a source that fails; it
+    # pins what the program does: a source that fails finds nothing.
+    # Synthetic files and albums.
+    files, window = album
+    SyntheticSource.search_errors = {'Album A': RetrievalError('synthetic search failure')}
+    SecondSource.albums = [(ALBUM_A, tracks(genre='Second'))]
+    create_profile(user, qtbot, window, 'Synthetic',
+                   [{'source': 'Synthetic Source', 'if_no_results': 'Stop'},
+                    {'source': 'Second Source'}])
+    pick(user, qtbot, window.profileCombo, 'Synthetic')
+
+    log = search(user, qtbot, mainwin, window)
+
+    assert 'An error occurred during the search: synthetic search failure' in log
+    assert SecondSource.searches == []
+    no_previews(mainwin)
+
+
+@pytest.mark.xfail(strict=True, reason="a track written n/total isn't read as a number, "
+                                       "so the highest track number rule never applies")
+def test_an_mp3_numbered_n_of_total_fits_an_album_by_its_highest_number(
+        mainwin, make_audio, user, qtbot, tmp_path):
+    # tut5:95: "A matching album, once retrieved, is used only if it has as
+    # many tracks as the files you selected or as their highest track number."
+    # An MP3 whose track number is stored with its total reads as n/total.
+    # Synthetic files and album.
+    folder = tmp_path / 'music' / 'Artist A - Album A'
+    files = [make_audio(f'0{n}.mp3', folder, title=f'Song {n}', tracknumber=f'{n}/3', **ALBUM_A)
+             for n in (1, 3)]
+    load(mainwin, qtbot, tmp_path / 'music', 2)
+    SyntheticSource.albums = [(ALBUM_A, tracks(genre='Synth'))]
+    window = open_mass_tagging(user, mainwin, qtbot)
+    create_profile(user, qtbot, window, 'Synthetic', [{'source': 'Synthetic Source'}])
+    pick(user, qtbot, window.profileCombo, 'Synthetic')
+    assert 'Valid matches were found for the album.' in search(user, qtbot, mainwin, window)
+    assert [previews(mainwin)[str(f)]['genre'] for f in files] == [['Synth'], ['Synth']]
+    write_previews(user, window)
+    qtbot.waitUntil(lambda: all(in_file(f).get('genre') == ['Synth'] for f in files))
+
+
+@pytest.mark.xfail(strict=True, reason=(
+    'track numbers are compared as text when track is the only match field'))
+def test_mp3s_numbered_n_of_total_match_by_track(mainwin, make_audio, user, qtbot, tmp_path):
+    # tut5:104: "track is used only when it's the only field listed";
+    # tut5:106. An MP3 whose track number is stored with its total reads as
+    # n/total. Synthetic files and album; the files' titles differ from the
+    # retrieved ones.
+    folder = tmp_path / 'music' / 'Artist A - Album A'
+    files = [make_audio(f'0{n}.mp3', folder, title=f'File {n}', tracknumber=f'{n}/3', **ALBUM_A)
+             for n in (1, 2, 3)]
+    load(mainwin, qtbot, tmp_path / 'music', 3)
+    SyntheticSource.albums = [(ALBUM_A, tracks(genre='Synth'))]
+    window = open_mass_tagging(user, mainwin, qtbot)
+    create_profile(user, qtbot, window, 'Synthetic', [{'source': 'Synthetic Source'}],
+                   match='track')
+    search(user, qtbot, mainwin, window)
+    shown_previews = previews(mainwin)
+    assert [shown_previews[str(p)]['title'] for p in files] == [[f'Song {n}'] for n in (1, 2, 3)]
+
+
+@pytest.mark.xfail(strict=True, reason="a compilation matches only an album whose artist is the app's own Various Artists")
+def test_a_compilation_matches_an_album_by_various(mainwin, make_audio, user, qtbot, tmp_path):
+    # tut5:91: "An album will be considered a match if its album name and its
+    # artist both match the files' by at least the percentage specified here."
+    # The docs don't say which artist a compilation's files have; Discogs
+    # names it "Various". Synthetic files and album.
+    folder = tmp_path / 'music' / 'Album C'
+    artists = ('Artist A', 'Artist B', 'Artist A')
+    files = [make_audio(f'0{n}.mp3', folder, album='Album C', artist=a, title=f'Song {n}', tracknumber=str(n))
+             for n, a in enumerate(artists, 1)]
+    load(mainwin, qtbot, tmp_path / 'music', 3)
+    SyntheticSource.albums = [({'album': 'Album C', 'artist': 'Various'},
+                               [dict(t, artist=a) for t, a in zip(tracks(genre='Comp'), artists)])]
+    window = open_mass_tagging(user, mainwin, qtbot)
+    create_profile(user, qtbot, window, 'Synthetic', [{'source': 'Synthetic Source'}])
+    search(user, qtbot, mainwin, window)
+    for f in files:
+        assert previews(mainwin)[str(f)]['genre'] == ['Comp']
+
+
+def test_a_source_polled_again_after_one_that_identifies_each_file_gets_its_data(
+        mainwin, make_audio, user, qtbot, tmp_path, monkeypatch):
+    # tut5 "How it works": "If a match wasn't found for one Tag Source, but for
+    # another the Tag Source will be polled again using the data retrieved from
+    # the matching source." The docs don't describe a source that identifies
+    # each file; it pins what the program does: the source that found nothing
+    # is polled again with the album and artist the identifying one found.
+    # Synthetic files and sources.
+    files = [make_audio(f'0{n}.mp3', tmp_path / 'music' / 'plain') for n in (1, 2, 3)]
+    load(mainwin, qtbot, tmp_path / 'music', 3)
+
+    def identifying_search(self, album, artists):
+        copies = sorted((f for group in artists.values() for f in group),
+                        key=lambda f: f['__filename'])
+        return [({'album': 'Album X', 'artist': 'Artist X'},
+                 [{'title': f'Found {n}', '#exact': f} for n, f in zip((3, 2, 1), copies)])]
+
+    monkeypatch.setattr(SecondSource, 'search', identifying_search)
+    monkeypatch.setattr(SecondSource, 'retrieve', lambda self, info: None)
+    window = open_mass_tagging(user, mainwin, qtbot)
+    create_profile(user, qtbot, window, 'Synthetic',
+                   [{'source': 'Synthetic Source'}, {'source': 'Second Source'}])
+
+    search(user, qtbot, mainwin, window)
+
+    assert len(SyntheticSource.searches) == 2
+    assert SyntheticSource.searches[1] == ('Album X', ['Artist X'])
+    for f, n in zip(files, (3, 2, 1)):
+        assert previews(mainwin)[str(f)]['title'] == [f'Found {n}']

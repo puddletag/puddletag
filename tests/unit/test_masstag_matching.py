@@ -12,6 +12,7 @@ from puddlestuff.masstag import (CONTINUE, DEFAULT_PATTERN, STOP, MassTagFlag, M
                                  Result, TagSourceProfile, find_best, masstag, match_files,
                                  merge_tsp_tracks, split_files)
 from puddlestuff.puddleobjects import ratio
+from puddlestuff.tagsources import RetrievalError
 
 
 class FileTags(dict):
@@ -935,3 +936,226 @@ def test_stop_during_a_retrieval_polls_no_source_again(log):
     assert c.searches == []
     assert not any('Rechecking' in line for line in log)
     assert names(results) == ['B']
+
+
+def test_an_album_with_as_many_tracks_as_the_files_fits_whatever_their_numbers():
+    """tut5.txt, Minimum percentage required for album matches: "A matching
+    album, once retrieved, is used only if it has as many tracks as the files
+    you selected or as their highest track number." Files numbered 2, 3 and 4
+    match an album of 3 tracks by their count. Synthetic files and albums."""
+    files = searched([file_tags(f'0{n}.mp3', artist=['Artist'], title=[f'Song {n}'], track=[str(n)])
+                      for n in (2, 3, 4)])
+    a = FakeSource('A', knows((ALBUM, songs(3))))
+    mtp, results = lookup(a, files=files)
+
+    assert a.retrieved == [ALBUM]
+    assert names(results) == ['A']
+
+
+@pytest.mark.parametrize('info, line', [
+    ({'artist': 'Artist'}, 'Retrieving matching album. Artist=<b>Artist</b>'),
+    ({'album': 'Album'}, 'Retrieving matching album. Album=<b>Album</b>'),
+    ({}, 'Retrieving matching album.')])
+def test_the_log_names_what_a_matching_album_has(log, info, line):
+    """The docs don't describe this; it pins what the program does when a
+    search result lacks its artist, its album or both: the log names only
+    what the result has. Synthetic files and albums; a minimum percentage of 0
+    (the lowest the profile editor's box takes) matches any result."""
+    a = FakeSource('A', {('Album', 'Artist'): [(info, songs())]})
+    lookup(a, album_bound=0)
+
+    assert line in log
+    assert a.retrieved == [info]
+
+
+@pytest.mark.parametrize('order', [(0, 1), (1, 0)])
+def test_a_file_that_loses_its_track_to_a_closer_file_takes_its_next_closest(order):
+    """tut5.txt: "choose the one with the highest **Matching Percentage** as a
+    match if and only if the **Match Percentage** is at least the **Minimum
+    percentage required for track match**". The docs don't settle two files
+    wanting one track; this pins what the program does, as
+    test_a_track_two_files_want_goes_to_the_closer_file does. 'Love Me Doo' is
+    closest to 'Love Me Too' (0.889), so 'Love Me Do' takes its next closest,
+    'Love Me' (0.75, against 0.778 for 'Love Me Too'). Synthetic."""
+    file_titles = ['Love Me Do', 'Love Me Doo']
+    files = [file_tags(f'{file_titles[n]}.mp3', title=[file_titles[n]]) for n in order]
+    tracks = [{'title': ['Love Me Too']}, {'title': ['Love Me']}]
+
+    matched = match_files(searched(files), tracks, 0.7, ['title'])
+
+    assert titles(matched) == {'Love Me Do.mp3': ['Love Me'],
+                               'Love Me Doo.mp3': ['Love Me Too']}
+
+
+@pytest.mark.parametrize('discs, positions', [
+    (['A', 'A', 'B', 'B'], ['A1', 'A2', 'B1', 'B2']),
+    (['1'] * 4, ['A1', 'A2', 'B1', 'B2'])])
+def test_an_album_numbered_by_vinyl_side_still_matches_by_artist_and_title(discs, positions):
+    """tut5.txt (Match tracks using fields): "If no fields are listed,
+    **artist** and **title** are used." Tracks numbered by vinyl side (the
+    sides as disc numbers, or one disc with the positions as tracks) match the
+    files by artist and title, though their numbers aren't numbers. Synthetic
+    files and tracks."""
+    files = searched([file_tags(f'0{n}.mp3', artist=['Artist'], title=[f'Song {n}'], track=[str(n)])
+                      for n in range(1, 5)])
+    tracks = [{'artist': ['Artist'], 'discnumber': [d], 'title': [f'Song {n}'], 'track': [p]}
+              for n, d, p in zip(range(1, 5), discs, positions)]
+
+    assert titles(match_files(files, tracks, 0.8)) == {
+        f'0{n}.mp3': [f'Song {n}'] for n in range(1, 5)}
+
+
+def fail():
+    raise RetrievalError('synthetic failure')
+
+
+def failing_profile(**failures):
+    """A profile with one source that raises RetrievalError, and its files."""
+    files = album_files()
+    source = FakeSource('A', knows((ALBUM, songs())), **failures)
+    return MassTagProfile(files=files, profiles=[TagSourceProfile(tag_source=source)]), files
+
+
+def test_without_an_error_handler_a_search_error_reaches_the_caller():
+    """The docs don't describe this; it pins what the program does when the
+    caller passes no error handler: a tag source's search error is raised.
+    Synthetic source."""
+    mtp, files = failing_profile(on_search=fail)
+
+    with pytest.raises(RetrievalError):
+        masstag(mtp, files)
+
+
+def test_an_error_handler_that_returns_true_stops_on_a_search_error():
+    """The docs don't describe this; it pins what the program does when the
+    caller's error handler returns True for a tag source's search error: the
+    error is raised. Synthetic source."""
+    mtp, files = failing_profile(on_search=fail)
+
+    with pytest.raises(RetrievalError):
+        masstag(mtp, files, None, lambda error, tsp: True)
+
+
+def test_without_an_error_handler_a_retrieval_error_reaches_the_caller():
+    """The docs don't describe this; it pins what the program does when the
+    caller passes no error handler: a tag source's retrieval error is raised.
+    Synthetic source."""
+    mtp, files = failing_profile(on_retrieve=fail)
+
+    with pytest.raises(RetrievalError):
+        masstag(mtp, files)
+
+
+def test_an_error_handler_that_returns_true_stops_on_a_retrieval_error():
+    """The docs don't describe this; it pins what the program does when the
+    caller's error handler returns True for a tag source's retrieval error:
+    the error is raised. Synthetic source."""
+    mtp, files = failing_profile(on_retrieve=fail)
+
+    with pytest.raises(RetrievalError):
+        masstag(mtp, files, None, None, lambda error, tsp: True)
+
+
+@pytest.mark.xfail(strict=True, reason="a track written n/total isn't read as a number, "
+                                       "so the highest track number rule never applies")
+def test_an_album_with_as_many_tracks_as_the_highest_n_of_total_fits():
+    """tut5.txt, Minimum percentage required for album matches: "A matching
+    album, once retrieved, is used only if it has as many tracks as the files
+    you selected or as their highest track number." Files numbered 1/3 and
+    3/3 (as a track number stored with its total reads) match an album of 3
+    tracks. Synthetic files and albums."""
+    files = searched([file_tags(f'0{n}.mp3', artist=['Artist'], title=[f'Song {n}'], track=[f'{n}/3'])
+                      for n in (1, 3)])
+    a = FakeSource('A', knows((ALBUM, songs(3))))
+    assert names(lookup(a, files=files)[1]) == ['A']
+
+
+# Matching by track compares numbers: the files' `n/total` and padded numbers
+# are read as the number.
+
+TRACKS_AS_TEXT = pytest.mark.xfail(
+    strict=True, reason='track numbers are compared as text when track is the only match field')
+
+
+@TRACKS_AS_TEXT
+def test_matching_by_track_reads_n_of_total_as_n():
+    """tut5.txt, Match tracks using fields: "**track** is used only when it's
+    the only field listed", compared with the retrieved tracks' numbers.
+    A track number stored with its total reads as `n/total`. Synthetic files
+    and tracks."""
+    files = [file_tags(f'0{n}.mp3', artist=['Artist'], track=[f'{n}/3']) for n in (1, 2, 3)]
+    tracks = [{'artist': ['Artist'], 'title': [f'Song {n}'], 'track': [str(n)]} for n in (1, 2, 3)]
+    assert brute_forced(files, tracks, keys=['track'], jfdi=False) == {
+        f'0{n}.mp3': [f'Song {n}'] for n in (1, 2, 3)}
+
+
+@TRACKS_AS_TEXT
+def test_matching_by_track_reads_a_padded_number_as_the_number():
+    """tut5.txt, Match tracks using fields: "**track** is used only when it's
+    the only field listed", compared with the retrieved tracks' numbers: 01
+    is track 1. Synthetic files and tracks."""
+    files = [file_tags(f'0{n}.mp3', artist=['Artist'], track=[f'0{n}']) for n in (1, 2, 3)]
+    tracks = [{'artist': ['Artist'], 'title': [f'Song {n}'], 'track': [str(n)]} for n in (1, 2, 3)]
+    assert brute_forced(files, tracks, keys=['track'], jfdi=False) == {
+        f'0{n}.mp3': [f'Song {n}'] for n in (1, 2, 3)}
+
+
+@TRACKS_AS_TEXT
+def test_matching_by_track_renumbers_n_of_total_files_disc_by_disc():
+    """tut5.txt, Match tracks using fields: "If **track** is the only field
+    listed, the album has several discs and there are as many files as
+    retrieved tracks, files numbered straight through the album are
+    renumbered disc by disc before they're compared: with two discs of two
+    tracks each, file 3 is compared with disc 2's track 1." The files are
+    numbered `n/total`, as a track number stored with its total reads.
+    Synthetic."""
+    files = [file_tags(f'{n:02}.mp3', artist=['Artist'], track=[f'{n}/4']) for n in range(1, 5)]
+    assert brute_forced(files, two_discs(2), keys=['track'], jfdi=False) == {
+        '01.mp3': ['Disc 1 Track 1'], '02.mp3': ['Disc 1 Track 2'],
+        '03.mp3': ['Disc 2 Track 1'], '04.mp3': ['Disc 2 Track 2']}
+
+
+@pytest.mark.xfail(strict=True, reason="the recheck pairs the files with the found album's tracks "
+                                       "by position and drops the files past its end")
+def test_the_recheck_compares_every_selected_file():
+    """tut5.txt, How it works: "If a match wasn't found for one Tag Source,
+    but for another the Tag Source will be polled again using the data
+    retrieved from the matching source." Mass Tagging a Selection: "as many
+    tracks as the files you selected". The matching source corrects the
+    artist's name and the other finds the album under it; the matching
+    source's album has fewer tracks than there are files, and the recheck
+    still compares all of them. Synthetic files and albums."""
+    files = searched([file_tags(name, artist=['Artist'], title=[f'Song {n}'], track=[str(n)])
+                      for name, n in (('01.mp3', 1), ('02.mp3', 2), ('02b.mp3', 2))])
+    fixed = {'album': 'Album', 'artist': 'Artists'}
+    a = FakeSource('A', knows((fixed, songs(3, genre=['One']))))
+    b = FakeSource('B', {('Album', 'Artist'): [(fixed, songs(2, artist=['Artists']))]})
+    mtp, results = lookup(a, b, files=files)
+
+    assert a.searches == [('Album', ['Artist']), ('Album', ['Artists'])]
+    assert names(results) == ['B', 'A']
+
+
+def test_files_whose_numbers_arent_numbers_fit_an_album_by_their_count():
+    """tut5.txt, Minimum percentage required for album matches: "A matching
+    album, once retrieved, is used only if it has as many tracks as the files
+    you selected or as their highest track number." The docs don't describe
+    track numbers that aren't numbers; it pins what the program does: the
+    files count, and the album with as many tracks is used. Synthetic files
+    numbered as vinyl sides are, and a synthetic album."""
+    files = searched([file_tags(f'{p}.mp3', artist=['Artist'], title=[f'Song {n}'], track=[p])
+                      for n, p in enumerate(['A1', 'A2', 'B1'], 1)])
+    a = FakeSource('A', knows((ALBUM, songs(3))))
+    assert names(lookup(a, files=files)[1]) == ['A']
+
+
+def test_matching_by_track_compares_positions_that_arent_numbers_as_text():
+    """tut5.txt, Match tracks using fields: "**track** is used only when it's
+    the only field listed". The docs don't describe track numbers that aren't
+    numbers; it pins what the program does: they're compared as text.
+    Synthetic files and tracks numbered as vinyl sides are."""
+    files = [file_tags(f'{p}.mp3', artist=['Artist'], track=[p]) for p in ('A1', 'A2', 'B1')]
+    tracks = [{'artist': ['Artist'], 'title': [f'Song {p}'], 'track': [p]}
+              for p in ('A1', 'A2', 'B1')]
+    assert brute_forced(files, tracks, keys=['track'], jfdi=False) == {
+        f'{p}.mp3': [f'Song {p}'] for p in ('A1', 'A2', 'B1')}
