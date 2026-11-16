@@ -357,7 +357,6 @@ def test_hello_user_without_a_login_name():
 
 # Corner cases ----------------------------------------------------------------
 
-@pytest.mark.xfail(strict=True, reason='a hit line without an id or title raises IndexError')
 def test_hit_line_without_an_id_or_title(web_server, cddb):
     # CDDBPROTO: each hit is "category discid dtitle". Synthetic: one hit
     # line has only a category.

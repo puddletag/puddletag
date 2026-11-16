@@ -99,6 +99,8 @@ def query(track_info, server_url=None,
                 # split into 3 pieces, not 4
                 # (thanks to bgp for the fix!)
             match = line.split(' ', 2)
+            if len(match) < 3:
+                continue
 
             result.append({'category': match[0], 'disc_id': match[1], 'title':
                 match[2]})
