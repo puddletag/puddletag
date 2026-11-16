@@ -1031,7 +1031,6 @@ def test_cover_server_error(covers, web_server, log, count):
     assert 'Error retrieving image: HTTP Error 500: Internal Server Error' in log
 
 
-@pytest.mark.xfail(strict=True, reason='a catalog number whose release has no label is dropped')
 def test_catalog_number_without_a_label(source, web_server):
     """tagsources.txt: "**catalognumber**: Catalog numbers of the album."
     Synthetic: a second label-info with a catalog number and no label. Its

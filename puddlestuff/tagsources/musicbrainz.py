@@ -200,7 +200,8 @@ def parse_label_list(release_node):
     labels = parse_node(release_node, 'label-info-list', 'label-info',
                         'label')
 
-    catalogs = [z['catalog-number'] for z in labels if 'catalog-number' in z]
+    catalogs = [z['catalog-number'] for z in
+                parse_node(release_node, 'label-info-list', 'label-info', 'catalog-number')]
     label_names = [z['label']['name'] for z in labels
                    if 'label' in z and 'name' in z['label']]
     label_ids = [z['label']['id'] for z in labels
