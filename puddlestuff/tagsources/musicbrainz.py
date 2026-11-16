@@ -533,10 +533,10 @@ class MusicBrainz(object):
         else:
             try:
                 params = parse_searchstring(s)
-            except RetrievalError as e:
-                return parse_album_search(mb_urlopen(search_album(s, limit=100)))
+            except RetrievalError:
+                params = None
             if not params:
-                return
+                return parse_album_search(mb_urlopen(search_album(s, limit=100)))
             artist = params[0][0]
             album = params[0][1]
             return self.search(album, [artist], 100)

@@ -1080,7 +1080,6 @@ def test_forward_artist_relationship_with_attributes(source, web_server):
     assert values(tracks[0], 'guest synthetic role') == ['Synthetic Artist']
 
 
-@pytest.mark.xfail(strict=True, reason='a search of only "|" sends nothing')
 def test_search_of_a_lone_bar(source, web_server):
     """tagsources.txt: "Anything else is searched as an album title." A
     search of only "|" is one album search."""
