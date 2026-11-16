@@ -530,11 +530,15 @@ def load_source_prefs(name, preferences):
     ret = []
     for option in preferences:
         if option[1] == COMBO:
-            ret.append(cparser.get(name, option[0], option[2][1]))
+            default = option[2][1]
         elif option[1] == SPINBOX:
-            ret.append(cparser.get(name, option[0], option[2][2]))
+            default = option[2][2]
         else:
-            ret.append(cparser.get(name, option[0], option[2]))
+            default = option[2]
+        try:
+            ret.append(cparser.get(name, option[0], default))
+        except (TypeError, ValueError):
+            ret.append(default)
     return ret
 
 
@@ -766,10 +770,7 @@ class MainWin(QWidget):
         prefs = deepcopy(config)
         for pref, value in zip(prefs, defaults):
             if pref[1] == SPINBOX:
-                try:
-                    pref[2][2] = int(value)
-                except ValueError:
-                    pass
+                pref[2][2] = value
             elif pref[1] == COMBO:
                 pref[2][1] = value
             else:

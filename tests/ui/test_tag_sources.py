@@ -2348,7 +2348,6 @@ def unreadable_score(request, clean_profile):
     config.set('Configurable', 'API Key', 'Saved key')
 
 
-@pytest.mark.xfail(strict=True, reason='a saved number preference that is not a number makes Configure fail')
 def test_saved_score_that_is_not_a_number_shows_the_default(unreadable_score, more_sources, mainwin, make_audio,
                                                             tmp_path, qtbot, user):
     # The docs are silent: tut4.txt says only that the Tag Source's
