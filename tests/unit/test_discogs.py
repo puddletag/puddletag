@@ -912,3 +912,75 @@ def test_api_key_is_not_sent_elsewhere(source, web_server):
 
     assert discogs.urlopen(web_server.url + '/page') == b'page'
     assert 'Authorization' not in web_server.requests[-1].headers
+
+
+# Corner cases ----------------------------------------------------------------
+
+@pytest.mark.xfail(strict=True, reason='a credit with a join goes into the title, '
+                   'not into involvedpeople_track')
+def test_credit_with_a_join(source, web_server):
+    """tagsources.txt: "**involvedpeople_track**: People involved with the
+    relevant track. Taken from the track's extraartists node". Synthetic: a
+    credit with a join."""
+    release = recorded('release-1257896')
+    release['tracklist'][1]['extraartists'].append(
+        {'join': 'and', 'name': 'Synthetic Person', 'role': 'Mixed By'})
+    serve(web_server, EXISTENCE, release)
+
+    track = retrieve(source, EXISTENCE)[1][1]
+
+    assert 'Synthetic Person:Mixed By' in track['involvedpeople_track']
+    assert track['title'] == 'A-Team'
+
+
+def test_artists_without_a_join_are_joined_with_an_ampersand(source, web_server):
+    """tagsources.txt: "**artist**: The track's artist, as Discogs names
+    it". The docs are silent on artists with no join; this is what puddletag
+    does. Synthetic: two artists, neither with a join."""
+    release = recorded('release-1257896')
+    release['tracklist'][1]['artists'] = [
+        {'join': '', 'name': 'Roy Engel'}, {'join': '', 'name': 'Yonatan Marcow'}]
+    serve(web_server, EXISTENCE, release)
+
+    assert retrieve(source, EXISTENCE)[1][1]['artist'] == 'Roy Engel & Yonatan Marcow'
+
+
+@pytest.mark.xfail(strict=True, reason='a format without descriptions puts its '
+                   'media name in format')
+def test_format_without_descriptions(source, web_server):
+    """tagsources.txt: "**format**: The format description (eg. Album,
+    Single, etc.)" and "**discogs_format**: The album's release media".
+    Synthetic: a format with no descriptions, and one with an empty list."""
+    release = recorded('release-249504')
+    release['formats'] = [
+        {'name': 'Vinyl', 'qty': '1'}, {'descriptions': [], 'name': 'CD', 'qty': '1'}]
+    serve(web_server, NEVER_GONNA, release)
+
+    info = retrieve(source, NEVER_GONNA)[0]
+
+    assert 'format' not in info
+    assert info['discogs_format'] == ['Vinyl', 'CD']
+
+
+def test_image_without_an_address_is_skipped(source, web_server):
+    """tagsources.txt: "**__image**: Cover art." The docs are silent on an
+    image Discogs gives no address for; this is what puddletag does. Synthetic:
+    the first image has neither size."""
+    data = covers(web_server, NEVER_GONNA, [('', ''), ('back.jpg', 'back-150.jpg')])
+    source.applyPrefs([True, 1, discogs.R_ID_DEFAULT, ''])
+
+    info = retrieve(source, NEVER_GONNA)[0]
+
+    assert info['__image'] == [{'data': data['back.jpg']}]
+    assert sorted(request.path for request in web_server.requests) == [
+        '/back.jpg', f'/releases/{NEVER_GONNA}']
+
+
+def test_empty_release_id_field_preference_is_discogs_id(source):
+    """tagsources.txt: "in the field the tag source's **Field to use for
+    discogs_id** preference names (**discogs_id** unless changed)". The files
+    are synthetic."""
+    source.applyPrefs([False, 1, '', ''])
+
+    assert albums(lookup(source, {'album': ['x'], 'discogs_id': ['249504']})) == [
+        'Never Gonna Give You Up']
