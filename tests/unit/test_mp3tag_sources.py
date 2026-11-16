@@ -1429,3 +1429,133 @@ def test_joinlines_keeps_the_page_end(folder, n):
               'findline "zz" 1 1\nsayrest\noutputto "artist"\nsay "after"')
 
     assert album_fields(folder, parser) == {'artist': 'after'}
+
+
+# Corner cases. Every script and page is synthetic.
+
+@pytest.mark.parametrize('commands, expected', [
+    pytest.param('if "zz"\nif "line"\nsay "a"\nendif\nsay "b"\nendif\nsay "c"', 'c', id='false-if'),
+    pytest.param('if "line"\nsay "a"\nelse\nif "line"\nsay "b"\nendif\nsay "c"\nendif\nsay "!"',
+                 'a!', id='else'),
+])
+def test_if_and_else_skip_a_nested_if(folder, commands, expected):
+    # Mp3tag's reference: If "Check for occurrence of S on current
+    # position."; Else "Alternative branch of an If operation."; Endif "End
+    # of an If/IfNot/IfOutput/IfNotOutput/IfVar/IfNotVar operation." So a
+    # branch that isn't run is skipped to its own Endif, nested Ifs included.
+    assert album_fields(folder, f'outputto "album"\nfindline "line four"\n{commands}') == {'album': expected}
+
+
+def test_findlinenocase_upwards(folder):
+    # Mp3tag's reference, FindLineNoCase: the same "(ignoring case and
+    # starting from the current position)". Docs-silent: the maintainer's
+    # choice (not a quote): a negative N searches upwards from the line
+    # above.
+    parser = 'findline "line five"\nfindlinenocase "LINE" -2\nsayrest'
+
+    assert album_fields(folder, 'outputto "album"\n' + parser) == {'album': 'line three <i>x</i> tail'}
+
+
+def test_joinlines_at_the_page_end_does_nothing(folder):
+    # Mp3tag's reference, JoinLines: "Joins the current line with the next
+    # N lines." Docs-silent: the maintainer's choice (not a quote): on the
+    # page's end there is nothing to join, and the script goes on.
+    parser = ('outputto "album"\nsay "before"\nfindline "zz" 1 1\njoinlines 1\n'
+              'outputto "artist"\nsay "after"')
+
+    assert album_fields(folder, parser) == {'album': 'before', 'artist': 'after'}
+
+
+def test_joinuntil_without_the_text_joins_nothing(folder):
+    # Mp3tag's reference, JoinUntil: "Joins the current line to the next
+    # occurrence of S." Docs-silent: the maintainer's choice (not a quote):
+    # with no S, nothing is joined and the script goes on.
+    parser = ('outputto "album"\nfindline "line three"\njoinuntil "zz"\nsayrest\n'
+              'outputto "artist"\nmoveline 1\nsayrest')
+
+    assert album_fields(folder, parser) == {'album': 'line three <i>x</i> tail',
+                                            'artist': 'line four'}
+
+
+def test_saynextnumber_without_a_number_says_nothing(folder):
+    # Docs-silent: the maintainer's choice (not a quote): with nothing to
+    # say, nothing is said and the script goes on.
+    parser = 'outputto "album"\nsaynextnumber\nsayrest'
+
+    assert album_fields(folder, parser, page='line one') == {'album': 'line one'}
+
+
+def test_sayoutput_of_the_current_output_repeats_it(folder):
+    # Mp3tag's reference, SayOutput: "Send the content of output S to the
+    # current output." With S the current output, its text is added to
+    # itself.
+    parser = 'outputto "album"\nsay "ab"\nsayoutput "album"\nsay "!"'
+
+    assert album_fields(folder, parser) == {'album': 'abab!'}
+
+
+def test_sayuntilml_on_the_first_line(folder):
+    # Mp3tag's reference, SayUntilML: "Send everything until S to output
+    # searching across multiple lines". Docs-silent: the maintainer's
+    # choice (not a quote): S found on the first line is said up to, and
+    # the pointer stays on S.
+    parser = ('outputto "album"\nfindline "three"\nsayuntilml "tail"\n'
+              'outputto "artist"\nsayrest')
+
+    assert album_fields(folder, parser) == {'album': 'line three <i>x</i>', 'artist': 'tail'}
+
+
+def test_page_naming_an_unknown_charset_is_read_as_utf8(folder, server):
+    # Docs-silent: the maintainer's choice (not a quote): a page naming a
+    # charset Python doesn't know is read as UTF-8. The charset is
+    # synthetic.
+    server.add('/album', '<html><head><meta charset="x-synthetic"></head>\nCafé\n'.encode('utf-8'))
+
+    fields = retrieve_page(folder, server, 'outputto "album"\nfindline "Caf"\nsayrest')[0]
+
+    assert fields['album'] == 'Café'
+
+
+def test_album_parser_before_the_index_parser(folder):
+    # Mp3tag's reference doesn't order the sections, so the album parser
+    # may come first.
+    text = '\n'.join([f'[{key}]={value}' for key, value in {**HEADER, **INDEX_HEADER}.items()]
+                     + ['[ParserScriptAlbum]=...', ALBUM_PARSER,
+                        '[ParserScriptIndex]=...', INDEX_PARSER]) + '\n'
+
+    source = load_one(folder, text)
+
+    assert [c[0] for c in source.album_source] == ['outputto', 'sayrest']
+    assert [c[0] for c in source.search_source] == ['sayrest']
+
+
+def test_debug_without_a_file_name_prints(folder, tmp_path, monkeypatch, capsys):
+    # Mp3tag's reference: Debug "Debug output, S= "on" or "off", s is an
+    # optional file name." Docs-silent on where it goes without one: the
+    # maintainer's choice (not a quote): it is printed, and no file is
+    # written.
+    monkeypatch.chdir(tmp_path)
+
+    assert album_fields(folder, 'debug "on"\noutputto "album"\nsay "ok"') == {'album': 'ok'}
+    assert capsys.readouterr().out != ''
+    assert list(tmp_path.iterdir()) == [folder]
+
+
+def test_gotoline_past_the_page_end_stops_the_script(folder):
+    # Docs-silent: the maintainer's choice (not a quote): a GotoLine that
+    # leaves the page stops the script and keeps what it output so far.
+    parser = 'outputto "album"\nsay "before"\ngotoline 99\noutputto "artist"\nsay "after"'
+
+    assert album_fields(folder, parser) == {'album': 'before'}
+
+
+def test_nested_loops(folder):
+    # Mp3tag's reference, Do ... While: "Nesting of Do commands is not
+    # allowed." Docs-silent on what happens then: the maintainer's choice
+    # (not a quote): puddletag runs them, the inner loop to its end on each
+    # pass of the outer one.
+    parser = ('outputto "album"\ndo\nsayrest\nsay "/"\nmoveline 1\ndo\nsayrest\nsay ";"\n'
+              'moveline 1\nwhile "b"\nwhile "a"')
+
+    assert album_fields(folder, parser, page='a 1\nb 1\nb 2\na 2\nb 3\nend') == {
+        'album': 'a 1/b 1;b 2;a 2/b 3;'}
