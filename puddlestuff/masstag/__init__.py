@@ -15,7 +15,7 @@ from ..mainwin.tagsources import (strip as strip_fields,
 
 
 def set_status(v):
-    print(v)
+    """The Mass Tagging window replaces this when it's imported, to write to its log."""
 
 
 NO_MATCH_OPTIONS = [
@@ -128,9 +128,6 @@ def brute_force_results(audios, retrieved):
 def check_result(result, audios):
     track_nums = [_f for _f in [to_string(audio.get('track', None)) for audio in audios] if _f]
 
-    if result.tracks is None:
-        return True
-
     if track_nums:
         max_num = 0
         for num in track_nums:
@@ -147,7 +144,7 @@ def check_result(result, audios):
     return False
 
 
-def combine_tracks(track1, track2, repl=None):
+def combine_tracks(track1, track2):
     ret = defaultdict(lambda: [])
 
     for key, value in list(track2.items()) + list(track1.items()):
@@ -156,10 +153,6 @@ def combine_tracks(track1, track2, repl=None):
         for v in value:
             if v not in ret[key]:
                 ret[key].append(v)
-    if repl:
-        for key in repl:
-            if key in track2:
-                ret[key] = track2[key]
     if '#exact' in track1:
         ret['#exact'] = track1['#exact']
     elif '#exact' in track2:
@@ -284,17 +277,12 @@ def match_files(files, tracks, minimum=0.7, keys=None, jfdi=False,
                 matched[f_index][t_index] = (score, sum(totals))
 
     def get_best(f_index, t_indexes):
-        if not t_indexes:
-            return
         items = list(t_indexes.items())
         best_match = max(items, key=itemgetter(1))
         t_i = best_match[0]
 
         while t_i in assigned:
-            try:
-                old_match = matched[assigned[t_i]][t_i]
-            except KeyError:
-                break
+            old_match = matched[assigned[t_i]][t_i]
             if best_match[1] > old_match:
                 old_f_index = assigned[t_i]
                 assigned[t_i] = f_index
@@ -329,12 +317,8 @@ def match_files(files, tracks, minimum=0.7, keys=None, jfdi=False,
 
     ret_indexes = {}
     for t_index, f_index in assigned.items():
-        try:
-            ret[files[f_index].cls] = tracks[t_index]
-            ret_indexes[t_index] = files[f_index].cls
-        except AttributeError:
-            ret[files[f_index]] = tracks[t_index]
-            ret_indexes[t_index] = files[f_index]
+        ret[files[f_index].cls] = tracks[t_index]
+        ret_indexes[t_index] = files[f_index].cls
 
     for t in tracks:
         if '#exact' in t:
@@ -366,8 +350,6 @@ def merge_track(audio, info):
             else:
                 if isinstance(info[key], list):
                     track[key] = info[key][::]
-                elif isinstance(info[key], dict):
-                    track[key] = info[key]
 
     for key in audio.keys():
         if not key.startswith('#'):
@@ -380,19 +362,15 @@ def merge_track(audio, info):
     return track
 
 
-def merge_tsp_tracks(profiles, files=None):
+def merge_tsp_tracks(profiles):
     ret = []
     to_repl = []
     for tsp in profiles:
         if not tsp.matched or tsp.result is None:
             continue
 
-        if tsp.result.tracks is None and files is not None:
-            info = strip_fields(tsp.result.info, tsp.fields, leave_exact=True)
-            tags = [deepcopy(info) for z in files]
-        else:
-            tags = [strip_fields(t, tsp.fields, leave_exact=True)
-                    for t in tsp.result.merged]
+        tags = [strip_fields(t, tsp.fields, leave_exact=True)
+                for t in tsp.result.merged]
 
         if len(tags) > len(ret):
             ret.extend(tags[len(ret):])
@@ -408,13 +386,10 @@ def merge_tsp_tracks(profiles, files=None):
     return ret
 
 
-def masstag(mtp, files=None, flag=None, mtp_error_func=None,
+def masstag(mtp, files, flag=None, mtp_error_func=None,
             tsp_error_func=None, print_status=True):
     not_found = []
     found = []
-
-    if files is None:
-        files = mtp.files
 
     if flag is None:
         flag = MassTagFlag()
@@ -681,20 +656,6 @@ class Result(object):
         self.__tracks = value
         self._update_merged()
 
-    def retrieve(self, errors=None):
-        if self.tag_source:
-            try:
-                self.info, self.tracks = self.tag_source.retrieve(self.info)
-            except RetrievalError as e:
-                if errors is None:
-                    raise
-                if errors(e):
-                    raise e
-                else:
-                    return {}, []
-            return self.info, self.tracks
-        return {}, []
-
 
 class TagSourceProfile(object):
 
@@ -732,10 +693,7 @@ class TagSourceProfile(object):
     def retrieve(self, result, errors=None):
         info = result.info if hasattr(result, 'info') else result
 
-        try:
-            index = self.results.index(result)
-        except ValueError:
-            index = None
+        index = self.results.index(result)
 
         try:
             results = self.tag_source.retrieve(info)
@@ -752,8 +710,7 @@ class TagSourceProfile(object):
             else:
                 self.result = Result({}, [])
         self.result.tag_source = self.tag_source
-        if index is not None:
-            self.results[index] = self.result
+        self.results[index] = self.result
         return self.result
 
     def search(self, files=None, tag_source=None):
@@ -769,15 +726,3 @@ class TagSourceProfile(object):
         for r in self.results:
             r.tag_source = self.tag_source
         return self.results
-
-
-if __name__ == '__main__':
-    from .. import puddletag
-
-    puddletag.load_plugins()
-    from ..tagsources import tagsources
-
-    sources = dict((t.name, t) for t in tagsources)
-    source = sources['Local TSource Plugin']()
-    source.applyPrefs(['/mnt/multimedia/testlib'])
-    print(source._dirs)

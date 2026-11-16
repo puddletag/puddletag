@@ -96,8 +96,6 @@ class MassTagEdit(QDialog):
 
     def dupClicked(self):
         row = self.listbox.currentRow()
-        if row == -1:
-            return
         win = MTProfileEdit(self.tag_sources, deepcopy(self._profiles[row]), self)
         win.setModal(True)
         win.profileChanged.connect(self.addProfile)
@@ -109,8 +107,6 @@ class MassTagEdit(QDialog):
         else:
             row = self.listbox.currentRow()
 
-        if row == -1:
-            return
         win = MTProfileEdit(self.tag_sources, self._profiles[row], self)
         win.setModal(True)
         win.profileChanged.connect(partial(self.replaceProfile, row))
@@ -135,8 +131,6 @@ class MassTagEdit(QDialog):
 
     def remove(self):
         row = self.listbox.currentRow()
-        if row == -1:
-            return
         del (self._profiles[row])
         self.listbox.takeItem(row)
 
@@ -299,8 +293,6 @@ class MTProfileEdit(QDialog):
 
     def dupClicked(self):
         row = self.listbox.currentRow()
-        if row == -1:
-            return
         win = TSProfileEdit(self.tag_sources, self._tsps[row], self)
         win.setModal(True)
         win.profileChanged.connect(self.addTSProfile)
@@ -312,8 +304,6 @@ class MTProfileEdit(QDialog):
         else:
             row = self.listbox.currentRow()
 
-        if row == -1:
-            return
         win = TSProfileEdit(self.tag_sources, self._tsps[row], self)
         win.setModal(True)
         win.profileChanged.connect(partial(self.replaceTSProfile, row))
@@ -351,8 +341,6 @@ class MTProfileEdit(QDialog):
 
     def remove(self):
         row = self.listbox.currentRow()
-        if row == -1:
-            return
         del (self._tsps[row])
         self.listbox.takeItem(row)
 
@@ -573,7 +561,6 @@ class MassTagWindow(QWidget):
         win.show()
 
     def lookup(self):
-        button = self.sender()
         if self._startButton.text() != translate('Masstagging', '&Stop'):
             self.__flag.stop = False
             self._log.clear()
