@@ -1977,8 +1977,6 @@ def test_an_mp3_numbered_n_of_total_fits_an_album_by_its_highest_number(
     qtbot.waitUntil(lambda: all(in_file(f).get('genre') == ['Synth'] for f in files))
 
 
-@pytest.mark.xfail(strict=True, reason=(
-    'track numbers are compared as text when track is the only match field'))
 def test_mp3s_numbered_n_of_total_match_by_track(mainwin, make_audio, user, qtbot, tmp_path):
     # tut5:104: "track is used only when it's the only field listed";
     # tut5:106. An MP3 whose track number is stored with its total reads as

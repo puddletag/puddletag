@@ -246,6 +246,11 @@ get_lower = lambda f, key, default = '': to_string(f.get(key, default)).lower()
 
 
 def ratio_compare(d1, d2, key):
+    if key == 'track':
+        try:
+            return 1.0 if to_int(d1.get(key)) == to_int(d2.get(key)) else 0.0
+        except (TypeError, ValueError):
+            pass
     return ratio(get_lower(d1, key, 'a'), get_lower(d2, key, 'b'))
 
 
@@ -556,7 +561,7 @@ def split_files(audios, pattern):
 
 
 def to_int(v):
-    return int(to_string(v))
+    return int(to_string(v).split('/')[0])
 
 
 class MassTagProfile(object):

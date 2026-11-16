@@ -1071,11 +1071,6 @@ def test_an_album_with_as_many_tracks_as_the_highest_n_of_total_fits():
 # Matching by track compares numbers: the files' `n/total` and padded numbers
 # are read as the number.
 
-TRACKS_AS_TEXT = pytest.mark.xfail(
-    strict=True, reason='track numbers are compared as text when track is the only match field')
-
-
-@TRACKS_AS_TEXT
 def test_matching_by_track_reads_n_of_total_as_n():
     """tut5.txt, Match tracks using fields: "**track** is used only when it's
     the only field listed", compared with the retrieved tracks' numbers.
@@ -1087,7 +1082,6 @@ def test_matching_by_track_reads_n_of_total_as_n():
         f'0{n}.mp3': [f'Song {n}'] for n in (1, 2, 3)}
 
 
-@TRACKS_AS_TEXT
 def test_matching_by_track_reads_a_padded_number_as_the_number():
     """tut5.txt, Match tracks using fields: "**track** is used only when it's
     the only field listed", compared with the retrieved tracks' numbers: 01
@@ -1098,7 +1092,6 @@ def test_matching_by_track_reads_a_padded_number_as_the_number():
         f'0{n}.mp3': [f'Song {n}'] for n in (1, 2, 3)}
 
 
-@TRACKS_AS_TEXT
 def test_matching_by_track_renumbers_n_of_total_files_disc_by_disc():
     """tut5.txt, Match tracks using fields: "If **track** is the only field
     listed, the album has several discs and there are as many files as
