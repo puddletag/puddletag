@@ -189,8 +189,10 @@ def find_best(matches, files, minimum=0.7):
     artists = list(group[album].keys())
     if len(artists) == 1:
         artist = artists[0]
+        various = None
     else:
         artist = constants.VARIOUS
+        various = {constants.VARIOUS.lower(), 'various', 'various artists'}
     d = {'artist': artist, 'album': album}
     scored = []
     by_count = []
@@ -201,7 +203,11 @@ def find_best(matches, files, minimum=0.7):
         else:
             info = match[0]
 
-        score = min([ratio_compare(d, info, key) for key in d])
+        if various:
+            artist_score = max(ratio(name, get_lower(info, 'artist', 'b')) for name in various)
+        else:
+            artist_score = ratio_compare(d, info, 'artist')
+        score = min(artist_score, ratio_compare(d, info, 'album'))
 
         tracks = match.tracks if hasattr(match, 'tracks') else match[1]
         if score >= minimum:

@@ -1995,7 +1995,6 @@ def test_mp3s_numbered_n_of_total_match_by_track(mainwin, make_audio, user, qtbo
     assert [shown_previews[str(p)]['title'] for p in files] == [[f'Song {n}'] for n in (1, 2, 3)]
 
 
-@pytest.mark.xfail(strict=True, reason="a compilation matches only an album whose artist is the app's own Various Artists")
 def test_a_compilation_matches_an_album_by_various(mainwin, make_audio, user, qtbot, tmp_path):
     # tut5:91: "An album will be considered a match if its album name and its
     # artist both match the files' by at least the percentage specified here."
