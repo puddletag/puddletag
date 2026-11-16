@@ -168,10 +168,7 @@ def parse_artist_relation(relations):
             if not desc:
                 desc = r['artist']['name']
             else:
-                if r['direction'] == 'backward':
-                    field = '%s %s' % (desc, field)
-                else:
-                    field = '%s %s' % (field, desc)
+                field = '%s %s' % (desc, field)
                 desc = r['artist']['name']
         if desc and desc not in ret[field]:
             ret[field].append(desc)

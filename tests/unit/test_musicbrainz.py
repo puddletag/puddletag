@@ -1061,7 +1061,6 @@ def test_disc_without_a_format(source, web_server):
     assert all('format' in t for t in others)
 
 
-@pytest.mark.xfail(strict=True, reason='a forward relationship puts its attributes last')
 def test_forward_artist_relationship_with_attributes(source, web_server):
     """tagsources.txt: "come back as fields named after the relationship,
     with its attributes first". Synthetic: a relationship with an attribute,
