@@ -6,6 +6,7 @@ files, albums and images.
 """
 import json
 import logging
+import threading
 from pathlib import Path
 
 import mutagen.id3
@@ -2250,3 +2251,115 @@ def test_mp3tag_script_that_raises_is_left_out(mp3tag_script_and_a_folder, mainw
                  if r.levelno == logging.ERROR and 'Synthetic Folder' in r.getMessage()]
     assert message.startswith(f"Couldn't load Mp3tag Tag Source {mp3tag_folder() / 'Synthetic Folder.src'}: "
                               '[Errno 21] Is a directory')
+
+
+# Corner cases.
+
+def test_emptied_fields_box_writes_every_field(mainwin, make_audio, tmp_path, qtbot, user):
+    # tagsources.txt: "If left empty all the retrieved fields will be
+    # written." Synthetic album and tracks.
+    window, paths = load(mainwin, make_audio, tmp_path, qtbot, user)
+    type_fields(user, window, 'title')
+    type_fields(user, window, '')
+    user.press(Key.Key_Delete)
+    user.activate()
+    user.click_cell(user.cell(0, 'title'))
+    user.press(Key.Key_A, Ctrl)
+
+    search(user, qtbot, window)
+    click_album(user, window, 'Alpha')
+
+    qtbot.waitUntil(lambda: previews(mainwin) == ALPHA_PREVIEWS)
+
+
+def test_sort_option_editor_adds_to_an_empty_list(mainwin, make_audio, tmp_path, qtbot, user, dialogs):
+    # preferences.txt: "Use the dialog brought up by clicking 'Edit' to
+    # bring up an editor for the sort options." The docs don't say what
+    # Add does with no option left; this is what puddletag does. Synthetic
+    # options.
+    window, paths = load(mainwin, make_audio, tmp_path, qtbot, user, select=False)
+    dialog = user.open_preferences('Tag Sources')
+    page = dialog.stack.currentWidget()
+    editor = sort_editor(user, qtbot, page)
+    lb = editor.listbox
+    for _ in range(2):
+        user.click(lb.viewport(), lb.visualItemRect(lb.item(0)).center())
+        user.click(tool_button(editor, 'Remove'))
+    assert lb.count() == 0
+
+    dialogs.answer('QInputDialog.getItem', ('album', True))
+    user.click(tool_button(editor, 'Add'))
+
+    assert listed_options(editor) == ['album']
+    assert dialogs.calls[-1][1][4] == []
+    assert dialogs.calls[-1][1][5] == 0
+
+
+def test_enter_while_searching_starts_no_second_search(mainwin, make_audio, tmp_path, qtbot, user):
+    # The docs are silent: tagsources.txt says only that text in the Search
+    # Box is used to search with. This is what puddletag does. Synthetic
+    # source and files.
+    window, paths = load(mainwin, make_audio, tmp_path, qtbot, user)
+    source = the_source()
+    release = threading.Event()
+    original = source.keyword_search
+    source.keyword_search = lambda text: (release.wait(5), original(text))[1]
+
+    user.click(window.searchEdit)
+    user.type('Alpha')
+    user.press(Key.Key_Return)
+    qtbot.waitUntil(lambda: not window.searchButton.isEnabled())
+    user.press(Key.Key_Return)
+    release.set()
+
+    qtbot.waitUntil(lambda: window.label.text() == 'Searching complete.')
+    assert source.keywords == ['Alpha']
+
+
+@pytest.fixture
+def synthetic_mapped(clean_profile):
+    """The window's last source is Synthetic, and a mapping names it.
+    Synthetic."""
+    config = PuddleConfig(str(Path(CONFIGDIR) / 'tagsources.conf'))
+    config.set('tagsources', 'lastsource', 'Synthetic')
+    Path(CONFIGDIR, 'mappings').write_text('Synthetic,title,subtitle\n')
+
+
+def test_mapping_for_the_source_the_window_opens_on(synthetic_mapped, mainwin, make_audio, tmp_path, qtbot, user):
+    # preferences.txt: "You can also set mappings for Tag Sources using the
+    # **exact** Tag Source's name." and "Mappings apply the next time you
+    # start puddletag." Synthetic source and mapping.
+    window, paths = load(mainwin, make_audio, tmp_path, qtbot, user)
+    assert window.sourcelist.currentText() == 'Synthetic'
+
+    search(user, qtbot, window)
+    click_album(user, window, 'Alpha')
+
+    expected = [{('subtitle' if k == 'title' else k): v for k, v in p.items()} for p in ALPHA_PREVIEWS]
+    qtbot.waitUntil(lambda: previews(mainwin) == expected)
+
+
+@pytest.fixture(params=['not a number', None], ids=['text', 'null'])
+def unreadable_score(request, clean_profile):
+    """tagsources.conf with a Minimum Score that isn't a number, next to a
+    saved API Key. Synthetic."""
+    config = PuddleConfig(str(Path(CONFIGDIR) / 'tagsources.conf'))
+    config.set('Configurable', 'Minimum Score', request.param)
+    config.set('Configurable', 'API Key', 'Saved key')
+
+
+@pytest.mark.xfail(strict=True, reason='a saved number preference that is not a number makes Configure fail')
+def test_saved_score_that_is_not_a_number_shows_the_default(unreadable_score, more_sources, mainwin, make_audio,
+                                                            tmp_path, qtbot, user):
+    # The docs are silent: tut4.txt says only that the Tag Source's
+    # behaviour can be configured. The maintainer's choice (not a quote): a
+    # saved value that can't be read gives that preference its default and
+    # leaves the others as saved. Synthetic source and saved values.
+    window, paths = load(mainwin, make_audio, tmp_path, qtbot, user, select=False)
+    pick(user, qtbot, window.sourcelist, 'Configurable')
+    # A combo is applied as the index of its choice.
+    assert instance(Configurable).applied == [[True, 1, 'Saved key', 80]]
+
+    dialog = configure_dialog(user, qtbot, window)
+
+    assert configure_values(dialog) == [True, 'Large', 'Saved key', 80]

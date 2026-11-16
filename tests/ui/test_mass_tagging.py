@@ -1912,6 +1912,31 @@ def test_a_source_that_identifies_each_file_tags_files_without_metadata(
         assert '#exact' not in in_file(f)
 
 
+def test_fields_of_a_source_that_identifies_each_file(
+        mainwin, make_audio, user, qtbot, tmp_path, monkeypatch):
+    # tut5 (Fields): "The list of fields to retrieve from the tag source."
+    # Synthetic files, and a source that works as AcoustID's does: its search
+    # gives the tracks and its retrieve gives nothing.
+    files = [make_audio(f'0{n}.mp3', tmp_path / 'music' / 'plain') for n in (1, 2, 3)]
+    load(mainwin, qtbot, tmp_path / 'music', 3)
+
+    def identifying_search(self, album, artists):
+        copies = sorted((f for group in artists.values() for f in group),
+                        key=lambda f: f['__filename'])
+        return [({'album': 'Album X', 'artist': 'Artist X'},
+                 [{'title': f'Found {n}', '#exact': f} for n, f in zip((3, 2, 1), copies)])]
+
+    monkeypatch.setattr(SyntheticSource, 'search', identifying_search)
+    monkeypatch.setattr(SyntheticSource, 'retrieve', lambda self, info: None)
+    window = open_mass_tagging(user, mainwin, qtbot)
+    create_profile(user, qtbot, window, 'Synthetic', [{'fields': 'title', 'source': 'Synthetic Source'}])
+
+    search(user, qtbot, mainwin, window)
+
+    for f, n in zip(files, (3, 2, 1)):
+        assert previews(mainwin)[str(f)] == {'title': [f'Found {n}']}
+
+
 def test_a_web_source_that_fails_is_logged_and_the_next_source_polled(
         mp3tag_script, mainwin, make_audio, user, qtbot, tmp_path):
     # tut5 "If no results found:": "you can choose to either Continue with the
