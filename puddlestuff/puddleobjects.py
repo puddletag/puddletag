@@ -2,7 +2,6 @@
 Contains objects used throughout puddletag
 """
 
-import itertools
 import json
 import logging
 import os
@@ -11,15 +10,14 @@ import time
 from bisect import bisect_left, insort_left  # for unique function.
 from collections import defaultdict
 from copy import copy
-from functools import partial, reduce, total_ordering
+from functools import partial, total_ordering
 from glob import glob
 from io import StringIO
 from itertools import groupby  # for unique function.
-from operator import or_
 from typing import Any, Callable, Generator, List, Optional, Tuple, Union
 
-from PyQt6.QtCore import QBuffer, QByteArray, QCollator, QDir, QLocale, QMimeData, QObject, QRectF, QSettings, \
-    QSize, QThread, QTimer, Qt, pyqtSignal
+from PyQt6.QtCore import QBuffer, QByteArray, QCollator, QDir, QEvent, QKeyCombination, QLocale, QMimeData, QObject, \
+    QRectF, QSettings, QSize, QThread, QTimer, Qt, pyqtSignal
 from PyQt6.QtCore import QFile, QIODevice
 from PyQt6.QtGui import QAction, QIcon, QBrush, QPixmap, QImage, \
     QKeySequence
@@ -27,8 +25,8 @@ from PyQt6.QtSvg import QSvgRenderer
 from PyQt6.QtSvgWidgets import QGraphicsSvgItem
 from PyQt6.QtWidgets import QAbstractItemDelegate, QAbstractItemView, QApplication, QComboBox, QDialog, QDialogButtonBox, \
     QDockWidget, QFileDialog, QFrame, QGraphicsPixmapItem, QGraphicsScene, QGraphicsView, QGridLayout, QHBoxLayout, \
-    QHeaderView, QLabel, QLayout, QLineEdit, QListWidget, QMenu, QMessageBox, QProgressBar, QPushButton, QScrollArea, \
-    QSizePolicy, QTextEdit, QToolButton, QVBoxLayout, QWidget
+    QHeaderView, QKeySequenceEdit, QLabel, QLayout, QLineEdit, QListWidget, QMenu, QMessageBox, QProgressBar, \
+    QPushButton, QScrollArea, QSizePolicy, QTextEdit, QToolButton, QVBoxLayout, QWidget
 
 from . import audioinfo
 from .audioinfo import (IMAGETYPES, DESCRIPTION, DATA, IMAGETYPE, DEFAULT_COVER,
@@ -53,31 +51,6 @@ SD_PATTERNS = [
     (r'\[.*?\]', 0.3),
     (r'(, )?(pt\.|part) .+', 0.2),
 ]
-
-mod_keys = {
-    Qt.KeyboardModifier.ShiftModifier: 'Shift',
-    Qt.KeyboardModifier.MetaModifier: 'Meta',
-    Qt.KeyboardModifier.AltModifier: 'Alt',
-    Qt.KeyboardModifier.ControlModifier: 'Ctrl',
-    Qt.KeyboardModifier.NoModifier: '',
-    Qt.KeyboardModifier.KeypadModifier: '',
-    Qt.KeyboardModifier.GroupSwitchModifier: '', }
-
-
-def keycmp(modifier):
-    # Qt's own order, the one menus show: Meta+Ctrl+Alt+Shift.
-    order = [Qt.KeyboardModifier.MetaModifier, Qt.KeyboardModifier.ControlModifier,
-             Qt.KeyboardModifier.AltModifier, Qt.KeyboardModifier.ShiftModifier]
-    return order.index(modifier) if modifier in order else len(order)
-
-
-modifiers = {}
-for i in range(1, len(mod_keys)):
-    for keys in set(itertools.permutations(mod_keys, i)):
-        mask = reduce(or_, keys)
-        modifiers[mask] = '+'.join(mod_keys[key] for key in sorted(keys, key=keycmp) if mod_keys[key])
-
-mod_keys = set((Qt.Key.Key_Shift, Qt.Key.Key_Control, Qt.Key.Key_Meta, Qt.Key.Key_Alt))
 
 imagetypes = [
     (translate('Cover Type', 'Other'), translate("Cover Type", 'O')),
@@ -2430,46 +2403,105 @@ class PuddleThread(QThread):
         self.threadfinished.emit(self.retval)
 
 
-class ShortcutEditor(QLineEdit):
+MODIFIER_NAMES = {Qt.Key.Key_Alt: 'Alt', Qt.Key.Key_Control: 'Ctrl', Qt.Key.Key_Meta: 'Meta',
+                  Qt.Key.Key_Shift: 'Shift'}
+MODIFIERS = {Qt.Key.Key_Alt: Qt.KeyboardModifier.AltModifier, Qt.Key.Key_Control: Qt.KeyboardModifier.ControlModifier,
+             Qt.Key.Key_Meta: Qt.KeyboardModifier.MetaModifier, Qt.Key.Key_Shift: Qt.KeyboardModifier.ShiftModifier}
+# Qt's own order, the one menus show.
+MODIFIER_ORDER = [Qt.Key.Key_Meta, Qt.Key.Key_Control, Qt.Key.Key_Alt, Qt.Key.Key_Shift]
+
+
+class HeldModifiers:
+    """Mixin for a QKeySequenceEdit: shows the modifiers held so far ("Ctrl+Shift"), which
+    Qt leaves out while no key has come."""
+    press_order = False  # True: in the order pressed, not Qt's
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._held = []
+        self._shown = ''
+
+    def _track(self, event):
+        """Updates the held modifiers; returns True if the event's key is a modifier."""
+        key = event.key()
+        held = event.modifiers()
+        if key in MODIFIERS:
+            if event.type() == QEvent.Type.KeyPress:
+                held |= MODIFIERS[key]
+                if key not in self._held:
+                    self._held.append(key)
+            else:
+                held &= ~MODIFIERS[key]
+        self._held = [k for k in self._held if held & MODIFIERS[k]]
+        return key in MODIFIERS
+
+    def _show_held(self):
+        if self.keySequence().isEmpty():
+            keys = self._held if self.press_order else [k for k in MODIFIER_ORDER if k in self._held]
+            self._shown = '+'.join(MODIFIER_NAMES[k] for k in keys)
+            self.findChild(QLineEdit).setText(self._shown)
+
+    def keyPressEvent(self, event):
+        super().keyPressEvent(event)
+        if self._track(event):
+            self._show_held()
+
+    def keyReleaseEvent(self, event):
+        super().keyReleaseEvent(event)
+        # The Assign and Edit fields keep showing a released modifier; the cell drops it.
+        if self._track(event) and self.press_order:
+            self._show_held()
+
+    def timerEvent(self, event):
+        # A second after a lone modifier's release Qt ends the typing and blanks the field.
+        super().timerEvent(event)
+        if self.keySequence().isEmpty() and self._shown:
+            self.findChild(QLineEdit).setText(self._shown)
+
+
+class ShortcutEditor(HeldModifiers, QKeySequenceEdit):
     validityChanged = pyqtSignal(bool, name='validityChanged')
 
     def __init__(self, shortcuts=None, *args, **kwargs):
-        QLineEdit.__init__(self, *args, **kwargs)
-        winsettings('shortcutcapture', self)
-
-        self.key = ""
-        self.modifiers = {}
+        super().__init__(*args, **kwargs)
+        self.setMaximumSequenceLength(1)
+        # Tab and Shift+Tab move the focus.
+        self.setFinishingKeyCombinations([
+            QKeyCombination(Qt.Key.Key_Tab), QKeyCombination(Qt.Key.Key_Backtab),
+            QKeyCombination(Qt.KeyboardModifier.ShiftModifier, Qt.Key.Key_Backtab)])
+        self._shortcuts = [] if shortcuts is None else shortcuts
         self._valid = False
-        if shortcuts is None:
-            shortcuts = []
-        self._shortcuts = shortcuts
+        self.keySequenceChanged.connect(self._check)
+
+    def _check(self, keys):
+        text = keys.toString()
+        if text:
+            self._shown = ''
+        self.valid = bool(text) and text not in self._shortcuts
+
+    def text(self):
+        # While only modifiers show, the text is theirs: the Edit window then says
+        # "Invalid shortcut sequence.".
+        return self.keySequence().toString() or self._shown
+
+    def setText(self, text):
+        self.setKeySequence(QKeySequence(text))
 
     def clear(self):
-        super(ShortcutEditor, self).clear()
+        self._shown = ''
+        super().clear()
         self.valid = False
 
     def keyPressEvent(self, event):
+        super().keyPressEvent(event)
+        if event.key() in MODIFIERS and self.keySequence().isEmpty():
+            self.valid = False
 
-        text = ''
-
-        if event.modifiers():
-            text = modifiers[event.modifiers()]
-
-        if event.key() not in mod_keys:
-            if text:
-                text += '+' + str(QKeySequence(event.key()).toString())
-            else:
-                text = str(QKeySequence(event.key()).toString())
-
-            if text and text not in self._shortcuts:
-                valid = True
-            else:
-                valid = False
-        else:
-            valid = False
-
-        self.setText(text)
-        self.valid = valid
+    def event(self, event):
+        if event.type() == QEvent.Type.ShortcutOverride:
+            # Not accepted: the window's own keys (a button's Alt+letter) run first.
+            return QWidget.event(self, event)
+        return super().event(event)
 
     @property
     def valid(self):
