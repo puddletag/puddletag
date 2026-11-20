@@ -537,7 +537,6 @@ def test_f8_runs_its_own_command(mainwin, user, qtbot):
     user.close_preferences(window, 'Cancel')
 
 
-@pytest.mark.xfail(strict=True, reason='a modifier held while another row is clicked empties the cell')
 def test_holding_a_modifier_while_clicking_another_row_keeps_the_key(mainwin, user, qtbot):
     # The docs don't say; this is what puddletag should do: a key editor closed by a
     # click on another row while Ctrl is held keeps the key. Save is "Save (Ctrl+S)"

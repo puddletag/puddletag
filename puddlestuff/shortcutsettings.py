@@ -1,118 +1,28 @@
 import os
 
-from PyQt6.QtCore import QEvent, QLineF, QRectF, Qt, pyqtRemoveInputHook
-from PyQt6.QtGui import QBrush, QKeySequence, QPainter, QPalette, QPen
-from PyQt6.QtWidgets import QAbstractItemDelegate, QAbstractItemView, QFrame, QItemDelegate, QLabel, \
-    QTableWidget, QTableWidgetItem, QVBoxLayout, QWidget
+from PyQt6.QtCore import QEvent, Qt, pyqtRemoveInputHook
+from PyQt6.QtGui import QAction, QKeySequence, QPalette, QPen
+from PyQt6.QtWidgets import QAbstractItemDelegate, QAbstractItemView, QItemDelegate, QKeySequenceEdit, QLabel, \
+    QLineEdit, QTableWidget, QTableWidgetItem, QVBoxLayout, QWidget
 
 from .constants import CONFIGDIR
-from .puddleobjects import PuddleConfig
+from .puddleobjects import HeldModifiers, MODIFIERS, PuddleConfig
 from .translations import translate
 
 pyqtRemoveInputHook()
 
 
-class ActionEditorWidget(QLabel):
+class KeyCell(HeldModifiers, QKeySequenceEdit):
+    """The Shortcut column's editor: one key, the modifiers held shown in the order pressed."""
+    press_order = True
 
-    def __init__(self, text, parent):
-
-        QLabel.__init__(self, text, parent)
-        self.modifiers = {}
-        self.setAutoFillBackground(True)
-        palette = self.palette()
-        palette.setBrush(QPalette.ColorRole.Base, palette.brush(QPalette.ColorRole.AlternateBase))
-        self.setPalette(palette)
-        self.valid = False
-        self.setFrameStyle(QFrame.Shape.Panel)
-
-    def keyPressEvent(self, event):
-
-        other = None
-
-        if event.key() == Qt.Key.Key_Shift:
-            self.modifiers[Qt.Key.Key_Shift] = "Shift"
-        elif event.key() == Qt.Key.Key_Control:
-            self.modifiers[Qt.Key.Key_Control] = "Ctrl"
-        elif event.key() == Qt.Key.Key_Meta:
-            self.modifiers[Qt.Key.Key_Meta] = "Meta"
-        elif event.key() == Qt.Key.Key_Alt:
-            self.modifiers[Qt.Key.Key_Alt] = "Alt"
-        else:
-            other = QKeySequence(event.key()).toString(QKeySequence.SequenceFormat.NativeText)
-
-        if other:
-            key_string = "+".join(list(self.modifiers.values()) + [str(other), ])
-            self.valid = True
-        else:
-            key_string = "+".join(list(self.modifiers.values()))
-
-        self.setText(key_string)
-
-    def keyReleaseEvent(self, event):
-
-        if self.valid:
-            return
-
-        if event.key() == Qt.Key.Key_Shift:
-            if Qt.Key.Key_Shift in self.modifiers:
-                del self.modifiers[Qt.Key.Key_Shift]
-        elif event.key() == Qt.Key.Key_Control:
-            if Qt.Key.Key_Control in self.modifiers:
-                del self.modifiers[Qt.Key.Key_Control]
-        elif event.key() == Qt.Key.Key_Meta:
-            if Qt.Key.Key_Meta in self.modifiers:
-                del self.modifiers[Qt.Key.Key_Meta]
-        elif event.key() == Qt.Key.Key_Alt:
-            if Qt.Key.Key_Alt in self.modifiers:
-                del self.modifiers[Qt.Key.Key_Alt]
-
-        self.setText("+".join(list(self.modifiers.values())))
-
-        if len(self.modifiers) == 0:
-            self.releaseKeyboard()
-
-    def mousePressEvent(self, event):
-
-        if event.button() != Qt.MouseButton.LeftButton:
-            return
-
-        size = self.height() / 2.0
-        rect = QRectF(self.width() - size, size * 0.5, size, size)
-
-        if rect.contains(event.position()):
-            self.clear()
-            self.valid = True
-            event.accept()
-
-    def paintEvent(self, event):
-
-        if self.text():
-            painter = QPainter()
-            painter.begin(self)
-            painter.setRenderHint(QPainter.RenderHint.Antialiasing)
-
-            color = self.palette().color(QPalette.ColorRole.Highlight)
-            color.setAlpha(127)
-            painter.setBrush(QBrush(color))
-            color = self.palette().color(QPalette.ColorRole.HighlightedText)
-            color.setAlpha(127)
-            painter.setPen(QPen(color))
-            size = self.height() / 2.0
-
-            left = self.width() - 4
-
-            painter.drawRect(QRectF(left - size, size * 0.5, size, size))
-            painter.drawLine(QLineF(left - size * 0.75, size * 0.75,
-                             left - size * 0.25, size * 1.25))
-            painter.drawLine(QLineF(left - size * 0.25, size * 0.75,
-                             left - size * 0.75, size * 1.25))
-            painter.end()
-
-        QLabel.paintEvent(self, event)
-
-    def showEvent(self, event):
-
-        self.grabKeyboard()
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.setMaximumSequenceLength(1)
+        self.setFinishingKeyCombinations([])  # Tab and Esc are keys here
+        self.setClearButtonEnabled(True)
+        self.findChild(QLineEdit).setContextMenuPolicy(Qt.ContextMenuPolicy.NoContextMenu)
+        self.typed = self.done = False
 
 
 class ActionEditorDelegate(QItemDelegate):
@@ -123,36 +33,46 @@ class ActionEditorDelegate(QItemDelegate):
 
     def createEditor(self, parent, option, index):
 
-        self._edited = str(index.data())
+        editor = KeyCell(parent)
+        editor.editingFinished.connect(lambda: self._finish(editor))
+        clear = editor.findChild(QAction, '_q_qlineeditclearaction')
+        assert clear is not None, "Qt's clear button has no action of that name"
+        clear.triggered.connect(lambda: self._clear(editor))
+        return editor
 
-        self.editor = ActionEditorWidget(str(index.data()), parent)
-        self.editor.installEventFilter(self)
-        return self.editor
+    def _end(self, editor, commit):
+        # Once only: the focus lost after closing would finish the editing again.
+        if editor.done:
+            return
+        editor.done = True
+        if commit:
+            self.commitData.emit(editor)
+        self.closeEditor.emit(editor, QAbstractItemDelegate.EndEditHint.NoHint)
 
-    def eventFilter(self, obj, event):
+    def _finish(self, editor):
+        if editor.typed and not editor.keySequence().isEmpty():
+            self._end(editor, True)
 
-        if obj == self.editor:
-            if event.type() == QEvent.Type.KeyPress:
-                obj.keyPressEvent(event)
-                if obj.valid:
-                    self.commitData.emit(self.editor)
-                    self.closeEditor.emit(self.editor, QAbstractItemDelegate.EndEditHint.NoHint)
+    def _clear(self, editor):
+        editor.typed = True
+        self._end(editor, True)
+
+    def eventFilter(self, editor, event):
+        kind = event.type()
+        if kind == QEvent.Type.ShortcutOverride:
+            # Not accepted: the window's own keys (F8) run instead of being typed.
+            return True
+        if kind == QEvent.Type.KeyPress:
+            if event.key() not in MODIFIERS:
+                editor.typed = True
+            return False
+        if kind == QEvent.Type.KeyRelease:
+            own = MODIFIERS.get(event.key(), Qt.KeyboardModifier.NoModifier)
+            if not editor.typed and not (event.modifiers() & ~own):
+                self._end(editor, False)  # a modifier alone, or a key the window ran (F8), changes nothing
                 return True
-
-            elif event.type() == QEvent.Type.KeyRelease:
-                obj.keyReleaseEvent(event)
-                if not obj.text():
-                    self.closeEditor.emit(self.editor, QAbstractItemDelegate.EndEditHint.NoHint)
-                return True
-
-            elif event.type() == QEvent.Type.MouseButtonPress:
-                obj.mousePressEvent(event)
-                if obj.valid:
-                    self.commitData.emit(self.editor)
-                    self.closeEditor.emit(self.editor, QAbstractItemDelegate.EndEditHint.NoHint)
-                return True
-
-        return False
+            return False
+        return QItemDelegate.eventFilter(self, editor, event)
 
     def paint(self, painter, option, index):
 
@@ -168,12 +88,16 @@ class ActionEditorDelegate(QItemDelegate):
 
     def setEditorData(self, editor, index):
 
-        editor.setText(str(index.data()))
+        # Shows every key of the command; the sequence stays empty until one is typed.
+        editor.findChild(QLineEdit).setText(str(index.data()))
 
     def setModelData(self, editor, model, index):
-        if editor.text() != self._edited:
+        if not editor.typed:
+            return
+        text = editor.keySequence().toString()
+        if text != str(index.data()):
             index.model().edited = True
-        model.setData(index, editor.text())
+        model.setData(index, text)
 
     def updateEditorGeometry(self, editor, option, index):
         editor.setGeometry(option.rect)
