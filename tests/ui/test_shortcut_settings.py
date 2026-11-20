@@ -5,18 +5,23 @@ menu items, by pressing them, in the saved user_shortcuts file and after a resta
 import os
 
 import pytest
-from PyQt6.QtCore import QPoint, Qt
-from PyQt6.QtWidgets import QApplication, QLabel
+from PyQt6.QtCore import QEvent, QPoint, QRect, Qt
+from PyQt6.QtGui import QKeyEvent
+from PyQt6.QtWidgets import QAbstractItemView, QApplication, QLabel, QLineEdit
 
 from puddlestuff import constants, tagmodel
 from puddlestuff.puddleobjects import PuddleConfig
 from puddlestuff.puddlesettings import SettingsDialog
-from puddlestuff.shortcutsettings import ActionEditorWidget
 
 pytestmark = pytest.mark.ui
 
-Key = Qt.Key
+Alt = Qt.KeyboardModifier.AltModifier
 Ctrl = Qt.KeyboardModifier.ControlModifier
+Key = Qt.Key
+Keypad = Qt.KeyboardModifier.KeypadModifier
+Meta = Qt.KeyboardModifier.MetaModifier
+NoModifier = Qt.KeyboardModifier.NoModifier
+Shift = Qt.KeyboardModifier.ShiftModifier
 
 USER_SHORTCUTS = os.path.join(constants.CONFIGDIR, 'user_shortcuts')
 
@@ -33,14 +38,49 @@ def key_cell(table, name):
     return table.item(row, 1)
 
 
+def editing(table):
+    """A cell's key editor is open."""
+    return table.state() == QAbstractItemView.State.EditingState
+
+
 def open_key_editor(user, qtbot, table, name):
-    """Double-clicks the command's Shortcut cell (preferences.txt:154); the editor that
-    opens takes the keyboard."""
+    """Double-clicks the command's Shortcut cell (preferences.txt:155); the editor that
+    opens has the keyboard focus."""
     cell = key_cell(table, name)
     table.scrollToItem(cell)
     user.double_click(table.viewport(), table.visualItemRect(cell).center())
-    qtbot.waitUntil(lambda: isinstance(QApplication.focusWidget(), ActionEditorWidget))
+    qtbot.waitUntil(lambda: editing(table))
     return QApplication.focusWidget()
+
+
+def shown(editor):
+    """The text the open key editor shows."""
+    field = editor if isinstance(editor, (QLabel, QLineEdit)) else editor.findChild(QLineEdit)
+    return field.text()
+
+
+def hold(key, held=NoModifier):
+    """Presses a modifier key and keeps it down. As a desktop sends it, the event carries
+    the modifiers held before it; QTest can't let go of one modifier and keep another."""
+    QApplication.sendEvent(QApplication.focusWidget(), QKeyEvent(QEvent.Type.KeyPress, key.value, held))
+
+
+def let_go(key, held):
+    """Lets go of a modifier key; held still includes it, as a desktop sends it."""
+    QApplication.sendEvent(QApplication.focusWidget(), QKeyEvent(QEvent.Type.KeyRelease, key.value, held))
+
+
+def click_at(user, widget, pos):
+    """Clicks at pos as a mouse does: the widget under the pointer gets the click, which
+    may be a child of widget."""
+    target = widget.childAt(pos) or widget
+    user.click(target, target.mapFrom(widget, pos))
+
+
+def x_point(editor):
+    """Where the x sits: at the right end of the editor, halfway down."""
+    size = editor.height() / 2
+    return QPoint(int(editor.width() - size / 2 - 2), int(size))
 
 
 def type_key(user, qtbot, table, name, key, modifier=Ctrl):
@@ -51,10 +91,17 @@ def type_key(user, qtbot, table, name, key, modifier=Ctrl):
 
 
 def click_x(user, qtbot, table, name):
-    """Clicks the x drawn at the right of the cell's editor, which empties the cell."""
+    """Clicks the x at the right of the cell's editor, which empties the cell."""
     editor = open_key_editor(user, qtbot, table, name)
-    size = editor.height() / 2
-    user.click(editor, QPoint(int(editor.width() - size / 2 - 2), int(size)))
+    click_at(user, editor, x_point(editor))
+
+
+def click_row(user, table, name):
+    """Clicks the command's Description cell."""
+    [row] = [r for r in range(table.rowCount()) if table.item(r, 0).text() == name]
+    item = table.item(row, 0)
+    table.scrollToItem(item)
+    user.click(table.viewport(), table.visualItemRect(item).center())
 
 
 def cells(table, *names):
@@ -118,7 +165,7 @@ def play_and_preferences_on_ctrl_p(clean_profile):
 def test_typed_key_reaches_the_menu_item_and_runs_the_command(mainwin, user, qtbot):
     # "With this panel you can edit the keyboard shortcuts of any menu item in puddletag.
     # Just double-click on the desired shortcut in the shortcut column and enter the
-    # desired shortcut." (preferences.txt:154); Preferences "Opens the Preferences
+    # desired shortcut." (preferences.txt:155); Preferences "Opens the Preferences
     # dialog." (menus.txt:145-147). Ctrl+L is synthetic: no command has it.
     window, table = shortcuts_page(user)
     type_key(user, qtbot, table, '&Preferences', Key.Key_L)
@@ -139,7 +186,7 @@ def test_ctrl_alone_changes_nothing(mainwin, user, qtbot):
     window, table = shortcuts_page(user)
     open_key_editor(user, qtbot, table, '&Save')
     user.press(Key.Key_Control)
-    qtbot.waitUntil(lambda: not isinstance(QApplication.focusWidget(), ActionEditorWidget))
+    qtbot.waitUntil(lambda: not editing(table))
     assert cells(table, '&Save') == {'&Save': 'Ctrl+S'}
     user.close_preferences(window)
     assert keys(user, '&Save') == ['Ctrl+S']
@@ -174,7 +221,7 @@ def test_cancel_keeps_the_old_keys(mainwin, user, qtbot):
 
 def test_new_key_survives_a_restart(mainwin, user, qtbot, restart):
     # The docs don't say; this is what puddletag does: a key typed in the page and saved
-    # with OK is there at the next start (preferences.txt:154). Ctrl+L is synthetic.
+    # with OK is there at the next start (preferences.txt:155). Ctrl+L is synthetic.
     window, table = shortcuts_page(user)
     type_key(user, qtbot, table, '&Preferences', Key.Key_L)
     user.close_preferences(window)
@@ -314,3 +361,240 @@ def test_cancel_undoes_a_moved_key(mainwin, user, qtbot):
     assert keys(user, '&Play') == ['Ctrl+P']
     assert keys(user, '&Preferences') == []
     assert not os.path.exists(USER_SHORTCUTS)
+
+
+@pytest.mark.parametrize('modifier, text', [
+    (Alt | Shift, 'Alt+Shift+1'),
+    (Ctrl | Alt, 'Ctrl+Alt+1'),
+    (Ctrl | Shift, 'Ctrl+Shift+1'),
+    (Ctrl | Meta, 'Meta+Ctrl+1'),
+    (Alt | Ctrl | Meta | Shift, 'Meta+Ctrl+Alt+Shift+1'),
+])
+def test_chord_names_its_modifiers_in_qt_order(mainwin, user, qtbot, modifier, text):
+    # "Just double-click on the desired shortcut in the shortcut column and enter the
+    # desired shortcut." (preferences.txt:155); the docs name Select Column's chord
+    # "Select Column (Meta+Alt+C)" (menus.txt:121), the modifiers in this order. The
+    # chords with key 1 are synthetic.
+    window, table = shortcuts_page(user)
+    type_key(user, qtbot, table, '&Preferences', Key.Key_1, modifier)
+    assert cells(table, '&Preferences') == {'&Preferences': text}
+    user.close_preferences(window)
+    assert keys(user, '&Preferences') == [text]
+    assert saved('&Preferences') == text
+
+
+def test_ctrl_pressed_before_shift_gives_the_same_key(mainwin, user, qtbot):
+    # The docs don't say; this is what puddletag does: Ctrl, then Shift, then 1, each
+    # still held, enters the same key as pressing the chord at once. Synthetic key.
+    window, table = shortcuts_page(user)
+    open_key_editor(user, qtbot, table, '&Preferences')
+    qtbot.keyPress(QApplication.focusWidget(), Key.Key_Control)
+    qtbot.keyPress(QApplication.focusWidget(), Key.Key_Shift, Ctrl)
+    qtbot.keyClick(QApplication.focusWidget(), Key.Key_1, Ctrl | Shift)
+    qtbot.keyRelease(QApplication.focusWidget(), Key.Key_Shift, Ctrl | Shift)
+    qtbot.keyRelease(QApplication.focusWidget(), Key.Key_Control, Ctrl)
+    assert cells(table, '&Preferences') == {'&Preferences': 'Ctrl+Shift+1'}
+    assert not editing(table)
+    user.close_preferences(window)
+    assert saved('&Preferences') == 'Ctrl+Shift+1'
+
+
+@pytest.mark.parametrize('key', [Key.Key_Alt, Key.Key_Meta, Key.Key_Shift])
+def test_modifier_alone_changes_nothing(mainwin, user, qtbot, key):
+    # The docs don't say; this is what puddletag does: a modifier pressed alone closes
+    # the key editor and leaves the key as it was. Save is "Save (Ctrl+S)"
+    # (menus.txt:25).
+    window, table = shortcuts_page(user)
+    open_key_editor(user, qtbot, table, '&Save')
+    user.press(key)
+    qtbot.waitUntil(lambda: not editing(table))
+    assert cells(table, '&Save') == {'&Save': 'Ctrl+S'}
+    user.close_preferences(window)
+    assert keys(user, '&Save') == ['Ctrl+S']
+    assert not os.path.exists(USER_SHORTCUTS)
+
+
+@pytest.mark.parametrize('key, modifier, text', [
+    (Key.Key_5, Keypad, '5'),
+    (Key.Key_A, NoModifier, 'A'),
+    (Key.Key_F9, NoModifier, 'F9'),
+    (Key.Key_Space, NoModifier, 'Space'),
+])
+def test_key_without_a_modifier(mainwin, user, qtbot, key, modifier, text):
+    # The docs don't say; this is what puddletag does: a key needs no modifier to be a
+    # command's key. The keys are synthetic.
+    window, table = shortcuts_page(user)
+    type_key(user, qtbot, table, '&Preferences', key, modifier)
+    assert cells(table, '&Preferences') == {'&Preferences': text}
+    user.close_preferences(window)
+    assert saved('&Preferences') == text
+    assert keys(user, '&Preferences') == [text]
+
+
+def test_x_where_there_is_no_key_changes_nothing(mainwin, user, qtbot):
+    # The docs don't say; this is what puddletag does: a click where the x would be on a
+    # command without a key changes nothing.
+    window, table = shortcuts_page(user)
+    editor = open_key_editor(user, qtbot, table, '&Preferences')
+    click_at(user, editor, x_point(editor))
+    click_row(user, table, '&Play')
+    qtbot.waitUntil(lambda: not editing(table))
+    assert cells(table, '&Preferences') == {'&Preferences': ''}
+    user.close_preferences(window)
+    assert not os.path.exists(USER_SHORTCUTS)
+
+
+def test_click_inside_the_editor_keeps_it_open(mainwin, user, qtbot):
+    # The docs don't say; this is what puddletag does: a click inside the key editor
+    # leaves it open, and the next key is entered. Ctrl+L is synthetic.
+    window, table = shortcuts_page(user)
+    editor = open_key_editor(user, qtbot, table, '&Save')
+    user.click(editor, QPoint(editor.width() // 3, editor.height() // 2))
+    assert editing(table)
+    user.press(Key.Key_L, Ctrl)
+    assert cells(table, '&Save') == {'&Save': 'Ctrl+L'}
+    user.close_preferences(window)
+    assert saved('&Save') == 'Ctrl+L'
+
+
+def test_clicking_another_row_keeps_the_key(mainwin, user, qtbot):
+    # The docs don't say; this is what puddletag does: clicking another row while a key
+    # editor is open closes it and keeps the key. Save is "Save (Ctrl+S)" (menus.txt:25).
+    window, table = shortcuts_page(user)
+    open_key_editor(user, qtbot, table, '&Save')
+    click_row(user, table, '&Play')
+    qtbot.waitUntil(lambda: not editing(table))
+    assert cells(table, '&Save') == {'&Save': 'Ctrl+S'}
+    user.close_preferences(window)
+    assert not os.path.exists(USER_SHORTCUTS)
+
+
+def test_open_editor_shows_both_keys(mainwin, user, qtbot):
+    # Paste is "Paste (Ctrl+V)" (menus.txt:86); its Shift+Ins is from data/shortcuts
+    # (the docs don't mention it). The docs don't say what the editor shows: both keys.
+    window, table = shortcuts_page(user)
+    editor = open_key_editor(user, qtbot, table, '&Paste')
+    assert shown(editor) == 'Ctrl+V; Shift+Ins'
+    click_row(user, table, '&Play')
+    qtbot.waitUntil(lambda: not editing(table))
+    assert cells(table, '&Paste') == {'&Paste': 'Ctrl+V; Shift+Ins'}
+    user.close_preferences(window, 'Cancel')
+
+
+def test_x_shows_only_when_there_is_a_key(mainwin, user, qtbot):
+    # The docs don't say; this is what puddletag does: the x is drawn in the editor of a
+    # command with a key and not in an empty one. Save is "Save (Ctrl+S)" (menus.txt:25).
+    def colours(editor):
+        size = editor.height() // 2
+        square = QRect(editor.width() - size - 4, size // 2, size, size)
+        image = editor.grab().toImage()
+        return {image.pixel(x, y) for x in range(square.left(), square.right() + 1)
+                for y in range(square.top(), square.bottom() + 1)}
+
+    window, table = shortcuts_page(user)
+    editor = open_key_editor(user, qtbot, table, '&Save')
+    qtbot.waitUntil(lambda: len(colours(editor)) > 1)
+    click_row(user, table, '&Play')
+    qtbot.waitUntil(lambda: not editing(table))
+    editor = open_key_editor(user, qtbot, table, '&Preferences')
+    qtbot.wait(300)
+    assert len(colours(editor)) == 1
+    click_row(user, table, '&Play')
+    qtbot.waitUntil(lambda: not editing(table))
+    user.close_preferences(window, 'Cancel')
+
+
+@pytest.mark.parametrize('key, modifier, text', [
+    (Key.Key_Backspace, NoModifier, 'Backspace'),
+    (Key.Key_Enter, Keypad, 'Enter'),
+    (Key.Key_Escape, NoModifier, 'Esc'),
+    (Key.Key_Return, NoModifier, 'Return'),
+    (Key.Key_Backtab, Shift, 'Shift+Backtab'),
+    (Key.Key_Tab, NoModifier, 'Tab'),
+])
+def test_editing_keys_are_keys_too(mainwin, user, qtbot, key, modifier, text):
+    # The docs don't say; this is what puddletag does: Esc, Tab, Return and the other
+    # editing keys are entered as the command's key, not used to leave or move in the
+    # table. The keys are synthetic.
+    window, table = shortcuts_page(user)
+    type_key(user, qtbot, table, '&Save', key, modifier)
+    assert cells(table, '&Save') == {'&Save': text}
+    assert not editing(table)
+    assert window.isVisible()
+    user.close_preferences(window)
+    assert saved('&Save') == text
+
+
+def test_f8_runs_its_own_command(mainwin, user, qtbot):
+    # "Pressing F8 switches focus between it and the file-view." (tut3.txt:36, the
+    # Pattern Combo). The docs don't say what the key editor does with it; this is what
+    # puddletag does: F8 runs its command, closes the editor and enters no key.
+    window, table = shortcuts_page(user)
+    open_key_editor(user, qtbot, table, '&Preferences')
+    user.press(Key.Key_F8)
+    qtbot.waitUntil(lambda: not editing(table))
+    assert cells(table, '&Preferences') == {'&Preferences': ''}
+    user.close_preferences(window, 'Cancel')
+
+
+@pytest.mark.xfail(strict=True, reason='a modifier held while another row is clicked empties the cell')
+def test_holding_a_modifier_while_clicking_another_row_keeps_the_key(mainwin, user, qtbot):
+    # The docs don't say; this is what puddletag should do: a key editor closed by a
+    # click on another row while Ctrl is held keeps the key. Save is "Save (Ctrl+S)"
+    # (menus.txt:25).
+    window, table = shortcuts_page(user)
+    open_key_editor(user, qtbot, table, '&Save')
+    hold(Key.Key_Control)
+    click_row(user, table, '&Play')
+    let_go(Key.Key_Control, Ctrl)
+    qtbot.waitUntil(lambda: not editing(table))
+    assert cells(table, '&Save') == {'&Save': 'Ctrl+S'}
+    user.close_preferences(window)
+    assert keys(user, '&Save') == ['Ctrl+S']
+
+
+@pytest.mark.parametrize('first, second, texts', [
+    (Key.Key_Control, Key.Key_Shift, ['Ctrl', 'Ctrl+Shift', 'Ctrl', 'Ctrl']),
+    (Key.Key_Shift, Key.Key_Control, ['Shift', 'Shift+Ctrl', 'Shift', 'Shift']),
+])
+def test_held_modifiers_show_in_the_order_pressed(mainwin, user, qtbot, first, second, texts):
+    # The docs don't say; this is what puddletag does: the key editor shows the
+    # modifiers held, in the order they were pressed, and keeps showing the one still
+    # held after the other is let go. A modifier held alone enters no key. Save is
+    # "Save (Ctrl+S)" (menus.txt:25).
+    modifier = {Key.Key_Control: Ctrl, Key.Key_Shift: Shift}
+    mod1, mod2 = modifier[first], modifier[second]
+    window, table = shortcuts_page(user)
+    editor = open_key_editor(user, qtbot, table, '&Save')
+    seen = []
+    hold(first)
+    seen.append(shown(editor))
+    hold(second, mod1)
+    seen.append(shown(editor))
+    let_go(second, mod1 | mod2)
+    seen.append(shown(editor))
+    qtbot.wait(1200)
+    seen.append(shown(editor))
+    assert seen == texts
+    let_go(first, mod1)
+    qtbot.waitUntil(lambda: not editing(table))
+    assert cells(table, '&Save') == {'&Save': 'Ctrl+S'}
+    user.close_preferences(window, 'Cancel')
+
+
+def test_modifier_still_held_stays_shown(mainwin, user, qtbot):
+    # The docs don't say; this is what puddletag does: Ctrl and Shift held, then Ctrl
+    # let go first, the editor goes on showing Shift, and letting Shift go closes it with
+    # the key unchanged. Save is "Save (Ctrl+S)" (menus.txt:25).
+    window, table = shortcuts_page(user)
+    editor = open_key_editor(user, qtbot, table, '&Save')
+    hold(Key.Key_Control)
+    hold(Key.Key_Shift, Ctrl)
+    let_go(Key.Key_Control, Ctrl | Shift)
+    assert shown(editor) == 'Shift'
+    qtbot.wait(1200)
+    assert shown(editor) == 'Shift'
+    let_go(Key.Key_Shift, Shift)
+    qtbot.waitUntil(lambda: not editing(table))
+    assert cells(table, '&Save') == {'&Save': 'Ctrl+S'}
+    user.close_preferences(window, 'Cancel')

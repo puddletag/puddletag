@@ -8,22 +8,27 @@ import os
 import shutil
 
 import pytest
-from PyQt6.QtCore import Qt, QTimer, QTranslator
-from PyQt6.QtWidgets import (QApplication, QLabel, QMenu, QPushButton, QStyle, QStyleOptionViewItem,
-                             QToolButton)
+from PyQt6.QtCore import QEvent, Qt, QTimer, QTranslator
+from PyQt6.QtGui import QKeyEvent
+from PyQt6.QtWidgets import (QAbstractItemView, QApplication, QDialog, QLabel, QLineEdit, QMenu,
+                             QPushButton, QStyle, QStyleOptionViewItem, QToolButton)
 
 from puddlestuff import action_shortcuts, audioinfo, constants
 from puddlestuff.actiondlg import (ActionWindow, CreateAction, CreateFunction, ShortcutDialog,
                                    ShortcutName)
 from puddlestuff.puddleobjects import PuddleConfig
-from puddlestuff.shortcutsettings import ActionEditorWidget
 
 pytestmark = pytest.mark.ui
+
+# The dialog guard patches QDialog.exec for each test.
+REAL_EXEC = QDialog.exec
 
 Key = Qt.Key
 Alt = Qt.KeyboardModifier.AltModifier
 Ctrl = Qt.KeyboardModifier.ControlModifier
+Keypad = Qt.KeyboardModifier.KeypadModifier
 Meta = Qt.KeyboardModifier.MetaModifier
+NoModifier = Qt.KeyboardModifier.NoModifier
 Shift = Qt.KeyboardModifier.ShiftModifier
 LEFT = Qt.MouseButton.LeftButton
 
@@ -107,6 +112,33 @@ def button(window, text):
     return found
 
 
+def key_text(field):
+    """The text the key field shows."""
+    return (field if isinstance(field, QLineEdit) else field.findChild(QLineEdit)).text()
+
+
+def user_shortcut(name):
+    """The key saved for the command or shortcut in user_shortcuts; None when none is."""
+    return PuddleConfig(os.path.join(constants.CONFIGDIR, 'user_shortcuts')).get('shortcuts', name, None)
+
+
+def hold(key, held=NoModifier):
+    """Presses a modifier key and keeps it down. As a desktop sends it, the event carries
+    the modifiers held before it; QTest can't let go of one modifier and keep another."""
+    QApplication.sendEvent(QApplication.focusWidget(), QKeyEvent(QEvent.Type.KeyPress, key.value, held))
+
+
+def let_go(key, held):
+    """Lets go of a modifier key; held still includes it, as a desktop sends it."""
+    QApplication.sendEvent(QApplication.focusWidget(), QKeyEvent(QEvent.Type.KeyRelease, key.value, held))
+
+
+def invalid_labels(dialog):
+    """The visible "Invalid shortcut sequence." messages of an Edit Shortcut window."""
+    return [label.text() for label in dialog.findChildren(QLabel)
+            if label.isVisible() and label.text() == 'Invalid shortcut sequence.']
+
+
 def tool_button(window, tooltip):
     [found] = [b for b in window.findChildren(QToolButton)
                if b.toolTip() == tooltip and b.window() is window]
@@ -155,6 +187,36 @@ def assign(user, monkeypatch, window, key_steps, name=None):
     """Clicks Assign Shortcut and answers its two dialogs."""
     answer(monkeypatch, user, ShortcutName, naming(user, name))
     answer(monkeypatch, user, ShortcutDialog, key_steps)
+    user.click(window.shortcutButton)
+
+
+def assign_for_real(user, monkeypatch, window, key_steps, name=None):
+    """Clicks Assign Shortcut with its name and key windows modal, as puddletag runs them
+    (exec()), so their buttons' Alt+letters work: answer()'s show() leaves them blocked
+    under the Actions window. Each window's steps run inside its own event loop; the
+    click returns once both have closed. A failing step still closes its window, so the
+    test fails instead of hanging."""
+    monkeypatch.setattr(QDialog, 'exec', lambda self: REAL_EXEC(self))
+    handlers = [(ShortcutName, naming(user, name)), (ShortcutDialog, key_steps)]
+
+    def pick(tries=400):
+        current = QApplication.activeModalWidget()
+        if isinstance(current, handlers[0][0]) and current.isVisible():
+            steps = handlers.pop(0)[1]
+            try:
+                user.activate(current)
+                steps(current)
+            except BaseException:
+                current.reject()
+                raise
+        elif not tries:
+            if current is not None:
+                current.reject()
+            return
+        if handlers:
+            QTimer.singleShot(10, lambda: pick(tries - 1))
+
+    QTimer.singleShot(0, pick)
     user.click(window.shortcutButton)
 
 
@@ -238,7 +300,7 @@ def nothing_ran(qtbot, user, paths):
 def test_assigned_key_runs_the_action(mainwin, loaded, user, qtbot, monkeypatch):
     # "I recommend you assign shortcuts to your favourite actions like
     # Ctrl+1, Ctrl+2 etc. Use the Assign Shortcut button on the Actions
-    # Dialog." (tut3.txt:97-99). Actions "run previously defined functions
+    # Dialog." (tut3.txt:100). Actions "run previously defined functions
     # on the selected files" (tut2.txt:50); Case Conversion "changes the
     # album, title and artist fields to 'Mixed Case'" (tut2.txt:58).
     table, paths = loaded
@@ -366,7 +428,7 @@ def test_taken_key_is_refused(loaded, qtbot, user, monkeypatch, mainwin):
     def steps(dialog):
         ok = button(dialog, 'OK')
         user.press(Key.Key_S, Ctrl)  # Save's key
-        refused.append((dialog._text.text(), ok.isEnabled()))
+        refused.append((key_text(dialog._text), ok.isEnabled()))
         user.press(Key.Key_1, Ctrl)
         user.click(ok)
 
@@ -414,7 +476,7 @@ def test_edit_shortcuts_changes_the_key(loaded, mainwin, user, qtbot, monkeypatc
     editor = edit_shortcuts(user, qtbot, window)
     assert [item.text() for item in editor._listbox.items()] == ['Case Conversion']
     dialog = edit_item(user, qtbot, editor, 0)
-    assert dialog._shortcut.text() == 'Ctrl+1'
+    assert key_text(dialog._shortcut) == 'Ctrl+1'
     user.click(dialog._shortcut)
     user.press(Key.Key_2, Ctrl)
     user.click(dialog._ok)
@@ -602,7 +664,7 @@ class SyntheticTranslation(QTranslator):
 def test_add_by_double_click(loaded, mainwin, user, qtbot, monkeypatch):
     # "I recommend you assign shortcuts to your favourite actions like Ctrl+1,
     # Ctrl+2 etc. Use the Assign Shortcut button on the Actions Dialog."
-    # (tut3.txt:97-99). The docs don't say how Edit Shortcuts' Add works; this
+    # (tut3.txt:100). The docs don't say how Edit Shortcuts' Add works; this
     # is what puddletag does: an action double-clicked in the list on the left
     # is added to the shortcut. The name and Ctrl+2 are synthetic.
     table, paths = loaded
@@ -628,7 +690,7 @@ def test_add_by_double_click(loaded, mainwin, user, qtbot, monkeypatch):
 
 
 def test_add_by_the_add_button(loaded, mainwin, user, qtbot, monkeypatch):
-    # As double-clicking (tut3.txt:97-99): the Add window's own Add button
+    # As double-clicking (tut3.txt:100): the Add window's own Add button
     # adds the selected action. The name and Ctrl+2 are synthetic.
     table, paths = loaded
     window = open_actions(user, qtbot)
@@ -668,7 +730,7 @@ def test_duplicate(loaded, mainwin, user, qtbot, monkeypatch):
     assert dialog._ok.isEnabled() is False
     assert [dialog._newActionList.item(i).text() for i in range(dialog._newActionList.count())] \
         == ['Case Conversion']
-    assert dialog._shortcut.text() == ''
+    assert key_text(dialog._shortcut) == ''
     name_it(user, dialog, 'Case Copy')
     user.click(dialog._shortcut)
     user.press(Key.Key_2, Ctrl)
@@ -822,7 +884,7 @@ def test_second_key_of_a_command_is_refused(loaded, qtbot, user, monkeypatch, ma
     def steps(dialog):
         ok = button(dialog, 'OK')
         user.press(Key.Key_Insert, Qt.KeyboardModifier.ShiftModifier)
-        refused.append((dialog._text.text(), ok.isEnabled()))
+        refused.append((key_text(dialog._text), ok.isEnabled()))
         user.press(Key.Key_1, Ctrl)
         user.click(ok)
 
@@ -860,16 +922,16 @@ def test_name_a_command_has_is_refused(loaded, qtbot, user, monkeypatch, mainwin
 
 def test_preferences_ok_after_a_shortcut_assigned_meanwhile(loaded, mainwin, user, qtbot, monkeypatch):
     # "I recommend you assign shortcuts to your favourite actions like Ctrl+1, Ctrl+2
-    # etc. Use the Assign Shortcut button on the Actions Dialog." (tut3.txt:97-99);
+    # etc. Use the Assign Shortcut button on the Actions Dialog." (tut3.txt:100);
     # "Just double-click on the desired shortcut in the shortcut column and enter the
-    # desired shortcut." (preferences.txt:154). Ctrl+1 and Ctrl+L are synthetic.
+    # desired shortcut." (preferences.txt:155). Ctrl+1 and Ctrl+L are synthetic.
     prefs = user.open_preferences('Shortcuts')
     table = prefs.stack.currentWidget().actionTable
     [row] = [r for r in range(table.rowCount()) if table.item(r, 0).text() == '&Preferences']
     cell = table.item(row, 1)
     table.scrollToItem(cell)
     user.double_click(table.viewport(), table.visualItemRect(cell).center())
-    qtbot.waitUntil(lambda: isinstance(QApplication.focusWidget(), ActionEditorWidget))
+    qtbot.waitUntil(lambda: table.state() == QAbstractItemView.State.EditingState)
     user.press(Key.Key_L, Ctrl)
     assigned(user, qtbot, monkeypatch)
     user.activate(prefs)
@@ -891,9 +953,9 @@ def test_clear_takes_the_key_off_a_shortcut(loaded, mainwin, user, qtbot, monkey
     assign(user, monkeypatch, window, pressing(user, Key.Key_1))
     editor = edit_shortcuts(user, qtbot, window)
     dialog = edit_item(user, qtbot, editor, 0)
-    assert dialog._shortcut.text() == 'Ctrl+1'
+    assert key_text(dialog._shortcut) == 'Ctrl+1'
     user.click(button(dialog, '&Clear'))
-    assert dialog._shortcut.text() == ''
+    assert key_text(dialog._shortcut) == ''
     user.click(dialog._ok)
     user.activate(editor)
     user.click(button(editor, 'OK'))
@@ -947,10 +1009,10 @@ def test_key_text_names_modifiers_as_the_menus_do(loaded, qtbot, user, monkeypat
     def steps(dialog):
         ok = button(dialog, 'OK')
         user.press(Key.Key_C, Ctrl | Shift)  # Copy All Fields' key
-        seen.append((dialog._text.text(), ok.isEnabled()))
+        seen.append((key_text(dialog._text), ok.isEnabled()))
         for modifier, text in KEY_TEXTS:
             user.press(Key.Key_1, modifier)
-            seen.append((dialog._text.text(), ok.isEnabled()))
+            seen.append((key_text(dialog._text), ok.isEnabled()))
         user.press(Key.Key_1, Ctrl)
         user.click(ok)
 
@@ -958,3 +1020,306 @@ def test_key_text_names_modifiers_as_the_menus_do(loaded, qtbot, user, monkeypat
     close(user, window)
 
     assert seen == [('Ctrl+Shift+C', False)] + [(text, True) for modifier, text in KEY_TEXTS]
+
+
+def test_second_key_replaces_the_first(loaded, qtbot, user, monkeypatch, mainwin):
+    # The docs don't say; this is what puddletag does: a second key pressed in
+    # Assign Shortcut's key window replaces the first, and OK saves the second.
+    # Ctrl+2 and Ctrl+3 are synthetic.
+    table, paths = loaded
+    window = open_actions(user, qtbot)
+    check(user, window, 'Case Conversion')
+    seen = []
+
+    def steps(dialog):
+        ok = button(dialog, 'OK')
+        user.press(Key.Key_2, Ctrl)
+        user.press(Key.Key_3, Ctrl)
+        seen.append((key_text(dialog._text), ok.isEnabled()))
+        user.click(ok)
+
+    assign(user, monkeypatch, window, steps)
+    close(user, window)
+
+    assert seen == [('Ctrl+3', True)]
+    assert shortcuts_on_menu(mainwin) == [('Case Conversion', 'Ctrl+3')]
+    assert user_shortcut('Case Conversion') == 'Ctrl+3'
+
+
+def test_modifier_alone_disables_ok(loaded, qtbot, user, monkeypatch, mainwin):
+    # The docs don't say; this is what puddletag does: a modifier pressed alone
+    # is not a key, so OK is disabled until a key comes with it. Ctrl+2 is
+    # synthetic.
+    table, paths = loaded
+    window = open_actions(user, qtbot)
+    check(user, window, 'Case Conversion')
+    enabled = []
+
+    def steps(dialog):
+        ok = button(dialog, 'OK')
+        user.press(Key.Key_2, Ctrl)
+        enabled.append(ok.isEnabled())
+        user.press(Key.Key_Control)
+        enabled.append(ok.isEnabled())
+        user.click(button(dialog, "&Don't assign keyboard shortcut."))
+
+    assign(user, monkeypatch, window, steps)
+    close(user, window)
+
+    assert enabled == [True, False]
+    assert shortcuts_on_menu(mainwin) == [('Case Conversion', '')]
+
+
+@pytest.mark.parametrize('key, modifier, text', [
+    (Key.Key_5, Keypad, '5'),
+    (Key.Key_Backspace, NoModifier, 'Backspace'),
+    (Key.Key_Escape, NoModifier, 'Esc'),
+    (Key.Key_Return, NoModifier, 'Return'),
+])
+def test_unusual_keys_are_keys(loaded, qtbot, user, monkeypatch, mainwin, key, modifier, text):
+    # The docs don't say; this is what puddletag does: the keypad's 5, Backspace,
+    # Esc and Return pressed alone are keys, shown by their name, that OK saves;
+    # the window stays open.
+    table, paths = loaded
+    window = open_actions(user, qtbot)
+    check(user, window, 'Case Conversion')
+    seen = []
+
+    def steps(dialog):
+        ok = button(dialog, 'OK')
+        user.press(key, modifier)
+        seen.append((key_text(dialog._text), ok.isEnabled(), dialog.isVisible()))
+        user.click(ok)
+
+    assign(user, monkeypatch, window, steps)
+    close(user, window)
+
+    assert seen == [(text, True, True)]
+    assert shortcuts_on_menu(mainwin) == [('Case Conversion', text)]
+    assert user_shortcut('Case Conversion') == text
+
+
+def test_tab_moves_to_the_buttons(loaded, qtbot, user, monkeypatch, mainwin):
+    # The docs don't say; this is what puddletag does: Tab in Assign
+    # Shortcut's key window records no key and moves the focus to a button.
+    table, paths = loaded
+    window = open_actions(user, qtbot)
+    check(user, window, 'Case Conversion')
+    seen = []
+
+    def steps(dialog):
+        user.press(Key.Key_Tab)
+        seen.append((key_text(dialog._text), button(dialog, 'OK').isEnabled(),
+                     isinstance(QApplication.focusWidget(), QPushButton)))
+        user.click(button(dialog, "&Don't assign keyboard shortcut."))
+
+    assign(user, monkeypatch, window, steps)
+    close(user, window)
+
+    assert seen == [('', False, True)]
+
+
+def test_taken_key_in_edit_shortcut_says_so_and_saves_no_key(loaded, mainwin, user, qtbot, monkeypatch):
+    # The docs don't say; this is what puddletag does: a key another command
+    # has (Save's Ctrl+S) typed in Edit Shortcut's key field is shown with the
+    # message "Invalid shortcut sequence.", and OK saves the shortcut with no
+    # key; Save keeps its key.
+    table, paths = loaded
+    window = open_actions(user, qtbot)
+    check(user, window, 'Case Conversion')
+    assign(user, monkeypatch, window, pressing(user, Key.Key_1))
+    editor = edit_shortcuts(user, qtbot, window)
+    dialog = edit_item(user, qtbot, editor, 0)
+    user.click(dialog._shortcut)
+    user.press(Key.Key_S, Ctrl)
+    assert len(invalid_labels(dialog)) == 1
+    assert key_text(dialog._shortcut) == 'Ctrl+S'
+    user.click(dialog._ok)
+    user.activate(editor)
+    user.click(button(editor, 'OK'))
+    close(user, window)
+    assert shortcuts_on_menu(mainwin) == [('Case Conversion', '')]
+    assert user.action('&Save').shortcut().toString() == 'Ctrl+S'
+    assert user_shortcut('Case Conversion') == ''
+
+
+def test_cancel_keeps_the_key(loaded, mainwin, user, qtbot, monkeypatch):
+    # The docs don't say; this is what puddletag does: Cancel in Edit Shortcut
+    # throws away a key typed in its field; the shortcut keeps its own and
+    # still runs the action. Ctrl+2 is synthetic.
+    table, paths = loaded
+    window = open_actions(user, qtbot)
+    check(user, window, 'Case Conversion')
+    assign(user, monkeypatch, window, pressing(user, Key.Key_1))
+    editor = edit_shortcuts(user, qtbot, window)
+    dialog = edit_item(user, qtbot, editor, 0)
+    user.click(dialog._shortcut)
+    user.press(Key.Key_2, Ctrl)
+    user.click(button(dialog, 'Cancel'))
+    user.activate(editor)
+    user.click(button(editor, 'OK'))
+    close(user, window)
+    assert shortcuts_on_menu(mainwin) == [('Case Conversion', 'Ctrl+1')]
+    user.press(Key.Key_1, Ctrl)
+    written(qtbot, paths[0], mixed(1))
+    assert in_files(paths) == [mixed(1), tags(2)]
+
+
+def test_esc_in_the_key_field_is_a_key(loaded, mainwin, user, qtbot, monkeypatch):
+    # The docs don't say; this is what puddletag does: Esc pressed in Edit
+    # Shortcut's key field is the shortcut's key, not a way to close the window.
+    table, paths = loaded
+    window = open_actions(user, qtbot)
+    check(user, window, 'Case Conversion')
+    assign(user, monkeypatch, window, pressing(user, Key.Key_1))
+    editor = edit_shortcuts(user, qtbot, window)
+    dialog = edit_item(user, qtbot, editor, 0)
+    user.click(dialog._shortcut)
+    user.press(Key.Key_Escape)
+    assert dialog.isVisible()
+    assert key_text(dialog._shortcut) == 'Esc'
+    user.click(dialog._ok)
+    user.activate(editor)
+    user.click(button(editor, 'OK'))
+    close(user, window)
+    assert shortcuts_on_menu(mainwin) == [('Case Conversion', 'Esc')]
+
+
+def test_alt_letter_of_a_button_runs_the_button(loaded, qtbot, user, monkeypatch, mainwin):
+    # The docs don't say; this is what puddletag does: Alt+D in Assign
+    # Shortcut's key window is the mnemonic of "Don't assign keyboard
+    # shortcut", which closes the window with no key instead of being the key.
+    table, paths = loaded
+    window = open_actions(user, qtbot)
+    check(user, window, 'Case Conversion')
+
+    def steps(dialog):
+        user.press(Key.Key_D, Alt)
+        qtbot.waitUntil(lambda: not dialog.isVisible())
+
+    assign_for_real(user, monkeypatch, window, steps)
+    close(user, window)
+
+    assert shortcuts_on_menu(mainwin) == [('Case Conversion', '')]
+
+
+def test_f8_is_a_key_in_the_modal_windows(loaded, qtbot, user, monkeypatch, mainwin):
+    # "Pressing F8 switches focus between it and the file-view." (tut3.txt:36,
+    # about the Pattern Combo). The docs don't say more; this is what puddletag
+    # does: Qt doesn't run an application-wide key while a modal window is open,
+    # so F8 pressed in Assign Shortcut's key window reaches the field and is
+    # recorded as the shortcut's key.
+    table, paths = loaded
+    window = open_actions(user, qtbot)
+    check(user, window, 'Case Conversion')
+    seen = []
+
+    def steps(dialog):
+        ok = button(dialog, 'OK')
+        user.press(Key.Key_F8)
+        seen.append((key_text(dialog._text), ok.isEnabled(), dialog.isVisible()))
+        user.click(ok)
+
+    assign_for_real(user, monkeypatch, window, steps)
+    close(user, window)
+
+    assert seen == [('F8', True, True)]
+    assert shortcuts_on_menu(mainwin) == [('Case Conversion', 'F8')]
+
+
+def test_f8_in_edit_shortcut_is_a_key(loaded, mainwin, user, qtbot, monkeypatch):
+    # "Pressing F8 switches focus between it and the file-view." (tut3.txt:36).
+    # The docs don't say more; this is what puddletag does: Edit Shortcut is
+    # modal too, so F8 pressed in its key field is recorded, with no message.
+    table, paths = loaded
+    window = open_actions(user, qtbot)
+    check(user, window, 'Case Conversion')
+    assign(user, monkeypatch, window, pressing(user, Key.Key_1))
+    editor = edit_shortcuts(user, qtbot, window)
+    dialog = edit_item(user, qtbot, editor, 0)
+    user.click(dialog._shortcut)
+    user.press(Key.Key_F8)
+    assert key_text(dialog._shortcut) == 'F8'
+    assert invalid_labels(dialog) == []
+    user.click(dialog._ok)
+    user.activate(editor)
+    user.click(button(editor, 'OK'))
+    close(user, window)
+    assert shortcuts_on_menu(mainwin) == [('Case Conversion', 'F8')]
+
+
+def test_alt_c_in_edit_shortcut_clears_the_key(loaded, mainwin, user, qtbot, monkeypatch):
+    # The docs don't say; this is what puddletag does: Alt+C pressed in Edit
+    # Shortcut's key field is the mnemonic of its Clear button, which empties
+    # the field instead of being the key.
+    table, paths = loaded
+    window = open_actions(user, qtbot)
+    check(user, window, 'Case Conversion')
+    assign(user, monkeypatch, window, pressing(user, Key.Key_1))
+    editor = edit_shortcuts(user, qtbot, window)
+    dialog = edit_item(user, qtbot, editor, 0)
+    user.click(dialog._shortcut)
+    user.press(Key.Key_C, Alt)
+    # Qt clicks the button after its animate-click delay
+    qtbot.waitUntil(lambda: key_text(dialog._shortcut) == '')
+    user.click(dialog._ok)
+    user.activate(editor)
+    user.click(button(editor, 'OK'))
+    close(user, window)
+    assert shortcuts_on_menu(mainwin) == [('Case Conversion', '')]
+
+
+def test_held_modifiers_show_in_qt_order(loaded, qtbot, user, monkeypatch, mainwin):
+    # The docs don't say; this is what puddletag does: modifiers held in
+    # Assign Shortcut's key window are shown as they come, in Qt's order, and
+    # stay shown after they are let go (a second later too); OK stays disabled.
+    table, paths = loaded
+    window = open_actions(user, qtbot)
+    check(user, window, 'Case Conversion')
+    seen = []
+
+    def steps(dialog):
+        hold(Key.Key_Shift)
+        seen.append(key_text(dialog._text))
+        hold(Key.Key_Control, Shift)
+        seen.append(key_text(dialog._text))
+        let_go(Key.Key_Control, Ctrl | Shift)
+        let_go(Key.Key_Shift, Shift)
+        qtbot.wait(1200)
+        seen.append((key_text(dialog._text), button(dialog, 'OK').isEnabled()))
+        user.click(button(dialog, "&Don't assign keyboard shortcut."))
+
+    assign(user, monkeypatch, window, steps)
+    close(user, window)
+
+    assert seen == ['Shift', 'Ctrl+Shift', ('Ctrl+Shift', False)]
+    assert shortcuts_on_menu(mainwin) == [('Case Conversion', '')]
+
+
+def test_modifier_alone_is_invalid_until_cleared(loaded, mainwin, user, qtbot, monkeypatch):
+    # The docs don't say; this is what puddletag does: a modifier held alone in
+    # Edit Shortcut's key field is shown with the message "Invalid shortcut
+    # sequence.", also after it is let go, until Clear empties the field;
+    # Cancel then leaves the shortcut its key.
+    table, paths = loaded
+    window = open_actions(user, qtbot)
+    check(user, window, 'Case Conversion')
+    assign(user, monkeypatch, window, pressing(user, Key.Key_1))
+    editor = edit_shortcuts(user, qtbot, window)
+    dialog = edit_item(user, qtbot, editor, 0)
+    user.click(dialog._shortcut)
+    hold(Key.Key_Control)
+    assert key_text(dialog._shortcut) == 'Ctrl'
+    assert len(invalid_labels(dialog)) == 1
+    let_go(Key.Key_Control, Ctrl)
+    qtbot.wait(1200)
+    assert key_text(dialog._shortcut) == 'Ctrl'
+    assert len(invalid_labels(dialog)) == 1
+    user.click(button(dialog, '&Clear'))
+    assert key_text(dialog._shortcut) == ''
+    assert invalid_labels(dialog) == []
+    user.click(button(dialog, 'Cancel'))
+    user.activate(editor)
+    user.click(button(editor, 'OK'))
+    close(user, window)
+    assert shortcuts_on_menu(mainwin) == [('Case Conversion', 'Ctrl+1')]
