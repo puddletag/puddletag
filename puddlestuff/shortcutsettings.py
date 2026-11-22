@@ -192,10 +192,6 @@ class ActionEditorDialog(QWidget):
     saveSettings = classmethod(saveSettings)
 
     def validateAction(self, row, column):
-
-        if column != 1:
-            return
-
         item = self.actionTable.item(row, column)
         key = QKeySequence(item.text()).toString()
         self._keys[row] = [key] if key else []

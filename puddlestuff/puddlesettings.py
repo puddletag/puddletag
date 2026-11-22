@@ -479,11 +479,6 @@ class ListModel(QAbstractListModel):
     def rowCount(self, index=QModelIndex()):
         return len(self.options)
 
-    def flags(self, index):
-        if not index.isValid():
-            return Qt.ItemFlag.ItemIsEnabled
-        return Qt.ItemFlag(QAbstractListModel.flags(self, index))
-
 
 class SettingsList(QListView):
     """Just want a list that emits a selectionChanged signal, with

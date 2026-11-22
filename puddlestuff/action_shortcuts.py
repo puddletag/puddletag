@@ -47,10 +47,7 @@ def create_action_shortcuts(method, parent=None):
 
 def get_shortcuts():
     from .puddletag import status
-    if status['actions']:
-        ret = [_f for _f in (str(k.toString()) for z in status['actions'] for k in z.shortcuts()) if _f]
-    else:
-        ret = []
+    ret = [_f for _f in (str(k.toString()) for z in status['actions'] for k in z.shortcuts()) if _f]
     return set(ret)
 
 
@@ -69,9 +66,6 @@ def _sections(cparser):
 
 
 def load_settings():
-    if not os.path.exists(os.path.dirname(FILENAME)):
-        os.makedirs(os.path.dirname(FILENAME))
-
     cparser = PuddleConfig(FILENAME)
 
     actions = load_actions()
@@ -144,7 +138,7 @@ class Shortcut(QAction):
 class Editor(QDialog):
     actionChanged = pyqtSignal(str, list, str, name='actionChanged')
 
-    def __init__(self, title='Add Action', shortcut='', actions=None, names=None, shortcuts=None, parent=None):
+    def __init__(self, title, shortcut, actions, names, shortcuts, parent=None):
         super(Editor, self).__init__(parent)
         self.setWindowTitle(title)
 
@@ -160,8 +154,6 @@ class Editor(QDialog):
         clear = QPushButton(translate('Shortcuts', '&Clear'))
         clear.clicked.connect(self._shortcut.clear)
 
-        if names is None:
-            names = []
         self._names = names
 
         self._actionList = ListBox()
@@ -385,11 +377,8 @@ class ShortcutEditor(QDialog):
         self._actions = load_actions()
 
         from .puddletag import status
-        if status['actions']:
-            shortcuts = dict((str(a.text()), str(a.shortcut().toString()))
-                             for a in status['actions'])
-        else:
-            shortcuts = {}
+        shortcuts = dict((str(a.text()), str(a.shortcut().toString()))
+                         for a in status['actions'])
 
         for section in _sections(cparser):
             name = cparser.get(section, NAME, 'Default')
