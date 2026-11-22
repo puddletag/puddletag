@@ -1076,10 +1076,9 @@ def test_preferences_list_answers_nothing_for_an_invalid_index(mainwin, qtbot, u
     user.close_preferences(window, 'Cancel')
 
 
-@pytest.mark.xfail(strict=True, reason='with no translations found, OK saves <Autodetect> over the saved language')
 def test_ok_without_translations_keeps_the_saved_language(mainwin, qtbot, user, no_translations):
     # preferences.txt (Language): "**Default** is English".
-    # The docs don't say; this is what puddletag should do: with no translation found, OK
+    # The docs don't say; this is what puddletag does: with no translation found, OK
     # keeps the language picked before (synthetic profile).
     PuddleConfig().set('main', 'lang', 'default')
     window = user.open_preferences()

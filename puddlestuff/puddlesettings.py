@@ -150,8 +150,6 @@ class GeneralSettings(QWidget):
             vbox.addLayout(create_buddy(
                 translate('GenSettings', 'Language (Requires a restart)'),
                 self._lang_combo))
-        else:
-            self._lang_combo.setCurrentIndex(0)
         vbox.addStretch()
         self.setLayout(vbox)
 
@@ -177,13 +175,14 @@ class GeneralSettings(QWidget):
             from .mainwin import previews
             previews.set_sort_options(self._sort_options)
             cparser.set('table', 'sortoptions', self._sort_options)
-        index = self._lang_combo.currentIndex()
-        if index > 1:
-            cparser.set('main', 'lang', str(self._lang_combo.currentText()))
-        elif index == 0:
-            cparser.set('main', 'lang', 'auto')
-        elif index == 1:
-            cparser.set('main', 'lang', 'default')
+        if self._lang_combo.count() > 2:
+            index = self._lang_combo.currentIndex()
+            if index > 1:
+                cparser.set('main', 'lang', str(self._lang_combo.currentText()))
+            elif index == 0:
+                cparser.set('main', 'lang', 'auto')
+            elif index == 1:
+                cparser.set('main', 'lang', 'default')
 
         vals = dict([c.settingValue for c in self._controls])
         for c in controls:
