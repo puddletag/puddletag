@@ -3,7 +3,7 @@
 Preferences
 ===========
 
-Nothing in Preferences is saved until you click **OK**. **Cancel** or **Esc** closes the window without saving anything, and **Enter** clicks **OK**. If the values on a page can't be saved (for instance a row in the Tag Panel that isn't a number), a warning names the page, the window stays open and nothing is saved.
+Nothing in Preferences is saved until you click **OK**. **Cancel** or **Esc** closes the window without saving anything, and **Enter** clicks **OK**. If the values on a page can't be saved (for instance a row in the Tag Panel that isn't a number), a warning names the page, the window stays open and nothing is saved. A plugin's page that refuses its values only while saving can't be checked first: the pages before it in the list are saved.
 
 General
 -------

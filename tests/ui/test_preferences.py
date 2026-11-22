@@ -1085,3 +1085,18 @@ def test_ok_without_translations_keeps_the_saved_language(mainwin, qtbot, user, 
     window = user.open_preferences()
     user.close_preferences(window)
     assert saved('main', 'lang') == 'default'
+
+
+def test_plugin_page_that_refuses_leaves_the_pages_before_it_saved(mainwin, qtbot, user, dialogs, monkeypatch):
+    # preferences.txt: "A plugin's page that refuses its values only while saving can't be
+    # checked first: the pages before it in the list are saved." The page is a synthetic
+    # plugin's.
+    monkeypatch.setattr(puddlesettings, 'config_widgets', [SyntheticPage])
+    window = user.open_preferences()
+    edit_general(user, qtbot, window.stack.currentWidget())
+    dialogs.answer('QMessageBox.warning', OK)
+    user.click(window.okbuttons.okButton)
+    qtbot.waitUntil(lambda: bool(warnings_shown(dialogs)))
+    user.close_preferences(window, 'Cancel')
+    assert saved('Show &gridlines', 'value', 'gensettings') is False
+    assert mainwin._table.showGrid() is False
