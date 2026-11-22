@@ -1258,7 +1258,6 @@ def test_functions_dock_opens_on_the_first_function_once_the_last_is_gone(
 # The docs don't say; two actions can't share a name, as Rename refuses one
 # (test_rename_to_a_taken_name_says_so): they're ticked by name, so ticking
 # one ticks both next time.
-@pytest.mark.xfail(strict=True, reason='New Action and Duplicate accept a name another action has')
 @pytest.mark.parametrize('how', ['add', 'duplicate'])
 def test_taken_name_is_refused_for_a_new_action(how, loaded, user, qtbot, dialogs):
     window = open_actions(user, qtbot)

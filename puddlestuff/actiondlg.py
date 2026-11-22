@@ -859,6 +859,9 @@ class ActionWindow(QDialog):
     def nameRefusal(self):
         return translate('Actions', "An action's name can't be only spaces, dots or the characters / \\ * ? \" | :")
 
+    def takenRefusal(self, name):
+        return translate('Actions', 'An action named <b>{}</b> already exists.').format(name)
+
     def renameAction(self, item):
         name = str(item.text())
         names = [m.name for m in self.macros.values()]
@@ -872,7 +875,7 @@ class ActionWindow(QDialog):
         elif not has_file_name(name):
             refusal = self.nameRefusal()
         elif name in names:
-            refusal = translate('Actions', 'An action named <b>{}</b> already exists.').format(name)
+            refusal = self.takenRefusal(name)
 
         if refusal is None:
             macro = self.macros[row]
@@ -937,6 +940,9 @@ class ActionWindow(QDialog):
         if (ok is True) and text:
             if not has_file_name(text):
                 QMessageBox.warning(self, 'puddletag', self.nameRefusal())
+                return
+            if text in [m.name for m in self.macros.values()]:
+                QMessageBox.warning(self, 'puddletag', self.takenRefusal(text))
                 return
             item = QListWidgetItem(text)
             item.setCheckState(Qt.CheckState.Unchecked)
@@ -1029,6 +1035,9 @@ class ActionWindow(QDialog):
             return
         if not has_file_name(text):
             QMessageBox.warning(self, 'puddletag', self.nameRefusal())
+            return
+        if text in [m.name for m in self.macros.values()]:
+            QMessageBox.warning(self, 'puddletag', self.takenRefusal(text))
             return
 
         name = str(text)
