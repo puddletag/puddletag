@@ -1119,30 +1119,6 @@ def test_tab_moves_to_the_buttons(loaded, qtbot, user, monkeypatch, mainwin):
     assert seen == [('', False, True)]
 
 
-def test_taken_key_in_edit_shortcut_says_so_and_saves_no_key(loaded, mainwin, user, qtbot, monkeypatch):
-    # The docs don't say; this is what puddletag does: a key another command
-    # has (Save's Ctrl+S) typed in Edit Shortcut's key field is shown with the
-    # message "Invalid shortcut sequence.", and OK saves the shortcut with no
-    # key; Save keeps its key.
-    table, paths = loaded
-    window = open_actions(user, qtbot)
-    check(user, window, 'Case Conversion')
-    assign(user, monkeypatch, window, pressing(user, Key.Key_1))
-    editor = edit_shortcuts(user, qtbot, window)
-    dialog = edit_item(user, qtbot, editor, 0)
-    user.click(dialog._shortcut)
-    user.press(Key.Key_S, Ctrl)
-    assert len(invalid_labels(dialog)) == 1
-    assert key_text(dialog._shortcut) == 'Ctrl+S'
-    user.click(dialog._ok)
-    user.activate(editor)
-    user.click(button(editor, 'OK'))
-    close(user, window)
-    assert shortcuts_on_menu(mainwin) == [('Case Conversion', '')]
-    assert user.action('&Save').shortcut().toString() == 'Ctrl+S'
-    assert user_shortcut('Case Conversion') == ''
-
-
 def test_cancel_keeps_the_key(loaded, mainwin, user, qtbot, monkeypatch):
     # The docs don't say; this is what puddletag does: Cancel in Edit Shortcut
     # throws away a key typed in its field; the shortcut keeps its own and
@@ -1401,8 +1377,6 @@ def test_preferences_ok_after_a_shortcut_removed_meanwhile(loaded, mainwin, user
 
 
 @pytest.mark.parametrize('how', ['modifier alone', 'taken key'])
-@pytest.mark.xfail(strict=True,
-                   reason="Edit Shortcut's OK stays enabled while its key field holds a key it can't save")
 def test_key_edit_shortcut_cant_save_turns_ok_off(how, loaded, mainwin, user, qtbot, monkeypatch):
     # The docs don't say; Assign Shortcut's key window turns OK off for a key
     # another command has (test_taken_key_is_refused) and for a modifier alone

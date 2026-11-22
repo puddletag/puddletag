@@ -179,7 +179,8 @@ class Editor(QDialog):
         okcancel.cancel.connect(self.close)
         self._ok = okcancel.okButton
         self._name.textChanged.connect(self.enableOk)
-        self.enableOk(self._name.text())
+        self._shortcut.validityChanged.connect(self.enableOk)
+        self.enableOk()
         scut_status = QLabel('')
         self._shortcut.validityChanged.connect(
             lambda v: scut_status.setText('') if v or (not self._shortcut.text()) else
@@ -216,11 +217,10 @@ class Editor(QDialog):
         self._newActionList.setCurrentItem(new_item,
                                            QItemSelectionModel.SelectionFlag.ClearAndSelect)
 
-    def enableOk(self, text):
-        if not text or text in self._names:
-            self._ok.setEnabled(False)
-        else:
-            self._ok.setEnabled(True)
+    def enableOk(self, *args):
+        name = self._name.text()
+        key_saves = self._shortcut.valid or not self._shortcut.text()
+        self._ok.setEnabled(bool(name) and name not in self._names and key_saves)
 
     def okClicked(self):
         alist = self._newActionList
