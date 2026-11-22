@@ -10,7 +10,7 @@ import pytest
 from PyQt6.QtCore import QFile, QIODevice, QPoint, Qt, QTranslator
 from PyQt6.QtWidgets import (QApplication, QCheckBox, QColorDialog, QComboBox, QLabel, QLineEdit, QMenu,
                              QMessageBox, QPushButton, QRadioButton, QStyle, QStyleOptionButton,
-                             QStyleOptionViewItem, QToolButton)
+                             QStyleOptionViewItem, QToolButton, QWidget)
 
 from puddlestuff import audioinfo, confirmations, constants, puddlesettings
 from puddlestuff.mainwin.tagpanel import FrameCombo
@@ -999,3 +999,89 @@ def test_global_mapping_is_listed_and_saved_once(mainwin, user, qtbot, restart, 
         assert [line.strip() for line in f if line.strip().endswith(',comment,notes')] == ['global,comment,notes']
     model = load(win, qtbot, tmp_path / 'music', 1)
     assert model.taginfo[0]['notes'] == ['Synthetic comment']
+
+
+class SyntheticPage(QWidget):
+    """A plugin's Preferences page (add_config_widget) that refuses its
+    values only when it saves, as pages could before validateSettings."""
+    title = 'Synthetic Page'
+
+    def __init__(self, parent=None, status=None):
+        super().__init__(parent)
+
+    def applySettings(self, control=None):
+        raise puddlesettings.SettingsError('Synthetic refusal')
+
+
+@pytest.fixture
+def no_translations(tmp_path):
+    """An install that ships no .qm file. The translations search path is
+    the whole process's: it's put back."""
+    from PyQt6.QtCore import QDir
+    folder = tmp_path / 'no translations'
+    folder.mkdir()
+    paths = QDir.searchPaths('translations')
+    QDir.setSearchPaths('translations', [str(folder)])
+    yield
+    QDir.setSearchPaths('translations', paths)
+
+
+def test_no_translations_found_shows_no_language_row(mainwin, qtbot, user, no_translations):
+    # preferences.txt (Language): "...and the others are the translations puddletag found."
+    # The docs don't say; this is what puddletag does: with none found, the
+    # page shows no Language row (a synthetic install).
+    window = user.open_preferences()
+    page = window.stack.currentWidget()
+    assert page.findChildren(QComboBox) == []
+    assert [label.text() for label in page.findChildren(QLabel) if label.text().startswith('Language')] == []
+    user.close_preferences(window, 'Cancel')
+
+
+def test_plugin_page_that_refuses_names_itself_and_stays_open(mainwin, qtbot, user, dialogs, monkeypatch):
+    # preferences.txt: "If the values on a page can't be saved (for instance a row in the Tag
+    # Panel that isn't a number), a warning names the page, the window stays open and nothing
+    # is saved." The page is a synthetic plugin's, as test_enabled_plugin_adds_its_page adds one.
+    monkeypatch.setattr(puddlesettings, 'config_widgets', [SyntheticPage])
+    window = user.open_preferences('Synthetic Page')
+    dialogs.answer('QMessageBox.warning', OK)
+    user.click(window.okbuttons.okButton)
+    qtbot.waitUntil(lambda: bool(warnings_shown(dialogs)))
+    assert warnings_shown(dialogs) == [
+        'An error occurred while saving the settings of <b>Synthetic Page</b>: Synthetic refusal']
+    assert window.isVisible()
+    user.close_preferences(window, 'Cancel')
+
+
+def test_plugin_confirmation_without_a_description_shows_its_name(mainwin, qtbot, user, monkeypatch):
+    # preferences.txt (Confirmations): "Confirmations let you know that you're about to do
+    # something that can't be reversed. Turn off the ones that you find grating."
+    # The docs don't say; this is what puddletag does: a plugin's confirmation registered
+    # without a description is listed under its name, on by default (the name is synthetic).
+    # The autouse fixture puts the confirmations back, not the list of the registered ones,
+    # which the page lists.
+    monkeypatch.setattr(confirmations, '_registered', list(confirmations._registered))
+    confirmations.add('synthetic_question')
+    window = user.open_preferences('Confirmations')
+    box = find_box(window.stack.currentWidget(), 'synthetic_question')
+    assert box.isChecked()
+    user.close_preferences(window, 'Cancel')
+
+
+def test_preferences_list_answers_nothing_for_an_invalid_index(mainwin, qtbot, user):
+    # Qt lets a view ask a model about any index; the page list answers nothing for an
+    # invalid one (no click, hover or key in the list asks, so this asks it directly).
+    from PyQt6.QtCore import QModelIndex
+    window = user.open_preferences()
+    assert window.model.data(QModelIndex()) is None
+    user.close_preferences(window, 'Cancel')
+
+
+@pytest.mark.xfail(strict=True, reason='with no translations found, OK saves <Autodetect> over the saved language')
+def test_ok_without_translations_keeps_the_saved_language(mainwin, qtbot, user, no_translations):
+    # preferences.txt (Language): "**Default** is English".
+    # The docs don't say; this is what puddletag should do: with no translation found, OK
+    # keeps the language picked before (synthetic profile).
+    PuddleConfig().set('main', 'lang', 'default')
+    window = user.open_preferences()
+    user.close_preferences(window)
+    assert saved('main', 'lang') == 'default'

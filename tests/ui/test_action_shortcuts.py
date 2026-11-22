@@ -1323,3 +1323,114 @@ def test_modifier_alone_is_invalid_until_cleared(loaded, mainwin, user, qtbot, m
     user.click(button(editor, 'OK'))
     close(user, window)
     assert shortcuts_on_menu(mainwin) == [('Case Conversion', 'Ctrl+1')]
+
+
+def test_duplicate_with_nothing_selected_opens_nothing(loaded, mainwin, user, qtbot, monkeypatch):
+    # The docs don't say; this is what puddletag does: Duplicate with no shortcut
+    # selected opens no window, as Edit does.
+    table, paths = loaded
+    window = open_actions(user, qtbot)
+    check(user, window, 'Case Conversion')
+    assign(user, monkeypatch, window, pressing(user, Key.Key_1))
+    editor = edit_shortcuts(user, qtbot, window)
+    assert editor._listbox.selectedItems() == []
+    duplicate = tool_button(editor, 'Duplicate')
+    assert duplicate.isEnabled()
+    user.click(duplicate)
+    qtbot.wait(300)
+    assert shown(action_shortcuts.Editor) is None
+    user.click(button(editor, 'OK'))
+    close(user, window)
+    assert shortcuts_on_menu(mainwin) == [('Case Conversion', 'Ctrl+1')]
+
+
+def test_removed_action_leaves_its_shortcut_doing_nothing(loaded, mainwin, user, qtbot, monkeypatch):
+    # "I recommend you assign shortcuts to your favourite actions like Ctrl+1, Ctrl+2
+    # etc. Use the Assign Shortcut button on the Actions Dialog." (tut3.txt:100); the
+    # docs don't say; this is what puddletag does: removing, in the Actions window,
+    # the action a shortcut runs leaves the shortcut on the Actions menu, and its key
+    # then runs nothing.
+    table, paths = loaded
+    assigned(user, qtbot, monkeypatch)
+    shortcut = menu_item(mainwin, 'Case Conversion')
+    assert len(shortcut.funcs) == 1
+    window = open_actions(user, qtbot)
+    [item] = window.listbox.findItems('Case Conversion', Qt.MatchFlag.MatchExactly)
+    click_row(user, window.listbox, window.listbox.row(item))
+    user.click(window.buttonlist.removeButton)
+    # The shortcut learns of the removal from a file watcher, a moment later.
+    qtbot.waitUntil(lambda: shortcut.funcs == [])
+    close(user, window)
+    assert shortcuts_on_menu(mainwin) == [('Case Conversion', 'Ctrl+1')]
+    user.press(Key.Key_1, Ctrl)
+    nothing_ran(qtbot, user, paths)
+
+
+def test_preferences_ok_after_a_shortcut_removed_meanwhile(loaded, mainwin, user, qtbot, monkeypatch):
+    # "I recommend you assign shortcuts to your favourite actions like Ctrl+1, Ctrl+2
+    # etc. Use the Assign Shortcut button on the Actions Dialog." (tut3.txt:100);
+    # "Just double-click on the desired shortcut in the shortcut column and enter the
+    # desired shortcut." (preferences.txt:155); the docs don't say; this is what
+    # puddletag does: a shortcut removed in Edit Shortcuts while Preferences is open
+    # stays removed when Preferences' OK saves the key typed on its Shortcuts page.
+    # Ctrl+1 and Ctrl+L are synthetic.
+    table, paths = loaded
+    assigned(user, qtbot, monkeypatch)
+    prefs = user.open_preferences('Shortcuts')
+    keys = prefs.stack.currentWidget().actionTable
+    [row] = [r for r in range(keys.rowCount()) if keys.item(r, 0).text() == '&Preferences']
+    cell = keys.item(row, 1)
+    keys.scrollToItem(cell)
+    user.double_click(keys.viewport(), keys.visualItemRect(cell).center())
+    qtbot.waitUntil(lambda: keys.state() == QAbstractItemView.State.EditingState)
+    user.press(Key.Key_L, Ctrl)
+    user.activate()
+    window = open_actions(user, qtbot)
+    check(user, window, 'Case Conversion')
+    editor = edit_shortcuts(user, qtbot, window)
+    click_row(user, editor._listbox, 0)
+    user.click(tool_button(editor, 'Remove'))
+    user.click(button(editor, 'OK'))
+    close(user, window)
+    assert shortcuts_on_menu(mainwin) == []
+    user.activate(prefs)
+    user.close_preferences(prefs)
+    assert shortcuts_on_menu(mainwin) == []
+    assert user.action('&Preferences').shortcut().toString() == 'Ctrl+L'
+    assert user_shortcut('&Preferences') == 'Ctrl+L'
+
+
+@pytest.mark.parametrize('how', ['modifier alone', 'taken key'])
+@pytest.mark.xfail(strict=True,
+                   reason="Edit Shortcut's OK stays enabled while its key field holds a key it can't save")
+def test_key_edit_shortcut_cant_save_turns_ok_off(how, loaded, mainwin, user, qtbot, monkeypatch):
+    # The docs don't say; Assign Shortcut's key window turns OK off for a key
+    # another command has (test_taken_key_is_refused) and for a modifier alone
+    # (test_modifier_alone_disables_ok); Edit Shortcut does the same, and a free
+    # key turns it on again. Save's Ctrl+S is from data/shortcuts; Ctrl+2 is
+    # synthetic.
+    table, paths = loaded
+    window = open_actions(user, qtbot)
+    check(user, window, 'Case Conversion')
+    assign(user, monkeypatch, window, pressing(user, Key.Key_1))
+    editor = edit_shortcuts(user, qtbot, window)
+    dialog = edit_item(user, qtbot, editor, 0)
+    user.click(dialog._shortcut)
+    if how == 'taken key':
+        user.press(Key.Key_S, Ctrl)
+    else:
+        hold(Key.Key_Control)
+        let_go(Key.Key_Control, Ctrl)
+    seen = [(len(invalid_labels(dialog)), dialog._ok.isEnabled())]
+    # Clear takes the focus, so the key field is clicked again.
+    user.click(button(dialog, '&Clear'))
+    user.click(dialog._shortcut)
+    user.press(Key.Key_2, Ctrl)
+    seen.append((len(invalid_labels(dialog)), dialog._ok.isEnabled()))
+    user.click(dialog._ok)
+    user.activate(editor)
+    user.click(button(editor, 'OK'))
+    close(user, window)
+    assert seen == [(1, False), (0, True)]
+    assert shortcuts_on_menu(mainwin) == [('Case Conversion', 'Ctrl+2')]
+    assert user.action('&Save').shortcut().toString() == 'Ctrl+S'

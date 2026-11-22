@@ -561,9 +561,9 @@ def test_duplicate_window_title_is_translated(loaded, user, qtbot, dialogs):
     close_window(user, qtbot, window)
 
 
-def test_escape_keeps_the_action_order(loaded, user, qtbot):
+def test_escape_keeps_the_action_order(loaded, mainwin, user, qtbot):
     # The docs don't say; Cancel keeps the new order, so Esc and the close
-    # button do too.
+    # button do too, and the Actions dock shows the new order at once.
     window = open_actions(user, qtbot)
     select_row(user, window.listbox, 0)
     user.click(window.buttonlist.movedownButton)
@@ -571,6 +571,8 @@ def test_escape_keeps_the_action_order(loaded, user, qtbot):
     user.press(Key.Key_Escape)
     qtbot.waitUntil(lambda: not window.isVisible())
     user.activate()
+    [dock] = mainwin.findChildren(ActionDialog)
+    assert names(dock.listbox) == ['Standard', 'Case Conversion']
     window = open_actions(user, qtbot)
     assert names(window.listbox) == ['Standard', 'Case Conversion']
     close_window(user, qtbot, window)
@@ -1088,3 +1090,188 @@ def test_bad_saved_number_doesnt_stop_startup(loaded, qtbot, restart):
     assert win.isVisible()
     [menu] = [m for m in win.menuBar().findChildren(QMenu) if m.title() == '&Actions']
     assert '&Actions' in [item.text() for item in menu.actions()]
+
+
+# tut2.txt:48 "Actions are just a bunch of functions run one after the other."
+# The docs are silent: cancelling the name prompt, or OK with no name, adds
+# nothing (the name is synthetic).
+@pytest.mark.parametrize('answer', [('Upper', False), ('', True)], ids=['cancelled', 'no name'])
+def test_new_action_cancelled_adds_nothing(answer, loaded, user, qtbot, dialogs):
+    table, paths = loaded
+    window = open_actions(user, qtbot)
+    dialogs.answer('QInputDialog.getText', answer)
+    user.click(window.buttonlist.addButton)
+    qtbot.wait(100)
+    assert [name for name, args, kwargs in dialogs.calls] == ['QInputDialog.getText']
+    assert none_shown(CreateAction)
+    assert names(window.listbox) == DEFAULTS
+    assert sorted(os.listdir(ACTIONDIR)) == ['caseconversion.action', 'standard.action']
+    close_window(user, qtbot, window)
+    assert in_files(paths) == [tags(1), tags(2)]
+    assert in_table(table) == [tags(1), tags(2)]
+
+
+def test_new_action_named_like_another_actions_file_keeps_that_file(loaded, user, qtbot, dialogs):
+    # tut2.txt:48 "Actions are just a bunch of functions run one after the
+    # other." The docs are silent: an action's file is named after it, and the
+    # Standard action's is standard.action, so a new action named "standard"
+    # (synthetic) gets a file of its own and Standard keeps its steps.
+    before = steps('standard.action')
+    window = open_actions(user, qtbot)
+    dialogs.answer('QInputDialog.getText', ('standard', True))
+    user.click(window.buttonlist.addButton)
+    editor = opened(qtbot, CreateAction)
+    user.click(editor.buttonlist.addButton)
+    function = opened(qtbot, CreateFunction)
+    upper_case(user, qtbot, function, 'title')
+    user.click(function.okcancel.okButton)
+    qtbot.waitUntil(lambda: editor.listbox.count() == 1)
+    user.click(editor.okcancel.okButton)
+    qtbot.waitUntil(lambda: not editor.isVisible())
+    user.activate(window)
+    assert names(window.listbox) == DEFAULTS + ['standard']
+    assert sorted(os.listdir(ACTIONDIR)) == ['caseconversion.action', 'standard.action', 'standard_0.action']
+    assert Macro(action_path('standard.action')).name == 'Standard'
+    assert steps('standard.action') == before
+    assert Macro(action_path('standard_0.action')).name == 'standard'
+    assert steps('standard_0.action') == ['Convert Case: title: UPPER CASE']
+    close_window(user, qtbot, window)
+    window = open_actions(user, qtbot)
+    assert names(window.listbox) == DEFAULTS + ['standard']
+    close_window(user, qtbot, window)
+
+
+def test_wheel_scrolls_a_tall_preview_down(loaded, user, qtbot):
+    # function.txt (Format value) "Formats whatever is passed to it using the
+    # Format string." Synthetic: the docs are silent on a preview taller than
+    # its window; twelve synthetic fields make twelve lines, more than the
+    # preview shows.
+    user.click_menu('&Functions')
+    function = opened(qtbot, CreateFunction)
+    pick(user, qtbot, function.functions, 'Format value')
+    user.activate(function)
+    widget = function.stack.currentWidget()
+    type_into(user, widget.tagcombo.lineEdit(), 'a, b, c, d, e, f, g, h, i, j, k, l')
+    type_into(user, widget.controls[0].combo.lineEdit(), 'x')
+    label = function.exlabel
+    qtbot.waitUntil(lambda: label.verticalScrollBar().isVisible())
+    assert not label.horizontalScrollBar().isVisible()
+    assert label.verticalScrollBar().value() == 0
+    event = QWheelEvent(QPointF(5, 5), QPointF(label.mapToGlobal(QPoint(5, 5))), QPoint(), QPoint(0, -120),
+                        Qt.MouseButton.NoButton, Qt.KeyboardModifier.NoModifier,
+                        Qt.ScrollPhase.NoScrollPhase, False)
+    QApplication.sendEvent(label.viewport(), event)
+    assert label.verticalScrollBar().value() > 0
+    user.click(function.okcancel.cancelButton)
+    qtbot.waitUntil(lambda: not function.isVisible())
+    user.activate()
+
+
+def test_option_saved_translated_opens_selected_and_saves_english(loaded, user, qtbot):
+    # function.txt:41 "There are three types of case conversion: UPPER CASE,
+    # ..."; #230: in French, UPPER CASE gave Mixed Case; puddletag up to 2.5.0
+    # saved an option under its translated name. The docs are silent: the step
+    # opens on that option and OK saves its English name. The action and the
+    # translation are synthetic.
+    write_action('upper.action', 'Upper', [('titleCase', ['title'], ['Synthetic upper', '., !'])])
+    translator = SyntheticTranslation({('Functions', 'UPPER CASE'): 'Synthetic upper'})
+    QApplication.installTranslator(translator)
+    try:
+        window = open_actions(user, qtbot)
+        assert names(window.listbox) == DEFAULTS + ['Upper']
+        editor = edit_action(user, qtbot, window, 2)
+        select_row(user, editor.listbox, 0)
+        user.click(editor.buttonlist.editButton)
+        function = opened(qtbot, CreateFunction)
+        combo = function.stack.currentWidget().controls[0]
+        assert combo.currentText() == 'Synthetic upper'
+        assert combo.currentData() == 'UPPER CASE'
+        user.click(function.okcancel.okButton)
+        qtbot.waitUntil(lambda: not function.isVisible())
+        user.activate(editor)
+        user.click(editor.okcancel.okButton)
+        qtbot.waitUntil(lambda: not editor.isVisible())
+        user.activate(window)
+        close_window(user, qtbot, window)
+    finally:
+        QApplication.removeTranslator(translator)
+    with open(action_path('upper.action')) as f:
+        assert json.load(f)['Func0']['arguments'] == ['UPPER CASE', '., !']
+
+
+@pytest.fixture
+def plugin_function(monkeypatch):
+    """A synthetic plugin's function, loaded when puddletag starts, so the
+    Functions dock lists it: list this fixture before loaded."""
+    from puddlestuff import functions
+    from puddlestuff.util import PluginFunction
+
+    def exclaim(text, loud):
+        return text + '!' if loud else text
+
+    monkeypatch.setitem(functions.functions, 'synthetic_exclaim',
+                        PluginFunction('Synthetic exclaim', exclaim, 'Exclaim $0, loud: $1',
+                                       args=[('&Loud', 'check', True)]))
+
+
+def test_functions_dock_opens_on_the_first_function_once_the_last_is_gone(
+        plugin_function, loaded, mainwin, user, qtbot, restart, monkeypatch):
+    # menus.txt (Windows > Functions) "Shows the Functions dialog as a tool
+    # window. Click Apply to apply changes to the selected files." The docs
+    # say nothing more. The dock opens on the function it showed when
+    # puddletag quit. If that function is gone at the next start (a synthetic
+    # plugin function whose plugin was turned off), the dock opens on the
+    # first function of its list, Autonumbering, as on a first start.
+    from PyQt6.QtWidgets import QPushButton
+    from puddlestuff import functions, puddletag
+    from puddlestuff.mainwin.action_dialogs import FunctionDialog
+
+    table, paths = loaded
+    user.click_menu('Functions')
+    [dock] = mainwin.findChildren(FunctionDialog)
+    qtbot.waitUntil(dock.isVisible)
+    pick(user, qtbot, dock.functions, 'Synthetic exclaim')
+    user.activate()
+    type_into(user, dock.stack.currentWidget().tagcombo.lineEdit(), 'title')
+    [apply] = [b for b in dock.findChildren(QPushButton) if b.text() == 'Appl&y']
+    user.click(apply)
+    written(qtbot, user, paths[1], 'title', ['title 2!'])
+    # The next start loads no plugin function: the old window's close, in
+    # restart(), still finds the function and saves it as the one used last.
+    real_load_plugins = puddletag.load_plugins
+
+    def without_the_plugin():
+        functions.functions.pop('synthetic_exclaim', None)
+        return real_load_plugins()
+
+    monkeypatch.setattr(puddletag, 'load_plugins', without_the_plugin)
+    win = restart()
+    assert PuddleConfig().get('functions', 'last_used', '') == 'synthetic_exclaim'
+    [dock] = win.findChildren(FunctionDialog)
+    # Open when puddletag quit, the dock comes back open.
+    qtbot.waitUntil(dock.isVisible)
+    assert 'Synthetic exclaim' not in [dock.functions.itemText(i) for i in range(dock.functions.count())]
+    assert dock.functions.currentText() == 'Autonumbering'
+    assert dock.stack.currentWidget().func.funcname == 'Autonumbering'
+
+
+# The docs don't say; two actions can't share a name, as Rename refuses one
+# (test_rename_to_a_taken_name_says_so): they're ticked by name, so ticking
+# one ticks both next time.
+@pytest.mark.xfail(strict=True, reason='New Action and Duplicate accept a name another action has')
+@pytest.mark.parametrize('how', ['add', 'duplicate'])
+def test_taken_name_is_refused_for_a_new_action(how, loaded, user, qtbot, dialogs):
+    window = open_actions(user, qtbot)
+    files = sorted(os.listdir(ACTIONDIR))
+    dialogs.answer('QMessageBox.warning', None)
+    select_row(user, window.listbox, 0)
+    dialogs.answer('QInputDialog.getText', ('Standard', True))
+    user.click(window.buttonlist.addButton if how == 'add' else window.buttonlist.duplicateButton)
+    qtbot.waitUntil(lambda: any(call[0] == 'QMessageBox.warning' for call in dialogs.calls)
+                    or not none_shown(CreateAction))
+    warnings = [args[2] for name, args, kwargs in dialogs.calls if name == 'QMessageBox.warning']
+    assert warnings == ['An action named <b>Standard</b> already exists.']
+    assert none_shown(CreateAction)
+    assert names(window.listbox) == DEFAULTS
+    assert sorted(os.listdir(ACTIONDIR)) == files
+    close_window(user, qtbot, window)
