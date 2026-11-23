@@ -163,7 +163,7 @@ def fields_from_text(text):
 
 
 def dict_difference(dict1, dict2):
-    """Returns a dictonary containing key/value pairs from dict2 where key
+    """Returns a dictionary containing key/value pairs from dict2 where key
     isn't in dict1."""
     temp = {}
     for field in dict2:

@@ -255,14 +255,14 @@ def get_function_arguments(funcname, func, arguments, reserved, fmt=True, *dicts
 
 def run_format_func(funcname, arguments, m_audio, s_audio=None, extra=None,
                     state=None):
-    '''Runs the function function using the arguments specified from pudlestuff.function.
+    '''Runs the function function using the arguments specified from puddlestuff.functions.
 
     Arguments:
     funcname  -- String with the function name. Looked up using the
-                 dictionary pudlestuff.function.functions
+                 dictionary puddlestuff.functions.functions
     arguments -- List of arguments to pass to the function. Patterns
                  should not be evaluated. They'll be evaluated here.
-    m_audio   -- Audio file containg multiple multiple values per key.
+    m_audio   -- Audio file containing multiple values per key.
                  Eg. {'artist': ['Artist1': 'Artist2']}
 
     Keyword Arguments
@@ -315,7 +315,7 @@ def parsefunc(s, m_audio, s_audio=None, state=None, extra=None, ret_i=False, pat
     Arguments
     ---------
     s  -- *Unicode* format string. Eg. $replace(%artist%, name, surname)
-    m_audio -- Audio file containg multiple multiple values per key.
+    m_audio -- Audio file containing multiple values per key.
         Eg. {'artist': ['Artist1': 'Artist2']}
 
     Keyword Arguments

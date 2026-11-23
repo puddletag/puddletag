@@ -16,20 +16,20 @@ if '__file__' in globals():
     hash_file = path.join(git_root, '.git', 'HEAD')
     if path.exists(hash_file):
         try:
-            with open(hash_file) as fo:
-                changeset = fo.read().strip()
+            with open(hash_file) as f:
+                changeset = f.read().strip()
             if changeset.startswith("ref: "):
                 hash_file = path.join(git_root, '.git', *(changeset[5:].split('/')))
                 ref = changeset[5:]
                 try:
-                    with open(hash_file) as fo:
-                        changeset = fo.read().strip()
+                    with open(hash_file) as f:
+                        changeset = f.read().strip()
                 except FileNotFoundError:
                     # git moves branch refs into packed-refs; with the
                     # reftable format neither file exists.
                     changeset = None
-                    with open(path.join(git_root, '.git', 'packed-refs')) as fo:
-                        for line in fo:
+                    with open(path.join(git_root, '.git', 'packed-refs')) as f:
+                        for line in f:
                             if line[:1] not in '#^' and line.strip().endswith(' ' + ref):
                                 changeset = line.split()[0]
                                 break

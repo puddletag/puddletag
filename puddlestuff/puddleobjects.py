@@ -207,8 +207,8 @@ class PuddleConfig(object):
         text = json.dumps(dict(self.data), indent=2)
         temp = f'{filename}.tmp'
         try:
-            with open(temp, 'w') as fo:
-                fo.write(text)
+            with open(temp, 'w') as f:
+                f.write(text)
             os.replace(temp, filename)
         except BaseException:
             try:
@@ -389,7 +389,7 @@ def get_icon(name: Optional[str] = None, fallback: Optional[str] = None) -> QIco
     """Return the icon with the given name from the current icon theme.
 
     If the theme does not contain such icon, fallback to built-in png of
-    the same name. The fallback file can be overriden by providing a filename
+    the same name. The fallback file can be overridden by providing a filename
     as the second argument.
     """
     if not name and not fallback:
@@ -769,13 +769,13 @@ def progress(func: Callable[..., Generator[Optional[Tuple[str, int]], None, None
     will show 'Loading... 1 of 20', 'Loading... 2 of 20', etc.on the progress
     bar.
 
-    maximum is the maximum value of the progessbar.
+    maximum is the maximum value of the progress bar.
 
     threadfin is the function to run when the thread has finished. Usually
     for cleanup stuff.
 
     Note that the function returns a function that expects a parent for
-    the progess window as the first argument. This with the rest of the arguments
+    the progress window as the first argument. This with the rest of the arguments
     passed to the returned function are used when calling func (except in the
     case where only the parent argument is passed).
     """
@@ -1849,7 +1849,7 @@ class PicWidget(QWidget):
         """Enables or disables buttons depending on context.
 
         With < 1 image in self.images,
-        they're hidden unless overidden by self.showbuttons."""
+        they're hidden unless overridden by self.showbuttons."""
         if not self.images:
             self.next.setEnabled(False)
             self.prev.setEnabled(False)

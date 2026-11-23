@@ -15,13 +15,13 @@ def clean_files(dirpath):
         if not path.endswith('.html'):
             continue
         try:
-            with open(path, 'r+') as fo:
+            with open(path, 'r+') as f:
                 print("Fixing: " + path)
-                text = fo.read()
+                text = f.read()
                 text = remove_h1(text)
-                fo.seek(0)
-                fo.write(text)
-                fo.truncate()
+                f.seek(0)
+                f.write(text)
+                f.truncate()
         except (IOError, OSError):
             print("Could not edit: " + path)
 

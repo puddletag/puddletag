@@ -719,7 +719,7 @@ class FieldNameError(EnvironmentError):
 
 
 class CaselessDict(dict):
-    """Caseless dictionry. Only accepts strings as keys."""
+    """Caseless dictionary. Only accepts strings as keys."""
 
     def __init__(self, other=None):
         self._keys = {}

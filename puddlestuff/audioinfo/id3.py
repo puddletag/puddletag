@@ -686,7 +686,7 @@ write_frames.update({
     'genre': create_genre,
     'unsyncedlyrics': create_uslt})
 
-# Dictionary contaning classes from mutagen.id3 and it's associated
+# Dictionary containing classes from mutagen.id3 and its associated
 # handler.
 frames = dict([(key, text_handler(title)) for key,
                                               title in text_frames.items()])

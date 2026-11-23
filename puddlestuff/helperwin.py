@@ -175,7 +175,7 @@ class AutonumberDialog(QDialog):
                 numtracks = -1  # Don't use totals
         else:
             if self._separator.isChecked():
-                numtracks = -2  # Use totals, automaticall generated
+                numtracks = -2  # Use totals, automatically generated
             else:
                 numtracks = -1
 

@@ -148,7 +148,7 @@ def parse_tracklist(tlist):
 
 
 def parse_album_json(data):
-    """Parses the retrieved json for an album and get's the track listing."""
+    """Parses the retrieved json for an album and gets the track listing."""
 
     info = {}
 

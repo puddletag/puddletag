@@ -28,8 +28,8 @@ import puddlestuff
 
 
 def get_sha1_sum(filename):
-    with open(filename, "rb") as fo:
-        return hashlib.sha1(fo.read()).hexdigest()
+    with open(filename, "rb") as f:
+        return hashlib.sha1(f.read()).hexdigest()
 
 
 def update_checksums(filename, build_dir):
@@ -41,8 +41,8 @@ def update_checksums(filename, build_dir):
         "source_sha": source_sha,
         "beta_source_sha": source_sha,
     }
-    with open(filename, "w") as fo:
-        fo.write(TEMPLATE.format(**context))
+    with open(filename, "w") as f:
+        f.write(TEMPLATE.format(**context))
 
 
 def find_sources(build_dir):

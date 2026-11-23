@@ -3,9 +3,9 @@
 
 # Copyright (C) 2008-2010 concentricpuddle, GPLv2
 
-"""A modules that defines function that are to be used througout puddletag.
+"""A module that defines functions that are to be used throughout puddletag.
 
-Basically, this modules contains functions that are called via
+Basically, this module contains functions that are called via
 the getfunc function in findfunc.py. Most of the time though,
 getfunc isn't called directly, but via the tagtofilename function
 also found in the findfunc module.

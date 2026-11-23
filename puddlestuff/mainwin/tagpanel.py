@@ -240,10 +240,10 @@ class FrameCombo(QGroupBox):
         """Creates a vertical column of comboboxes.
         tags are tags is usual in the (tag, backgroundvalue) case[should be enumerable].
         rows are a dictionary with each key being a list of the indexes of tags that should
-        be one one row.
+        be on one row.
 
         E.g Say you wanted to have the artist, album, title, and comments on
-        seperate rows. But then you want year, genre and track on one row. With that
+        separate rows. But then you want year, genre and track on one row. With that
         row being before the comments row. You'd do something like...
 
         >>>tags = [('Artist', 'artist'), ('Title', 'title'), ('Album', 'album'),
