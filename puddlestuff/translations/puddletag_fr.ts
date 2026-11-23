@@ -277,7 +277,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
     <message>
       <location filename="../puddleobjects.py" line="1588" />
       <source>&lt;p&gt;Enter a description for the current cover.&lt;/p&gt;&lt;p&gt;For ID3 tags the description has to be different for each cover as per the ID3 spec. If they don't differ then spaces are appended to the description when the tag is saved.&lt;/p&gt;</source>
-      <translation>&lt;p&gt;Entrez une description pour l'image séleectionnée.&lt;/p&gt;&lt;p&gt;Pour les tags ID3 la description doit être différente pour chaque pochette. Sinon des espaces seront ajoutés au moment de sauvegarder.&lt;/p&gt;</translation>
+      <translation>&lt;p&gt;Entrez une description pour l'image sélectionnée.&lt;/p&gt;&lt;p&gt;Pour les tags ID3 la description doit être différente pour chaque pochette. Sinon des espaces seront ajoutés au moment de sauvegarder.&lt;/p&gt;</translation>
     </message>
     <message>
       <location filename="../puddleobjects.py" line="1598" />
@@ -385,7 +385,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
     <message>
       <location filename="../functions_dialogs.py" line="49" />
       <source>&amp;Restart numbering at each directory.</source>
-      <translation>&amp;Recomencer à chaque dossier.</translation>
+      <translation>&amp;Recommencer à chaque dossier.</translation>
     </message>
     <message>
       <location filename="../helperwin.py" line="40" />
@@ -525,7 +525,7 @@ Double cliquer pour changer la couleur&lt;/p&gt;</translation>
     <message>
       <location filename="../puddlesettings.py" line="547" />
       <source>Field edited in Extended Tags.</source>
-      <translation>Champs modifiés dans less tags étendus.</translation>
+      <translation>Champs modifiés dans les tags étendus.</translation>
     </message>
     <message>
       <location filename="../puddlesettings.py" line="548" />
@@ -1603,17 +1603,17 @@ Double cliquer pour changer la couleur&lt;/p&gt;</translation>
     <message>
       <location filename="../translations.py" line="144" />
       <source>Format $0 using $1</source>
-      <translation>Formatter $0 selon $1</translation>
+      <translation>Formater $0 selon $1</translation>
     </message>
     <message>
       <location filename="../translations.py" line="145" />
       <source>Format value</source>
-      <translation>Formatter la valeur</translation>
+      <translation>Formater la valeur</translation>
     </message>
     <message>
       <location filename="../translations.py" line="146" />
       <source>&amp;Format string</source>
-      <translation>Chaine de &amp;formattage</translation>
+      <translation>Chaine de &amp;formatage</translation>
     </message>
     <message>
       <location filename="../translations.py" line="147" />
@@ -1739,12 +1739,12 @@ Double cliquer pour changer la couleur&lt;/p&gt;</translation>
     <message>
       <location filename="../translations.py" line="172" />
       <source>Replace with RegExp</source>
-      <translation>Remplacer avec une Expression rationelle</translation>
+      <translation>Remplacer avec une Expression rationnelle</translation>
     </message>
     <message>
       <location filename="../translations.py" line="173" />
       <source>&amp;Regular Expression</source>
-      <translation>Expression &amp;Rationelle</translation>
+      <translation>Expression &amp;Rationnelle</translation>
     </message>
     <message>
       <location filename="../translations.py" line="174" />
@@ -1764,7 +1764,7 @@ Double cliquer pour changer la couleur&lt;/p&gt;</translation>
     <message>
       <location filename="../translations.py" line="178" />
       <source>&amp;Pattern (extension not required)</source>
-      <translation>&amp;Motif (extension optionelle)</translation>
+      <translation>&amp;Motif (extension optionnelle)</translation>
     </message>
     <message>
       <location filename="../translations.py" line="179" />
@@ -2411,7 +2411,7 @@ Double cliquer pour changer la couleur&lt;/p&gt;</translation>
     <message>
       <location filename="../masstag/dialogs.py" line="671" />
       <source>&lt;b&gt;Lookups completed.&lt;/b&gt;</source>
-      <translation>&lt;b&gt;Recheche terminée.&lt;/b&gt;</translation>
+      <translation>&lt;b&gt;Recherche terminée.&lt;/b&gt;</translation>
     </message>
   </context>
   <context>
@@ -2516,7 +2516,7 @@ Double cliquer pour changer la couleur&lt;/p&gt;</translation>
     <message>
       <location filename="../translations.py" line="28" />
       <source>Clear Selected &amp;Cells</source>
-      <translation>Nettoyer les &amp;cellules séectionnées</translation>
+      <translation>Nettoyer les &amp;cellules sélectionnées</translation>
     </message>
     <message>
       <location filename="../translations.py" line="29" />
@@ -3109,7 +3109,7 @@ Continuer ?</translation>
     <message>
       <location filename="../mainwin/funcs.py" line="291" />
       <source>No supported music libraries were found. Most likely the required dependencies aren't installed. Visit the puddletag website, &lt;a href='http://puddletag.sourceforge.net'&gt;puddletag.sourceforge.net&lt;/a&gt; for more details.</source>
-      <translation>Aucune discothèque exploitable n'a été trouvée. Il est possible que les bibliothèques nécéssaires ne soient pas installées. Voyez le site web puddletag, &lt;a href='http://puddletag.sourceforge.net'&gt;puddletag.sourceforge.net&lt;/a&gt; pour plus d'informations.</translation>
+      <translation>Aucune discothèque exploitable n'a été trouvée. Il est possible que les bibliothèques nécessaires ne soient pas installées. Voyez le site web puddletag, &lt;a href='http://puddletag.sourceforge.net'&gt;puddletag.sourceforge.net&lt;/a&gt; pour plus d'informations.</translation>
     </message>
     <message>
       <location filename="../musiclib.py" line="120" />
@@ -3146,7 +3146,7 @@ Continuer ?</translation>
     <message>
       <location filename="../musiclib.py" line="201" />
       <source>Loading music library...</source>
-      <translation>Chargement de la discothèqe...</translation>
+      <translation>Chargement de la discothèque...</translation>
     </message>
     <message>
       <location filename="../musiclib.py" line="212" />
@@ -3357,12 +3357,12 @@ Continuer ?</translation>
     <message>
       <location filename="../mainwin/tagsources.py" line="377" />
       <source>&lt;p&gt;The fields listed here will be used in determining whether a track matches the retrieved track. Each field will be compared using a fuzzy matching algorithm. If the resulting average match percentage is greater than the "Minimum Percentage" it'll be considered to match.&lt;/p&gt;</source>
-      <translation type="unfinished">&lt;p&gt;Les champs listés ici seront utilisé pour vérifer qu'une piste correspond à celle téléchargée. Chaque champ sera comparé avec un alogrithme approximatif. Si le taux d'exactitude est supérieur au "Pourcentage minimum" le test sera considéré positif.&lt;/p&gt;</translation>
+      <translation type="unfinished">&lt;p&gt;Les champs listés ici seront utilisé pour vérifier qu'une piste correspond à celle téléchargée. Chaque champ sera comparé avec un algorithme approximatif. Si le taux d'exactitude est supérieur au "Pourcentage minimum" le test sera considéré positif.&lt;/p&gt;</translation>
     </message>
     <message>
       <location filename="../mainwin/tagsources.py" line="386" />
       <source>&lt;p&gt;The artist and album fields will be used in determining whether an album matches the retrieved one. Each field will be compared using a fuzzy matching algorithm. If the resulting average match percentage is greater or equal than what you specify here it'll be considered to match.&lt;/p&gt;</source>
-      <translation>&lt;p&gt;Les champs Artiste et Album seront utilisés pour vérifier qu'un album correspond à celui récupéré. Chaque champ sera comparé avec un algorithme approximatif. Si la taux d'exctitude est supérieur ou égal à ce que vous entrez ici alors le test sera considéré positif.&lt;/p&gt;</translation>
+      <translation>&lt;p&gt;Les champs Artiste et Album seront utilisés pour vérifier qu'un album correspond à celui récupéré. Chaque champ sera comparé avec un algorithme approximatif. Si la taux d'exactitude est supérieur ou égal à ce que vous entrez ici alors le test sera considéré positif.&lt;/p&gt;</translation>
     </message>
     <message>
       <location filename="../mainwin/tagsources.py" line="423" />
@@ -3372,7 +3372,7 @@ Continuer ?</translation>
     <message>
       <location filename="../mainwin/tagsources.py" line="426" />
       <source>Match tracks using &amp;fields: </source>
-      <translation type="unfinished">Correpondance avec les &amp;champs: </translation>
+      <translation type="unfinished">Correspondance avec les &amp;champs: </translation>
     </message>
     <message>
       <location filename="../masstag/dialogs.py" line="265" />
@@ -3438,7 +3438,7 @@ Continuer ?</translation>
     <message>
       <location filename="../masstag/dialogs.py" line="262" />
       <source>Match tracks using fields: </source>
-      <translation>Correpondance avec les champs: </translation>
+      <translation>Correspondance avec les champs: </translation>
     </message>
     <message>
       <location filename="../masstag/dialogs.py" line="365" />
@@ -3457,7 +3457,7 @@ Continuer ?</translation>
 &lt;br./&gt;&lt;br /&gt;
 Par ex &lt;b&gt;artist, album, title&lt;/b&gt; pour récupérer les infos Artiste, Album, Titre depuis la Source.
 &lt;br./&gt;&lt;br /&gt;
-Commencez par un tidle (~) pour récupérer tous les champs, sauf ceux listés. Par ex &lt;b&gt;~composer,__image&lt;/b&gt; récupérera tous les champs à l'exception de Compositeur et Image.&lt;/p&gt;
+Commencez par un tilde (~) pour récupérer tous les champs, sauf ceux listés. Par ex &lt;b&gt;~composer,__image&lt;/b&gt; récupérera tous les champs à l'exception de Compositeur et Image.&lt;/p&gt;
 &lt;p&gt;Si un champ a été récupéré via une autre Source, les valeurs seront combinées si elles différent. Par ex si genre=&lt;b&gt;Rock&lt;/b&gt; d'abord et genre=&lt;b&gt;Alternative&lt;/b&gt; ensuite alors le champ aura au final plusieurs valeurs, &lt;b&gt;Rock\\Rap&lt;/b&gt; dans notre exemple.</translation>
     </message>
     <message>
@@ -3469,7 +3469,7 @@ Commencez par un tidle (~) pour récupérer tous les champs, sauf ceux listés. 
       <location filename="../masstag/dialogs.py" line="416" />
       <source>Enter a comma-separated lists of fields that'll replace any retrieved from previously polled tag sources. &lt;br /&gt;Start the list with the tilde (~) character to replace all but the fields you list. &lt;br /&gt;&lt;b&gt;NB: Fields listed here must also be listed in the list of fields to retrieve.&lt;/b&gt;&lt;br /&gt;&lt;br /&gt;Eg. Assume you have two Tag Sources. The first retrieves &lt;b&gt;artist=Freshlyground, album=Nomvula, genre=Afro Pop&lt;/b&gt;. The second source gets &lt;b&gt;artist=Freshly Ground, album=Nomvula, genre=Pop&lt;/b&gt;. For the second Tag Source, setting just &lt;b&gt;artist&lt;/b&gt; as the list of fields to replace will overwrite the artist field retrieved from the first tag source. The resulting retrieved fields/values as shown in puddletag will then be &lt;b&gt;artist=Freshly Ground, album=Nomvula, genre=Afro Pop\\Pop&lt;/b&gt;.</source>
       <translation>&lt;p&gt;Entrez une liste de champs, séparés par des virgules, qui remplaceront toute valeur précédente. &lt;br /&gt;
-Commencez par un tidle (~) pour remplacer tous les champs, sauf ceux listés. &lt;br./&gt;
+Commencez par un tilde (~) pour remplacer tous les champs, sauf ceux listés. &lt;br./&gt;
 &lt;b&gt;NB: Les champs listés ici doivent aussi être listés dans les champs à récupérer&lt;/b&gt;
 &lt;br /&gt;&lt;br /&gt;
 Par exemple, mettons que vous avez deux Sources. La première renvoie &lt;b&gt;artist=Freshlyground, album=Nomvula, genre=Afro Pop&lt;/b&gt;. La seconde source renvoie &lt;b&gt;artist=Freshly Ground, album=Nomvula, genre=Pop&lt;/b&gt;. Pour la seconde source, en mettant juste &lt;b&gt;artiste&lt;/b&gt; dans la liste des champs à remplacer va remplacer l'info Artiste récupérée par la première source. Dans notre exemple, le résultat sera &lt;b&gt;artist=Freshly Ground, album=Nomvula, genre=Afro Pop\\Pop&lt;/b&gt;.</translation>
@@ -3509,7 +3509,7 @@ Par exemple, mettons que vous avez deux Sources. La première renvoie &lt;b&gt;a
     <message>
       <location filename="../libraries/quodlibetlib.py" line="354" />
       <source>&amp;Library Path</source>
-      <translation>Chemin de &amp;la mediathèque</translation>
+      <translation>Chemin de &amp;la médiathèque</translation>
     </message>
     <message>
       <location filename="../libraries/quodlibetlib.py" line="357" />
@@ -3529,7 +3529,7 @@ Par exemple, mettons que vous avez deux Sources. La première renvoie &lt;b&gt;a
     <message>
       <location filename="../libraries/quodlibetlib.py" line="382" />
       <source>{} is an invalid QuodLibet music library file.</source>
-      <translation>{} n'est pas une mediathèque QuodLibet valide.</translation>
+      <translation>{} n'est pas une médiathèque QuodLibet valide.</translation>
     </message>
   </context>
   <context>
@@ -3664,7 +3664,7 @@ Par exemple, mettons que vous avez deux Sources. La première renvoie &lt;b&gt;a
     <message>
       <location filename="../action_shortcuts.py" line="160" />
       <source>&amp;Clear</source>
-      <translation>Effa&amp;çer</translation>
+      <translation>Effa&amp;cer</translation>
     </message>
     <message>
       <location filename="../action_shortcuts.py" line="186" />
@@ -3790,7 +3790,7 @@ Réel: {}</translation>
     <message>
       <location filename="../tagmodel.py" line="2067" />
       <source>It wasn't possible to play the selected files, because the music player you defined (&lt;b&gt;{}&lt;/b&gt;) does not exist.</source>
-      <translation>Il n'a pas été possible de lire les fichiers sélectionéns car le lecteur défini (&lt;b&gt;{}&lt;/b&gt;) n'existe pas.</translation>
+      <translation>Il n'a pas été possible de lire les fichiers sélectionnés car le lecteur défini (&lt;b&gt;{}&lt;/b&gt;) n'existe pas.</translation>
     </message>
   </context>
   <context>
@@ -3908,7 +3908,7 @@ Réel: {}</translation>
       <source>Enter search parameters here. If empty, the selected files are used. &lt;ul&gt;&lt;li&gt;&lt;b&gt;artist;album&lt;/b&gt; searches for a specific album/artist combination.&lt;/li&gt;&lt;li&gt;To list the albums by an artist leave off the album part, but keep the semicolon (eg. &lt;b&gt;Ratatat;&lt;/b&gt;). For an album only leave the artist part as in &lt;b&gt;;Resurrection&lt;/b&gt;.&lt;/li&gt;&lt;/ul&gt;</source>
       <translation type="unfinished">Entrez les paramètres de recherche ici. Si vous laissez vide alors les fichiers sélectionnés seront utilisés.
 &lt;ul&gt;&lt;li&gt;&lt;b&gt;artist;album&lt;/b&gt;recherche une combinaison Artiste/Album spécifique.&lt;/li&gt;
-&lt;li&gt;Pour lister les albums d'un artiste laissez la partie album vide mais gardez le point-virgule (par ex &lt;b&gt;Ratatat;&lt;/b&gt;). Pour une recherche par album, laissez la partie Artiste vide (par ex &lt;b&gt;;Resurection&lt;/b&gt;.&lt;/li&gt;
+&lt;li&gt;Pour lister les albums d'un artiste laissez la partie album vide mais gardez le point-virgule (par ex &lt;b&gt;Ratatat;&lt;/b&gt;). Pour une recherche par album, laissez la partie Artiste vide (par ex &lt;b&gt;;Resurrection&lt;/b&gt;.&lt;/li&gt;
 &lt;/ul&gt;</translation>
     </message>
     <message>
@@ -3916,7 +3916,7 @@ Réel: {}</translation>
       <source>Enter a comma-separated list of fields to write. &lt;br /&gt;&lt;br /&gt;Eg. &lt;b&gt;artist, album, title&lt;/b&gt; will only write the artist, album and title fields of the retrieved tags. &lt;br /&gt;&lt;br /&gt;If you want to exclude some fields, but write all others start the list the tilde (~) character. Eg &lt;b&gt;~composer, __image&lt;/b&gt; will write all fields but the composer and __image fields.</source>
       <translation type="unfinished">Entrez une liste, séparée par des virgules, des champs à écrire. &lt;br /&gt;&lt;br /&gt;
 Par ex &lt;b&gt;artist, album, title&lt;/b&gt; ne va écrire que les champs Artiste, Album et Titre des tags. &lt;br /&gt;&lt;br /&gt;
-Si vous voulez exclure certains champs, et écrire les autres alors commencez par un tidle (~). Par ex &lt;b&gt;~composer,__image&lt;/b&gt; va écrire tous les champs sauf Compositeur et Image.</translation>
+Si vous voulez exclure certains champs, et écrire les autres alors commencez par un tilde (~). Par ex &lt;b&gt;~composer,__image&lt;/b&gt; va écrire tous les champs sauf Compositeur et Image.</translation>
     </message>
     <message>
       <location filename="../mainwin/tagsources.py" line="88" />

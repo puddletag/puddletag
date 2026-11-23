@@ -207,7 +207,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
             Use Edit Shortcuts (found by pressing down on this button)
             to edit shortcuts after the fact.&lt;/p&gt;</source>
       <translation>&lt;p&gt;Erstellt eine
-            Tastenkombination für die ausgewählte Aktion im Aktionsmenu.
+            Tastenkombination für die ausgewählte Aktion im Aktionsmenü.
             Verwenden Sie Tastenkombinationen bearbeiten (dazu hier klicken)
             um Tastenkombinationen nachträglich festzulegen.&lt;/p&gt;</translation>
     </message>
@@ -1439,7 +1439,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
     <message>
       <location filename="../translations.py" line="111" />
       <source>Autonumbering</source>
-      <translation>Nummerieung</translation>
+      <translation>Nummerierung</translation>
     </message>
     <message>
       <location filename="../translations.py" line="112" />
@@ -1738,7 +1738,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
     <message>
       <location filename="../translations.py" line="172" />
       <source>Replace with RegExp</source>
-      <translation>Ersetzen duch regulären Ausdruck</translation>
+      <translation>Ersetzen durch regulären Ausdruck</translation>
     </message>
     <message>
       <location filename="../translations.py" line="173" />
@@ -2008,7 +2008,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
     <message>
       <location filename="../translations.py" line="12" />
       <source>Show tooltips in file-view:</source>
-      <translation>Tooltips in der Dateiansich anzeigen:</translation>
+      <translation>Tooltips in der Dateiansicht anzeigen:</translation>
     </message>
     <message>
       <location filename="../translations.py" line="13" />
@@ -2580,7 +2580,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
     <message>
       <location filename="../translations.py" line="43" />
       <source>Autonumbering &amp;Wizard...</source>
-      <translation type="unfinished">&amp;Nummmerierungsassistent...</translation>
+      <translation type="unfinished">&amp;Nummerierungsassistent...</translation>
     </message>
     <message>
       <location filename="../translations.py" line="44" />
@@ -2741,7 +2741,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
     <message>
       <location filename="../translations.py" line="75" />
       <source>Select all files belonging to the directories of those selected. Otherwise (if only a single directory is selected) selects all the files in the previous directory.</source>
-      <translation type="unfinished">Auswahl aller Dateien in den ausgwählten Ordnern. Wenn nur ein Ordner gewählt ist, Auswahl aller Dateien im vorhergenden Ordner.</translation>
+      <translation type="unfinished">Auswahl aller Dateien in den ausgewählten Ordnern. Wenn nur ein Ordner gewählt ist, Auswahl aller Dateien im vorhergehenden Ordner.</translation>
     </message>
     <message>
       <location filename="../translations.py" line="76" />
@@ -2756,7 +2756,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
     <message>
       <location filename="../translations.py" line="78" />
       <source>In &amp;Library</source>
-      <translation type="unfinished">In Bibiliothek</translation>
+      <translation type="unfinished">In Bibliothek</translation>
     </message>
     <message>
       <location filename="../translations.py" line="79" />
@@ -2786,7 +2786,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
     <message>
       <location filename="../translations.py" line="84" />
       <source>&amp;Cut</source>
-      <translation type="unfinished">Aus&amp;chneiden</translation>
+      <translation type="unfinished">Auss&amp;chneiden</translation>
     </message>
     <message>
       <location filename="../translations.py" line="85" />
@@ -2978,12 +2978,12 @@ Wollen Sie fortfahren?</translation>
     <message>
       <location filename="../tagsources/mp3tag/__init__.py" line="427" />
       <source>Retrieving album page: {}</source>
-      <translation>Empfange Albumsseite: {}</translation>
+      <translation>Empfange Albumseite: {}</translation>
     </message>
     <message>
       <location filename="../tagsources/mp3tag/__init__.py" line="428" />
       <source>Retrieving album page...</source>
-      <translation>Empfange Albumsseite...</translation>
+      <translation>Empfange Albumseite...</translation>
     </message>
     <message>
       <location filename="../tagsources/mp3tag/__init__.py" line="431" />
@@ -3078,7 +3078,7 @@ Wollen Sie fortfahren?</translation>
     <message>
       <location filename="../tagsources/musicbrainz.py" line="524" />
       <source>&lt;b&gt;Error:&lt;/b&gt; While retrieving {}: {}</source>
-      <translation>&lt;b&gt;Fehler:&lt;/b&gt; beim Emfpang von {}: {}</translation>
+      <translation>&lt;b&gt;Fehler:&lt;/b&gt; beim Empfang von {}: {}</translation>
     </message>
     <message>
       <location filename="../tagsources/musicbrainz.py" line="576" />
@@ -3275,7 +3275,7 @@ Wollen Sie fortfahren?</translation>
       <location filename="../puddletag.py" line="548" />
       <location filename="../mainwin/dirview.py" line="158" />
       <source>Some files have uncommitted previews. Changes will be lost once you load a directory. &lt;br /&gt;Do you still want to load a new directory?&lt;br /&gt;</source>
-      <translation>Einige Dateien haben eine unbestätigte Voschau. Änderungen gehen verloren wenn Sie einen Ordner einlesen.  &lt;br /&gt;Wollen Sie wirklich einen neuen Ordner einlesen?&lt;br /&gt;</translation>
+      <translation>Einige Dateien haben eine unbestätigte Vorschau. Änderungen gehen verloren wenn Sie einen Ordner einlesen.  &lt;br /&gt;Wollen Sie wirklich einen neuen Ordner einlesen?&lt;br /&gt;</translation>
     </message>
     <message>
       <location filename="../mainwin/tagsources.py" line="676" />
@@ -3297,7 +3297,7 @@ Wollen Sie fortfahren?</translation>
     <message>
       <location filename="../puddletag.py" line="444" />
       <source>Some files have uncommitted previews. These changes will be lost once you exit puddletag. &lt;br /&gt;Do you want to exit without writing those changes?&lt;br /&gt;</source>
-      <translation>Einige Dateien haben eine unbestätigte Voschau. Änderungen gehen verloren wenn Sie puddletag beenden.  &lt;br /&gt;Wollen Sie das Programm beenden ohne die Änderungen zu speichern?&lt;br /&gt;</translation>
+      <translation>Einige Dateien haben eine unbestätigte Vorschau. Änderungen gehen verloren wenn Sie puddletag beenden.  &lt;br /&gt;Wollen Sie das Programm beenden ohne die Änderungen zu speichern?&lt;br /&gt;</translation>
     </message>
     <message>
       <location filename="../puddletag.py" line="488" />

@@ -124,8 +124,7 @@ def test_translations_keep_their_sources_leading_and_trailing_space(ts):
 PLACEHOLDERS = re.compile(r'\$\d+|\{[^}]*\}')
 
 
-@pytest.mark.parametrize('ts', every_file(('es_ES', 'it', 'nl-nl', 'pl_PL', 'ru_RU'),
-                                          "translations drop or garble their sources' {} and $N"))
+@pytest.mark.parametrize('ts', every_file())
 def test_translations_keep_their_sources_placeholders(ts):
     # Synthetic: the docs are silent. A translation without its source's {}
     # or $1 never shows the value; one with a {} of its own shows it as text.

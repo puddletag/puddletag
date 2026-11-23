@@ -322,7 +322,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
     <message>
       <location filename="../puddleobjects.py" line="1727" />
       <source>&amp;Change cover</source>
-      <translation>&amp;Zamień omładkę</translation>
+      <translation>&amp;Zamień okładkę</translation>
     </message>
     <message>
       <location filename="../puddleobjects.py" line="1794" />
@@ -504,7 +504,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
     <message>
       <location filename="../puddlesettings.py" line="531" />
       <source>&lt;p&gt;Below are the backgrounds used for various controls in puddletag. &lt;br /&gt; Double click the desired action to change its colour.&lt;/p&gt;</source>
-      <translation>&lt;p&gt;Poniżej znajdują się tła używane dla różnych elementów puddletag. &lt;br /&gt; Kliknij dwukrotnie żądane dzialanie, aby zmienić jego kolor.&lt;/p&gt;</translation>
+      <translation>&lt;p&gt;Poniżej znajdują się tła używane dla różnych elementów puddletag. &lt;br /&gt; Kliknij dwukrotnie żądane działanie, aby zmienić jego kolor.&lt;/p&gt;</translation>
     </message>
     <message>
       <location filename="../puddlesettings.py" line="544" />
@@ -1435,7 +1435,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
     <message>
       <location filename="../translations.py" line="110" />
       <source>Autonumbering: $0, Start: $1, Restart for dir: $2, Padding: $3</source>
-      <translation>Autonumerowanie: 0, Początek: 1, Ponowne uruchomienie dla katalogu: 2, Uzupełnienie: 3</translation>
+      <translation>Autonumerowanie: $0, Początek: $1, Ponowne uruchomienie dla katalogu: $2, Uzupełnienie: $3</translation>
     </message>
     <message>
       <location filename="../translations.py" line="111" />
@@ -1854,7 +1854,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
     <message>
       <location filename="../translations.py" line="201" />
       <source>Convert Case: $0: $1</source>
-      <translation>Zmień wielkośc liter: $0: $1</translation>
+      <translation>Zmień wielkość liter: $0: $1</translation>
     </message>
     <message>
       <location filename="../translations.py" line="202" />
@@ -2008,7 +2008,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
     <message>
       <location filename="../puddlesettings.py" line="151" />
       <source>Language (Requires a restart)</source>
-      <translation type="unfinished">Język (zmiana wymaga ponownege uruchomienia)</translation>
+      <translation type="unfinished">Język (zmiana wymaga ponownego uruchomienia)</translation>
     </message>
     <message>
       <location filename="../translations.py" line="10" />
@@ -2263,7 +2263,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
     <message>
       <location filename="../masstag/__init__.py" line="60" />
       <source>&lt;b&gt;Polling: {}&lt;/b&gt;</source>
-      <translation>&lt;b&gt;Sprawdzanie:&lt;/b&gt;</translation>
+      <translation>&lt;b&gt;Sprawdzanie: {}&lt;/b&gt;</translation>
     </message>
     <message>
       <location filename="../masstag/__init__.py" line="61" />
@@ -3151,7 +3151,7 @@ Czy chcesz kontynuować?</translation>
       <location filename="../musiclib.py" line="131" />
       <source>Error loading {}: {}
 </source>
-      <translation>Bład ładowania {}: {}
+      <translation>Błąd ładowania {}: {}
 </translation>
     </message>
     <message>
@@ -3479,7 +3479,7 @@ Czy chcesz kontynuować?</translation>
     <message>
       <location filename="../masstag/dialogs.py" line="392" />
       <source>&lt;p&gt;Enter a comma-separated list of fields to retrieve. Leave empty to retrieve all available fields/values. &lt;br /&gt;&lt;br /&gt;Eg. &lt;b&gt;artist, album, title&lt;/b&gt; will only retrieve the artist, album and title fields of from the Tag Source. &lt;br /&gt;&lt;br /&gt;Start the list with the tilde (~) character to write all retrieved fields , but the ones listed. Eg the field list &lt;b&gt;~composer,__image&lt;/b&gt; will write all fields but the composer and __image (aka cover art) fields.&lt;/p&gt;&lt;p&gt;If a field has been retrieved in a previous Tag Source the values will be combined if they differ. Eg. If genre=&lt;b&gt;Rock&lt;/b&gt; for the first tag source polled and genre=&lt;b&gt;Alternative&lt;/b&gt; for the tag source polled second then the resulting field will have multiple-values ie. genre=&lt;b&gt;Rock\\Rap&lt;/b&gt;</source>
-      <translation>&lt;p&gt;Wprowadź listę pól do pobrania, rozdzielonych przecinkami. Nie wprowadzaj nic, aby pobrać wszystkie dostępne pola/wartości. &lt;br /&gt;&lt;br /&gt;Np., podając &lt;b&gt;artist, album, title&lt;/b&gt; zostaną pobrane tylko pola "Wykonawca", "Album" i "Tytuł" ze źródła tagu.&lt;br /&gt;&lt;br /&gt;Rozpocznij listę od tyldy (~), aby zapisać wszystkie pobrane pola z wyjątkiem tych, które są na liście. Np., lista pól &lt;b&gt;~composer,__image&lt;/b&gt; obejmie wszystkie pola, z wyjątkiem pól "Kompozytor" i "_Obraz (Okładka)".&lt;/p&gt;&lt;p&gt;Jeśli pole zostało pobrane z poprzedniego źródła tagu, wartości zostaną teraz połaczone, jeśli się różnią. Np., jeśli genre=&lt;b&gt;Rock&lt;/b&gt; dla pierwszego źródła tagu, a genre=&lt;b&gt;Alternative&lt;/b&gt; dla drugiego źródła tagu, wówczas wynikowe pole tagu będzie miało wiele wartości, np., genre=&lt;b&gt;Rock\\Rap&lt;/b&gt;&lt;/p&gt;</translation>
+      <translation>&lt;p&gt;Wprowadź listę pól do pobrania, rozdzielonych przecinkami. Nie wprowadzaj nic, aby pobrać wszystkie dostępne pola/wartości. &lt;br /&gt;&lt;br /&gt;Np., podając &lt;b&gt;artist, album, title&lt;/b&gt; zostaną pobrane tylko pola "Wykonawca", "Album" i "Tytuł" ze źródła tagu.&lt;br /&gt;&lt;br /&gt;Rozpocznij listę od tyldy (~), aby zapisać wszystkie pobrane pola z wyjątkiem tych, które są na liście. Np., lista pól &lt;b&gt;~composer,__image&lt;/b&gt; obejmie wszystkie pola, z wyjątkiem pól "Kompozytor" i "_Obraz (Okładka)".&lt;/p&gt;&lt;p&gt;Jeśli pole zostało pobrane z poprzedniego źródła tagu, wartości zostaną teraz połączone, jeśli się różnią. Np., jeśli genre=&lt;b&gt;Rock&lt;/b&gt; dla pierwszego źródła tagu, a genre=&lt;b&gt;Alternative&lt;/b&gt; dla drugiego źródła tagu, wówczas wynikowe pole tagu będzie miało wiele wartości, np., genre=&lt;b&gt;Rock\\Rap&lt;/b&gt;&lt;/p&gt;</translation>
     </message>
     <message>
       <location filename="../masstag/dialogs.py" line="414" />
@@ -3489,7 +3489,7 @@ Czy chcesz kontynuować?</translation>
     <message>
       <location filename="../masstag/dialogs.py" line="416" />
       <source>Enter a comma-separated lists of fields that'll replace any retrieved from previously polled tag sources. &lt;br /&gt;Start the list with the tilde (~) character to replace all but the fields you list. &lt;br /&gt;&lt;b&gt;NB: Fields listed here must also be listed in the list of fields to retrieve.&lt;/b&gt;&lt;br /&gt;&lt;br /&gt;Eg. Assume you have two Tag Sources. The first retrieves &lt;b&gt;artist=Freshlyground, album=Nomvula, genre=Afro Pop&lt;/b&gt;. The second source gets &lt;b&gt;artist=Freshly Ground, album=Nomvula, genre=Pop&lt;/b&gt;. For the second Tag Source, setting just &lt;b&gt;artist&lt;/b&gt; as the list of fields to replace will overwrite the artist field retrieved from the first tag source. The resulting retrieved fields/values as shown in puddletag will then be &lt;b&gt;artist=Freshly Ground, album=Nomvula, genre=Afro Pop\\Pop&lt;/b&gt;.</source>
-      <translation>Wprowadź oddzielone przecinkami pola, które zastąpią te pobrane z wcześniej używanych źródeł tagów. &lt;br /&gt;Rozpocznij listę od tyldy (~), aby zastąpić wszystkie pola, z wyjątkiem tych, które wymienisz. &lt;br /&gt;&lt;b&gt;Uwaga: Pola wymienione tutaj muszą znajdować się również na liście pól do pobrania.&lt;b&gt;&lt;br /&gt;&lt;br /&gt;Np., załóżmy, że są dwa źródła tagów. Z pierwszego pobrano: &lt;b&gt;&lt;b&gt;artist=Freshlyground, album=Nomvula, genre=Afro Pop&lt;/b&gt;&lt;/b&gt;. Z drugiego, zaś: &lt;b&gt;artist=Freshly Ground, album=Nomvula, genre=Pop&lt;/b&gt;. Ustawienie dla drugiego źródła tagów, jedynie pola &lt;b&gt;artist&lt;/b&gt; na liście pól do zastąpienia, spowoduje nadpisanie pola "Artysta" wrtością pobraną z pierwszego źródła. Ostateczne pola/wartości wyświetlone w programie Puddletag będą wyglądały następująco: &lt;b&gt;artist=Freshly Ground, album=Nomvula, genre=Afro Pop\Pop&lt;/b&gt;.</translation>
+      <translation>Wprowadź oddzielone przecinkami pola, które zastąpią te pobrane z wcześniej używanych źródeł tagów. &lt;br /&gt;Rozpocznij listę od tyldy (~), aby zastąpić wszystkie pola, z wyjątkiem tych, które wymienisz. &lt;br /&gt;&lt;b&gt;Uwaga: Pola wymienione tutaj muszą znajdować się również na liście pól do pobrania.&lt;b&gt;&lt;br /&gt;&lt;br /&gt;Np., załóżmy, że są dwa źródła tagów. Z pierwszego pobrano: &lt;b&gt;&lt;b&gt;artist=Freshlyground, album=Nomvula, genre=Afro Pop&lt;/b&gt;&lt;/b&gt;. Z drugiego, zaś: &lt;b&gt;artist=Freshly Ground, album=Nomvula, genre=Pop&lt;/b&gt;. Ustawienie dla drugiego źródła tagów, jedynie pola &lt;b&gt;artist&lt;/b&gt; na liście pól do zastąpienia, spowoduje nadpisanie pola "Artysta" wartością pobraną z pierwszego źródła. Ostateczne pola/wartości wyświetlone w programie Puddletag będą wyglądały następująco: &lt;b&gt;artist=Freshly Ground, album=Nomvula, genre=Afro Pop\Pop&lt;/b&gt;.</translation>
     </message>
     <message>
       <location filename="../masstag/dialogs.py" line="440" />

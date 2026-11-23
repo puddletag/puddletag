@@ -207,8 +207,8 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
             Use Edit Shortcuts (found by pressing down on this button)
             to edit shortcuts after the fact.&lt;/p&gt;</source>
       <translation>&lt;p&gt;Skapar en
-............genväg för den markerade åtgärden i menyn Åtgärder.
-............Använd 'Redigera åtgärd' för att redigera åtgärder.&lt;/p&gt;</translation>
+            genväg för den markerade åtgärden i menyn Åtgärder.
+            Använd 'Redigera åtgärd' för att redigera åtgärder.&lt;/p&gt;</translation>
     </message>
     <message>
       <location filename="../actiondlg.py" line="860" />
@@ -244,7 +244,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
     <message>
       <location filename="../actiondlg.py" line="966" />
       <source>Edit Action: </source>
-      <translation>Rdeigera åtgärd: </translation>
+      <translation>Redigera åtgärd: </translation>
     </message>
     <message>
       <location filename="../actiondlg.py" line="1025" />
@@ -276,7 +276,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
     <message>
       <location filename="../puddleobjects.py" line="1588" />
       <source>&lt;p&gt;Enter a description for the current cover.&lt;/p&gt;&lt;p&gt;For ID3 tags the description has to be different for each cover as per the ID3 spec. If they don't differ then spaces are appended to the description when the tag is saved.&lt;/p&gt;</source>
-      <translation>&lt;p&gt;Ange en beskrivning för aktuellt omslag&lt;/p&gt;&lt;/p&gt;För ID3-taggar, måste beskrivningen vara unik för varje omslag, enligt ID3-specifikationen. Om de inte skiljer sig åt, kommer blanksteg att läggas till i beskrivningen, när den sparas.&lt;/p&gt;</translation>
+      <translation>&lt;p&gt;Ange en beskrivning för aktuellt omslag&lt;/p&gt;&lt;p&gt;För ID3-taggar, måste beskrivningen vara unik för varje omslag, enligt ID3-specifikationen. Om de inte skiljer sig åt, kommer blanksteg att läggas till i beskrivningen, när den sparas.&lt;/p&gt;</translation>
     </message>
     <message>
       <location filename="../puddleobjects.py" line="1598" />
@@ -503,7 +503,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
     <message>
       <location filename="../puddlesettings.py" line="531" />
       <source>&lt;p&gt;Below are the backgrounds used for various controls in puddletag. &lt;br /&gt; Double click the desired action to change its colour.&lt;/p&gt;</source>
-      <translation>&lt;p&gt;Här är de bakgrunder som avänds för diverse kontroller i puddletag.&lt;br /&gt;Dubbelklicka på önskad åtgärd för att ändra dess färg&lt;/p&gt;</translation>
+      <translation>&lt;p&gt;Här är de bakgrunder som används för diverse kontroller i puddletag.&lt;br /&gt;Dubbelklicka på önskad åtgärd för att ändra dess färg&lt;/p&gt;</translation>
     </message>
     <message>
       <location filename="../puddlesettings.py" line="544" />
@@ -528,7 +528,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
     <message>
       <location filename="../puddlesettings.py" line="548" />
       <source>Field removed in Extended Tags.</source>
-      <translation>Bortaget fält i utökade taggar.</translation>
+      <translation>Borttaget fält i utökade taggar.</translation>
     </message>
   </context>
   <context>
@@ -1882,7 +1882,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
     <message>
       <location filename="../translations.py" line="207" />
       <source>For &amp;Mixed Case, after any of:</source>
-      <translation>För &amp;blandat skiftäge, efter vilket som helst av:</translation>
+      <translation>För &amp;blandat skiftläge, efter vilket som helst av:</translation>
     </message>
     <message>
       <location filename="../translations.py" line="208" />
@@ -2017,7 +2017,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
     <message>
       <location filename="../translations.py" line="14" />
       <source>Automatically resize columns to contents</source>
-      <translation>Anbassa kolumnstorlek automatiskt efter innehåll</translation>
+      <translation>Anpassa kolumnstorlek automatiskt efter innehåll</translation>
     </message>
     <message>
       <location filename="../translations.py" line="15" />
@@ -2429,7 +2429,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
     <message>
       <location filename="../mainwin/previews.py" line="20" />
       <source>Disabl&amp;e Preview Mode</source>
-      <translation>&amp;Inktivera förhandsgranskning</translation>
+      <translation>&amp;Inaktivera förhandsgranskning</translation>
     </message>
     <message>
       <location filename="../plugins/dupe_fields/__init__.py" line="48" />
@@ -2685,7 +2685,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
     <message>
       <location filename="../translations.py" line="64" />
       <source>Select a directory to import into puddletag.</source>
-      <translation type="unfinished">Välj en mapp att importera till puddeltag.</translation>
+      <translation type="unfinished">Välj en mapp att importera till puddletag.</translation>
     </message>
     <message>
       <location filename="../translations.py" line="65" />
@@ -3884,7 +3884,7 @@ Aktuell: {}</translation>
       <location filename="../mainwin/releasewidget.py" line="491" />
       <location filename="../mainwin/releasewidget.py" line="388" />
       <source>Retrieval complete.</source>
-      <translation type="unfinished">Hämtnin slutförd.</translation>
+      <translation type="unfinished">Hämtning slutförd.</translation>
     </message>
     <message>
       <location filename="../mainwin/releasewidget.py" line="497" />

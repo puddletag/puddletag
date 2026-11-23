@@ -207,7 +207,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
             Use Edit Shortcuts (found by pressing down on this button)
             to edit shortcuts after the fact.&lt;/p&gt;</source>
       <translation>&lt;p&gt;Maakt een
-            snelkoppeling voor de gecontrolleerde acties in het Acties menu
+            snelkoppeling voor de gecontroleerde acties in het Acties menu
             Gebruik Bewerk Snelkoppelingen (worden gevonden door op dit menu te klikken)
             om snelkoppelingen te bewerken na de feiten.&lt;/p&gt;</translation>
     </message>
@@ -342,7 +342,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
     <message>
       <location filename="../puddleobjects.py" line="2008" />
       <source>JPEG Images (*.jpg);;PNG Images (*.png);;All Files(*.*)</source>
-      <translation>JPEG afbeeldingen. (*.jpg);;;PNG afbeeldingen (*.pmg);;;Alle bestanden(*.*)</translation>
+      <translation>JPEG afbeeldingen. (*.jpg);;PNG afbeeldingen (*.png);;Alle bestanden(*.*)</translation>
     </message>
     <message>
       <location filename="../puddleobjects.py" line="2018" />
@@ -504,7 +504,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
     <message>
       <location filename="../puddlesettings.py" line="531" />
       <source>&lt;p&gt;Below are the backgrounds used for various controls in puddletag. &lt;br /&gt; Double click the desired action to change its colour.&lt;/p&gt;</source>
-      <translation>&lt;p&gt;Hier onder staan verschillende achtergronden die gebruikt worden voor de besturing in puddletag. &lt;b /&gt; Dubbelklik op de gewenste actie om de kleur te wijzigen.&lt;/p&gt;</translation>
+      <translation>&lt;p&gt;Hier onder staan verschillende achtergronden die gebruikt worden voor de besturing in puddletag. &lt;br /&gt; Dubbelklik op de gewenste actie om de kleur te wijzigen.&lt;/p&gt;</translation>
     </message>
     <message>
       <location filename="../puddlesettings.py" line="544" />
@@ -867,7 +867,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
     <message>
       <location filename="../constants.py" line="14" />
       <source>Various</source>
-      <translation>Varierende</translation>
+      <translation>Variërende</translation>
     </message>
     <message>
       <location filename="../constants.py" line="37" />
@@ -890,7 +890,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
     <message>
       <location filename="../constants.py" line="36" />
       <source>Various Artists</source>
-      <translation>Varierende artiesten</translation>
+      <translation>Variërende artiesten</translation>
     </message>
     <message>
       <location filename="../findfunc.py" line="289" />
@@ -907,7 +907,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
     <message>
       <location filename="../mainwin/filterwin.py" line="20" />
       <source>Filter: </source>
-      <translation>Filer: </translation>
+      <translation>Filter: </translation>
     </message>
     <message>
       <location filename="../mainwin/filterwin.py" line="21" />
@@ -1404,12 +1404,12 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
     <message>
       <location filename="../findfunc.py" line="63" />
       <source>At least {} arguments expected. {} given.</source>
-      <translation>In ieder geval {} agumenten verwacht. {} meegegeven.</translation>
+      <translation>In ieder geval {} argumenten verwacht. {} meegegeven.</translation>
     </message>
     <message>
       <location filename="../translations.py" line="105" />
       <source>Artwork: Filenames='$1', Description='$2', Case Sensitive=$3</source>
-      <translation>Coever: bestandsnamen='$1', Beschrijving='$2', Hoofdlettergevoeligheid=$3</translation>
+      <translation>Cover: bestandsnamen='$1', Beschrijving='$2', Hoofdlettergevoeligheid=$3</translation>
     </message>
     <message>
       <location filename="../translations.py" line="106" />
@@ -1612,7 +1612,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
     <message>
       <location filename="../translations.py" line="146" />
       <source>&amp;Format string</source>
-      <translation>String &amp;formateren</translation>
+      <translation>String &amp;formatteren</translation>
     </message>
     <message>
       <location filename="../translations.py" line="147" />
@@ -1733,7 +1733,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
     <message>
       <location filename="../translations.py" line="171" />
       <source>RegReplace $0: RegExp '$1' with '$2', Match Case: $3</source>
-      <translation>RegReplace $0: RegExp '$1' met '$2'. Overeengekomen: 3</translation>
+      <translation>RegReplace $0: RegExp '$1' met '$2'. Overeengekomen: $3</translation>
     </message>
     <message>
       <location filename="../translations.py" line="172" />
@@ -1798,7 +1798,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
     <message>
       <location filename="../translations.py" line="186" />
       <source>Split using separator $0: sep='$1'</source>
-      <translation>Splitsen met scheidingsteken $0: sep='1'</translation>
+      <translation>Splitsen met scheidingsteken $0: sep='$1'</translation>
     </message>
     <message>
       <location filename="../translations.py" line="187" />
@@ -2490,7 +2490,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
     <message>
       <location filename="../puddletag.py" line="199" />
       <source>About Qt</source>
-      <translation>Ovet Qt</translation>
+      <translation>Over Qt</translation>
     </message>
     <message>
       <location filename="../puddletag.py" line="324" />
@@ -2696,7 +2696,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
     <message>
       <location filename="../translations.py" line="66" />
       <source>Plays the selected files in the predefined music player.</source>
-      <translation type="unfinished">Speel de geselecteerde bestanden in voorgedifinieerde muziekspeler.</translation>
+      <translation type="unfinished">Speel de geselecteerde bestanden in voorgedefinieerde muziekspeler.</translation>
     </message>
     <message>
       <location filename="../translations.py" line="67" />
@@ -2821,7 +2821,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
     <message>
       <location filename="../translations.py" line="91" />
       <source>&amp;Decrease Font</source>
-      <translation type="unfinished">&amp;Letterype verkleinen</translation>
+      <translation type="unfinished">&amp;Lettertype verkleinen</translation>
     </message>
     <message>
       <location filename="../translations.py" line="92" />
@@ -3105,7 +3105,7 @@ Do you want to go ahead?</source>
     <message>
       <location filename="../mainwin/funcs.py" line="291" />
       <source>No supported music libraries were found. Most likely the required dependencies aren't installed. Visit the puddletag website, &lt;a href='http://puddletag.sourceforge.net'&gt;puddletag.sourceforge.net&lt;/a&gt; for more details.</source>
-      <translation>Er zijn geen ondersteunde bibliotheek gevonden. Waarschijnlijk zijn de benodigde componenten niet geïnstalleerd. Bezoek de puddletag website, &lt;a href="http://puddletag.sourceforge.net&gt;puddletag.sourceforge.net&lt;/a&gt; voor meer details.</translation>
+      <translation>Er zijn geen ondersteunde bibliotheek gevonden. Waarschijnlijk zijn de benodigde componenten niet geïnstalleerd. Bezoek de puddletag website, &lt;a href="http://puddletag.sourceforge.net"&gt;puddletag.sourceforge.net&lt;/a&gt; voor meer details.</translation>
     </message>
     <message>
       <location filename="../musiclib.py" line="120" />
@@ -3253,7 +3253,7 @@ Do you want to go ahead?</source>
     <message>
       <location filename="../pluginloader.py" line="119" />
       <source>Description</source>
-      <translation>Bschrijving</translation>
+      <translation>Beschrijving</translation>
     </message>
     <message>
       <location filename="../pluginloader.py" line="120" />
@@ -3353,7 +3353,7 @@ Do you want to go ahead?</source>
     <message>
       <location filename="../mainwin/tagsources.py" line="377" />
       <source>&lt;p&gt;The fields listed here will be used in determining whether a track matches the retrieved track. Each field will be compared using a fuzzy matching algorithm. If the resulting average match percentage is greater than the "Minimum Percentage" it'll be considered to match.&lt;/p&gt;</source>
-      <translation type="unfinished">&lt;p&gt;De velden, hier in een lijst angeduid, zullen daarmee beslist worden of deze nummers daadwerkelijk overeenkomen met de opgehaalde nummerinformatie. Elk veld zal worden vergeleken door het "fuzzy matching" algoritme. Als het gemiddelde hoger  is dan "Het minimale percentage" zal hij worden gebruikt.&lt;/p&gt;</translation>
+      <translation type="unfinished">&lt;p&gt;De velden, hier in een lijst aangeduid, zullen daarmee beslist worden of deze nummers daadwerkelijk overeenkomen met de opgehaalde nummerinformatie. Elk veld zal worden vergeleken door het "fuzzy matching" algoritme. Als het gemiddelde hoger  is dan "Het minimale percentage" zal hij worden gebruikt.&lt;/p&gt;</translation>
     </message>
     <message>
       <location filename="../mainwin/tagsources.py" line="386" />
@@ -3617,7 +3617,7 @@ Do you want to go ahead?</source>
     <message>
       <location filename="../shortcutsettings.py" line="191" />
       <source>&lt;b&gt;Double click a cell in the Shortcut Column to &lt;br /&gt;modify the key sequence.&lt;/b&gt;</source>
-      <translation>&lt;b&gt;Dubbelklik in een een snelkoppelings kolom om &lt;br /&gt;de toetsencombinatie te wijzigen.&lt;/b&gt;</translation>
+      <translation>&lt;b&gt;Dubbelklik in een snelkoppelings kolom om &lt;br /&gt;de toetsencombinatie te wijzigen.&lt;/b&gt;</translation>
     </message>
     <message>
       <location filename="../shortcutsettings.py" line="199" />
@@ -3837,7 +3837,7 @@ Echt: {}</translation>
     <message>
       <location filename="../puddlesettings.py" line="423" />
       <source>Write ID3v2.&amp;3</source>
-      <translation type="unfinished">ID3v2.&amp;3 schrijven {3v?}</translation>
+      <translation type="unfinished">ID3v2.&amp;3 schrijven</translation>
     </message>
   </context>
   <context>
@@ -3892,7 +3892,7 @@ Echt: {}</translation>
     <message>
       <location filename="../mainwin/tagsources.py" line="30" />
       <source>Enter search parameters here. If empty, the selected files are used. &lt;ul&gt;&lt;li&gt;&lt;b&gt;artist;album&lt;/b&gt; searches for a specific album/artist combination.&lt;/li&gt;&lt;li&gt;To list the albums by an artist leave off the album part, but keep the semicolon (eg. &lt;b&gt;Ratatat;&lt;/b&gt;). For an album only leave the artist part as in &lt;b&gt;;Resurrection&lt;/b&gt;.&lt;/li&gt;&lt;/ul&gt;</source>
-      <translation type="unfinished">Voer hier de zoek parameters in. Als er niks is ingoevoerd, zullen de geselecteerde bestanden gebruikt worden. &lt;ul&gt;&lt;li&gt;&lt;b&gt;artiest;album&lt;/b&gt;zoekt voor een specifieke album/artiest combinatie.&lt;/li&gt;&lt;li&gt;Om de albums te sorteren op artiest dient het album deel leeg gelaten te worden, maar behoud de puntkomma (bijv. &lt;b&gt;Ratatat;&lt;/b&gt;). Voor een album dient alleen het artiest deel ingevoerd te worden. Voorbeeld:&lt;b&gt;;Resurrection.&lt;/li&gt;&lt;/ul&gt;</translation>
+      <translation type="unfinished">Voer hier de zoek parameters in. Als er niks is ingevoerd, zullen de geselecteerde bestanden gebruikt worden. &lt;ul&gt;&lt;li&gt;&lt;b&gt;artiest;album&lt;/b&gt;zoekt voor een specifieke album/artiest combinatie.&lt;/li&gt;&lt;li&gt;Om de albums te sorteren op artiest dient het album deel leeg gelaten te worden, maar behoud de puntkomma (bijv. &lt;b&gt;Ratatat;&lt;/b&gt;). Voor een album dient alleen het artiest deel ingevoerd te worden. Voorbeeld:&lt;b&gt;;Resurrection.&lt;/li&gt;&lt;/ul&gt;</translation>
     </message>
     <message>
       <location filename="../mainwin/tagsources.py" line="39" />

@@ -393,7 +393,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
       <location filename="../helperwin.py" line="142" />
       <location filename="../helperwin.py" line="71" />
       <source>Add track &amp;separator ['/']: Number of tracks</source>
-      <translation>Sit liedjie-&amp;seprator by: Aantal liedjies</translation>
+      <translation>Sit liedjie-&amp;separator by: Aantal liedjies</translation>
     </message>
     <message>
       <location filename="../helperwin.py" line="78" />
@@ -511,7 +511,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
     <message>
       <location filename="../puddlesettings.py" line="545" />
       <source>Row colour for files with previews.</source>
-      <translation>Ry kluer vir files met previews.</translation>
+      <translation>Ry kleur vir files met previews.</translation>
     </message>
     <message>
       <location filename="../puddlesettings.py" line="546" />
@@ -565,7 +565,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
     <message>
       <location filename="../puddletag.py" line="51" />
       <source>Confirm when exiting preview mode.</source>
-      <translation>Bevestig wanneer uit voorksou mode gaan.</translation>
+      <translation>Bevestig wanneer uit voorskou mode gaan.</translation>
     </message>
     <message>
       <location filename="../puddletag.py" line="52" />
@@ -639,7 +639,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
       <location filename="../puddleobjects.py" line="114" />
       <location filename="../puddleobjects.py" line="88" />
       <source>Leaflet page</source>
-      <translation>Pamplef bladsy</translation>
+      <translation>Pamflet bladsy</translation>
     </message>
     <message>
       <location filename="../puddleobjects.py" line="114" />
@@ -1431,7 +1431,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
     <message>
       <location filename="../translations.py" line="110" />
       <source>Autonumbering: $0, Start: $1, Restart for dir: $2, Padding: $3</source>
-      <translation>Autobenommering: $0, Begin: $1, Herberbegin vir gids: $2, Padding: $3</translation>
+      <translation>Autobenommering: $0, Begin: $1, Herbegin vir gids: $2, Padding: $3</translation>
     </message>
     <message>
       <location filename="../translations.py" line="111" />
@@ -2015,7 +2015,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
     <message>
       <location filename="../translations.py" line="14" />
       <source>Automatically resize columns to contents</source>
-      <translation>Strek kollomme automaties na hul besittings</translation>
+      <translation>Strek kolomme automaties na hul besittings</translation>
     </message>
     <message>
       <location filename="../translations.py" line="15" />
@@ -2693,7 +2693,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
     <message>
       <location filename="../translations.py" line="66" />
       <source>Plays the selected files in the predefined music player.</source>
-      <translation>Die gekiesde lêre sal in die gedefineerde musiek speler gespeel word.</translation>
+      <translation>Die gekiesde lêre sal in die gedefinieerde musiek speler gespeel word.</translation>
     </message>
     <message>
       <location filename="../translations.py" line="67" />
@@ -2713,7 +2713,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
     <message>
       <location filename="../translations.py" line="70" />
       <source>Sa&amp;ve playlist</source>
-      <translation>Stoo&amp;r splellys</translation>
+      <translation>Stoo&amp;r speellys</translation>
     </message>
     <message>
       <location filename="../translations.py" line="71" />
@@ -3092,7 +3092,7 @@ Do you want to go ahead?</source>
       <location filename="../mainwin/funcs.py" line="290" />
       <location filename="../mainwin/funcs.py" line="264" />
       <source>No libraries found</source>
-      <translation>Geen geldige Musiek Biblieteke was gevind nie</translation>
+      <translation>Geen geldige Musiek Biblioteke was gevind nie</translation>
     </message>
     <message>
       <location filename="../mainwin/funcs.py" line="265" />
@@ -3102,7 +3102,7 @@ Do you want to go ahead?</source>
     <message>
       <location filename="../mainwin/funcs.py" line="291" />
       <source>No supported music libraries were found. Most likely the required dependencies aren't installed. Visit the puddletag website, &lt;a href='http://puddletag.sourceforge.net'&gt;puddletag.sourceforge.net&lt;/a&gt; for more details.</source>
-      <translation>&lt;a href='http://puddletag.sourceforge.net'&gt;puddletag.sourceforge.net&lt;/a&gt;Geen geldige Musiek Biblieteke was gevind nie. Heelwaarskynlik is the benodigde afhanklikhede nie geïnstalleer nie. Gaan na die puddletag webwerf, vir meer informasie.</translation>
+      <translation>&lt;a href='http://puddletag.sourceforge.net'&gt;puddletag.sourceforge.net&lt;/a&gt;Geen geldige Musiek Biblioteke was gevind nie. Heelwaarskynlik is the benodigde afhanklikhede nie geïnstalleer nie. Gaan na die puddletag webwerf, vir meer informasie.</translation>
     </message>
     <message>
       <location filename="../musiclib.py" line="120" />
@@ -3350,12 +3350,12 @@ Do you want to go ahead?</source>
     <message>
       <location filename="../mainwin/tagsources.py" line="377" />
       <source>&lt;p&gt;The fields listed here will be used in determining whether a track matches the retrieved track. Each field will be compared using a fuzzy matching algorithm. If the resulting average match percentage is greater than the "Minimum Percentage" it'll be considered to match.&lt;/p&gt;</source>
-      <translation>&lt;p&gt;Die velde was hier gelys word sal gebruik word om to beskou of a sekere liedjie sy en sy afgelaaide maat dieselfe is. Elke veld sal getoets word met 'n fuzzy-matching algoritme. As die gemiddelde persentasie van aldie velde groter as die 'Minimum Persentasie' is sal dit as 'n match beskou word.&lt;/p&gt;</translation>
+      <translation>&lt;p&gt;Die velde was hier gelys word sal gebruik word om to beskou of a sekere liedjie sy en sy afgelaaide maat dieselfde is. Elke veld sal getoets word met 'n fuzzy-matching algoritme. As die gemiddelde persentasie van aldie velde groter as die 'Minimum Persentasie' is sal dit as 'n match beskou word.&lt;/p&gt;</translation>
     </message>
     <message>
       <location filename="../mainwin/tagsources.py" line="386" />
       <source>&lt;p&gt;The artist and album fields will be used in determining whether an album matches the retrieved one. Each field will be compared using a fuzzy matching algorithm. If the resulting average match percentage is greater or equal than what you specify here it'll be considered to match.&lt;/p&gt;</source>
-      <translation>&lt;p&gt;Die kunstenaar and album velde sal gebruik word om to beskou of 'n album die afgelaaide album match. Elke feld was jy hier lys sal gebruik word in fuzzy-matching algoritme. As the gemiddelde gekalkuleerde persentasie groter of gelyk is aan wat jy hier lys, sal die afgelaaide album 'n match beskou word.&lt;/p&gt;</translation>
+      <translation>&lt;p&gt;Die kunstenaar and album velde sal gebruik word om to beskou of 'n album die afgelaaide album match. Elke veld was jy hier lys sal gebruik word in fuzzy-matching algoritme. As the gemiddelde gekalkuleerde persentasie groter of gelyk is aan wat jy hier lys, sal die afgelaaide album 'n match beskou word.&lt;/p&gt;</translation>
     </message>
     <message>
       <location filename="../mainwin/tagsources.py" line="423" />
@@ -3371,7 +3371,7 @@ Do you want to go ahead?</source>
       <location filename="../masstag/dialogs.py" line="265" />
       <location filename="../mainwin/tagsources.py" line="428" />
       <source>Minimum percentage required for track match.</source>
-      <translation>Minimum persentasie benodiig vir 'n liedjie match.</translation>
+      <translation>Minimum persentasie benodig vir 'n liedjie match.</translation>
     </message>
     <message>
       <location filename="../masstag/dialogs.py" line="186" />
@@ -3624,7 +3624,7 @@ Do you want to go ahead?</source>
     <message>
       <location filename="../shortcutsettings.py" line="200" />
       <source>Shortcut</source>
-      <translation>Korgewing</translation>
+      <translation>Kortgewing</translation>
     </message>
     <message>
       <location filename="../shortcutsettings.py" line="286" />
@@ -3926,7 +3926,7 @@ Egte: {}</translation>
     <message>
       <location filename="../mainwin/tagsources.py" line="347" />
       <source>&amp;Display format for individual tracks.</source>
-      <translation>Wysigings formaat vir &amp;individieule liedjies.</translation>
+      <translation>Wysigings formaat vir &amp;individuele liedjies.</translation>
     </message>
     <message>
       <location filename="../mainwin/tagsources.py" line="352" />
@@ -3996,7 +3996,7 @@ Egte: {}</translation>
     <message>
       <location filename="../mainwin/tagsources.py" line="693" />
       <source>Automatically retrieve matches.</source>
-      <translation>Laai oorenstemmende albums automaties af.</translation>
+      <translation>Laai ooreenstemmende albums automaties af.</translation>
     </message>
     <message>
       <location filename="../mainwin/tagsources.py" line="861" />
@@ -4026,7 +4026,7 @@ Egte: {}</translation>
     <message>
       <location filename="../mainwin/tagsources.py" line="961" />
       <source>&lt;b&gt;Tags were written.&lt;/b&gt;</source>
-      <translation>&lt;b&gt;Tags was geskryfe&lt;/b&gt;</translation>
+      <translation>&lt;b&gt;Tags was geskryf&lt;/b&gt;</translation>
     </message>
     <message>
       <location filename="../tagsources/__init__.py" line="91" />
@@ -4114,7 +4114,7 @@ Egte: {}</translation>
     <message>
       <location filename="../mainwin/releasewidget.py" line="733" />
       <source>More than one album matches. None will be retrieved.</source>
-      <translation type="unfinished">Meer as een album stem oorleen. Geen sal afgelaai word nie.</translation>
+      <translation type="unfinished">Meer as een album stem ooreen. Geen sal afgelaai word nie.</translation>
     </message>
     <message>
       <location filename="../mainwin/releasewidget.py" line="736" />
@@ -4124,7 +4124,7 @@ Egte: {}</translation>
     <message>
       <location filename="../mainwin/tagsources.py" line="417" />
       <source>Automatic retrieval options</source>
-      <translation type="unfinished">Automities aflaii opsies</translation>
+      <translation type="unfinished">Automities aflaai opsies</translation>
     </message>
   </context>
 </TS>

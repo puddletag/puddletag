@@ -519,17 +519,17 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
     <message>
       <location filename="../puddlesettings.py" line="546" />
       <source>Field added in Extended Tags.</source>
-      <translation>Campo adicionado em Tags Extendidas.</translation>
+      <translation>Campo adicionado em Tags Estendidas.</translation>
     </message>
     <message>
       <location filename="../puddlesettings.py" line="547" />
       <source>Field edited in Extended Tags.</source>
-      <translation>Campo editado em Tags Extendidas.</translation>
+      <translation>Campo editado em Tags Estendidas.</translation>
     </message>
     <message>
       <location filename="../puddlesettings.py" line="548" />
       <source>Field removed in Extended Tags.</source>
-      <translation>Campo removido em Tags Extendidas.</translation>
+      <translation>Campo removido em Tags Estendidas.</translation>
     </message>
   </context>
   <context>
@@ -568,7 +568,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
     <message>
       <location filename="../puddletag.py" line="51" />
       <source>Confirm when exiting preview mode.</source>
-      <translation>Confimar quando sair do modo de visualização.</translation>
+      <translation>Confirmar quando sair do modo de visualização.</translation>
     </message>
     <message>
       <location filename="../puddletag.py" line="52" />
@@ -798,7 +798,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
       <location filename="../puddleobjects.py" line="127" />
       <location filename="../puddleobjects.py" line="101" />
       <source>Illustration</source>
-      <translation>Illustração</translation>
+      <translation>Ilustração</translation>
     </message>
     <message>
       <location filename="../puddleobjects.py" line="127" />
@@ -938,7 +938,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
     <message>
       <location filename="../mainwin/tagtools.py" line="73" />
       <source>An error occurred while writing to &lt;b&gt;{}&lt;/b&gt;. ({})</source>
-      <translation>Um erro ocorreu enquando gravava para &lt;b&gt;{}&lt;/b&gt;,({})</translation>
+      <translation>Um erro ocorreu enquanto gravava para &lt;b&gt;{}&lt;/b&gt;,({})</translation>
     </message>
     <message>
       <location filename="../masstag/dialogs.py" line="391" />
@@ -1064,7 +1064,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
     <message>
       <location filename="../puddleobjects.py" line="2124" />
       <source>Album Art</source>
-      <translation>Arte do Albúm</translation>
+      <translation>Arte do Álbum</translation>
     </message>
     <message>
       <location filename="../translations.py" line="221" />
@@ -1190,7 +1190,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
     <message>
       <location filename="../tagsources/discogs.py" line="299" />
       <source>Cover size to retrieve</source>
-      <translation>Tamaho da capa para obter</translation>
+      <translation>Tamanho da capa para obter</translation>
     </message>
     <message>
       <location filename="../tagsources/discogs.py" line="300" />
@@ -1230,7 +1230,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
     <message>
       <location filename="../tagsources/discogs.py" line="337" />
       <source>Found Discogs ID: {}</source>
-      <translation>Encotradas Identificações Discogs: {}</translation>
+      <translation>Encontradas Identificações Discogs: {}</translation>
     </message>
   </context>
   <context>
@@ -1429,7 +1429,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
     <message>
       <location filename="../translations.py" line="109" />
       <source>Match filename's &amp;case:</source>
-      <translation>&amp;Diferenciar entre maíscula e minúscula o nome do arquivo:</translation>
+      <translation>&amp;Diferenciar entre maiúscula e minúscula o nome do arquivo:</translation>
     </message>
     <message>
       <location filename="../translations.py" line="110" />
@@ -1670,7 +1670,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
     <message>
       <location filename="../translations.py" line="158" />
       <source>Remove Dupes: $0, Match Case $1</source>
-      <translation>Remover duplicações: $0, Diferenciar maísculas de minúsculas:$1</translation>
+      <translation>Remover duplicações: $0, Diferenciar maiúsculas de minúsculas:$1</translation>
     </message>
     <message>
       <location filename="../translations.py" line="159" />
@@ -1868,7 +1868,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
     <message>
       <location filename="../translations.py" line="204" />
       <source>Mixed Case</source>
-      <translation>Não diferenciar maíusculas de minúsculas</translation>
+      <translation>Não diferenciar maiúsculas de minúsculas</translation>
     </message>
     <message>
       <location filename="../translations.py" line="205" />
@@ -1883,7 +1883,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
     <message>
       <location filename="../translations.py" line="207" />
       <source>For &amp;Mixed Case, after any of:</source>
-      <translation>Para &amp;maíusculas e minúsculas, depois qualquer um:</translation>
+      <translation>Para &amp;maiúsculas e minúsculas, depois qualquer um:</translation>
     </message>
     <message>
       <location filename="../translations.py" line="208" />
@@ -2003,7 +2003,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
     <message>
       <location filename="../translations.py" line="11" />
       <source>Show &amp;gridlines</source>
-      <translation>Mostrar &amp;linhasdegrade</translation>
+      <translation>Mostrar &amp;linhas de grade</translation>
     </message>
     <message>
       <location filename="../translations.py" line="12" />
@@ -2018,7 +2018,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
     <message>
       <location filename="../translations.py" line="14" />
       <source>Automatically resize columns to contents</source>
-      <translation>Redimesionar automaticamente as colunas de acordo com o conteúdo</translation>
+      <translation>Redimensionar automaticamente as colunas de acordo com o conteúdo</translation>
     </message>
     <message>
       <location filename="../translations.py" line="15" />
@@ -2033,7 +2033,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
     <message>
       <location filename="../translations.py" line="17" />
       <source>&amp;Load last folder at startup</source>
-      <translation>&amp;Carregar últma pasta ao iniciar</translation>
+      <translation>&amp;Carregar última pasta ao iniciar</translation>
     </message>
   </context>
   <context>
@@ -2425,7 +2425,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
       <location filename="../translations.py" line="24" />
       <location filename="../mainwin/previews.py" line="19" />
       <source>Enabl&amp;e Preview Mode</source>
-      <translation>Ativar Modo de &amp;Visualizaçao</translation>
+      <translation>Ativar Modo de &amp;Visualização</translation>
     </message>
     <message>
       <location filename="../mainwin/previews.py" line="20" />
@@ -2580,7 +2580,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
     <message>
       <location filename="../translations.py" line="43" />
       <source>Autonumbering &amp;Wizard...</source>
-      <translation type="unfinished">&amp;Assistente de Numeraçao Automática...</translation>
+      <translation type="unfinished">&amp;Assistente de Numeração Automática...</translation>
     </message>
     <message>
       <location filename="../translations.py" line="44" />
@@ -2676,7 +2676,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
     <message>
       <location filename="../translations.py" line="62" />
       <source>Append a directory to current file-view.</source>
-      <translation type="unfinished">Anexar um diretório à visualizaçao do arquivo atual.</translation>
+      <translation type="unfinished">Anexar um diretório à visualização do arquivo atual.</translation>
     </message>
     <message>
       <location filename="../translations.py" line="63" />
@@ -2711,7 +2711,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
     <message>
       <location filename="../translations.py" line="69" />
       <source>Refresh current file-view.</source>
-      <translation type="unfinished">Atualizar visualizaçao do arquivo atual.</translation>
+      <translation type="unfinished">Atualizar visualização do arquivo atual.</translation>
     </message>
     <message>
       <location filename="../translations.py" line="70" />
@@ -2741,7 +2741,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
     <message>
       <location filename="../translations.py" line="75" />
       <source>Select all files belonging to the directories of those selected. Otherwise (if only a single directory is selected) selects all the files in the previous directory.</source>
-      <translation type="unfinished">Selecionar todos os arquivos pertencentes aos diretórios dos selecionados. Caso contrário (se so um diretório estiver selecionado), seleciona todos os arquivos no diretório anterior.</translation>
+      <translation type="unfinished">Selecionar todos os arquivos pertencentes aos diretórios dos selecionados. Caso contrário (se só um diretório estiver selecionado), seleciona todos os arquivos no diretório anterior.</translation>
     </message>
     <message>
       <location filename="../translations.py" line="76" />
@@ -3078,13 +3078,13 @@ Você quer continuar?</translation>
     <message>
       <location filename="../tagsources/musicbrainz.py" line="524" />
       <source>&lt;b&gt;Error:&lt;/b&gt; While retrieving {}: {}</source>
-      <translation>&lt;b&gt;Erro:&lt;/b&gt; Enquanto obtia {}: {}</translation>
+      <translation>&lt;b&gt;Erro:&lt;/b&gt; Enquanto obtinha {}: {}</translation>
     </message>
     <message>
       <location filename="../tagsources/musicbrainz.py" line="576" />
       <location filename="../tagsources/musicbrainz.py" line="534" />
       <source>&lt;b&gt;Error:&lt;/b&gt; While retrieving Album ID {} ({})</source>
-      <translation>&lt;b&gt;Erro:&lt;/b&gt; Enquanto obtia ID do Álbum {} ({})</translation>
+      <translation>&lt;b&gt;Erro:&lt;/b&gt; Enquanto obtinha ID do Álbum {} ({})</translation>
     </message>
     <message>
       <location filename="../tagsources/musicbrainz.py" line="572" />
@@ -3108,7 +3108,7 @@ Você quer continuar?</translation>
     <message>
       <location filename="../mainwin/funcs.py" line="291" />
       <source>No supported music libraries were found. Most likely the required dependencies aren't installed. Visit the puddletag website, &lt;a href='http://puddletag.sourceforge.net'&gt;puddletag.sourceforge.net&lt;/a&gt; for more details.</source>
-      <translation>Nenhuma biblioteca de músicas suportada foi encontrada. É possivel que as dependências necessarias não estejam instaladas. Visite o site do puddletag, &lt;a href='http://puddletag.sourceforge.net'&gt;puddletag.sourceforge.net&lt;/a&gt; para mais detalhes.</translation>
+      <translation>Nenhuma biblioteca de músicas suportada foi encontrada. É possível que as dependências necessárias não estejam instaladas. Visite o site do puddletag, &lt;a href='http://puddletag.sourceforge.net'&gt;puddletag.sourceforge.net&lt;/a&gt; para mais detalhes.</translation>
     </message>
     <message>
       <location filename="../musiclib.py" line="120" />
@@ -3238,7 +3238,7 @@ Você quer continuar?</translation>
     <message>
       <location filename="../puddlesettings.py" line="219" />
       <source>&amp;Filename pattern.</source>
-      <translation>Padrao do &amp;Nome de arquivo.</translation>
+      <translation>Padrão do &amp;Nome de arquivo.</translation>
     </message>
   </context>
   <context>
@@ -3275,7 +3275,7 @@ Você quer continuar?</translation>
       <location filename="../puddletag.py" line="548" />
       <location filename="../mainwin/dirview.py" line="158" />
       <source>Some files have uncommitted previews. Changes will be lost once you load a directory. &lt;br /&gt;Do you still want to load a new directory?&lt;br /&gt;</source>
-      <translation>Alguns arquivos possuem visualizaçoes não submetidas. Mudanças serão perdidas assim que voce carregar um diretorio. &lt;br /&gt;Você ainda deseja carregar um novo diretório?&lt;br /&gt;</translation>
+      <translation>Alguns arquivos possuem visualizações não submetidas. Mudanças serão perdidas assim que você carregar um diretório. &lt;br /&gt;Você ainda deseja carregar um novo diretório?&lt;br /&gt;</translation>
     </message>
     <message>
       <location filename="../mainwin/tagsources.py" line="676" />
@@ -3297,7 +3297,7 @@ Você quer continuar?</translation>
     <message>
       <location filename="../puddletag.py" line="444" />
       <source>Some files have uncommitted previews. These changes will be lost once you exit puddletag. &lt;br /&gt;Do you want to exit without writing those changes?&lt;br /&gt;</source>
-      <translation>Alguns arquivos possuem visualizações não submetidas. Essas mudanças serão perdidas assim que você sair do puddletag. &lt;br /&gt;Voce deseja sair sem salvar essas mudanças?&lt;br /&gt;</translation>
+      <translation>Alguns arquivos possuem visualizações não submetidas. Essas mudanças serão perdidas assim que você sair do puddletag. &lt;br /&gt;Você deseja sair sem salvar essas mudanças?&lt;br /&gt;</translation>
     </message>
     <message>
       <location filename="../puddletag.py" line="488" />
@@ -3346,7 +3346,7 @@ Você quer continuar?</translation>
       <location filename="../masstag/dialogs.py" line="233" />
       <location filename="../mainwin/tagsources.py" line="368" />
       <source>Brute force unmatched files.</source>
-      <translation>Executar foça bruta em arquivos não correspondidos.</translation>
+      <translation>Executar força bruta em arquivos não correspondidos.</translation>
     </message>
     <message>
       <location filename="../mainwin/tagsources.py" line="370" />
@@ -3392,7 +3392,7 @@ Você quer continuar?</translation>
     <message>
       <location filename="../masstag/dialogs.py" line="205" />
       <source>&lt;p&gt;If no tag information is found in a file, the tags retrieved using this pattern will be used instead.&lt;/p&gt;</source>
-      <translation>&lt;p&gt;Se nenhuma informação de tag for encontrada num arquivo, as tags obtidas usando este padrao serão usadas.&lt;/p&gt;</translation>
+      <translation>&lt;p&gt;Se nenhuma informação de tag for encontrada num arquivo, as tags obtidas usando este padrão serão usadas.&lt;/p&gt;</translation>
     </message>
     <message>
       <location filename="../masstag/dialogs.py" line="212" />
@@ -3447,12 +3447,12 @@ Você quer continuar?</translation>
     <message>
       <location filename="../masstag/dialogs.py" line="381" />
       <source>Edit Tag Source Config</source>
-      <translation>Editar Configuraçoes da Fonte da Tag</translation>
+      <translation>Editar Configurações da Fonte da Tag</translation>
     </message>
     <message>
       <location filename="../masstag/dialogs.py" line="392" />
       <source>&lt;p&gt;Enter a comma-separated list of fields to retrieve. Leave empty to retrieve all available fields/values. &lt;br /&gt;&lt;br /&gt;Eg. &lt;b&gt;artist, album, title&lt;/b&gt; will only retrieve the artist, album and title fields of from the Tag Source. &lt;br /&gt;&lt;br /&gt;Start the list with the tilde (~) character to write all retrieved fields , but the ones listed. Eg the field list &lt;b&gt;~composer,__image&lt;/b&gt; will write all fields but the composer and __image (aka cover art) fields.&lt;/p&gt;&lt;p&gt;If a field has been retrieved in a previous Tag Source the values will be combined if they differ. Eg. If genre=&lt;b&gt;Rock&lt;/b&gt; for the first tag source polled and genre=&lt;b&gt;Alternative&lt;/b&gt; for the tag source polled second then the resulting field will have multiple-values ie. genre=&lt;b&gt;Rock\\Rap&lt;/b&gt;</source>
-      <translation>&lt;p&gt;Insira uma lista de campos separados por virgula para recuperar. Deixe vazio para recuperar todos os campos/valores disponíveis. &lt;br /&gt;&lt;br /&gt;Ex: &lt;b&gt;artista, álbum, título&lt;/b&gt; recuperará apenas os campos artista, álbum e título da Fonte Tag. &lt;br /&gt;&lt;br /&gt;Comece a lista com o caractere til (~) para escrever em todos os campos obtidos, com exceçao dos listados. Ex: a lista de campos &lt;b&gt;~compositor, __image&lt;/b&gt; escreverá em todos os campos com exceçao dos campos compositor e __imagem (conhecido como capa do álbum). &lt;/p&gt;&lt;p&gt;Se um campo foi obtido em uma Fonte Tag anterior, os valores serao combinados se eles forem diferentes. Ex: Se gênero = &lt;b&gt;Rock&lt;/b&gt; para a primeira fonte tag, e se gênero = &lt;b&gt;Alternativo&lt;/b&gt; para a segunda, o campo resultante tera múltiplos valores, ex: gênero = &lt;b&gt;Rock\\Rap&lt;/b&gt;</translation>
+      <translation>&lt;p&gt;Insira uma lista de campos separados por virgula para recuperar. Deixe vazio para recuperar todos os campos/valores disponíveis. &lt;br /&gt;&lt;br /&gt;Ex: &lt;b&gt;artista, álbum, título&lt;/b&gt; recuperará apenas os campos artista, álbum e título da Fonte Tag. &lt;br /&gt;&lt;br /&gt;Comece a lista com o caractere til (~) para escrever em todos os campos obtidos, com exceção dos listados. Ex: a lista de campos &lt;b&gt;~compositor, __image&lt;/b&gt; escreverá em todos os campos com exceção dos campos compositor e __imagem (conhecido como capa do álbum). &lt;/p&gt;&lt;p&gt;Se um campo foi obtido em uma Fonte Tag anterior, os valores serão combinados se eles forem diferentes. Ex: Se gênero = &lt;b&gt;Rock&lt;/b&gt; para a primeira fonte tag, e se gênero = &lt;b&gt;Alternativo&lt;/b&gt; para a segunda, o campo resultante tera múltiplos valores, ex: gênero = &lt;b&gt;Rock\\Rap&lt;/b&gt;</translation>
     </message>
     <message>
       <location filename="../masstag/dialogs.py" line="414" />
@@ -3462,7 +3462,7 @@ Você quer continuar?</translation>
     <message>
       <location filename="../masstag/dialogs.py" line="416" />
       <source>Enter a comma-separated lists of fields that'll replace any retrieved from previously polled tag sources. &lt;br /&gt;Start the list with the tilde (~) character to replace all but the fields you list. &lt;br /&gt;&lt;b&gt;NB: Fields listed here must also be listed in the list of fields to retrieve.&lt;/b&gt;&lt;br /&gt;&lt;br /&gt;Eg. Assume you have two Tag Sources. The first retrieves &lt;b&gt;artist=Freshlyground, album=Nomvula, genre=Afro Pop&lt;/b&gt;. The second source gets &lt;b&gt;artist=Freshly Ground, album=Nomvula, genre=Pop&lt;/b&gt;. For the second Tag Source, setting just &lt;b&gt;artist&lt;/b&gt; as the list of fields to replace will overwrite the artist field retrieved from the first tag source. The resulting retrieved fields/values as shown in puddletag will then be &lt;b&gt;artist=Freshly Ground, album=Nomvula, genre=Afro Pop\\Pop&lt;/b&gt;.</source>
-      <translation>Insira uma lista de campos separados por virgula que sobrescreverão quaisquer dados obtidos de outras fontes tag. &lt;br /&gt;Comece a lista com o caractere til (~) para sobrescrever todos os campos exceto o que você listar. &lt;br /&gt;&lt;b&gt;NB: Campos listados aqui também devem ser listados na lista de campos a serem obtidos. &lt;/b&gt;&lt;br /&gt;&lt;br /&gt;Ex: Assuma que você possui duas Fontes Tag. A primeira recupera &lt;b&gt;artista=Freshlyground, album=Nomvula, gênero=Afro Pop&lt;/b&gt;. A segunda fonte obtém &lt;b&gt;artista=Freshly Ground, álbum=Nomvula, gênero=Pop&lt;/b&gt; Para a segunda fonte, definir apenas o &lt;b&gt;artista&lt;/b&gt; como lista de campos a serem sobrescritos irá sobrescrever o campo artista da primeira fonte tag.  Os campos/valores resultantes obtidos mostrados no puddletag serao &lt;b&gt;artista=Freshly Ground, álbum=Nomvula, gênero=Afro Pop\\Pop&lt;/b&gt;.</translation>
+      <translation>Insira uma lista de campos separados por virgula que sobrescreverão quaisquer dados obtidos de outras fontes tag. &lt;br /&gt;Comece a lista com o caractere til (~) para sobrescrever todos os campos exceto o que você listar. &lt;br /&gt;&lt;b&gt;NB: Campos listados aqui também devem ser listados na lista de campos a serem obtidos. &lt;/b&gt;&lt;br /&gt;&lt;br /&gt;Ex: Assuma que você possui duas Fontes Tag. A primeira recupera &lt;b&gt;artista=Freshlyground, album=Nomvula, gênero=Afro Pop&lt;/b&gt;. A segunda fonte obtém &lt;b&gt;artista=Freshly Ground, álbum=Nomvula, gênero=Pop&lt;/b&gt; Para a segunda fonte, definir apenas o &lt;b&gt;artista&lt;/b&gt; como lista de campos a serem sobrescritos irá sobrescrever o campo artista da primeira fonte tag.  Os campos/valores resultantes obtidos mostrados no puddletag serão &lt;b&gt;artista=Freshly Ground, álbum=Nomvula, gênero=Afro Pop\\Pop&lt;/b&gt;.</translation>
     </message>
     <message>
       <location filename="../masstag/dialogs.py" line="440" />
@@ -3477,7 +3477,7 @@ Você quer continuar?</translation>
     <message>
       <location filename="../masstag/dialogs.py" line="446" />
       <source>&lt;p&gt;&lt;b&gt;Continue&lt;/b&gt;: The lookup for the current album will continue by checking the other tag sources if no matching results were found for this tag source.&lt;/p&gt;&lt;p&gt;&lt;b&gt;Stop:&lt;/b&gt; The lookup for the current album will stop and any previously retrieved results will be used.&lt;/p&gt;</source>
-      <translation>&lt;p&gt;&lt;b&gt;Continuar&lt;/b&gt;: A busca pelo álbum atual continuará ao marcar as outras fontes de tags se nenhuma correspondência resultante for encontrada para esta fonte de tags.&lt;/p&gt;&lt;p&gt;&lt;b&gt;Parar:&lt;/b&gt; A busca pelo álbum atual sera interrompida e quaisquer resultados previamente obtidos serao utilizados.&lt;/p&gt;</translation>
+      <translation>&lt;p&gt;&lt;b&gt;Continuar&lt;/b&gt;: A busca pelo álbum atual continuará ao marcar as outras fontes de tags se nenhuma correspondência resultante for encontrada para esta fonte de tags.&lt;/p&gt;&lt;p&gt;&lt;b&gt;Parar:&lt;/b&gt; A busca pelo álbum atual sera interrompida e quaisquer resultados previamente obtidos serão utilizados.&lt;/p&gt;</translation>
     </message>
   </context>
   <context>
@@ -3498,7 +3498,7 @@ Você quer continuar?</translation>
     <message>
       <location filename="../libraries/quodlibetlib.py" line="354" />
       <source>&amp;Library Path</source>
-      <translation>Diretorio da &amp;Biblioteca</translation>
+      <translation>Diretório da &amp;Biblioteca</translation>
     </message>
     <message>
       <location filename="../libraries/quodlibetlib.py" line="357" />
@@ -3779,7 +3779,7 @@ Real: {}</translation>
     <message>
       <location filename="../tagmodel.py" line="2067" />
       <source>It wasn't possible to play the selected files, because the music player you defined (&lt;b&gt;{}&lt;/b&gt;) does not exist.</source>
-      <translation>Não foi possivel executar os arquivos selecionados, pois o tocador de músicas que voce definiu (&lt;b&gt;{}&lt;/b&gt;) não existe.</translation>
+      <translation>Não foi possível executar os arquivos selecionados, pois o tocador de músicas que você definiu (&lt;b&gt;{}&lt;/b&gt;) não existe.</translation>
     </message>
   </context>
   <context>
@@ -3792,7 +3792,7 @@ Real: {}</translation>
     <message>
       <location filename="../mainwin/tagpanel.py" line="453" />
       <source>All row numbers must be integers.</source>
-      <translation>Todos os numeros de linha devem ser inteiros.</translation>
+      <translation>Todos os números de linha devem ser inteiros.</translation>
     </message>
   </context>
   <context>
@@ -3800,7 +3800,7 @@ Real: {}</translation>
     <message>
       <location filename="../puddlesettings.py" line="384" />
       <source>&amp;Restrict incoming files to (eg. "*.mp3; *.ogg; *.aac")</source>
-      <translation>&amp;Restringir arquivos chegando para (ex.: "*.mp3; *.ogg; *aac")</translation>
+      <translation>&amp;Restringir arquivos chegando para (ex.: "*.mp3; *.ogg; *.aac")</translation>
     </message>
     <message>
       <location filename="../puddlesettings.py" line="388" />
@@ -3825,7 +3825,7 @@ Real: {}</translation>
     <message>
       <location filename="../puddlesettings.py" line="402" />
       <source>Default &amp;pattern to use when saving artwork.</source>
-      <translation>&amp;Padrao a ser usado na hora de salvar arte.</translation>
+      <translation>&amp;Padrão a ser usado na hora de salvar arte.</translation>
     </message>
     <message>
       <location filename="../puddlesettings.py" line="418" />
@@ -3885,7 +3885,7 @@ Real: {}</translation>
       <location filename="../mainwin/releasewidget.py" line="491" />
       <location filename="../mainwin/releasewidget.py" line="388" />
       <source>Retrieval complete.</source>
-      <translation type="unfinished">Obtençao completa.</translation>
+      <translation type="unfinished">Obtenção completa.</translation>
     </message>
     <message>
       <location filename="../mainwin/releasewidget.py" line="497" />
@@ -3895,12 +3895,12 @@ Real: {}</translation>
     <message>
       <location filename="../mainwin/tagsources.py" line="30" />
       <source>Enter search parameters here. If empty, the selected files are used. &lt;ul&gt;&lt;li&gt;&lt;b&gt;artist;album&lt;/b&gt; searches for a specific album/artist combination.&lt;/li&gt;&lt;li&gt;To list the albums by an artist leave off the album part, but keep the semicolon (eg. &lt;b&gt;Ratatat;&lt;/b&gt;). For an album only leave the artist part as in &lt;b&gt;;Resurrection&lt;/b&gt;.&lt;/li&gt;&lt;/ul&gt;</source>
-      <translation type="unfinished">Insira os parâmetros de busca aqui. Se vazio, os seguintes arquivos são usados. &lt;ul&gt;&lt;li&gt;&lt;b&gt;artista;album&lt;/b&gt; busca por uma combinação específica de álbum/artista.&lt;/li&gt;&lt;li&gt;Para listar os álbuns por artista, ignore a parte do álbum, mas mantenha o ponto-e-virgula (e.x.: &lt;b&gt;Ratatat;&lt;/b&gt;). Para apenas álbum, retire a parte do artista, como em &lt;b&gt;;Ressurection.&lt;/li&gt;&lt;/ul&gt;</translation>
+      <translation type="unfinished">Insira os parâmetros de busca aqui. Se vazio, os seguintes arquivos são usados. &lt;ul&gt;&lt;li&gt;&lt;b&gt;artista;album&lt;/b&gt; busca por uma combinação específica de álbum/artista.&lt;/li&gt;&lt;li&gt;Para listar os álbuns por artista, ignore a parte do álbum, mas mantenha o ponto-e-virgula (e.x.: &lt;b&gt;Ratatat;&lt;/b&gt;). Para apenas álbum, retire a parte do artista, como em &lt;b&gt;;Resurrection.&lt;/li&gt;&lt;/ul&gt;</translation>
     </message>
     <message>
       <location filename="../mainwin/tagsources.py" line="39" />
       <source>Enter a comma-separated list of fields to write. &lt;br /&gt;&lt;br /&gt;Eg. &lt;b&gt;artist, album, title&lt;/b&gt; will only write the artist, album and title fields of the retrieved tags. &lt;br /&gt;&lt;br /&gt;If you want to exclude some fields, but write all others start the list the tilde (~) character. Eg &lt;b&gt;~composer, __image&lt;/b&gt; will write all fields but the composer and __image fields.</source>
-      <translation type="unfinished">Insira uma lista de campos separados por virgula para escrever. &lt;br /&gt;&lt;br /&gt;Ex: &lt;b&gt;artista, álbum, titulo&lt;/b&gt; so escrevera nos campos de artista, album e título das tags obtidas. &lt;br /&gt;&lt;br /&gt;Se voce deseja excluir alguns campos, mas escrever em todos os outros, comece a lista com o caractere til (~). Ex: &lt;b&gt;~compositor, __imagem&lt;/b&gt; escrevera em todos os campos, exceto os de compositor e imagem.</translation>
+      <translation type="unfinished">Insira uma lista de campos separados por virgula para escrever. &lt;br /&gt;&lt;br /&gt;Ex: &lt;b&gt;artista, álbum, titulo&lt;/b&gt; só escrevera nos campos de artista, album e título das tags obtidas. &lt;br /&gt;&lt;br /&gt;Se você deseja excluir alguns campos, mas escrever em todos os outros, comece a lista com o caractere til (~). Ex: &lt;b&gt;~compositor, __imagem&lt;/b&gt; escrevera em todos os campos, exceto os de compositor e imagem.</translation>
     </message>
     <message>
       <location filename="../mainwin/tagsources.py" line="88" />
@@ -3916,18 +3916,18 @@ Real: {}</translation>
     <message>
       <location filename="../mainwin/tagsources.py" line="305" />
       <source>Add sort option</source>
-      <translation type="unfinished">Adicionar opçao de ordenação</translation>
+      <translation type="unfinished">Adicionar opção de ordenação</translation>
     </message>
     <message>
       <location filename="../mainwin/tagsources.py" line="325" />
       <location filename="../mainwin/tagsources.py" line="307" />
       <source>Enter a sorting option (a comma-separated list of fields. Eg. "artist, title")</source>
-      <translation type="unfinished">Insira uma opçao de ordenação (uma lista separada por virgula de campos. Ex: "artista, título")</translation>
+      <translation type="unfinished">Insira uma opção de ordenação (uma lista separada por virgula de campos. Ex: "artista, título")</translation>
     </message>
     <message>
       <location filename="../mainwin/tagsources.py" line="324" />
       <source>Edit sort option</source>
-      <translation type="unfinished">Editar opçao de ordenação</translation>
+      <translation type="unfinished">Editar opção de ordenação</translation>
     </message>
     <message>
       <location filename="../mainwin/tagsources.py" line="347" />
@@ -4022,7 +4022,7 @@ Real: {}</translation>
     <message>
       <location filename="../mainwin/tagsources.py" line="884" />
       <source>&lt;b&gt;Select some files or enter search parameters.&lt;/b&gt;</source>
-      <translation type="unfinished">&lt;b&gt;Selecione alguns arquivos ou insira parametros de busca.&lt;/b&gt;</translation>
+      <translation type="unfinished">&lt;b&gt;Selecione alguns arquivos ou insira parâmetros de busca.&lt;/b&gt;</translation>
     </message>
     <message>
       <location filename="../mainwin/tagsources.py" line="928" />
@@ -4130,7 +4130,7 @@ Real: {}</translation>
     <message>
       <location filename="../mainwin/tagsources.py" line="417" />
       <source>Automatic retrieval options</source>
-      <translation type="unfinished">Opçoes de obtenção automatica</translation>
+      <translation type="unfinished">Opções de obtenção automática</translation>
     </message>
   </context>
 </TS>

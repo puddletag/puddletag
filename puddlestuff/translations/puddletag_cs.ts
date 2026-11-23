@@ -1813,7 +1813,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
     <message>
       <location filename="../translations.py" line="191" />
       <source>Trim whitespace</source>
-      <translation>Ořiznout prázdné znaky</translation>
+      <translation>Oříznout prázdné znaky</translation>
     </message>
     <message>
       <location filename="../translations.py" line="192" />

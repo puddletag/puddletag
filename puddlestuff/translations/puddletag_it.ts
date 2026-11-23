@@ -104,17 +104,17 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
     <message>
       <location filename="../tagsources/acoust_id.py" line="17" />
       <source>Retrieving MB album data: {}</source>
-      <translation>Recupero dati MB Album</translation>
+      <translation>Recupero dati MB Album: {}</translation>
     </message>
     <message>
       <location filename="../tagsources/acoust_id.py" line="18" />
       <source>Error generating fingerprint: {}</source>
-      <translation>Errore nella generazione impronta</translation>
+      <translation>Errore nella generazione impronta: {}</translation>
     </message>
     <message>
       <location filename="../tagsources/acoust_id.py" line="19" />
       <source>Error retrieving data: {}</source>
-      <translation>Errore recupero dati</translation>
+      <translation>Errore recupero dati: {}</translation>
     </message>
     <message>
       <location filename="../tagsources/acoust_id.py" line="20" />
@@ -1709,7 +1709,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
     <message>
       <location filename="../translations.py" line="166" />
       <source>Replace</source>
-      <translation>Sostitisci</translation>
+      <translation>Sostituisci</translation>
     </message>
     <message>
       <location filename="../translations.py" line="167" />
@@ -1969,7 +1969,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
                            &lt;li&gt;Ma usando &lt;b&gt;__selezionati&lt;/b&gt; in Azioni è &lt;b&gt;non&lt;/b&gt;.&lt;/li&gt;
                            &lt;li&gt;'~' scriverà in tutti i campi, tranne quello che segue
                            . Eg &lt;b&gt;~artista, titolo&lt;/b&gt; Scriverà su tutto tranne Artista e
-                           Titolo Campi trovati nelfile selezionato.&lt;li&gt;
+                           Titolo Campi trovati nel file selezionato.&lt;li&gt;
                            &lt;/ul&gt;</translation>
     </message>
     <message>
@@ -2028,7 +2028,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
     <message>
       <location filename="../translations.py" line="13" />
       <source>Show &amp;row numbers</source>
-      <translation>Mostra la numeruazione delle righe</translation>
+      <translation>Mostra la numerazione delle righe</translation>
     </message>
     <message>
       <location filename="../translations.py" line="14" />
@@ -2416,7 +2416,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
     <message>
       <location filename="../masstag/dialogs.py" line="620" />
       <source>&lt;b&gt;Please choose a tagging profile.&lt;/b&gt;</source>
-      <translation>&lt;b&gt;Prego scegliere un progilo tagging.&lt;/b&gt;</translation>
+      <translation>&lt;b&gt;Prego scegliere un profilo tagging.&lt;/b&gt;</translation>
     </message>
     <message>
       <location filename="../masstag/dialogs.py" line="628" />
@@ -3372,7 +3372,7 @@ Vuoi continuare?</translation>
       <location filename="../masstag/dialogs.py" line="233" />
       <location filename="../mainwin/tagsources.py" line="368" />
       <source>Brute force unmatched files.</source>
-      <translation>Forza i files non corrsipondenti.</translation>
+      <translation>Forza i files non corrispondenti.</translation>
     </message>
     <message>
       <location filename="../mainwin/tagsources.py" line="370" />
@@ -3805,7 +3805,7 @@ Vero: {}</translation>
     <message>
       <location filename="../tagmodel.py" line="2067" />
       <source>It wasn't possible to play the selected files, because the music player you defined (&lt;b&gt;{}&lt;/b&gt;) does not exist.</source>
-      <translation>Non èpossibile avviare i files selezionati perchè il player musicale scelto (&lt;b&gt;{}&lt;/b&gt;) non esiste.</translation>
+      <translation>Non è possibile avviare i files selezionati perché il player musicale scelto (&lt;b&gt;{}&lt;/b&gt;) non esiste.</translation>
     </message>
   </context>
   <context>

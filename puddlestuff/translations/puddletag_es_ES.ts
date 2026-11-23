@@ -332,7 +332,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
     <message>
       <location filename="../puddleobjects.py" line="1795" />
       <source>JPEG &amp; PNG Images (*.jpg *.jpeg *.png);;JPEG Images (*.jpg *.jpeg);;PNG Images (*.png);;All Files(*.*)</source>
-      <translation>JPEG &amp; PNG Imágenes (*.jpg *.jpeg *.png);;JPEG Imágeness (*.jpg *.jpeg);;PNG Imágenes (*.png);;Todos(*.*)</translation>
+      <translation>JPEG &amp; PNG Imágenes (*.jpg *.jpeg *.png);;JPEG Imágenes (*.jpg *.jpeg);;PNG Imágenes (*.png);;Todos(*.*)</translation>
     </message>
     <message>
       <location filename="../puddleobjects.py" line="2006" />
@@ -798,7 +798,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
       <location filename="../puddleobjects.py" line="127" />
       <location filename="../puddleobjects.py" line="101" />
       <source>Illustration</source>
-      <translation>Ilustracón</translation>
+      <translation>Ilustración</translation>
     </message>
     <message>
       <location filename="../puddleobjects.py" line="127" />
@@ -822,7 +822,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
       <location filename="../puddleobjects.py" line="129" />
       <location filename="../puddleobjects.py" line="103" />
       <source>Publisher/Studio logotype</source>
-      <translation>Logo discografica</translation>
+      <translation>Logo discográfica</translation>
     </message>
     <message>
       <location filename="../puddleobjects.py" line="129" />
@@ -890,7 +890,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
     <message>
       <location filename="../constants.py" line="36" />
       <source>Various Artists</source>
-      <translation>Varios artístas</translation>
+      <translation>Varios artistas</translation>
     </message>
     <message>
       <location filename="../findfunc.py" line="289" />
@@ -1122,7 +1122,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
     <message>
       <location filename="../mainwin/funcs.py" line="596" />
       <source>Rename: &lt;b&gt;{}&lt;/b&gt; to: &lt;i&gt;{}&lt;/i&gt;</source>
-      <translation>Renombar: &lt;b&gt;{}&lt;/b&gt; a: &lt;i&gt;{}&lt;/i&gt;</translation>
+      <translation>Renombrar: &lt;b&gt;{}&lt;/b&gt; a: &lt;i&gt;{}&lt;/i&gt;</translation>
     </message>
   </context>
   <context>
@@ -1191,7 +1191,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
     <message>
       <location filename="../tagsources/discogs.py" line="299" />
       <source>Cover size to retrieve</source>
-      <translation>Tamaño de la carátura a recuperar</translation>
+      <translation>Tamaño de la carátula a recuperar</translation>
     </message>
     <message>
       <location filename="../tagsources/discogs.py" line="300" />
@@ -1231,7 +1231,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
     <message>
       <location filename="../tagsources/discogs.py" line="337" />
       <source>Found Discogs ID: {}</source>
-      <translation>Encontrada identiricación Discogs: {}</translation>
+      <translation>Encontrada identificación Discogs: {}</translation>
     </message>
   </context>
   <context>
@@ -2318,7 +2318,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
     <message>
       <location filename="../masstag/__init__.py" line="93" />
       <source>Previously retrieved result does not match. Retrieving next matching album.</source>
-      <translation>Previamente no se obtuvieron resultados coincidentes. Recuperando coindidencias próximo álbum.</translation>
+      <translation>Previamente no se obtuvieron resultados coincidentes. Recuperando coincidencias próximo álbum.</translation>
     </message>
     <message>
       <location filename="../masstag/__init__.py" line="97" />
@@ -2328,7 +2328,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
     <message>
       <location filename="../masstag/__init__.py" line="100" />
       <source>&lt;br /&gt;Valid matches were found for the album.</source>
-      <translation>&lt;br /&gt;Validando coincidencias encontradadas para el álbum.</translation>
+      <translation>&lt;br /&gt;Validando coincidencias encontradas para el álbum.</translation>
     </message>
     <message>
       <location filename="../masstag/__init__.py" line="103" />
@@ -3017,7 +3017,7 @@ Esto puedo causar el bloque de su ordenador.
     <message>
       <location filename="../tagsources/musicbrainz.py" line="424" />
       <source>Retrieving image {}</source>
-      <translation>Recuperando imágen {}</translation>
+      <translation>Recuperando imagen {}</translation>
     </message>
     <message>
       <location filename="../tagsources/musicbrainz.py" line="608" />
@@ -3044,7 +3044,7 @@ Esto puedo causar el bloque de su ordenador.
     <message>
       <location filename="../tagsources/musicbrainz.py" line="508" />
       <source>Cover size to retrieve:</source>
-      <translation>Tamaño de la carátura a recuperar:</translation>
+      <translation>Tamaño de la carátula a recuperar:</translation>
     </message>
     <message>
       <location filename="../tagsources/musicbrainz.py" line="509" />
@@ -3090,7 +3090,7 @@ Esto puedo causar el bloque de su ordenador.
     <message>
       <location filename="../tagsources/musicbrainz.py" line="572" />
       <source>Found album id {} in tracks. Retrieving</source>
-      <translation>Encontrado identificador de álbum en las pistas. Recuperando</translation>
+      <translation>Encontrado identificador de álbum {} en las pistas. Recuperando</translation>
     </message>
   </context>
   <context>
@@ -3276,7 +3276,7 @@ Esto puedo causar el bloque de su ordenador.
       <location filename="../puddletag.py" line="548" />
       <location filename="../mainwin/dirview.py" line="158" />
       <source>Some files have uncommitted previews. Changes will be lost once you load a directory. &lt;br /&gt;Do you still want to load a new directory?&lt;br /&gt;</source>
-      <translation>En algunos archivos no se ha confirmados la vista previa. Esos cambios se perderan al cargar un directorio. &lt;br /&gt;¿Quiere cargar un nuevo directorio?&lt;br /&gt;</translation>
+      <translation>En algunos archivos no se ha confirmados la vista previa. Esos cambios se perderán al cargar un directorio. &lt;br /&gt;¿Quiere cargar un nuevo directorio?&lt;br /&gt;</translation>
     </message>
     <message>
       <location filename="../mainwin/tagsources.py" line="676" />
@@ -3298,7 +3298,7 @@ Esto puedo causar el bloque de su ordenador.
     <message>
       <location filename="../puddletag.py" line="444" />
       <source>Some files have uncommitted previews. These changes will be lost once you exit puddletag. &lt;br /&gt;Do you want to exit without writing those changes?&lt;br /&gt;</source>
-      <translation>En algunos archivos no se ha confirmados la vista previa. Esos cambios se perderan al salir de puddletag. &lt;br /&gt;¿Quiere salir sin guardar esos cambios?&lt;br /&gt;</translation>
+      <translation>En algunos archivos no se ha confirmados la vista previa. Esos cambios se perderán al salir de puddletag. &lt;br /&gt;¿Quiere salir sin guardar esos cambios?&lt;br /&gt;</translation>
     </message>
     <message>
       <location filename="../puddletag.py" line="488" />
@@ -3352,17 +3352,17 @@ Esto puedo causar el bloque de su ordenador.
     <message>
       <location filename="../mainwin/tagsources.py" line="370" />
       <source>&lt;p&gt;If a proper match isn't found for a file, the files will get sorted by filename, the retrieved tag sources by filename and corresponding (unmatched) tracks will matched.&lt;/p&gt;</source>
-      <translation>&lt;p&gt;Si no se encuentra una coincidencia apropiada, los ficheros serán ordenados por nombre, y las etiquetas obtenidas de la fuente de etiquetas no emparajadas serán emparejadas con las pistas.&lt;/p&gt;</translation>
+      <translation>&lt;p&gt;Si no se encuentra una coincidencia apropiada, los ficheros serán ordenados por nombre, y las etiquetas obtenidas de la fuente de etiquetas no emparejadas serán emparejadas con las pistas.&lt;/p&gt;</translation>
     </message>
     <message>
       <location filename="../mainwin/tagsources.py" line="377" />
       <source>&lt;p&gt;The fields listed here will be used in determining whether a track matches the retrieved track. Each field will be compared using a fuzzy matching algorithm. If the resulting average match percentage is greater than the "Minimum Percentage" it'll be considered to match.&lt;/p&gt;</source>
-      <translation>&lt;p&gt;Los campos listados aqui serán usados en determinadas recuperaciones de coincidencias dudosas de pistas. Cada campo será comparado usando un algoritmo de coincidencia confuso. Si el porcentaje de coincidencia es mayor el "Porcentaje mínimo", se considerá como coincidente.&lt;/p&gt;</translation>
+      <translation>&lt;p&gt;Los campos listados aquí serán usados en determinadas recuperaciones de coincidencias dudosas de pistas. Cada campo será comparado usando un algoritmo de coincidencia confuso. Si el porcentaje de coincidencia es mayor el "Porcentaje mínimo", se considerará como coincidente.&lt;/p&gt;</translation>
     </message>
     <message>
       <location filename="../mainwin/tagsources.py" line="386" />
       <source>&lt;p&gt;The artist and album fields will be used in determining whether an album matches the retrieved one. Each field will be compared using a fuzzy matching algorithm. If the resulting average match percentage is greater or equal than what you specify here it'll be considered to match.&lt;/p&gt;</source>
-      <translation>&lt;p&gt;Los campos artista y álbum serán usados en determinas recuperaciones dudosas de coincidencias. Cada campo será comparado usando un algoritmo de coincidencia confuso. Si el porcentaje de coincidencia es mayor o igual al porcentaje que ha especificado aqui, se considerá como coincidente.&lt;/p&gt;</translation>
+      <translation>&lt;p&gt;Los campos artista y álbum serán usados en determinas recuperaciones dudosas de coincidencias. Cada campo será comparado usando un algoritmo de coincidencia confuso. Si el porcentaje de coincidencia es mayor o igual al porcentaje que ha especificado aquí, se considerará como coincidente.&lt;/p&gt;</translation>
     </message>
     <message>
       <location filename="../mainwin/tagsources.py" line="423" />
@@ -3463,7 +3463,7 @@ Esto puedo causar el bloque de su ordenador.
     <message>
       <location filename="../masstag/dialogs.py" line="416" />
       <source>Enter a comma-separated lists of fields that'll replace any retrieved from previously polled tag sources. &lt;br /&gt;Start the list with the tilde (~) character to replace all but the fields you list. &lt;br /&gt;&lt;b&gt;NB: Fields listed here must also be listed in the list of fields to retrieve.&lt;/b&gt;&lt;br /&gt;&lt;br /&gt;Eg. Assume you have two Tag Sources. The first retrieves &lt;b&gt;artist=Freshlyground, album=Nomvula, genre=Afro Pop&lt;/b&gt;. The second source gets &lt;b&gt;artist=Freshly Ground, album=Nomvula, genre=Pop&lt;/b&gt;. For the second Tag Source, setting just &lt;b&gt;artist&lt;/b&gt; as the list of fields to replace will overwrite the artist field retrieved from the first tag source. The resulting retrieved fields/values as shown in puddletag will then be &lt;b&gt;artist=Freshly Ground, album=Nomvula, genre=Afro Pop\\Pop&lt;/b&gt;.</source>
-      <translation>Ponga una lista separada por comas de los campos que serán reemplazados de consultas anteriores&lt;br /&gt;Comience la lista con el carácter tilde (~) para escribir todos los campos obtenidos excepto los que están en la lista. &lt;br /&gt;&lt;b&gt;NB: Los campos mencionados aqui también son listados en la lista de campos a recuperar.&lt;/b&gt;&lt;br /&gt;&lt;br /&gt;P.ej. Asume que tiene dos fuentes de etiquetas. La primera recupera &lt;b&gt;artist=Freshlyground, album=Nomvula, genre=Afro Pop&lt;/b&gt;. La segunda fuente consigue &lt;b&gt;artist=Freshly Ground, album=Nomvula, genre=Pop&lt;/b&gt;.Simplemente estableciendo para la segunda fuente de etiquetas &lt;b&gt;artist&lt;/b&gt; como la lista de campos a reemplazar, será sobreescrito el campo artista obtenido desde la primera fuente de etiquetas. El resultado de los campos/valores obtenidos se muestra en puddletag como &lt;b&gt;artist=Freshly Ground, album=Nomvula, genre=Afro Pop\\Pop&lt;/b&gt;.</translation>
+      <translation>Ponga una lista separada por comas de los campos que serán reemplazados de consultas anteriores&lt;br /&gt;Comience la lista con el carácter tilde (~) para escribir todos los campos obtenidos excepto los que están en la lista. &lt;br /&gt;&lt;b&gt;NB: Los campos mencionados aquí también son listados en la lista de campos a recuperar.&lt;/b&gt;&lt;br /&gt;&lt;br /&gt;P.ej. Asume que tiene dos fuentes de etiquetas. La primera recupera &lt;b&gt;artist=Freshlyground, album=Nomvula, genre=Afro Pop&lt;/b&gt;. La segunda fuente consigue &lt;b&gt;artist=Freshly Ground, album=Nomvula, genre=Pop&lt;/b&gt;.Simplemente estableciendo para la segunda fuente de etiquetas &lt;b&gt;artist&lt;/b&gt; como la lista de campos a reemplazar, será sobreescrito el campo artista obtenido desde la primera fuente de etiquetas. El resultado de los campos/valores obtenidos se muestra en puddletag como &lt;b&gt;artist=Freshly Ground, album=Nomvula, genre=Afro Pop\\Pop&lt;/b&gt;.</translation>
     </message>
     <message>
       <location filename="../masstag/dialogs.py" line="440" />
@@ -3478,7 +3478,7 @@ Esto puedo causar el bloque de su ordenador.
     <message>
       <location filename="../masstag/dialogs.py" line="446" />
       <source>&lt;p&gt;&lt;b&gt;Continue&lt;/b&gt;: The lookup for the current album will continue by checking the other tag sources if no matching results were found for this tag source.&lt;/p&gt;&lt;p&gt;&lt;b&gt;Stop:&lt;/b&gt; The lookup for the current album will stop and any previously retrieved results will be used.&lt;/p&gt;</source>
-      <translation>&lt;p&gt;&lt;b&gt;Continuar&lt;/b&gt;: La búsqueda para el actual álbum continuará por otras fuentes de etiquetas si no hay resultados en esta fuente.&lt;/p&gt;&lt;p&gt;&lt;b&gt;Parar:&lt;/b&gt; La búsqueda para el actual álbúm para y se usarán los resultados previos obtenidos.&lt;/p&gt;</translation>
+      <translation>&lt;p&gt;&lt;b&gt;Continuar&lt;/b&gt;: La búsqueda para el actual álbum continuará por otras fuentes de etiquetas si no hay resultados en esta fuente.&lt;/p&gt;&lt;p&gt;&lt;b&gt;Parar:&lt;/b&gt; La búsqueda para el actual álbum para y se usarán los resultados previos obtenidos.&lt;/p&gt;</translation>
     </message>
   </context>
   <context>
@@ -3775,7 +3775,7 @@ Real: {}</translation>
     <message>
       <location filename="../tagmodel.py" line="2061" />
       <source>An error occurred while trying to play the selected files: &lt;b&gt;{}&lt;/b&gt;&lt;br /&gt;Does the music player you defined (&lt;b&gt;{}&lt;/b&gt;) exist?</source>
-      <translation>Error al intentar reproduccir los archivos seleccionados: &lt;b&gt;{}&lt;/b&gt; &lt;br /&gt;¿Existe el reproductor (&lt;b&gt;{}&lt;/b&gt;) definido?</translation>
+      <translation>Error al intentar reproducir los archivos seleccionados: &lt;b&gt;{}&lt;/b&gt; &lt;br /&gt;¿Existe el reproductor (&lt;b&gt;{}&lt;/b&gt;) definido?</translation>
     </message>
     <message>
       <location filename="../tagmodel.py" line="2067" />
@@ -3905,7 +3905,7 @@ Para un álbum deje sin nada la parte de artista (&lt;b&gt;;Resurrection&lt;/b&g
     <message>
       <location filename="../mainwin/tagsources.py" line="39" />
       <source>Enter a comma-separated list of fields to write. &lt;br /&gt;&lt;br /&gt;Eg. &lt;b&gt;artist, album, title&lt;/b&gt; will only write the artist, album and title fields of the retrieved tags. &lt;br /&gt;&lt;br /&gt;If you want to exclude some fields, but write all others start the list the tilde (~) character. Eg &lt;b&gt;~composer, __image&lt;/b&gt; will write all fields but the composer and __image fields.</source>
-      <translation>Ponga una lista de campos a escribir separada por comas. &lt;br /&gt;&lt;br /&gt;P.ej. &lt;b&gt;artista, álbum, título&lt;/b&gt; solamente escribirá los campos artista, álbum y título de las etiquetas obtenidas. &lt;br /&gt;&lt;br /&gt;Si desea excluir algunos campos, pero escrbir todos los demás, empiece la lista con el carácter de tilde (~). P.ej.&lt;b&gt;~ compositor, __image&lt;/b&gt; escribirá todos los campos, pero no los campos compositor y __image.</translation>
+      <translation>Ponga una lista de campos a escribir separada por comas. &lt;br /&gt;&lt;br /&gt;P.ej. &lt;b&gt;artista, álbum, título&lt;/b&gt; solamente escribirá los campos artista, álbum y título de las etiquetas obtenidas. &lt;br /&gt;&lt;br /&gt;Si desea excluir algunos campos, pero escribir todos los demás, empiece la lista con el carácter de tilde (~). P.ej.&lt;b&gt;~ compositor, __image&lt;/b&gt; escribirá todos los campos, pero no los campos compositor y __image.</translation>
     </message>
     <message>
       <location filename="../mainwin/tagsources.py" line="88" />
@@ -3927,7 +3927,7 @@ Para un álbum deje sin nada la parte de artista (&lt;b&gt;;Resurrection&lt;/b&g
       <location filename="../mainwin/tagsources.py" line="325" />
       <location filename="../mainwin/tagsources.py" line="307" />
       <source>Enter a sorting option (a comma-separated list of fields. Eg. "artist, title")</source>
-      <translation>Ponta una opción de ordenado (la coma separa los campos. P.ej. "artist, title")</translation>
+      <translation>Ponga una opción de ordenado (la coma separa los campos. P.ej. "artist, title")</translation>
     </message>
     <message>
       <location filename="../mainwin/tagsources.py" line="324" />

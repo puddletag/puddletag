@@ -178,12 +178,12 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
     <message>
       <location filename="../actiondlg.py" line="524" />
       <source>Error: Using &lt;b&gt;__selected&lt;/b&gt; in Actions is not allowed.</source>
-      <translation>Ошибка: Использование &lt;b&gt;_seected&lt;/b&gt; в Действиях не поддреживается.</translation>
+      <translation>Ошибка: Использование &lt;b&gt;__selected&lt;/b&gt; в Действиях не поддерживается.</translation>
     </message>
     <message>
       <location filename="../actiondlg.py" line="530" />
       <source>Please enter some fields to write to.</source>
-      <translation>Пожалуйтса, введите нельско полей для записи.</translation>
+      <translation>Пожалуйста, введите несколько полей для записи.</translation>
     </message>
     <message>
       <location filename="../actiondlg.py" line="572" />
@@ -255,7 +255,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
     <message>
       <location filename="../actiondlg.py" line="1039" />
       <source>Edit Action: {}</source>
-      <translation>Редактировать Дествие: {}</translation>
+      <translation>Редактировать Действие: {}</translation>
     </message>
   </context>
   <context>
@@ -396,7 +396,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
       <location filename="../helperwin.py" line="142" />
       <location filename="../helperwin.py" line="71" />
       <source>Add track &amp;separator ['/']: Number of tracks</source>
-      <translation>Добаить &amp;разделить треков ['/']: Число треков</translation>
+      <translation>Добавить &amp;разделить треков ['/']: Число треков</translation>
     </message>
     <message>
       <location filename="../helperwin.py" line="78" />
@@ -1670,12 +1670,12 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
     <message>
       <location filename="../translations.py" line="158" />
       <source>Remove Dupes: $0, Match Case $1</source>
-      <translation>Удалить дупликаты: $0, С учётом регистра $1</translation>
+      <translation>Удалить дубликаты: $0, С учётом регистра $1</translation>
     </message>
     <message>
       <location filename="../translations.py" line="159" />
       <source>Remove duplicate values</source>
-      <translation>Удалить повторяющиеся занчения</translation>
+      <translation>Удалить повторяющиеся значения</translation>
     </message>
     <message>
       <location filename="../translations.py" line="185" />
@@ -1858,7 +1858,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
     <message>
       <location filename="../translations.py" line="202" />
       <source>Case conversion</source>
-      <translation>Измененить регистр</translation>
+      <translation>Изменить регистр</translation>
     </message>
     <message>
       <location filename="../translations.py" line="203" />
@@ -2237,7 +2237,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
     <message>
       <location filename="../masstag/__init__.py" line="60" />
       <source>&lt;b&gt;Polling: {}&lt;/b&gt;</source>
-      <translation>&lt;b&gt;Выбор:&lt;/b&gt;</translation>
+      <translation>&lt;b&gt;Выбор: {}&lt;/b&gt;</translation>
     </message>
     <message>
       <location filename="../masstag/__init__.py" line="61" />
@@ -2322,7 +2322,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
     <message>
       <location filename="../masstag/__init__.py" line="97" />
       <source>&lt;br /&gt;Rechecking with results from &lt;b&gt;{}&lt;/b&gt;.&lt;br /&gt;</source>
-      <translation>&lt;br /&gt;Перепрвоерка с данными из &lt;b&gt;{}&lt;/b&gt;&lt;br /&gt;</translation>
+      <translation>&lt;br /&gt;Перепроверка с данными из &lt;b&gt;{}&lt;/b&gt;&lt;br /&gt;</translation>
     </message>
     <message>
       <location filename="../masstag/__init__.py" line="100" />
@@ -2525,7 +2525,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
     <message>
       <location filename="../translations.py" line="30" />
       <source>Sort &amp;By</source>
-      <translation>Сортировать&amp;по</translation>
+      <translation>Сортировать &amp;по</translation>
     </message>
     <message>
       <location filename="../translations.py" line="33" />
@@ -3282,7 +3282,7 @@ Do you want to go ahead?</source>
     <message>
       <location filename="../mainwin/tagtools.py" line="59" />
       <source>Disable Preview Mode first to enable tag deletion.</source>
-      <translation>Выключить Режим предпросмотра сначала чтобы включить уделение тегов.</translation>
+      <translation>Выключить Режим предпросмотра сначала чтобы включить удаление тегов.</translation>
     </message>
     <message>
       <location filename="../plugins/modified_time/__init__.py" line="29" />
@@ -3348,17 +3348,17 @@ Do you want to go ahead?</source>
     <message>
       <location filename="../mainwin/tagsources.py" line="370" />
       <source>&lt;p&gt;If a proper match isn't found for a file, the files will get sorted by filename, the retrieved tag sources by filename and corresponding (unmatched) tracks will matched.&lt;/p&gt;</source>
-      <translation type="unfinished">&lt;p&gt;Если подходящего значения не было найдено, то файлы будут отсортированы по имени файла, полученные теги будут остортированы по имени файла и соотвтетствующие (незаполненные) поля будут заполнены..&lt;/p&gt;</translation>
+      <translation type="unfinished">&lt;p&gt;Если подходящего значения не было найдено, то файлы будут отсортированы по имени файла, полученные теги будут отсортированы по имени файла и соответствующие (незаполненные) поля будут заполнены..&lt;/p&gt;</translation>
     </message>
     <message>
       <location filename="../mainwin/tagsources.py" line="377" />
       <source>&lt;p&gt;The fields listed here will be used in determining whether a track matches the retrieved track. Each field will be compared using a fuzzy matching algorithm. If the resulting average match percentage is greater than the "Minimum Percentage" it'll be considered to match.&lt;/p&gt;</source>
-      <translation type="unfinished">&lt;p&gt;Этот список полей будет использоваться для определения совпадение между треком и полученым треком. Каждое поле будет сравниваться с использованием нечёткого алгоритма. Если результирующий средний полученный процент больше чем "Минимальный процент", то будет считаться, что это одно и тоже.&lt;/p&gt;</translation>
+      <translation type="unfinished">&lt;p&gt;Этот список полей будет использоваться для определения совпадение между треком и полученным треком. Каждое поле будет сравниваться с использованием нечёткого алгоритма. Если результирующий средний полученный процент больше чем "Минимальный процент", то будет считаться, что это одно и тоже.&lt;/p&gt;</translation>
     </message>
     <message>
       <location filename="../mainwin/tagsources.py" line="386" />
       <source>&lt;p&gt;The artist and album fields will be used in determining whether an album matches the retrieved one. Each field will be compared using a fuzzy matching algorithm. If the resulting average match percentage is greater or equal than what you specify here it'll be considered to match.&lt;/p&gt;</source>
-      <translation>&lt;p&gt;Поля исполнитель и альбом будут использваться для определения того, что альбом соответствует полученному. Каждое поле будет сравниваться с использованием нечёткого алгоритма сравнения. Если результирующий средний процент совпадений больше или равен тому, что вы определили здесь, то будет принято совпадение.&lt;/p&gt;</translation>
+      <translation>&lt;p&gt;Поля исполнитель и альбом будут использоваться для определения того, что альбом соответствует полученному. Каждое поле будет сравниваться с использованием нечёткого алгоритма сравнения. Если результирующий средний процент совпадений больше или равен тому, что вы определили здесь, то будет принято совпадение.&lt;/p&gt;</translation>
     </message>
     <message>
       <location filename="../mainwin/tagsources.py" line="423" />
@@ -3459,7 +3459,7 @@ Do you want to go ahead?</source>
     <message>
       <location filename="../masstag/dialogs.py" line="416" />
       <source>Enter a comma-separated lists of fields that'll replace any retrieved from previously polled tag sources. &lt;br /&gt;Start the list with the tilde (~) character to replace all but the fields you list. &lt;br /&gt;&lt;b&gt;NB: Fields listed here must also be listed in the list of fields to retrieve.&lt;/b&gt;&lt;br /&gt;&lt;br /&gt;Eg. Assume you have two Tag Sources. The first retrieves &lt;b&gt;artist=Freshlyground, album=Nomvula, genre=Afro Pop&lt;/b&gt;. The second source gets &lt;b&gt;artist=Freshly Ground, album=Nomvula, genre=Pop&lt;/b&gt;. For the second Tag Source, setting just &lt;b&gt;artist&lt;/b&gt; as the list of fields to replace will overwrite the artist field retrieved from the first tag source. The resulting retrieved fields/values as shown in puddletag will then be &lt;b&gt;artist=Freshly Ground, album=Nomvula, genre=Afro Pop\\Pop&lt;/b&gt;.</source>
-      <translation>Введите разделённый запятыми список полей, которые будут заменены любыми полученными ранее данными из использваонных источников тегов. &lt;br /&gt;Начните список с тильды (~), чтобы заменить все поля, кроме указанных в списке. &lt;br /&gt;&lt;b&gt;Примечание: Поля приведённые здесь должны быть также присутствовать в списке полей для получения.&lt;b&gt;&lt;br /&gt;&lt;br /&gt;Например, предположим у вас есть два источника тегов. В первом: &lt;b&gt;исполнитель=Freshlyground, альбом=Nomvula, жанр=Afro pop&lt;/b&gt;. Во втором: &lt;b&gt;артист=Freshly Ground, альбом=Nomvula, жанр=Pop&lt;/b&gt;. Для второго источника тегов установив только &lt;b&gt;исполнитель&lt;/b&gt; в качестве списка полей для замены, будет заменено только поле исполнитель полученное из первого источника тегов. В результате полученные поля/значения, как показано в puddletag, ,будут &lt;b&gt;исполнитель=Freshly Ground, альбом=Nomvula, жанр=Afro Pop\\Pop&lt;/b&gt;.</translation>
+      <translation>Введите разделённый запятыми список полей, которые будут заменены любыми полученными ранее данными из использованных источников тегов. &lt;br /&gt;Начните список с тильды (~), чтобы заменить все поля, кроме указанных в списке. &lt;br /&gt;&lt;b&gt;Примечание: Поля приведённые здесь должны быть также присутствовать в списке полей для получения.&lt;b&gt;&lt;br /&gt;&lt;br /&gt;Например, предположим у вас есть два источника тегов. В первом: &lt;b&gt;исполнитель=Freshlyground, альбом=Nomvula, жанр=Afro pop&lt;/b&gt;. Во втором: &lt;b&gt;артист=Freshly Ground, альбом=Nomvula, жанр=Pop&lt;/b&gt;. Для второго источника тегов установив только &lt;b&gt;исполнитель&lt;/b&gt; в качестве списка полей для замены, будет заменено только поле исполнитель полученное из первого источника тегов. В результате полученные поля/значения, как показано в puddletag, ,будут &lt;b&gt;исполнитель=Freshly Ground, альбом=Nomvula, жанр=Afro Pop\\Pop&lt;/b&gt;.</translation>
     </message>
     <message>
       <location filename="../masstag/dialogs.py" line="440" />
@@ -3736,7 +3736,7 @@ Real: {}</source>
     <message>
       <location filename="../tagmodel.py" line="1519" />
       <source>Disable Preview Mode first to enable tag deletion.</source>
-      <translation>Выключить Режим предпросмотра сначала, чтобы включить уделение тегов.</translation>
+      <translation>Выключить Режим предпросмотра сначала, чтобы включить удаление тегов.</translation>
     </message>
     <message>
       <location filename="../tagmodel.py" line="1540" />
@@ -3746,7 +3746,7 @@ Real: {}</source>
     <message>
       <location filename="../tagmodel.py" line="1548" />
       <source>There was an error deleting the tag of {}: &lt;b&gt;Tag deletion isn't supported for {} files.&lt;/b&gt;</source>
-      <translation>Произошла ошибка во врему удалеия тега {}: &lt;b&gt;Удаление тега не поддерживается для {} файлов.&lt;/b&gt;</translation>
+      <translation>Произошла ошибка во время удаления тега {}: &lt;b&gt;Удаление тега не поддерживается для {} файлов.&lt;/b&gt;</translation>
     </message>
     <message>
       <location filename="../tagmodel.py" line="1557" />
@@ -3919,7 +3919,7 @@ Real: {}</source>
       <location filename="../mainwin/tagsources.py" line="325" />
       <location filename="../mainwin/tagsources.py" line="307" />
       <source>Enter a sorting option (a comma-separated list of fields. Eg. "artist, title")</source>
-      <translation type="unfinished">Введите опцию сортировки (разделёный запятой список полей. Например, "исполнитель, название")</translation>
+      <translation type="unfinished">Введите опцию сортировки (разделённый запятой список полей. Например, "исполнитель, название")</translation>
     </message>
     <message>
       <location filename="../mainwin/tagsources.py" line="324" />
@@ -4127,7 +4127,7 @@ Real: {}</source>
     <message>
       <location filename="../mainwin/tagsources.py" line="417" />
       <source>Automatic retrieval options</source>
-      <translation type="unfinished">Оции автоматического поиска</translation>
+      <translation type="unfinished">Опции автоматического поиска</translation>
     </message>
   </context>
 </TS>
