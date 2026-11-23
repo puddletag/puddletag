@@ -3,6 +3,7 @@ translators make them: update_translation.py collects puddletag's texts
 into puddlestuff/translations/*.ts, Qt Linguist fills in the
 translations, and each .ts is released to the .qm file puddletag loads.
 """
+import re
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
@@ -118,6 +119,18 @@ def test_translations_keep_their_sources_leading_and_trailing_space(ts):
     # 'Loading ' -> 'Загрузка'); the docs are silent on the other texts.
     assert [(context, source, text) for context, source, text in messages(ts)
             if text and edges(text) != edges(source)] == []
+
+
+PLACEHOLDERS = re.compile(r'\$\d+|\{[^}]*\}')
+
+
+@pytest.mark.parametrize('ts', every_file(('es_ES', 'it', 'nl-nl', 'pl_PL', 'ru_RU'),
+                                          "translations drop or garble their sources' {} and $N"))
+def test_translations_keep_their_sources_placeholders(ts):
+    # Synthetic: the docs are silent. A translation without its source's {}
+    # or $1 never shows the value; one with a {} of its own shows it as text.
+    assert [(context, source, text) for context, source, text in messages(ts)
+            if text and sorted(PLACEHOLDERS.findall(text)) != sorted(PLACEHOLDERS.findall(source))] == []
 
 
 @pytest.mark.parametrize('ts', every_file())
