@@ -2221,16 +2221,6 @@ Double cliquer pour changer la couleur&lt;/p&gt;</translation>
       <translation>Remplacer et stopper</translation>
     </message>
     <message>
-      <location filename="../masstag/__init__.py" line="32" />
-      <source>Use best match</source>
-      <translation>Utiliser la meilleure correspondance</translation>
-    </message>
-    <message>
-      <location filename="../masstag/__init__.py" line="33" />
-      <source>Do nothing and continue</source>
-      <translation>Ne rien faire et continuer</translation>
-    </message>
-    <message>
       <location filename="../masstag/__init__.py" line="58" />
       <source>Default Profile</source>
       <translation>Profil par défaut</translation>

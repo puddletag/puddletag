@@ -2220,16 +2220,6 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
       <translation>Заменить и остановиться</translation>
     </message>
     <message>
-      <location filename="../masstag/__init__.py" line="32" />
-      <source>Use best match</source>
-      <translation>Использовать лучшее совпадение</translation>
-    </message>
-    <message>
-      <location filename="../masstag/__init__.py" line="33" />
-      <source>Do nothing and continue</source>
-      <translation>Пропустить и продолжить</translation>
-    </message>
-    <message>
       <location filename="../masstag/__init__.py" line="58" />
       <source>Default Profile</source>
       <translation>Профиль по умолчанию</translation>

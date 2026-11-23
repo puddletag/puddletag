@@ -28,10 +28,6 @@ SINGLE_MATCH_OPTIONS = [
     translate('Masstagging', 'Combine and stop'),
     translate('Masstagging', 'Replace and stop')]
 
-AMBIGIOUS_MATCH_OPTIONS = [
-    translate('Masstagging', 'Use best match'),
-    translate('Masstagging', 'Do nothing and continue')]
-
 COMBINE_CONTINUE = 0
 REPLACE_CONTINUE = 1
 COMBINE_STOP = 2

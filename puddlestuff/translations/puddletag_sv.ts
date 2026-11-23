@@ -2219,16 +2219,6 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
       <translation>Ersätt och stoppa</translation>
     </message>
     <message>
-      <location filename="../masstag/__init__.py" line="32" />
-      <source>Use best match</source>
-      <translation>Använd bästa matchning</translation>
-    </message>
-    <message>
-      <location filename="../masstag/__init__.py" line="33" />
-      <source>Do nothing and continue</source>
-      <translation>Gör ingenting och fortsätt</translation>
-    </message>
-    <message>
       <location filename="../masstag/__init__.py" line="58" />
       <source>Default Profile</source>
       <translation>Standardprofil</translation>

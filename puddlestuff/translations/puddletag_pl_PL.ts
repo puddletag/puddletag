@@ -2246,16 +2246,6 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
       <translation>Zamień i zatrzymaj</translation>
     </message>
     <message>
-      <location filename="../masstag/__init__.py" line="32" />
-      <source>Use best match</source>
-      <translation>Użyj najlepszego dopasowania</translation>
-    </message>
-    <message>
-      <location filename="../masstag/__init__.py" line="33" />
-      <source>Do nothing and continue</source>
-      <translation>Pomiń i kontynuuj</translation>
-    </message>
-    <message>
       <location filename="../masstag/__init__.py" line="58" />
       <source>Default Profile</source>
       <translation>Domyślny profil</translation>
