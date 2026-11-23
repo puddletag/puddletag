@@ -153,9 +153,9 @@ class DirView(QTreeView):
         (or in their subfolders, with Subfolders on) has a preview, the
         user is asked to confirm. Returns True if the user cancels the
         action (the selection is put back as it was), False if the user
-        chooses to go ahead or there are no un-commited previews.
+        chooses to go ahead or there are no uncommitted previews.
         """
-        msg = translate('Previews', 'Some files have uncommited previews. '
+        msg = translate('Previews', 'Some files have uncommitted previews. '
                                     'Changes will be lost once you load a directory. <br />'
                                     'Do you still want to load a new directory?<br />')
         subfolders = self._status['table'].subFolders

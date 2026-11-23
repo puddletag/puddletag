@@ -35,9 +35,9 @@ FIELDS_TOOLTIP = translate('Functions Dialog',
                            <li>Combinations like <b>__selected, artist, title</b> are
                            allowed.</li>
                            <li>But using <b>__selected</b> in Actions is <b>not</b>.</li>
-                           <li>'~' will write to all the the fields, except what follows it
+                           <li>'~' will write to all the fields, except what follows it
                            . Eg <b>~artist, title</b> will write to all but the artist and
-                           title fields found in the selected files.<li>
+                           title fields found in the selected files.</li>
                            </ul>""")
 
 

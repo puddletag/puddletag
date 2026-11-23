@@ -1285,7 +1285,7 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
     </message>
     <message>
       <location filename="../puddletag.py" line="626" />
-      <source>Your filesystem encoding was detected as &lt;b&gt;ASCII&lt;/b&gt;. &lt;br /&gt;You won't be able to rename files using accented, &lt;br /&gt; cyrillic or any characters outside the ASCII alphabet.</source>
+      <source>Your filesystem encoding was detected as &lt;b&gt;ASCII&lt;/b&gt;. &lt;br /&gt;You won't be able to rename files using accented, &lt;br /&gt; Cyrillic or any characters outside the ASCII alphabet.</source>
       <translation>Die Kodierung des Dateisystems wurde als &lt;b&gt;ASCII&lt;/b&gt; erkannt. &lt;br /&gt;Es wird nicht möglich sein, Dateinamen mit akzentuierten, &lt;br /&gt; kyrillischen oder anderen Zeichen außerhalb der ASCII Kodierung zu verwenden.</translation>
     </message>
     <message>
@@ -1951,9 +1951,9 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
                            &lt;li&gt;Combinations like &lt;b&gt;__selected, artist, title&lt;/b&gt; are
                            allowed.&lt;/li&gt;
                            &lt;li&gt;But using &lt;b&gt;__selected&lt;/b&gt; in Actions is &lt;b&gt;not&lt;/b&gt;.&lt;/li&gt;
-                           &lt;li&gt;'~' will write to all the the fields, except what follows it
+                           &lt;li&gt;'~' will write to all the fields, except what follows it
                            . Eg &lt;b&gt;~artist, title&lt;/b&gt; will write to all but the artist and
-                           title fields found in the selected files.&lt;li&gt;
+                           title fields found in the selected files.&lt;/li&gt;
                            &lt;/ul&gt;</source>
       <translation type="unfinished" />
     </message>
@@ -3274,7 +3274,7 @@ Wollen Sie fortfahren?</translation>
     <message>
       <location filename="../puddletag.py" line="548" />
       <location filename="../mainwin/dirview.py" line="158" />
-      <source>Some files have uncommited previews. Changes will be lost once you load a directory. &lt;br /&gt;Do you still want to load a new directory?&lt;br /&gt;</source>
+      <source>Some files have uncommitted previews. Changes will be lost once you load a directory. &lt;br /&gt;Do you still want to load a new directory?&lt;br /&gt;</source>
       <translation>Einige Dateien haben eine unbestätigte Voschau. Änderungen gehen verloren wenn Sie einen Ordner einlesen.  &lt;br /&gt;Wollen Sie wirklich einen neuen Ordner einlesen?&lt;br /&gt;</translation>
     </message>
     <message>
@@ -3296,7 +3296,7 @@ Wollen Sie fortfahren?</translation>
     </message>
     <message>
       <location filename="../puddletag.py" line="444" />
-      <source>Some files have uncommited previews. These changes will be lost once you exit puddletag. &lt;br /&gt;Do you want to exit without writing those changes?&lt;br /&gt;</source>
+      <source>Some files have uncommitted previews. These changes will be lost once you exit puddletag. &lt;br /&gt;Do you want to exit without writing those changes?&lt;br /&gt;</source>
       <translation>Einige Dateien haben eine unbestätigte Voschau. Änderungen gehen verloren wenn Sie puddletag beenden.  &lt;br /&gt;Wollen Sie das Programm beenden ohne die Änderungen zu speichern?&lt;br /&gt;</translation>
     </message>
     <message>
@@ -3317,7 +3317,7 @@ Wollen Sie fortfahren?</translation>
     </message>
     <message>
       <location filename="../tagmodel.py" line="1469" />
-      <source>Some files have uncommited previews. Changes will be lost once you unload them. &lt;br /&gt;Do you still want to unload everything?&lt;br /&gt;</source>
+      <source>Some files have uncommitted previews. Changes will be lost once you unload them. &lt;br /&gt;Do you still want to unload everything?&lt;br /&gt;</source>
       <translation type="unfinished" />
     </message>
     <message>

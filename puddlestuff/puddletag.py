@@ -131,7 +131,7 @@ def connect_control(control, controls):
 
 
 def action_triggered_slot(control, command):
-    "QAction.triggerred slot adds a checked=False param which we want to ignore"
+    "QAction.triggered slot adds a checked=False param which we want to ignore"
     return lambda: getattr(control, command)()
 
 
@@ -442,7 +442,7 @@ class MainWin(QMainWindow):
 
     def closeEvent(self, e):
         preview_msg = translate('Previews',
-                                'Some files have uncommited previews. '
+                                'Some files have uncommitted previews. '
                                 'These changes will be lost once you exit puddletag. <br />'
                                 'Do you want to exit without writing those changes?<br />')
         if tagmodel.has_previews(parent=self, msg=preview_msg):
@@ -545,7 +545,7 @@ class MainWin(QMainWindow):
             filename = encode_fn(filename)
 
         if not append:
-            msg = translate('Previews', 'Some files have uncommited previews. '
+            msg = translate('Previews', 'Some files have uncommitted previews. '
                                         'Changes will be lost once you load a directory. <br />'
                                         'Do you still want to load a new directory?<br />')
             if tagmodel.has_previews(parent=self, msg=msg):
@@ -626,7 +626,7 @@ class MainWin(QMainWindow):
             QMessageBox.warning(self, "puddletag", translate("Errors",
                                                              "Your filesystem encoding was detected as <b>ASCII</b>. <br />"
                                                              "You won't be able to rename files using accented, <br />"
-                                                             " cyrillic or any characters outside the ASCII alphabet."))
+                                                             " Cyrillic or any characters outside the ASCII alphabet."))
 
         for control, val in gensettings.items():
             control.applyGenSettings(val, 1)

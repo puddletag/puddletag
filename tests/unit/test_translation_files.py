@@ -9,6 +9,7 @@ from pathlib import Path
 import pytest
 from PyQt6.QtCore import QTranslator
 from PyQt6.QtWidgets import QApplication
+from PyQt6.lupdate import lupdate
 
 from puddlestuff import translations
 
@@ -44,6 +45,7 @@ def every_file(failing=(), reason=''):
 
 
 ALL = ('afr', 'cs', 'de', 'es_ES', 'fr', 'it', 'nl-nl', 'pl_PL', 'pt_BR', 'ru_RU', 'sv')
+NINE = ('cs', 'de', 'es_ES', 'fr', 'it', 'pl_PL', 'pt_BR', 'ru_RU', 'sv')
 TEN = ALL[1:]  # all but afr
 TWO = ('it', 'pl_PL')
 
@@ -64,9 +66,17 @@ CORRECTED = [
                  id='modification-time'),
     pytest.param('Defaults', 'An error occurred while updating <b>{}</b>. ({})', TWO, id='update'),
     pytest.param('Defaults', 'An error occurred while writing to <b>{}</b>. ({})', ALL, id='write'),
+    pytest.param('Errors', 'Your filesystem encoding was detected as <b>ASCII</b>. <br />'
+                           "You won't be able to rename files using accented, <br />"
+                           ' Cyrillic or any characters outside the ASCII alphabet.', NINE, id='ascii-filesystem'),
     pytest.param('MusicLib', 'An error occurred while loading the {} library: <b>{}</b>', ALL,
                  id='load-library'),
     pytest.param('Playlist', 'An error occurred while reading <b>{}</b> ({})', ALL, id='read-playlist'),
+    pytest.param('Previews', 'Some files have uncommitted previews. Changes will be lost once you load a directory. '
+                             '<br />Do you still want to load a new directory?<br />', TEN, id='previews-load'),
+    pytest.param('Previews', 'Some files have uncommitted previews. These changes will be lost once you exit '
+                             'puddletag. <br />Do you want to exit without writing those changes?<br />', TEN,
+                 id='previews-exit'),
 ]
 
 
@@ -82,6 +92,24 @@ def test_every_text_listed_for_translators_is_in_every_ts_file(ts, monkeypatch):
     sources = {(context, source) for context, source, _ in messages(ts)}
     # pylupdate6 leaves out empty texts
     assert {pair for pair in listed if pair[1]} - sources == set()
+
+
+@pytest.fixture(scope='module')
+def program_texts(tmp_path_factory):
+    """(context, source) of every text the code passes to translate(), as
+    update_translation.py collects them with pylupdate6."""
+    fresh = tmp_path_factory.mktemp('lupdate') / 'fresh.ts'
+    lupdate(sorted(str(path) for path in TRANSLATIONS.parent.rglob('*.py')), [str(fresh)], no_obsolete=True)
+    return {(context, source) for context, source, _ in messages(fresh)}
+
+
+@pytest.mark.parametrize('ts', every_file())
+def test_ts_file_holds_exactly_the_programs_texts(ts, program_texts):
+    # translate.txt: "Then run update_translation.py with your desired
+    # locale": a text corrected in the code but not in a .ts file loses
+    # its translation at the next refresh.
+    sources = {(context, source) for context, source, _ in messages(ts)}
+    assert (sorted(program_texts - sources), sorted(sources - program_texts)) == ([], [])
 
 
 @pytest.mark.parametrize('ts', every_file())
@@ -106,11 +134,6 @@ def test_qm_shows_the_translations_of_its_ts(qapp, ts):
     finally:
         QApplication.removeTranslator(translator)
     assert shown == {(c, s): text or s for c, s, text in messages(ts)}
-
-
-@pytest.mark.parametrize('ts', every_file())
-def test_no_text_misspells_occurred(ts):
-    assert [source for _, source, _ in messages(ts) if 'occured' in source] == []
 
 
 @pytest.mark.parametrize('context, source, languages', CORRECTED)

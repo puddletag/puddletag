@@ -434,7 +434,7 @@ class ColumnSettings(HeaderSetting):
 
 class TagModel(QAbstractTableModel):
     """The model used in TableShit
-    Methods you shoud take not of are(read docstrings for more):
+    Methods you should take note of are(read docstrings for more):
 
     setData -> As per the usual model, can only write one tag at a time.
     setRowData -> Writes a row's tags at once.
@@ -1076,7 +1076,7 @@ class TagModel(QAbstractTableModel):
         Basically, if a tag has a key which is = self.undolevel - 1,
         then the tag is updated with the dictionary in that key.
 
-        setRowData does not modify the undoleve unless you explicitely tell
+        setRowData does not modify the undolevel unless you explicitly tell
         it, but setData does modify the undolevel.
 
         It is recommended that you use consecutive indexes for self.undolevel."""
@@ -1466,7 +1466,7 @@ class TagTable(QTableView):
             pass
 
     def clearAll(self):
-        msg = translate('Previews', 'Some files have uncommited previews. '
+        msg = translate('Previews', 'Some files have uncommitted previews. '
                                     'Changes will be lost once you unload them. <br />'
                                     'Do you still want to unload everything?<br />')
         if has_previews(parent=self, msg=msg):
