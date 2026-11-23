@@ -701,7 +701,7 @@ def test_all_images(covers, web_server, size, suffix):
     (the default) or All (can take a while)." Every image of the Cover Art
     Archive's index comes back, in its order, at the size chosen, with the
     type of its first type: Front is Cover (Front), Back is Cover (Back),
-    anything else Other. Issue 622: "An unhandled error occured: string
+    anything else Other. Issue 622: "An unhandled error occured [sic]: string
     indices must be integers"."""
     covers.applyPrefs([True, size, 1])
     info, tracks = covers.retrieve(ABBEY_ROAD)

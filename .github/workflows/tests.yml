@@ -69,14 +69,33 @@ jobs:
         use_oidc: ${{ !(github.event_name == 'pull_request' && github.event.pull_request.head.repo.fork) }}
         fail_ci_if_error: false
 
-  # master's branch protection requires this job, not the matrix jobs, so the
-  # Python versions above can change without touching the protection; keep
-  # its name. always() makes it run, and fail, when a matrix job fails: a
+  # codespell with pyproject.toml's settings, as tests/unit/test_spelling.py
+  # runs it, at the dev lock's pin. The lock can't serve as a constraints
+  # file (pip refuses its coverage[toml] extra), so the pin is read from it.
+  spelling:
+    name: Check the spelling
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+    - uses: actions/checkout@v7
+    - name: Set up Python 3.15
+      uses: actions/setup-python@v7
+      with:
+        python-version: '3.15'
+    - name: Install codespell
+      run: python -m pip install "$(grep '^codespell==' requirements-dev.txt)"
+    - name: Check the spelling
+      run: codespell
+
+  # master's branch protection requires this job, not the matrix jobs or the
+  # spelling job, so they can change without touching the protection; keep
+  # its name. always() makes it run, and fail, when a job it needs fails: a
   # skipped required check would count as passed.
   all-tests:
     name: All tests passed
     if: always()
-    needs: tests
+    needs: [spelling, tests]
     runs-on: ubuntu-latest
     steps:
-    - run: test "${{ needs.tests.result }}" = success
+    - run: test "${{ needs.spelling.result }}" = success && test "${{ needs.tests.result }}" = success

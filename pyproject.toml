@@ -12,3 +12,41 @@ timeout = 60
 [tool.coverage.run]
 source = ["puddlestuff"]
 patch = ["subprocess"]
+
+[tool.codespell]
+# The .ts files' translations aren't English: only their sources are
+# checked. Anchored at the line start, or codespell 2.4.3 counts lines
+# wrong after each match.
+ignore-multiline-regex = '(?m)^[ \t]*<(translation|translatorcomment)(?: [^/>]*)?>.*?</\1>'
+# A misspelling quoted as written, from a report, takes "[sic]" after it.
+ignore-sic = true
+# Words that are right where they stand: names, ID3 frames and MP4 atoms,
+# a slang word in a news post, and the pieces an accelerator (&) or an
+# escape cuts a word into.
+ignore-words-list = [
+    "Acapella",
+    "caf",
+    "Clea",
+    "Dilema",
+    "Disabl",
+    "Hav",
+    "nam",
+    "WORS",
+    "WTH",
+    "Zink",
+]
+# codespell's own word pattern, without the quotes around a word, so the
+# first and last words of a 'single-quoted' text are checked too.
+regex = "[\\w\\-]+(?:['’][\\w\\-]+)*"
+# The generated docs and the tests' real files (kept byte for byte), and
+# what a checkout has that git ignores. Hidden files and folders are
+# skipped already.
+skip = [
+    "*.egg-info",
+    "./build",
+    "./dist",
+    "./docs",
+    "./tests/data",
+    "./venv",
+    "__pycache__",
+]
