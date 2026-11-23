@@ -22,7 +22,7 @@ def append_text(tags, text, combo, checkbox):
 
 #If you're not creating an Function, nothing else is needed, but to let
 #puddletag know of the existence of this function. Do it 
-#by definining a functions property as dictionary with 
+#by defining a functions property as dictionary with 
 # (function_name, function) pairs...
 functions = {'append': append_text}
 
@@ -44,7 +44,7 @@ functions = {'append': append_text}
 #   strings only.
 #4. Return floating point values with 2 decimal places max unless
 #   more precision is needed.
-#5. If the function wasn't sucessful for any reason, return None 
+#5. If the function wasn't successful for any reason, return None 
 #   (not something equivalent, None).
 #6. Errors aren't handled, so catch any you can.
 #9. If an error occurred that the user should be notified of raise 

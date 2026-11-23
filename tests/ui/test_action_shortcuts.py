@@ -340,7 +340,7 @@ def test_key_in_preview_mode(mainwin, loaded, user, qtbot, monkeypatch):
 
 
 def test_undo_after_the_key(mainwin, loaded, user, qtbot, monkeypatch):
-    # "Undo (Ctrl+Z) ... Undo's the last edit." (menus.txt:60-62).
+    # "Undo (Ctrl+Z) ... Undoes the last edit." (menus.txt:60-62).
     table, paths = loaded
     assigned(user, qtbot, monkeypatch)
     user.press(Key.Key_1, Ctrl)

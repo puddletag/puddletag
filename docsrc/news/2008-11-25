@@ -13,4 +13,4 @@ Stuff that's fixed
 
 * Saving a file's album art to disk now works.
 * The importing tags text files dialog now looks better, by bolding the tags instead of the ugly interface puddletag had before.
-* Not everything moves around when resising puddletag anymore and the layout is saved from the previous session.
+* Not everything moves around when resizing puddletag anymore and the layout is saved from the previous session.

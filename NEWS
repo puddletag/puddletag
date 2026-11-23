@@ -96,7 +96,7 @@
         Loading a new directory would sometimes not unload previously loaded
         directory.
         Mp3tag tag source are more compatible.
-        AcoustID support without extra depencies except one.
+        AcoustID support without extra dependencies except one.
     Changes:
         Filesystem panel will not update if hidden.
         
@@ -272,7 +272,7 @@
         Translations
         A new Function to correct incorrectly encoded files contributed by Stjujsckij Nickolaj.
         MoveUp and MoveDown shortcuts that move the selected files Up/Down in file-view.
-        The folowing fields were added to the MusicBrainz tag source:
+        The following fields were added to the MusicBrainz tag source:
             mbrainz_rating, label, country, isrcs, musicip_puid, asin, barcode
         Select all in Dir has been removed. I've added two new menu items. Select Next in Dir and Select Previous Dir.
         Support for GUI plugins.
@@ -284,7 +284,7 @@
         The Replace with Regular Expression function now starts from $1 instead of $0. I had to do this in order for Mp3tag's Tag Sources to work. Please update your actions.
         Previews in the Functions now show previews.
         Action Shortcuts settings have been moved from Preferences to the Actions dialog.
-        Tools->Sort Selected is now Tools->Sort By. The last sort option is now saved inbetween sessions/loads.
+        Tools->Sort Selected is now Tools->Sort By. The last sort option is now saved between sessions/loads.
     Fixes:
         MP4 mappings and handling of unicode fields in MP4 files.
         ID3's rating didn't handle missing parameters well.
@@ -465,7 +465,7 @@
     Bugs wrt to tagging were fixed, like:
         Saving pictures on an mp3 file with the same description.
         No more 'copy method' doesn't exist errors.
-        Flickering of the >> and << buttons belowe images were removed.
+        Flickering of the >> and << buttons below images were removed.
         Buttons on the image editor are enabled or disabled depending on file.
 
 10 April 2009 (0.5.9)

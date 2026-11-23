@@ -489,7 +489,7 @@ def test_paired_frame_item_without_a_role(id3_file):
     ('playcount', 'abc'),
     # POPM: "an email, rating and playcount separated by a colon".
     ('popularimeter', 'a@b:x:1'),
-    # RVA2: "Values are of the forme channel:gain:peak". Synthetic values.
+    # RVA2: "Values are of the form channel:gain:peak". Synthetic values.
     ('rgain:track', 'x'),
 ])
 def test_values_that_are_not_saved(make_audio, ext, field, value):
@@ -502,7 +502,7 @@ def test_values_that_are_not_saved(make_audio, ext, field, value):
 @pytest.mark.parametrize('ext', ID3_FORMATS)
 def test_bad_value_keeps_the_frame(make_audio, ext):
     # id3.txt: POPM "an email, rating and playcount separated by a colon";
-    # RVA2 "Values are of the forme channel:gain:peak". A value that isn't
+    # RVA2 "Values are of the form channel:gain:peak". A value that isn't
     # in that form changes nothing. Synthetic frames and values.
     path = make_audio('song.' + ext, title='Song')
     add_frames(path, mutagen.id3.POPM(email='a@b', rating=5, count=2),
@@ -516,7 +516,7 @@ def test_bad_value_keeps_the_frame(make_audio, ext):
 def test_editing_existing_frames(make_audio, ext):
     # id3.txt: POPM "an email, rating and playcount separated by a colon";
     # UFID "Only values that can be decoded to UTF-8 will be editable"; RVA2
-    # "Values are of the forme channel:gain:peak"; USLT
+    # "Values are of the form channel:gain:peak"; USLT
     # "Language|Description|Lyrics". Frames written by another program, then
     # edited. Synthetic values.
     path = make_audio('song.' + ext, title='Song')

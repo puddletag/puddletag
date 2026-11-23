@@ -282,7 +282,7 @@ NESTED_FOLDERS = '/mnt/music/$if(%albumartist%,%albumartist%/$if(%album%,%album%
 ])
 def test_slash_written_in_a_function_makes_a_folder(tag_to_file, pattern, path, tags, expected):
     # function.txt: "Files can also be moved, by specifying '/' as a
-    # directory delimeter", inside a function too. Synthetic tags.
+    # directory delimiter", inside a function too. Synthetic tags.
     assert tag_to_file(pattern, path, **tags) == expected
 
 

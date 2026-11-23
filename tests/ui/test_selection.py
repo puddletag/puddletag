@@ -362,7 +362,7 @@ def test_invert_selection(user, loaded, invert):
 
 @pytest.mark.parametrize('select_column', SELECT_COLUMN.values(), ids=SELECT_COLUMN.keys())
 def test_select_column(user, loaded, select_column):
-    # "Select's the column of whichever cell you last selected." The cell
+    # "Selects the column of whichever cell you last selected." The cell
     # clicked before it stays selected too.
     table, before = loaded
     user.click_cell(user.cell(0, 'artist'))

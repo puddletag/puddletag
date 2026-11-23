@@ -1206,7 +1206,7 @@ def test_if_checks_the_text_at_the_pointer(folder, commands, expected):
 def test_debug_on_writes_the_named_file(folder, tmp_path, monkeypatch):
     # Mp3tag's reference: Debug "Debug output, S= "on" or "off", s is an
     # optional file name." tagsources.txt: "Be sure to set 'debug off' or
-    # remove it alltogether unless you're in the mood for having your
+    # remove it altogether unless you're in the mood for having your
     # filesystem being littered with junk files."
     monkeypatch.chdir(tmp_path)
 

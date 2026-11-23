@@ -1,4 +1,4 @@
-"""Undo (menus.txt: "Undo's the last edit"), run as a user runs it: the
+"""Undo (menus.txt: "Undoes the last edit"), run as a user runs it: the
 toolbar button, Edit→Undo or Ctrl+Z. Each undo is checked in the files and
 in the table. Synthetic files.
 """
@@ -147,7 +147,7 @@ def test_unload_everything_clears_the_history(user, loaded, qtbot):
     assert in_file(paths[0])['title'] == ['New']
 
 
-# "Undo's the last edit", from each place it's offered. "When there's
+# "Undoes the last edit", from each place it's offered. "When there's
 # nothing left to undo, Undo is greyed out."
 
 UNDO = {

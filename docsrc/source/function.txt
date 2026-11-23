@@ -153,7 +153,7 @@ Examples
 A Format string can be (almost) any string. Eg. for a file with the tag, *artist=A Guy*, *album=Screeching*, *title=Excessively Emo*, *track=2*
 
 * Using 'I wanna write my own.' as a Format string will return 'I wanna write my own.' and write it to the fields you choose.
-* Individual fields can be referenced by placing them inbetween percent characters (%). So **%artist%** will return 'A Guy', **%album%**, 'Screeching' and so on for the others. Using **%genre%** would return nothing, because there ain't no genre field in the tag.
+* Individual fields can be referenced by placing them between percent characters (%). So **%artist%** will return 'A Guy', **%album%**, 'Screeching' and so on for the others. Using **%genre%** would return nothing, because there ain't no genre field in the tag.
 * You can combine fields with any combination of letters as in **I don't like an %title% %artist%...%album%**. Returning, 'I don't like an Excessively Emo A Guy...Screeching'
 * More editing power is available via the scripting functions. They have the format **$name(arguments)**. See the :doc:`scripting functions page <scripting>` for a listing. They can be simple eg. **$upper(value)** will return 'VALUE', **$lower(%artist%)** will return 'a guy'. You can even combine/nest them to get what you want as in **I don't like an $lower(%title% $mid(%artist%,2,10)) $lower(%album%).** giving "I don't like an excessively emo guy screeching."
 
@@ -382,7 +382,7 @@ Converts a tag to filename using the pattern (see above description for Format v
 
 If the filename contains any of the characters, **\\\*?"|:/**, then they will be removed.
 
-Files can also be moved, by specifying '/' as a directory delimeter. Any forward slashes found in the fields used in constructing the pattern are ommitted (if the artist is AC/DC, it will not create an AC directory, rather the slash will be removed and ACDC will be used). A '/' written inside a function makes a directory too, so *$if(%album%,%album%/,)%title%* only adds an album directory when the file has an album.
+Files can also be moved, by specifying '/' as a directory delimiter. Any forward slashes found in the fields used in constructing the pattern are omitted (if the artist is AC/DC, it will not create an AC directory, rather the slash will be removed and ACDC will be used). A '/' written inside a function makes a directory too, so *$if(%album%,%album%/,)%title%* only adds an album directory when the file has an album.
 
 Intermediate directories will be created if they don't exist. A directory that comes out empty is left out, so */mnt/music/%album%/$if(%discnumber%,Disc %discnumber%,)/%title%* only adds a *Disc* directory when the file has a disc number.
 

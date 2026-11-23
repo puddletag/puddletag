@@ -48,7 +48,7 @@ Edit sort options
 ^^^^^^^^^^^^^^^^^
 The list you edit here is saved when you click **OK** in Preferences, like every other page.
 
-With Sort Options you can sort the file-view using a list of predefined fields. The window brough up by clicking this button is pretty self explanatory. Any field-lists you add will create a menu item in the **Tools->Sort By** menu.
+With Sort Options you can sort the file-view using a list of predefined fields. The window brought up by clicking this button is pretty self explanatory. Any field-lists you add will create a menu item in the **Tools->Sort By** menu.
 
 Provided a single file (or none at all) is selected, clicking on a menu item will sort the file-view in order of the fields defined. So **track/__dirpath/album** will sort the file-view by track first, then __dirpath then album. It's equivalent to clicking the relevant headers in order in the file-view.
 
@@ -82,7 +82,7 @@ The mapping doesn't work in reverse, **albumartist** won't be show as **performe
 * A field can't contain a comma: **OK** refuses it with a warning. A row with an empty cell is ignored.
 * The mappings are saved to the **mappings** file in puddletag's configuration folder only when they differ from the built-in ones. When they're the same again, the file is removed, so the built-in mappings (which may change in a new release) are used.
 * Mappings apply the next time you start puddletag.
-* Tag can be one one of ID3, MP4, APEv2 (for Musepack, WavPack, etc.) or VorbisComment (for FLAC and Ogg Vorbis). Note that these are **case-sensitive**.
+* Tag can be one of ID3, MP4, APEv2 (for Musepack, WavPack, etc.) or VorbisComment (for FLAC and Ogg Vorbis). Note that these are **case-sensitive**.
 * A mapping whose **Tag** is **global** applies to every tag type.
 * You can also set mappings for Tag Sources using the **exact** Tag Source's name. eg. **MusicBrainz**.
 * **Mapping default fields like "__filename, __dirpath, __image, etc". will cause undesired behaviour.**

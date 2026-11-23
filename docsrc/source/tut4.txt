@@ -23,7 +23,7 @@ You can specify or omit fields from a tagging operation by specifying the follow
 
 * Leave it empty and all metadata from the Tag Source will be retrieved.
 * Enter a comma separated list of fields to retrieve only those field. Eg. **artist, title, album, genre**
-* Alternatively, use the tilde character ("~") followed by a comma delimited list of fields you'd like to exclude. All fields except thouse you specify will get written to files. Eg. if you entered **~genre,album** and the Tag Source returned a tag with **artist, title, album, track, genre** fields. Only the **artist, title, track** fields would be written to the files.
+* Alternatively, use the tilde character ("~") followed by a comma delimited list of fields you'd like to exclude. All fields except those you specify will get written to files. Eg. if you entered **~genre,album** and the Tag Source returned a tag with **artist, title, album, track, genre** fields. Only the **artist, title, track** fields would be written to the files.
 
 .. image:: images/tagsource_dialog_tut4.png
    :alt: Field descriptions

@@ -11,7 +11,7 @@ After installing the required tools, you'll need to retrieve the latest developm
 
     git clone https://github.com/puddletag/puddletag.git
 
-The dev version will downloaded into the puddletag directory. Change into the dev directory with:
+The dev version will be downloaded into the puddletag directory. Change into the dev directory with:
 
 .. code-block:: bash
 

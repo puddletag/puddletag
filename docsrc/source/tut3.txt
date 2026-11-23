@@ -19,7 +19,7 @@ There's more with regards editing album art :ref:`below <album_art>`.
 
 The File-View
 -------------
-It lists the the metadata for the fields you've selected to display.
+It lists the metadata for the fields you've selected to display.
 
 + You can write to multiple files at once. Just select the files. Choose the field you want to write to and write as normal. All selected files will be updated, and **Edit→Undo** puts them all back at once.
 + Multiple-valued fields are shown like **value1\\\\value2**. Enter a value like that and puddletag will assume you want some multiple values.

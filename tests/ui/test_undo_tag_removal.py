@@ -347,7 +347,7 @@ def test_official_tag_undone_on_one_file(mainwin, make_audio, tmp_path, qtbot, u
 
 
 def test_one_file_tag_tool_undone_before_the_edit_before_it(mainwin, make_audio, tmp_path, qtbot, user):
-    # "Undo's the last edit": the removal is the last edit, so Undo restores
+    # "Undoes the last edit": the removal is the last edit, so Undo restores
     # the tag first, with "the fields puddletag remembers" ("Deleting
     # 'official' tags can be undone though"), and only then the edit.
     music = tmp_path / 'music'
@@ -389,7 +389,7 @@ def test_tag_tool_with_nothing_to_undo(mainwin, make_audio, tmp_path, qtbot, use
 
 
 def test_edit_undone_after_a_tag_tool_with_no_undo(mainwin, make_audio, tmp_path, qtbot, user):
-    # "Undo's the last edit": a removal that "there'll be no way to undo"
+    # "Undoes the last edit": a removal that "there'll be no way to undo"
     # isn't an edit, so Undo still reaches the edit before it.
     music = tmp_path / 'music'
     paths = [mp3(make_audio, f'0{i}.mp3', music, artist=f'Artist {i}', composer='Composer', title=f'Title {i}')
@@ -539,7 +539,7 @@ def test_remove_tag_on_read_only_files(mainwin, make_audio, tmp_path, qtbot, use
 
 @pytest.mark.skipif(os.geteuid() == 0, reason='root can write a read-only file')
 def test_remove_tag_goes_on_after_a_read_only_file(mainwin, make_audio, tmp_path, qtbot, user, dialogs):
-    # Remove Tag: "Removes the tags of selected files." and Undo: "Undo's
+    # Remove Tag: "Removes the tags of selected files." and Undo: "Undoes
     # the last edit": the file that is read-only (synthetic: 0444) keeps its
     # tag once the user says to go on, the other loses it, and Undo brings
     # that one back.
@@ -566,7 +566,7 @@ def test_remove_tag_goes_on_after_a_read_only_file(mainwin, make_audio, tmp_path
 
 @pytest.mark.skipif(os.geteuid() == 0, reason='root can write a read-only file')
 def test_edit_undone_after_remove_tag_failed(mainwin, make_audio, tmp_path, qtbot, user, dialogs):
-    # Undo: "Undo's the last edit" and "When there's nothing left to undo,
+    # Undo: "Undoes the last edit" and "When there's nothing left to undo,
     # Undo is greyed out." A Remove Tag that changed no file isn't an edit,
     # so Undo still reaches the edit before it. Synthetic files, two of them
     # read-only (0444).

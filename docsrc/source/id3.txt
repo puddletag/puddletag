@@ -139,7 +139,7 @@ UFID stands for **Unique File Identifier**. It's a single-valued field shown in 
 
 field: rgain, frame: RVA2
 ^^^^^^^^^^^^^^^^^^^^^^^^^
-Replaygain, also know as **Relative Volume Adjustment** info is stored in the **RVA2** Frame. The field name in puddletag will take the **rgain:description**. You're likely to encounter either **rgain:track** or **rgain:album** as these are used by media players to store Replaygain info. Values are of the forme **channel:gain:peak** where peak is a floating point number between 0 and 1.
+Replaygain, also known as **Relative Volume Adjustment** info is stored in the **RVA2** Frame. The field name in puddletag will take the **rgain:description**. You're likely to encounter either **rgain:track** or **rgain:album** as these are used by media players to store Replaygain info. Values are of the form **channel:gain:peak** where peak is a floating point number between 0 and 1.
 
 .. _uslt:
 

@@ -138,7 +138,7 @@ def test_open_folder(mainwin, make_audio, tmp_path, qtbot, user, dialogs, open_f
 
 def test_open_folder_replaces_the_files(mainwin, make_audio, tmp_path, qtbot, user, dialogs, loaded):
     # Add Folder: "Works as Open Folder, but instead of replacing the
-    # File-Views's contents, appends the newly loaded files."
+    # File-View's contents, appends the newly loaded files."
     table, paths = loaded
     p3 = make_audio('03.mp3', tmp_path / 'other', artist='Artist 3', title='Title 3')
     dialogs.answer(GET_DIRECTORY, str(p3.parent))
@@ -190,7 +190,7 @@ def test_subfolders_on(mainwin, make_audio, tmp_path, qtbot, user, dialogs):
 
 @pytest.mark.parametrize('add', ADD.values(), ids=ADD.keys())
 def test_add_folder(mainwin, make_audio, tmp_path, qtbot, user, dialogs, loaded, add):
-    # "Works as Open Folder, but instead of replacing the File-Views's
+    # "Works as Open Folder, but instead of replacing the File-View's
     # contents, appends the newly loaded files."
     table, paths = loaded
     p3 = make_audio('03.mp3', tmp_path / 'other', artist='Artist 3', title='Title 3')
@@ -206,7 +206,7 @@ def test_add_folder_greyed_out_before_any_folder(mainwin, user):
 
 
 def test_add_folder_keeps_previews(mainwin, make_audio, tmp_path, qtbot, user, dialogs, loaded):
-    # "Works as Open Folder, but instead of replacing the File-Views's
+    # "Works as Open Folder, but instead of replacing the File-View's
     # contents, appends the newly loaded files": the shown rows stay as
     # they are, and "any values you change that differ from the original
     # will be shown as emboldened text".

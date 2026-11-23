@@ -917,7 +917,7 @@ def loaded_over(mainwin, qtbot, user, folders):
 @pytest.mark.parametrize('add', ADD_A_FOLDER.values(), ids=ADD_A_FOLDER.keys())
 def test_add_folder_holding_a_loaded_folder_keeps_the_others(mainwin, make_audio, tmp_path, qtbot, user, dialogs, add):
     # Add Folder: "Works as Open Folder, but instead of replacing the
-    # File-Views's contents, appends the newly loaded files." (synthetic folders)
+    # File-View's contents, appends the newly loaded files." (synthetic folders)
     m = tmp_path / 'm'
     make_audio('a1.mp3', m / 'a', title='a1')
     make_audio('a2.mp3', m / 'a' / 'sub', title='a2')
@@ -932,7 +932,7 @@ def test_add_folder_holding_a_loaded_folder_keeps_the_others(mainwin, make_audio
 @pytest.mark.parametrize('add', ADD_A_FOLDER.values(), ids=ADD_A_FOLDER.keys())
 def test_add_folder_named_like_a_loaded_one(mainwin, make_audio, tmp_path, qtbot, user, dialogs, add):
     # Add Folder: "Works as Open Folder, but instead of replacing the
-    # File-Views's contents, appends the newly loaded files." (synthetic folders)
+    # File-View's contents, appends the newly loaded files." (synthetic folders)
     m = tmp_path / 'm'
     make_audio('x.mp3', m / 'Beatles', title='x')
     make_audio('y.mp3', m / 'Beatles Live', title='y')
@@ -946,7 +946,7 @@ def test_add_folder_named_like_a_loaded_one(mainwin, make_audio, tmp_path, qtbot
 @pytest.mark.parametrize('add', ADD_A_FOLDER.values(), ids=ADD_A_FOLDER.keys())
 def test_add_folder_named_like_the_start_of_a_loaded_one(mainwin, make_audio, tmp_path, qtbot, user, dialogs, add):
     # Add Folder: "Works as Open Folder, but instead of replacing the
-    # File-Views's contents, appends the newly loaded files." (synthetic folders)
+    # File-View's contents, appends the newly loaded files." (synthetic folders)
     m = tmp_path / 'm'
     make_audio('x.mp3', m / 'Beatles', title='x')
     make_audio('y.mp3', m / 'Beatles Live', title='y')

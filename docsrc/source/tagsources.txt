@@ -190,5 +190,5 @@ Tag sources that use **[Include]** (they come with a **.inc** file) aren't suppo
 
 I won't be supporting the creation of Mp3tag tag source nor does puddletag have any useful debugging facilities for them. However, if a tag source works fine with Mp3tag, but doesn't with puddletag, `create an issue <https://github.com/puddletag/puddletag/issues>`_ with a link to the tag source and some example searches and I'll fix 'em.
 
-Be sure to set 'debug off' or remove it alltogether unless you're in the mood for having your filesystem being littered with junk files.
+Be sure to set 'debug off' or remove it altogether unless you're in the mood for having your filesystem being littered with junk files.
 

@@ -84,7 +84,7 @@ Here's what I see...
    :height: 403
    :target: ../_images/5full.png
 
-Hmm, the leading zeroes are a bit of an eye-sore. puddletag allows you to use :doc:`scripting functions <scripting>` when renaming files using **Tag->File**. The functions are just like normal programming functions except they'e prepended with the **$** character. In this case, the **$num(tag, length)** function is appropriate since it pads the field's value with leading zeroes until it is of the same length as the **length** argument (otherwise remove all leading zeroes until it is).
+Hmm, the leading zeroes are a bit of an eye-sore. puddletag allows you to use :doc:`scripting functions <scripting>` when renaming files using **Tag->File**. The functions are just like normal programming functions except they're prepended with the **$** character. In this case, the **$num(tag, length)** function is appropriate since it pads the field's value with leading zeroes until it is of the same length as the **length** argument (otherwise remove all leading zeroes until it is).
 
 I don't want any so I'll use **$num(%track%, 1)** and rename the files again using **Tag->File**.
 

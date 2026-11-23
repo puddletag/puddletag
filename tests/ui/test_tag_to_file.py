@@ -193,7 +193,7 @@ def test_tag_to_file_with_a_syntax_error(user, loaded, mainwin, dialogs):
 def test_rename_to_another_filesystem(user, loaded, qtbot):
     # #252 reports "link between devices" when Tag->File moves a file to
     # another filesystem. function.txt: "Files can also be moved, by
-    # specifying '/' as a directory delimeter." Synthetic folder in
+    # specifying '/' as a directory delimiter." Synthetic folder in
     # /dev/shm, another device than tmp_path in the CI container.
     table, paths = loaded
     target = Path('/dev/shm') / f'puddletag-{os.getpid()}'

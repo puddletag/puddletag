@@ -141,7 +141,7 @@ def double_click_window_title(dock):
 
 
 def test_hidden_and_shown_docks_stay_so_after_a_restart(mainwin, user, qtbot, restart):
-    # news.txt: "Not everything moves around when resising puddletag anymore
+    # news.txt: "Not everything moves around when resizing puddletag anymore
     # and the layout is saved from the previous session."
     toggle(user, 'Filesystem')
     qtbot.waitUntil(lambda: not docks(mainwin)['Filesystem'].isVisible())
@@ -189,7 +189,7 @@ def test_hidden_dock_shown_after_a_restart_returns_to_its_area(mainwin, user, qt
     # The docs don't say; this is what puddletag does (#768: "if you
     # close/hide the Logs window ... and then show it again, it will appear
     # where it was before"). news.txt: "Not everything moves around when
-    # resising puddletag anymore and the layout is saved from the previous
+    # resizing puddletag anymore and the layout is saved from the previous
     # session."
     toggle(user, 'Logs')
     qtbot.waitUntil(docks(mainwin)['Logs'].isVisible)
