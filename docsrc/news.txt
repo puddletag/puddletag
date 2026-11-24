@@ -336,7 +336,7 @@ This is a beta, reason being that it's not anywhere near thoroughly tested, but
 it does contain important stuff like.
 
 +   Masstagging improvements with regards to both matching (courtesy of `beets <http://beets.radbox.org/>`_)   and searching.
-+   $ceiling, $eql, $floor, $round scripting functions.
++   $ceiling, $eql (renamed $equals in 1.0.2), $floor, $round scripting functions.
 +   Full support for Mp3tag tag sources.
 +   Support for MusicBrainz and Discogs new APIs.
 +   More than one file can be written to at a time in the file-view. Just select more than one file, edit a field as normal (like album) and Bob's your aunt.
