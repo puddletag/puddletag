@@ -1,3 +1,5 @@
+:orphan:
+
 About
 =====
 
@@ -21,6 +23,8 @@ To the writers of the libraries puddletag depends on (without which I'll probabl
 
 And for those who've contributed, the people whose code I stole, those who helped me out on discussion boards and to open-source creators, **Thanks a bunch**.
 
+
+.. _translators:
 
 Translators
 -----------

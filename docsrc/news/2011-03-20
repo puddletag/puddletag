@@ -11,7 +11,7 @@ New Features
 * USLT Frame support for ID3 that uses the same format as ID3. See the :ref:`ID3 page <uslt>`.
 * The Stored Tags window shows the values of all tags found in file.
 * Experimental ID3v2.3 support courtesy of `MusicBrainz Picard <http://musicbrainz.org/doc/PicardTagger>`_. Multiple values are not supported. Don't use it for now unless you really need to. Then report back on how it went. Enable it in Edit->Preferences->Tags.
-* Two new plugins. Details are on the :ref:`Downloads <plugin_downloads>` page.
+* Two new plugins. Details are on the :ref:`Downloads <bundled_plugins>` page.
 
 Fixes
 -----

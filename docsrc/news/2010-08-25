@@ -15,7 +15,7 @@ New Features
 * Right click on any directory. Click the refresh button to refresh it.
 * You can now change the shortcut for any menu item. Edit->Preferences->Shortcuts to configure.
 * Also, you can now sort selected tracks using predefined fields. Some defaults are in Tools->Sort Selected. Configure it using the 'Edit sort options' button in Preferences.
-* I've finally added a :download:`RSS Feed <rss.xml>` to the website.
+* I've finally added a RSS Feed to the website.
 
 Bugs
 ----

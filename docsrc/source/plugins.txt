@@ -35,6 +35,8 @@ Plugins will be imported using **modulename**, as such only valid in Python modu
 
 Your plugin will not be loaded unless all this information is present. A plugin that can't be loaded is left out, and the reason is written to puddletag's log. A plugin whose `init` function fails stays loaded, and the error is written to the log. A tag source of a plugin that can't be started is left out too, and the reason is shown in the **Tag Sources** window and written to puddletag's log. To use a plugin, tick it on the Plugins page of Edit->Preferences, then restart puddletag.
 
+.. _bundled_plugins:
+
 Plugins that come with puddletag
 --------------------------------
 

@@ -91,7 +91,9 @@ def get_anchor(text):
 
 def create_page(files):
     out = [
-        """.. include:: subs.txt
+        """:orphan:
+
+.. include:: subs.txt
 
 News
 ^^^^
@@ -104,7 +106,7 @@ News
     :class: text
 
 
-:download:`RSS Feed <rss.xml>`
+`Releases feed <https://github.com/puddletag/puddletag/releases.atom>`_
 
 """
     ]

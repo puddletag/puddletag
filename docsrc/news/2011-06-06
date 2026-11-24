@@ -8,7 +8,7 @@ Unless there're some critical bugs discovered in this release, then the next rel
 
 As for this release, there're a lot of changes, but nothing of note UI wise (except for the website theme change copied from the `Django docs <http://djangoproject.com>`_).
 
-Quickly listed, I've added a Man page, created a slightly better looking splash screen, converted the documentation to reStructuredText and added it to the tarball. Also there's a :download:`changelog` containing most everything done and **Raphaël Rochet** became the first person to translate puddletag by providing a :ref:`French translation <translations>`.
+Quickly listed, I've added a Man page, created a slightly better looking splash screen, converted the documentation to reStructuredText and added it to the tarball. Also there's a :download:`changelog` containing most everything done and **Raphaël Rochet** became the first person to translate puddletag by providing a :ref:`French translation <translators>`.
 
 
 New Features
@@ -33,7 +33,7 @@ Fixes
 Changes
 -------
 
-+ The old Extended Tags plugin will no longer work. Use the :ref:`new one <plugin_downloads>`.
++ The old Extended Tags plugin will no longer work. Use the :ref:`new one <bundled_plugins>`.
 + Unicode support for Replace with Regular Expression function.
 + **peformersortorder** has been renamed to **performersortorder** in ID3 tags.
 + Similarly the **lyrics_us** field is now **unsyncedlyrics**.
