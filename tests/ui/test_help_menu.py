@@ -292,7 +292,6 @@ def test_about_qt_shows_the_qt_version_and_ok_closes_it(mainwin, qtbot, user):
     assert QApplication.activeModalWidget() is None
 
 
-@pytest.mark.xfail(strict=True, reason='the About window still says 2008-2012')
 def test_about_tab_matches_the_docs(mainwin, qtbot, user, monkeypatch):
     # index.txt: "Supported formats: ID3v1, ID3v2 (mp3, and in AIFF, DSF
     # and DSDIFF files), MP4 (mp4, m4a, etc.), VorbisComments (ogg, opus,
@@ -339,7 +338,6 @@ def test_about_tab_link_opens_in_the_browser(mainwin, qtbot, user, monkeypatch, 
     assert opened == [link]
 
 
-@pytest.mark.xfail(strict=True, reason='the About window still thanks those responsible for PyQt4')
 def test_thanks_tab_matches_the_docs(mainwin, qtbot, user, monkeypatch):
     # about.txt's "Thank yous" and "Translators" sections, as the page
     # shows them: in the page's order, bold without the asterisks.

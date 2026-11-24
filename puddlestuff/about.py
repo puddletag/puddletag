@@ -17,7 +17,7 @@ desc = translate("About", '''puddletag is an audio tag editor for GNU/Linux simi
 Supported formats: ID3v1, ID3v2 (mp3, and in AIFF, DSF and DSDIFF files), MP4 (mp4, m4a, etc.), VorbisComments (ogg, opus, flac), APEv2 (Musepack mpc, Monkey's Audio ape, WavPack wv) and Windows Media (wma). <br /><br />
 
 Visit the puddletag website (<a href="https://docs.puddletag.net">https://docs.puddletag.net</a>) for help and updates.<br /><br />
-&copy; 2008-2012 concentricpuddle (concentricpuddle@gmail.com) <br />
+&copy; 2008-2026 concentricpuddle and the puddletag developers <br />
 Licensed under GPLv3 (<a href="http://www.gnu.org/licenses/gpl-3.0.html">http://www.gnu.org/licenses/gpl-3.0.html</a>).
 ''')
 
@@ -29,7 +29,7 @@ To the writers of the libraries puddletag depends on (without which I'll probabl
 
 <b>Paul McGuire</b> for PyParsing and for being extraordinarily helpful.<br />
 <b>Michael Urman</b> and <b>Joe Wreschnig</b> for Mutagen (It. Is. Awesome).<br />
-<b>Nokia, Phil Thomson</b> and all parties responsible for PyQt4.<br />
+<b>Phil Thompson</b> and Riverbank Computing for PyQt, and <b>The Qt Company</b> for Qt.<br />
 <b>Michael Foord</b> and <b>Nicola Larosa</b> for ConfigObj (seriously, they should replace ConfigParser with this).<br />
 The <b>Oxygen team</b> for the Oxygen icons.<br /><br />
 

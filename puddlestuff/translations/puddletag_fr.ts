@@ -12,7 +12,7 @@
 Supported formats: ID3v1, ID3v2 (mp3, and in AIFF, DSF and DSDIFF files), MP4 (mp4, m4a, etc.), VorbisComments (ogg, opus, flac), APEv2 (Musepack mpc, Monkey's Audio ape, WavPack wv) and Windows Media (wma). &lt;br /&gt;&lt;br /&gt;
 
 Visit the puddletag website (&lt;a href="https://docs.puddletag.net"&gt;https://docs.puddletag.net&lt;/a&gt;) for help and updates.&lt;br /&gt;&lt;br /&gt;
-&amp;copy; 2008-2012 concentricpuddle (concentricpuddle@gmail.com) &lt;br /&gt;
+&amp;copy; 2008-2026 concentricpuddle and the puddletag developers &lt;br /&gt;
 Licensed under GPLv3 (&lt;a href="http://www.gnu.org/licenses/gpl-3.0.html"&gt;http://www.gnu.org/licenses/gpl-3.0.html&lt;/a&gt;).
 </source>
       <translation type="unfinished" />
@@ -27,7 +27,7 @@ To the writers of the libraries puddletag depends on (without which I'll probabl
 
 &lt;b&gt;Paul McGuire&lt;/b&gt; for PyParsing and for being extraordinarily helpful.&lt;br /&gt;
 &lt;b&gt;Michael Urman&lt;/b&gt; and &lt;b&gt;Joe Wreschnig&lt;/b&gt; for Mutagen (It. Is. Awesome).&lt;br /&gt;
-&lt;b&gt;Nokia, Phil Thomson&lt;/b&gt; and all parties responsible for PyQt4.&lt;br /&gt;
+&lt;b&gt;Phil Thompson&lt;/b&gt; and Riverbank Computing for PyQt, and &lt;b&gt;The Qt Company&lt;/b&gt; for Qt.&lt;br /&gt;
 &lt;b&gt;Michael Foord&lt;/b&gt; and &lt;b&gt;Nicola Larosa&lt;/b&gt; for ConfigObj (seriously, they should replace ConfigParser with this).&lt;br /&gt;
 The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.&lt;br /&gt;&lt;br /&gt;
 
