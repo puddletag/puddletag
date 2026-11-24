@@ -668,7 +668,6 @@ def test_save_playlist_extended_info_pattern(mainwin, qtbot, user, dialogs, unic
         '#EXTM3U', '#EXTINF: 1, Tïtle 1', str(p1), '#EXTINF: 1, Title 2', str(p2)]
 
 
-@pytest.mark.xfail(strict=True, reason='the option is still labelled "Entries relative to working directory"')
 def test_save_playlist_relative_entries(mainwin, qtbot, user, dialogs, unicode_music, tmp_path):
     # "Entries relative to the playlist's folder: When enabled, the entries
     # are written relative to the playlist's folder, not as absolute paths."

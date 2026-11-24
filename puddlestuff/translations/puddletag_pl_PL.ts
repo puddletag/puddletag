@@ -3244,7 +3244,7 @@ Czy chcesz kontynuować?</translation>
     </message>
     <message>
       <location filename="../puddlesettings.py" line="211" />
-      <source>Entries &amp;relative to working directory</source>
+      <source>Entries &amp;relative to the playlist's folder</source>
       <translation>Wpisy odnoszące się do katalogu &amp;roboczego</translation>
     </message>
     <message>

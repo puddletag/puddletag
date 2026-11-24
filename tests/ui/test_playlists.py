@@ -152,7 +152,6 @@ def test_load_playlist_closes_the_file(mainwin, make_audio, user, dialogs, qtbot
     assert unclosed(caught, path) == []
 
 
-@pytest.mark.xfail(strict=True, reason='the option is still labelled "Entries relative to working directory"')
 def test_save_playlist_relative_entries_up_to_the_root(mainwin, make_audio, user, dialogs, qtbot, tmp_path,
                                                        elsewhere):
     # "Entries relative to the playlist's folder: When enabled, the entries
@@ -177,7 +176,6 @@ def test_save_playlist_relative_entries_up_to_the_root(mainwin, make_audio, user
     wait_for_rows(qtbot, table, [p1])
 
 
-@pytest.mark.xfail(strict=True, reason='the option is still labelled "Entries relative to working directory"')
 def test_save_then_load_relative_playlist(mainwin, music, user, dialogs, qtbot, tmp_path):
     # "Entries relative to the playlist's folder: When enabled, the entries
     # are written relative to the playlist's folder, not as absolute paths."

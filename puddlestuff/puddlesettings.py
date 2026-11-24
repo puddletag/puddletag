@@ -207,7 +207,7 @@ class Playlist(QWidget):
         self.extinfo.setChecked(cparser.get('playlist', 'extinfo', True))
         self.extpattern.setEnabled(self.extinfo.isChecked())
 
-        self.reldir = QCheckBox(translate("Playlist Settings", 'Entries &relative to working directory'))
+        self.reldir = QCheckBox(translate("Playlist Settings", "Entries &relative to the playlist's folder"))
         self.reldir.setChecked(cparser.get('playlist', 'reldir', False))
 
         self.windows_separator = QCheckBox(translate("Playlist Settings", 'Use windows path separator (\\)'))
