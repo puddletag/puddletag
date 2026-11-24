@@ -144,6 +144,13 @@
     "control": "table",
     "enabled": "filesselected"
   },
+  "shortcut55": {
+    "name": "Open Folder in File &Manager",
+    "command": "openFolder",
+    "control": "table",
+    "enabled": "filesselected",
+    "tooltip": "Opens the selected file's folder in the desktop's file manager."
+  },
   "shortcut36": {
     "name": "Paste &Onto Selection", 
     "command": "paste_onto", 
