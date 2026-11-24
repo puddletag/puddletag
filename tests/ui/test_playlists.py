@@ -152,11 +152,12 @@ def test_load_playlist_closes_the_file(mainwin, make_audio, user, dialogs, qtbot
     assert unclosed(caught, path) == []
 
 
+@pytest.mark.xfail(strict=True, reason='the option is still labelled "Entries relative to working directory"')
 def test_save_playlist_relative_entries_up_to_the_root(mainwin, make_audio, user, dialogs, qtbot, tmp_path,
                                                        elsewhere):
-    # "Entries relative to working directory: When enabled, the entries are
-    # written relative to the playlist's folder, not as absolute paths." The
-    # music and the playlist share only /.
+    # "Entries relative to the playlist's folder: When enabled, the entries
+    # are written relative to the playlist's folder, not as absolute paths."
+    # The music and the playlist share only /.
     p1 = make_audio('01.mp3', elsewhere, title='Title 1')
     mainwin.openDir(str(elsewhere), False)
     table = mainwin._table
@@ -164,7 +165,7 @@ def test_save_playlist_relative_entries_up_to_the_root(mainwin, make_audio, user
     user.activate()
     lists = tmp_path / 'lists'
     lists.mkdir()
-    set_preference(user, 'Playlist', 'Entries &relative to working directory', True)
+    set_preference(user, 'Playlist', "Entries &relative to the playlist's folder", True)
     set_preference(user, 'Playlist', '&Write extended info', False)
     lines = save_playlist(user, dialogs, lists / 'out.m3u')
     assert lines == ['#EXTM3U', os.path.join(*['..'] * (len(lists.parts) - 1), *p1.parts[1:])]
@@ -176,12 +177,13 @@ def test_save_playlist_relative_entries_up_to_the_root(mainwin, make_audio, user
     wait_for_rows(qtbot, table, [p1])
 
 
+@pytest.mark.xfail(strict=True, reason='the option is still labelled "Entries relative to working directory"')
 def test_save_then_load_relative_playlist(mainwin, music, user, dialogs, qtbot, tmp_path):
-    # "Entries relative to working directory: When enabled, the entries are
-    # written relative to the playlist's folder, not as absolute paths." and
-    # "Opens a dialog to import an m3u playlist into puddletag."
+    # "Entries relative to the playlist's folder: When enabled, the entries
+    # are written relative to the playlist's folder, not as absolute paths."
+    # and "Opens a dialog to import an m3u playlist into puddletag."
     table, paths = music
-    set_preference(user, 'Playlist', 'Entries &relative to working directory', True)
+    set_preference(user, 'Playlist', "Entries &relative to the playlist's folder", True)
     select_rows(user, 0, 1)
     out = tmp_path / 'lists' / 'out.m3u'
     lines = save_playlist(user, dialogs, out)

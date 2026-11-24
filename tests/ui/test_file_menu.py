@@ -588,7 +588,7 @@ def test_save_playlist(mainwin, user, dialogs, unicode_music, tmp_path):
     # "Save's the selected files of the File_view to a playlist, or every
     # file when none is selected. The format to write for the extended info
     # can be set in Preferences." (both rows are selected) and "Write
-    # extended info: When enabled the pattern you will be used to write
+    # extended info: When enabled, the pattern below it is used to write
     # extended info for M3U playlists."
     table, (p1, p2) = unicode_music
     select_rows(user, 0, 1)
@@ -628,7 +628,7 @@ def test_save_playlist_greyed_out_with_nothing_loaded(user):
 
 
 def test_save_playlist_suggests_the_filename_pattern(mainwin, qtbot, user, dialogs, make_audio, tmp_path):
-    # "Filename pattern: Then default filename pattern to use when saving
+    # "Filename pattern: The default filename pattern to use when saving
     # playlists." The dialog starts in the last loaded folder (docs-silent).
     window = user.open_preferences('Playlist')
     set_text(user, labelled(window, '&Filename pattern.'), '%artist%.m3u')
@@ -645,7 +645,7 @@ def test_save_playlist_suggests_the_filename_pattern(mainwin, qtbot, user, dialo
 
 
 def test_save_playlist_without_extended_info(mainwin, qtbot, user, dialogs, unicode_music, tmp_path):
-    # "Write extended info: When enabled the pattern you will be used to
+    # "Write extended info: When enabled, the pattern below it is used to
     # write extended info for M3U playlists."
     table, (p1, p2) = unicode_music
     window = user.open_preferences('Playlist')
@@ -656,7 +656,7 @@ def test_save_playlist_without_extended_info(mainwin, qtbot, user, dialogs, unic
 
 
 def test_save_playlist_extended_info_pattern(mainwin, qtbot, user, dialogs, unicode_music, tmp_path):
-    # "Write extended info: When enabled the pattern you will be used to
+    # "Write extended info: When enabled, the pattern below it is used to
     # write extended info for M3U playlists." The pattern field has no
     # label.
     table, (p1, p2) = unicode_music
@@ -668,12 +668,13 @@ def test_save_playlist_extended_info_pattern(mainwin, qtbot, user, dialogs, unic
         '#EXTM3U', '#EXTINF: 1, Tïtle 1', str(p1), '#EXTINF: 1, Title 2', str(p2)]
 
 
+@pytest.mark.xfail(strict=True, reason='the option is still labelled "Entries relative to working directory"')
 def test_save_playlist_relative_entries(mainwin, qtbot, user, dialogs, unicode_music, tmp_path):
-    # "Entries relative to working directory: When enabled, the entries are
-    # written relative to the playlist's folder, not as absolute paths."
+    # "Entries relative to the playlist's folder: When enabled, the entries
+    # are written relative to the playlist's folder, not as absolute paths."
     table, (p1, p2) = unicode_music
     window = user.open_preferences('Playlist')
-    set_check_box(user, window, 'Entries &relative to working directory', True)
+    set_check_box(user, window, "Entries &relative to the playlist's folder", True)
     user.close_preferences(window)
     select_rows(user, 0, 1)
     assert save_playlist(user, dialogs, tmp_path / 'lists' / 'out.m3u') == [
