@@ -504,10 +504,8 @@ def test_format_descriptions_keep_discogs_order(source):
 ])
 def test_album_credits(source, release_id, expected):
     """tagsources.txt: "**involvedpeople_album**: People involved with the
-    album's creation. Taken from the extraartists node for the album."; id3.txt:
-    "**Billy Taylor:Piano;Chester Bennington:Vocals;Ratatat:Instruments** ...
-    Items in a pair are separated with a colon (:), with pairs separated by a
-    semi-colon(;)" """
+    album's creation. Taken from the extraartists node for the album, several
+    people separated by semi-colons. (Eg. **Young Churf:Harpsichord**)" """
     info, _ = retrieve(source, release_id)
     assert info['involvedpeople_album'] == expected
 

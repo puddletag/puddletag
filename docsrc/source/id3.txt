@@ -109,7 +109,7 @@ wwwsource            WOAS
 
 Paired Frames
 -------------
-The following are called **paired frames** due to their values being represented as paired items. Eg. the involvedpeople tag could list the people involved in the band of whatever song you're trying to tag, like **Billy Taylor:Piano;Chester Bennington:Vocals;Ratatat:Instruments** (note that spaces are significant). Items in a pair are separated with a colon (:), with pairs separated by a semi-colon(;) (like I just did). Although Mp3tag allows the writing of multiple paired frames, the ID3 standard doesn't allow it, therefore mutagen doesn't, hence puddletag refrains from writing multiple paired frames. So erm...store all your stuff in one frame if you don't mind. Thanks.
+The following are called **paired frames** because each holds a list of pairs: a role, then the person in it. Eg. the musiciancredits field could list who played what on whatever song you're trying to tag, like **Piano:Billy Taylor;Vocals:Chester Bennington;Instruments:Ratatat** (note that spaces are significant). Items in a pair are separated with a colon (:), with pairs separated by a semi-colon (;). The role comes first, as the ID3 standard has it: an instrument in TMCL, a function such as producer in TIPL. One frame holds any number of pairs, but the standard allows only one frame of each kind in a tag, so puddletag saves only a field's first value: put all the pairs in that one value.
 
 Here are the puddletag supported frames:
 

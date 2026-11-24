@@ -328,11 +328,11 @@ def test_user_defined_url(id3_file):
 
 
 def test_paired_frames(id3_file):
-    # id3.txt's example: items in a pair separated with a colon, pairs with a
-    # semicolon.
-    people = 'Billy Taylor:Piano;Chester Bennington:Vocals;Ratatat:Instruments'
+    # id3.txt's example: a role, then the person in it; items in a pair
+    # separated with a colon, pairs with a semi-colon.
+    people = 'Piano:Billy Taylor;Vocals:Chester Bennington;Instruments:Ratatat'
     frames, tag = save(id3_file, {'involvedpeople': [people], 'musiciancredits': [people]})
-    pairs = [['Billy Taylor', 'Piano'], ['Chester Bennington', 'Vocals'], ['Ratatat', 'Instruments']]
+    pairs = [['Piano', 'Billy Taylor'], ['Vocals', 'Chester Bennington'], ['Instruments', 'Ratatat']]
     assert (frames['TIPL'].people, frames['TMCL'].people) == (pairs, pairs)
     assert (tag['involvedpeople'], tag['musiciancredits']) == ([people], [people])
 
@@ -474,13 +474,21 @@ def add_frames(path, *frames):
     audio.save()
 
 
-def test_paired_frame_item_without_a_role(id3_file):
+def test_paired_frame_role_without_a_person(id3_file):
     # id3.txt, Paired Frames: "Items in a pair are separated with a colon (:),
-    # with pairs separated by a semi-colon(;)". A name with no role keeps an
-    # empty one. Synthetic names.
-    frames, tag = save(id3_file, {'involvedpeople': ['Bob;Ann:Piano']})
-    assert frames['TIPL'].people == [['Bob', ''], ['Ann', 'Piano']]
-    assert tag['involvedpeople'] == ['Bob:;Ann:Piano']
+    # with pairs separated by a semi-colon (;)." A role without a person keeps
+    # an empty one. Synthetic names.
+    frames, tag = save(id3_file, {'involvedpeople': ['Piano;Drums:Ann']})
+    assert frames['TIPL'].people == [['Piano', ''], ['Drums', 'Ann']]
+    assert tag['involvedpeople'] == ['Piano:;Drums:Ann']
+
+
+def test_paired_frame_keeps_only_the_first_value(id3_file):
+    # id3.txt, Paired Frames: "the standard allows only one frame of each kind
+    # in a tag, so puddletag saves only a field's first value". Synthetic names.
+    frames, tag = save(id3_file, {'musiciancredits': ['Piano:Billy Taylor', 'Vocals:Chester Bennington']})
+    assert [f.people for f in frames.getall('TMCL')] == [[['Piano', 'Billy Taylor']]]
+    assert tag['musiciancredits'] == ['Piano:Billy Taylor']
 
 
 @pytest.mark.parametrize('ext', ID3_FORMATS)
