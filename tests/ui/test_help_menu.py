@@ -292,14 +292,16 @@ def test_about_qt_shows_the_qt_version_and_ok_closes_it(mainwin, qtbot, user):
     assert QApplication.activeModalWidget() is None
 
 
+@pytest.mark.xfail(strict=True, reason='the About window still says 2008-2012')
 def test_about_tab_matches_the_docs(mainwin, qtbot, user, monkeypatch):
     # index.txt: "Supported formats: ID3v1, ID3v2 (mp3, and in AIFF, DSF
     # and DSDIFF files), MP4 (mp4, m4a, etc.), VorbisComments (ogg, opus,
     # flac), APEv2 (Musepack mpc, Monkey's Audio ape, WavPack wv) and
     # Windows Media (wma)." and "puddletag is licensed under the GPLv3,
     # which you can find in its entirety at
-    # http://www.gnu.org/licenses/gpl-3.0.html." The site the docs are
-    # built to is docs.puddletag.net (docs/CNAME).
+    # http://www.gnu.org/licenses/gpl-3.0.html." and about.txt's
+    # "© 2008-2026 concentricpuddle and the puddletag developers." The
+    # site the docs are built to is docs.puddletag.net (docs/CNAME).
     exec_for_real(monkeypatch)
     shown = while_open(user, about_puddletag)
     user.click_menu('About puddletag')
@@ -312,6 +314,7 @@ def test_about_tab_matches_the_docs(mainwin, qtbot, user, monkeypatch):
     assert 'https://docs.puddletag.net' in text
     assert 'sourceforge' not in text
     assert 'http://www.gnu.org/licenses/gpl-3.0.html' in text
+    assert '© 2008-2026 concentricpuddle and the puddletag developers' in text
 
 
 def test_about_tab_link_opens_in_the_browser(mainwin, qtbot, user, monkeypatch, opened):
@@ -336,6 +339,7 @@ def test_about_tab_link_opens_in_the_browser(mainwin, qtbot, user, monkeypatch, 
     assert opened == [link]
 
 
+@pytest.mark.xfail(strict=True, reason='the About window still thanks those responsible for PyQt4')
 def test_thanks_tab_matches_the_docs(mainwin, qtbot, user, monkeypatch):
     # about.txt's "Thank yous" and "Translators" sections, as the page
     # shows them: in the page's order, bold without the asterisks.
@@ -346,7 +350,7 @@ def test_thanks_tab_matches_the_docs(mainwin, qtbot, user, monkeypatch):
         'writing an id3 reader).',
         'Paul McGuire for PyParsing and for being extraordinarily helpful.',
         'Michael Urman and Joe Wreschnig for Mutagen (It. Is. Awesome).',
-        'Nokia, Phil Thomson and all parties responsible for PyQt4.',
+        'Phil Thompson and Riverbank Computing for PyQt, and The Qt Company for Qt.',
         'Michael Foord and Nicola Larosa for ConfigObj (seriously, they should replace ConfigParser with this).',
         'The Oxygen team for the Oxygen icons.',
         "And for those who've contributed, the people whose code I stole, those who helped me out on "

@@ -8,6 +8,8 @@ About puddletag
 
 puddletag is just a tag editor. Although it's likely better than what you're used to (unless you've used Mp3tag, in which case it's kinda like what you're used to).
 
+© 2008-2026 concentricpuddle and the puddletag developers.
+
 Thank yous
 ----------
 
@@ -17,7 +19,7 @@ To the writers of the libraries puddletag depends on (without which I'll probabl
 
 + **Paul McGuire** for PyParsing and for being extraordinarily helpful.
 + **Michael Urman** and **Joe Wreschnig** for Mutagen (It. Is. Awesome).
-+ **Nokia, Phil Thomson** and all parties responsible for PyQt4.
++ **Phil Thompson** and Riverbank Computing for PyQt, and **The Qt Company** for Qt.
 + **Michael Foord** and **Nicola Larosa** for ConfigObj (seriously, they should replace ConfigParser with this).
 + The **Oxygen team** for the Oxygen icons.
 
