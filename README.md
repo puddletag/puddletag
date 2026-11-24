@@ -24,12 +24,13 @@ Supported formats: ID3v1, ID3v2 (mp3, and in AIFF, DSF and DSDIFF files), MP4 (m
 
 puddletag uses several third-party modules to performs its tasks:
 
-- [Python3](https://www.python.org/)
+- [Python](https://www.python.org/) 3.14 or later
 - [PyQt6](https://pypi.org/project/PyQt6/), for the GUI.
 - [configobj](https://pypi.org/project/configobj/)
 - [pyparsing](https://pypi.org/project/pyparsing/) , takes care of the parsing
 - [Mutagen](https://pypi.org/project/mutagen/), used as the tagging lib
-- [Chromaprint](http://acoustid.org/chromaprint) (recommended), for AcoustID support
+- [pyacoustid](https://pypi.org/project/pyacoustid/) (recommended), for AcoustID support
+- [Chromaprint](http://acoustid.org/chromaprint)'s fpcalc (recommended), for AcoustID support
 - [unidecode](https://pypi.org/project/Unidecode/)
 - [send2trash](https://pypi.org/project/Send2Trash/)
 
@@ -41,7 +42,7 @@ Puddletag is available on [PyPI](https://pypi.org/project/puddletag/).
 
 In addition to the full releases, every time we merge a PR or commit a change, we automatically release a new version on [TestPyPI](https://test.pypi.org/project/puddletag/), so if you want to try a brand new feature or a recent bugfix, you can give these pre-releases a try.
 
-There are several tools to install puddletag via PyPI, for example [pip](https://packaging.python.org/en/latest/tutorials/installing-packages/#installing-to-the-user-site), [pipx](https://pypa.github.io/pipx/installation/), [pipenv](https://pipenv.pypa.io/en/latest/), and several others. Choose the one that suits best your workflow, but we strongly recommend you create an isolated, local (f.e. by using `pip install --local`) environment when installing third-party software.
+There are several tools to install puddletag via PyPI, for example [pip](https://packaging.python.org/en/latest/tutorials/installing-packages/#installing-to-the-user-site), [pipx](https://pypa.github.io/pipx/installation/), [pipenv](https://pipenv.pypa.io/en/latest/), and several others. Choose the one that suits best your workflow, but we strongly recommend installing third-party software into an isolated environment, for example with `pipx install puddletag`, or with pip inside a [virtual environment](https://docs.python.org/3/library/venv.html).
 
 ### Distributions package
 
@@ -131,10 +132,10 @@ _support needed, open an issue if interested in working on it_
 
 If you seek the bleeding edge of puddletag, or wanting to contribute (we welcome all contributions!) you can install and/or run via source code.
 
-First, you need to install the dependencies; this step is different depending on the distribution; on Debian you can run:
+First, you need to install the dependencies; this step is different depending on the distribution; on Debian testing or unstable (Debian 13's Python 3.13 is older than the 3.14 puddletag needs) you can run:
 
 ```
-apt install python3 python3-mutagen python3-configobj python3-pyparsing python3-pyqt6 python3-pyqt6.qtsvg python3-unidecode python3-send2trash
+apt install python3 python3-mutagen python3-configobj python3-pyparsing python3-pyqt6 python3-pyqt6.qtsvg python3-unidecode python3-send2trash python3-acoustid libchromaprint-tools
 ```
 
 Then, clone the repo and run puddletag:
@@ -149,9 +150,9 @@ Alternatively you can use a [virtual environment](https://docs.python.org/3/libr
 ```sh
 git clone 'https://github.com/puddletag/puddletag.git'
 cd 'puddletag'
-python3 -m 'venv' '.'
-bin/pip3 install -r 'requirements.txt'
-bin/python3 'puddletag'
+python3 -m 'venv' 'venv'
+venv/bin/pip3 install -r 'requirements.txt'
+venv/bin/python3 'puddletag'
 ```
 
 ## License
