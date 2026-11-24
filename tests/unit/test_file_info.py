@@ -7,6 +7,7 @@ Music/Artist/Album (the .ape file only says so in its header).
 """
 import os
 import re
+import subprocess
 
 import mutagen
 import pytest
@@ -90,10 +91,114 @@ def test_tags(song):
     assert re.fullmatch(r'puddletag v\d+\.\d+.*', song['__app'])  # "puddletag v0.10.4"
 
 
+# The fields only some formats have (tags.txt, "Fields of some formats"),
+# and the ones each synthetic file has.
+FORMAT_ONLY = ['__albumgain', '__bitspersample', '__layer', '__md5sig', '__titlegain', '__vendorstring',
+               '__version']
+FORMAT_FIELDS = {
+    'aiff': {'__bitspersample'}, 'ape': {'__bitspersample', '__version'}, 'dff': {'__bitspersample'},
+    'dsf': {'__bitspersample'}, 'flac': {'__bitspersample', '__md5sig', '__vendorstring'},
+    'm4a': {'__bitspersample'}, 'mp3': {'__layer', '__version'}, 'mpc': {'__version'},
+    'ogg': {'__vendorstring'}, 'opus': {'__vendorstring'}, 'wma': set(),
+    'wv': {'__bitspersample', '__version'},
+}
+
+
+def ffprobe_bits(path):
+    """The bits per sample ffprobe reads in the file's audio stream."""
+    return subprocess.run(['ffprobe', '-v', 'error', '-select_streams', 'a:0', '-show_entries',
+                           'stream=bits_per_raw_sample', '-of', 'default=noprint_wrappers=1:nokey=1', str(path)],
+                          capture_output=True, text=True, check=True).stdout.strip()
+
+
+@pytest.mark.parametrize('ext', [
+    pytest.param(ext, marks=pytest.mark.xfail(
+        strict=True, reason='an MP3 without a stored album gain shows __albumgain as None') if ext == 'mp3' else ())
+    for ext in sorted(FORMATS)])
+def test_fields_of_some_formats(make_audio, tmp_path, ext):
+    # tags.txt: "These fields come from the audio stream, and only some
+    # formats have them." Each entry lists its formats. Synthetic: no silent
+    # file stores a replay gain (mpcgain stores none for silence), so
+    # __albumgain and __titlegain show on none.
+    path = make_audio('song.' + ext, tmp_path, title='Song')
+    tag = audioinfo.Tag(str(path))
+    assert {field for field in FORMAT_ONLY if field in tag} == FORMAT_FIELDS[ext]
+
+
+@pytest.mark.parametrize('ext', ['aiff', 'ape', 'dff', 'dsf', 'flac', 'm4a', 'wv'])
+def test_bits_per_sample(make_audio, tmp_path, ext):
+    # tags.txt: "The number of bits per sample the file's stream header gives:
+    # 16 for CD audio, 1 for DSD." Synthetic: AIFF is pcm_s16be; the APE
+    # fixture's header says 16; DSD is 1 bit; ffmpeg's FLAC is 16-bit; MP4's
+    # sample entry gives 16 for AAC; ffmpeg's WavPack encoder stores silence
+    # in fewer bits (8 today), so the test asks ffprobe, which reads the same
+    # stream.
+    path = make_audio('song.' + ext, tmp_path, title='Song')
+    expected = ffprobe_bits(path) if ext == 'wv' else {'dff': '1', 'dsf': '1'}.get(ext, '16')
+    assert audioinfo.Tag(str(path))['__bitspersample'] == expected
+
+
+@pytest.mark.parametrize('ext, expected', [
+    ('ape', ('', '3.99')), ('mp3', ('3', '1')), ('mpc', ('', '8')), ('wv', ('', '1040'))])
+def test_layer_and_version(make_audio, tmp_path, ext, expected):
+    # tags.txt: "The MPEG layer of an MP3 file: 3." and "The version of the
+    # file's format: the MPEG version of an MP3 file (1, 2 or 2.5), the stream
+    # version of a Musepack file (7 or 8), the Monkey's Audio version of an
+    # APE file (3.99), or the stream version of a WavPack file as a number
+    # (1040 for version 0x410)." Synthetic: ffmpeg's MP3 at 44.1 kHz is
+    # MPEG-1; mpcenc writes stream version 8; the APE fixture's header is
+    # version 3990; ffmpeg writes WavPack version 0x410.
+    path = make_audio('song.' + ext, tmp_path, title='Song')
+    tag = audioinfo.Tag(str(path))
+    assert (tag.get('__layer', ''), tag['__version']) == expected
+
+
+@pytest.mark.parametrize('ext', ['flac', 'ogg', 'opus'])
+def test_vendor_string(make_audio, tmp_path, ext):
+    # tags.txt: "The vendor string of a FLAC, Ogg Vorbis or Opus file's
+    # VorbisComment: the name of the library that wrote it." Read with
+    # mutagen as the independent reader.
+    path = make_audio('song.' + ext, tmp_path, title='Song')
+    assert audioinfo.Tag(str(path))['__vendorstring'] == mutagen.File(path).tags.vendor
+
+
+@pytest.mark.xfail(strict=True, reason='__md5sig is shown as a decimal number')
+def test_md5_signature(make_audio, tmp_path):
+    # tags.txt: "The MD5 signature of a FLAC file's audio, from its STREAMINFO
+    # block, as 32 hexadecimal digits (as metaflac --show-md5sum prints it)."
+    path = make_audio('song.flac', tmp_path, title='Song')
+    assert audioinfo.Tag(str(path))['__md5sig'] == '%032x' % mutagen.File(path).info.md5_signature
+
+
+def test_total_mp4(make_audio, tmp_path):
+    # tags.txt: "The number of tracks: ... or the totaltracks field in MP4
+    # files, which keep the two apart. Can also be written to."
+    path = make_audio('song.m4a', tmp_path, title='Song', tracknumber='3/12')
+    tag = audioinfo.Tag(str(path))
+    assert (tag['track'], tag['totaltracks'], tag['__total']) == (['3'], ['12'], '12')
+    tag.update({'__total': '15'})
+    tag.save()
+    saved = audioinfo.Tag(str(path))
+    assert (saved['track'], saved['totaltracks']) == (['3'], ['15'])
+
+
+def test_separate_track_total_key(make_audio, tmp_path):
+    # tags.txt: "A total saved under a key of its own, like VorbisComment's
+    # TRACKTOTAL, shows as a field of that name (tracktotal)." Synthetic: the
+    # TRACKTOTAL is added with mutagen, as other programs write it.
+    path = make_audio('song.flac', tmp_path, title='Song', tracknumber='3')
+    audio = mutagen.File(path)
+    audio['TRACKTOTAL'] = '12'
+    audio.save()
+    tag = audioinfo.Tag(str(path))
+    assert (tag['track'], tag['tracktotal']) == (['3'], ['12'])
+    assert '__total' not in tag
+
+
 @pytest.mark.parametrize('ext', sorted(set(FORMATS) - {'m4a'}))
 def test_total(make_audio, tmp_path, ext):
-    # "If the track field is of track/numtracks format, returns numtracks.
-    # Can also be written to."
+    # "The number of tracks: what follows the slash in the track field (12
+    # for 3/12) ... Can also be written to."
     path = make_audio('song.' + ext, tmp_path, tracknumber='3/12')
     tag = audioinfo.Tag(str(path))
     assert '__total' in tag
@@ -105,9 +210,9 @@ def test_total(make_audio, tmp_path, ext):
 
 @pytest.mark.parametrize('ext', sorted(set(FORMATS) - {'m4a'}))
 def test_total_without_a_track(make_audio, tmp_path, ext):
-    # "If the track field is of track/numtracks format, returns numtracks.
-    # Can also be written to." Synthetic: the file has no track, so there is
-    # no total to write to.
+    # "The number of tracks: what follows the slash in the track field (12
+    # for 3/12) ... Can also be written to." Synthetic: the file has no
+    # track, so there is no total to write to.
     path = make_audio('song.' + ext, tmp_path, title='Song')
     tag = audioinfo.Tag(str(path))
     tag.update({'__total': '12'})
@@ -226,7 +331,8 @@ def test_empty_wavpack_file(tmp_path):
 
 @pytest.mark.parametrize('ext', sorted(set(FORMATS) - {'m4a'}))
 def test_total_in_a_pattern(make_audio, tmp_path, ext):
-    # "If the track field is of track/numtracks format, returns numtracks."
+    # "The number of tracks: what follows the slash in the track field (12
+    # for 3/12) ..."
     path = make_audio('song.' + ext, tmp_path, tracknumber='3/12')
     assert findfunc.parsefunc('%__total%', audioinfo.Tag(str(path))) == '12'
 
@@ -242,8 +348,9 @@ def test_total_in_a_pattern_mp4(make_audio, tmp_path):
 
 
 def test_no_total_without_one_in_the_track(make_audio, tmp_path):
-    # Synthetic: "If the track field is of track/numtracks format, returns
-    # numtracks." A track of 3 has no numtracks, so there is no __total.
+    # Synthetic: "The number of tracks: what follows the slash in the track
+    # field (12 for 3/12) ..." A track of 3 has no slash, so there is no
+    # __total.
     path = make_audio('song.flac', tmp_path, tracknumber='3')
     tag = audioinfo.Tag(str(path))
     assert '__total' not in tag

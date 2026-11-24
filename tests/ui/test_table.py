@@ -395,6 +395,31 @@ def test_select_columns_add(mainwin, qtbot, user, music):
     untouched(before)
 
 
+def test_select_columns_add_a_total_column(mainwin, qtbot, user, make_audio, tmp_path):
+    # tags.txt: "__total reads and writes the number of tracks on its own: to
+    # see it in a column of its own, add a column whose Field is __total
+    # (Preferences, Columns)." preferences.txt, Columns: "Add appends an empty
+    # column." Synthetic files: a total, none, and an MP4's.
+    folder = tmp_path / 'music'
+    paths = [make_audio('01.mp3', folder, title='one', tracknumber='3/12'),
+             make_audio('02.mp3', folder, title='two', tracknumber='4'),
+             make_audio('03.m4a', folder, title='three', tracknumber='5/9')]
+    table = load(mainwin, qtbot, user, folder)
+    assert names(table) == ['01.mp3', '02.mp3', '03.m4a']
+    before = stamps(paths)
+    window = select_columns(mainwin, qtbot, user)
+    user.click(tool_button(window, 'Add'))
+    user.type('Total')
+    replace_text(user, window.tag.lineEdit(), '__total')
+    click_ok(qtbot, user, window)
+    assert shown(table) == COLUMNS + ['__total']
+    assert titles(table)[-1] == 'Total'
+    model = table.model()
+    assert [model.data(user.cell(row, '__total')) for row in range(3)] == ['12', None, '9']
+    assert [model.data(user.cell(row, 'track')) for row in range(3)] == ['3/12', '4', '5']
+    untouched(before)
+
+
 def test_select_columns_duplicate(mainwin, qtbot, user, music):
     # preferences.txt, Columns: "Duplicate appends a copy of the selected
     # column, ticked or not as the original; the file-view shows it once its

@@ -172,7 +172,41 @@ The following fields are common to almost all music files.
 
 .. describe:: __total
 
-    If the track field is of track/numtracks format, returns numtracks. Can also be written to.
+    The number of tracks: what follows the slash in the track field (12 for 3/12), or the **totaltracks** field in MP4 files, which keep the two apart. Can also be written to.
+
+
+Fields of some formats
+----------------------
+
+These fields come from the audio stream, and only some formats have them.
+
+.. describe:: __albumgain
+
+    The album gain, in dB, that a Musepack file's stream header or an MP3 file's LAME header stores.
+
+.. describe:: __bitspersample
+
+    The number of bits per sample the file's stream header gives: 16 for CD audio, 1 for DSD. AIFF, DSDIFF, DSF, FLAC, Monkey's Audio, MP4 and WavPack files have it.
+
+.. describe:: __layer
+
+    The MPEG layer of an MP3 file: 3.
+
+.. describe:: __md5sig
+
+    The MD5 signature of a FLAC file's audio, from its STREAMINFO block, as 32 hexadecimal digits (as metaflac --show-md5sum prints it).
+
+.. describe:: __titlegain
+
+    The title gain, in dB, that a Musepack file's stream header stores.
+
+.. describe:: __vendorstring
+
+    The vendor string of a FLAC, Ogg Vorbis or Opus file's VorbisComment: the name of the library that wrote it.
+
+.. describe:: __version
+
+    The version of the file's format: the MPEG version of an MP3 file (1, 2 or 2.5), the stream version of a Musepack file (7 or 8), the Monkey's Audio version of an APE file (3.99), or the stream version of a WavPack file as a number (1040 for version 0x410).
 
 
 Functions Only
@@ -203,6 +237,8 @@ Tags
 The table below lists ID3v2.4 frames, MP4 atoms and WMA attributes with their respective puddletag fields. :doc:`This <id3>` page lists ID3 Frames and the various ways to edit them in puddletag, including what happens to TDAT, TIME, TORY, TRDA and TSIZ, which only ID3v2.3 has.
 
 Any MP4 atoms not in this list will be assumed to be freeform frames, written using ':com.apple.iTunes:**fieldname**' as the atom. Atoms the file already has keep their names. ID3 frames not found will be written as TXXX frames of the form **TXXX:fieldname** frame.
+
+**track** holds the track number and, after a slash, the number of tracks (3/12), as ID3, VorbisComment, APEv2 and WMA files store them. **__total** reads and writes the number of tracks on its own: to see it in a column of its own, add a column whose Field is __total (Preferences, Columns). A total saved under a key of its own, like VorbisComment's TRACKTOTAL, shows as a field of that name (**tracktotal**).
 
 MP4 keeps track and disc numbers apart from their totals: **track** and **totaltracks** share the trkn atom, **discnumber** and **totaldiscs** the disk atom, each a whole number; writing **track** as 3/12, or **discnumber** as 1/2, sets both. The flags (cpil, pgap, pcst) read **1** or **0**, as MusicBrainz Picard and Mp3tag show them; **1** or **Yes** turns one on, anything else off. ID3's **itunescompilationflag** (TCMP) saves **Yes** and **No** as **1** and **0** too. MP4 keeps lyrics as plain text, so a language and description in front, as ID3 takes them (**eng||Lyrics**, **eng|Description|Lyrics**), aren't saved. tmpo and the iTunes IDs (akID, atID, cmID, cnID, geID, plID, rtng, sfID, stik) take whole numbers.
 

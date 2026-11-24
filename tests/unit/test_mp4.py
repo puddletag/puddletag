@@ -476,8 +476,9 @@ def test_freeform_atoms_named_alike(make_audio, atoms, shown, kept):
 
 
 def test_total_without_a_track(make_audio):
-    # "__total: If the track field is of track/numtracks format, returns
-    # numtracks. Can also be written to." With no track nothing is written.
+    # "__total: The number of tracks: ... or the totaltracks field in MP4
+    # files, which keep the two apart. Can also be written to." With no track
+    # nothing is written.
     # Synthetic value.
     path = make_audio('song.m4a', title='T')
     atoms, tag = save(path, {'__total': '12'})
@@ -486,8 +487,8 @@ def test_total_without_a_track(make_audio):
 
 
 def test_total_is_there_with_a_track(make_audio):
-    # "__total: If the track field is of track/numtracks format, returns
-    # numtracks." Synthetic values.
+    # "__total: The number of tracks: ... or the totaltracks field in MP4
+    # files, which keep the two apart." Synthetic values.
     atoms, tag = save(make_audio('song.m4a'), {'track': ['3'], 'totaltracks': ['12']})
     assert ('__total' in tag, tag.get('__total')) == (True, '12')
 

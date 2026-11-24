@@ -556,8 +556,8 @@ def test_cover_without_a_mime_type(id3_file):
 
 @pytest.mark.parametrize('ext', ID3_FORMATS)
 def test_total_needs_a_track_total(make_audio, ext):
-    # tags.txt, __total: "If the track field is of track/numtracks format,
-    # returns numtracks." Synthetic tracks.
+    # tags.txt, __total: "The number of tracks: what follows the slash in the
+    # track field (12 for 3/12) ... Can also be written to." Synthetic tracks.
     with_total = audioinfo.Tag(str(make_audio('with.' + ext, title='Song', tracknumber='3/12')))
     without = audioinfo.Tag(str(make_audio('without.' + ext, title='Song')))
     assert ('__total' in with_total, with_total['__total'], '__total' in without) == (True, '12', False)

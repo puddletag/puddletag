@@ -109,8 +109,8 @@ def test_folder_cells_left_alone(user, loaded, qtbot, tmp_path, monkeypatch):
 
 
 def test_total_in_the_pattern(mainwin, make_audio, tmp_path, qtbot, user):
-    # tags.txt: "__total: If the track field is of track/numtracks format,
-    # returns numtracks."
+    # tags.txt: "__total: The number of tracks: what follows the slash in
+    # the track field (12 for 3/12) ..."
     path = make_audio('song.flac', tmp_path / 'music', title='Song', tracknumber='3/12')
     mainwin.openDir(str(path.parent), False)
     table = mainwin._table
