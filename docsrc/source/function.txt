@@ -143,7 +143,7 @@ Arguments
 Description
 ^^^^^^^^^^^
 
-Formats whatever is passed to it using the Format string.
+Formats whatever is passed to it using the Format string. This is the tag to tag conversion (Mp3tag's Convert > Tag - Tag): the Format string can combine any fields, and the result is written to the fields you choose.
 
 .. note:: Extensions are *not* added if you modify filename related fields using this Function.
 
@@ -155,6 +155,7 @@ A Format string can be (almost) any string. Eg. for a file with the tag, *artist
 * Using 'I wanna write my own.' as a Format string will return 'I wanna write my own.' and write it to the fields you choose.
 * Individual fields can be referenced by placing them between percent characters (%). So **%artist%** will return 'A Guy', **%album%**, 'Screeching' and so on for the others. Using **%genre%** would return nothing, because there ain't no genre field in the tag.
 * You can combine fields with any combination of letters as in **I don't like an %title% %artist%...%album%**. Returning, 'I don't like an Excessively Emo A Guy...Screeching'
+* To build the title from other fields, choose title as the field to write to and use **%track% - %album% - %artist%**, which returns '2 - Screeching - A Guy'.
 * More editing power is available via the scripting functions. They have the format **$name(arguments)**. See the :doc:`scripting functions page <scripting>` for a listing. They can be simple eg. **$upper(value)** will return 'VALUE', **$lower(%artist%)** will return 'a guy'. You can even combine/nest them to get what you want as in **I don't like an $lower(%title% $mid(%artist%,2,10)) $lower(%album%).** giving "I don't like an excessively emo guy screeching."
 
 .. _import_text_file:

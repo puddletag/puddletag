@@ -242,6 +242,14 @@ def test_format_value(pattern, expected):
     assert values(apply_actions([make_action('format', ['comment'], pattern)], GUY)).get('comment', []) == expected
 
 
+def test_format_value_builds_the_title():
+    # function.txt: "To build the title from other fields, choose title as the
+    # field to write to and use **%track% - %album% - %artist%**, which returns
+    # '2 - Screeching - A Guy'."
+    action = [make_action('format', ['title'], '%track% - %album% - %artist%')]
+    assert values(apply_actions(action, GUY)) == {'title': ['2 - Screeching - A Guy']}
+
+
 @pytest.mark.parametrize('characters, text, expected', [
     # Case Conversion: Mixed Case with "." and a space, then "." alone
     ('. ', 'this is my name. and my surname. with a dot.here and there.',
