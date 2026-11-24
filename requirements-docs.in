@@ -1,0 +1,3 @@
+# building the docs (docsrc/); never published
+sphinx
+sphinx-bootstrap-theme
