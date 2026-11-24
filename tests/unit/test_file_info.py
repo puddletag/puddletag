@@ -111,10 +111,7 @@ def ffprobe_bits(path):
                           capture_output=True, text=True, check=True).stdout.strip()
 
 
-@pytest.mark.parametrize('ext', [
-    pytest.param(ext, marks=pytest.mark.xfail(
-        strict=True, reason='an MP3 without a stored album gain shows __albumgain as None') if ext == 'mp3' else ())
-    for ext in sorted(FORMATS)])
+@pytest.mark.parametrize('ext', sorted(FORMATS))
 def test_fields_of_some_formats(make_audio, tmp_path, ext):
     # tags.txt: "These fields come from the audio stream, and only some
     # formats have them." Each entry lists its formats. Synthetic: no silent
@@ -162,7 +159,6 @@ def test_vendor_string(make_audio, tmp_path, ext):
     assert audioinfo.Tag(str(path))['__vendorstring'] == mutagen.File(path).tags.vendor
 
 
-@pytest.mark.xfail(strict=True, reason='__md5sig is shown as a decimal number')
 def test_md5_signature(make_audio, tmp_path):
     # tags.txt: "The MD5 signature of a FLAC file's audio, from its STREAMINFO
     # block, as 32 hexadecimal digits (as metaflac --show-md5sum prints it)."

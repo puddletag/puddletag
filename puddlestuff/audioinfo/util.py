@@ -377,15 +377,13 @@ def info_to_dict(info):
         except AttributeError:
             pass
 
-    try:
-        tags['__titlegain'] = str(info.title_gain)
-    except AttributeError:
-        pass
+    gain = getattr(info, 'title_gain', None)
+    if gain is not None:
+        tags['__titlegain'] = str(gain)
 
-    try:
-        tags['__albumgain'] = str(info.album_gain)
-    except AttributeError:
-        pass
+    gain = getattr(info, 'album_gain', None)
+    if gain is not None:
+        tags['__albumgain'] = str(gain)
 
     try:
         tags['__version'] = str(info.version)
@@ -393,7 +391,7 @@ def info_to_dict(info):
         pass
 
     try:
-        tags['__md5sig'] = str(info.md5_signature)
+        tags['__md5sig'] = '%032x' % info.md5_signature
     except AttributeError:
         pass
 
