@@ -38,9 +38,9 @@ ignore-words-list = [
 # codespell's own word pattern, without the quotes around a word, so the
 # first and last words of a 'single-quoted' text are checked too.
 regex = "[\\w\\-]+(?:['’][\\w\\-]+)*"
-# The generated docs and the tests' real files (kept byte for byte), and
-# what a checkout has that git ignores. Hidden files and folders are
-# skipped already.
+# The tests' real files (kept byte for byte), and what a checkout has that
+# git ignores, such as docs/, where make html builds the site. Hidden files
+# and folders are skipped already.
 skip = [
     "*.egg-info",
     "./build",

@@ -20,3 +20,6 @@ MANIFEST
 
 # Test coverage data
 .coverage
+
+# The docs site that make html builds from docsrc/
+/docs/

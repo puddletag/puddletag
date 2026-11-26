@@ -133,7 +133,7 @@ def button(window, text):
 def test_online_documentation_opens_the_docs(mainwin, qtbot, user, opened):
     # index.txt: "But check out the :doc:`documentation <docs>` first." The
     # docs page (docs.txt) is built to docs.html on docs.puddletag.net
-    # (docs/CNAME).
+    # (the custom domain in the repository's Pages settings).
     user.click_menu('Online &Documentation')
 
     assert opened == ['https://docs.puddletag.net/docs.html']
@@ -300,7 +300,8 @@ def test_about_tab_matches_the_docs(mainwin, qtbot, user, monkeypatch):
     # which you can find in its entirety at
     # http://www.gnu.org/licenses/gpl-3.0.html." and about.txt's
     # "© 2008-2026 concentricpuddle and the puddletag developers." The
-    # site the docs are built to is docs.puddletag.net (docs/CNAME).
+    # site the docs are published to is docs.puddletag.net (the custom
+    # domain in the repository's Pages settings).
     exec_for_real(monkeypatch)
     shown = while_open(user, about_puddletag)
     user.click_menu('About puddletag')
