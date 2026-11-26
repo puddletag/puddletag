@@ -1,11 +1,7 @@
 :orphan:
 
-.. include:: checksums.txt
-
 puddletag Documentation
 -----------------------
-
-**Download these docs:** |docs_html_link|_ | |docs_rst_link|_
 
 First I have to introduce you to the naming conventions used by puddletag (some copied from Mp3tag).
 
