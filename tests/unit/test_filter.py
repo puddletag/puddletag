@@ -1,7 +1,7 @@
 """Filter expressions (puddlestuff/audio_filter.py), run on real files the way
 the Filter panel runs them (tagmodel.py applyFilter).
 
-Expected results come from docsrc/source/filter.txt unless noted. Tags are
+Expected results come from docs/source/filter.txt unless noted. Tags are
 synthetic, the docs' own example values where they give them. On a fresh
 profile, the fields the filter knows are audioinfo's default field list.
 """

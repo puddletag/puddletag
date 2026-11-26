@@ -10,7 +10,7 @@ from pathlib import Path
 from puddlestuff.findfunc import Function
 from puddlestuff.functions import functions
 
-DOCS = Path(__file__).resolve().parents[2] / 'docsrc' / 'source'
+DOCS = Path(__file__).resolve().parents[2] / 'docs' / 'source'
 SCRIPTING = re.findall(r'^\.\. describe:: \$(\w+)\(',
                        (DOCS / 'scripting.txt').read_text(encoding='utf-8'), re.M)
 SECTIONS = [title.strip() for title in re.findall(

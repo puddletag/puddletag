@@ -1,7 +1,7 @@
 """Real files whose tags other programs wrote: public-domain recordings cut
 down to their tags (tests/data/README.md has their sources and licenses).
 
-Expected values are each file's own tags, named as docsrc/source/tags.txt
+Expected values are each file's own tags, named as docs/source/tags.txt
 and id3.txt say puddletag shows them.
 """
 import shutil

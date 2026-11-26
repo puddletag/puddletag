@@ -1,7 +1,7 @@
 """The file information fields (__length, __bitrate, __path...) that
 audioinfo.Tag gives a real file: the table shows them and patterns use them.
 
-Expected results come from docsrc/source/tags.txt. The files are synthetic:
+Expected results come from docs/source/tags.txt. The files are synthetic:
 one second of mono silence at 44.1 kHz (DSD at 2822.4 kHz), in
 Music/Artist/Album (the .ape file only says so in its header).
 """

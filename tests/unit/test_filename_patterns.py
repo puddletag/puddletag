@@ -1,6 +1,6 @@
 """File->Tag and Tag->File, called the way mainwin/funcs.py calls them.
 
-Expected results come from docsrc/source/menus.txt (File->Tag),
+Expected results come from docs/source/menus.txt (File->Tag),
 function.txt ("Tag to filename") and tut1.txt with its screenshots, or from
 the linked reports. Folders and tag values that a source doesn't give are
 synthetic.

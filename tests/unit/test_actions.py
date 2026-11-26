@@ -1,7 +1,7 @@
 """Actions: the functions of the Functions dialog, run through findfunc.Function,
 and the .action files that save chains of them.
 
-Expected results come from docsrc/source/function.txt unless noted.
+Expected results come from docs/source/function.txt unless noted.
 """
 import json
 import os
@@ -76,7 +76,7 @@ def test_default_action_loads_as_written(name):
 
 
 def test_default_case_conversion_action():
-    # docsrc/source/tut2.txt: the Case Conversion action's function changes
+    # docs/source/tut2.txt: the Case Conversion action's function changes
     # the album, title and artist fields to "Mixed Case", which capitalises
     # each word and lowers the rest (function.txt). Synthetic title.
     funcs, name = load_macro_info(os.path.join(DATADIR, SHIPPED['Case Conversion']))
@@ -628,7 +628,7 @@ def plugin_step(print_string, controls, *args):
     (make_action('titleCase', ['artist', 'album', 'title'], 'Mixed Case', '., !'),
      'Convert Case: artist, album, title: Mixed Case'),
     # "$# shows the value of argument number #. $0 will always be the fields
-    # that'll get written to." (docsrc/source/functionplugin/__init__.py); a
+    # that'll get written to." (docs/source/functionplugin/__init__.py); a
     # check box shown as Yes/No is docs-silent.
     (make_action('autonumbering', ['track'], 5, True, 3),
      'Autonumbering: track, Start: 5, Restart for dir: Yes, Padding: 3'),

@@ -1,7 +1,7 @@
 """The helpers every tag format shares (puddlestuff/audioinfo/util.py)
 and the tag mapping (audioinfo.setmapping): what the tag classes, the
 table and the clipboard get from them. Expected values come from
-docsrc/source/tags.txt where it covers them, otherwise from the
+docs/source/tags.txt where it covers them, otherwise from the
 maintainer's decisions. Synthetic values and files."""
 import os
 import time

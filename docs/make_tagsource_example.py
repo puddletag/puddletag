@@ -1,9 +1,9 @@
-"""Builds source/functionplugin.tar.gz, the docs' example function plugin,
-from the source/functionplugin folder. Run it after changing the folder.
-The same files give the same archive: every entry has a fixed date and
-owner.
+"""Builds source/tagsource.tar.gz, the docs' example tag source plugin,
+from the source/tagsource_plugin folder. Run it after changing the
+folder. The same files give the same archive: every entry has a fixed
+date and owner.
 
-    venv/bin/python docsrc/make_functionplugin_example.py
+    venv/bin/python docs/make_tagsource_example.py
 """
 import gzip
 import io
@@ -11,7 +11,7 @@ import tarfile
 from pathlib import Path
 
 SOURCE = Path(__file__).parent / 'source'
-FOLDER = 'functionplugin'
+FOLDER = 'tagsource_plugin'
 FILES = ['__init__.py', 'info']  # the folder's files, in the archive's order
 MTIME = 1794027600  # 2026-11-07 00:00 America/New_York
 
@@ -40,7 +40,7 @@ def tar_bytes():
 
 
 def main():
-    with open(SOURCE / 'functionplugin.tar.gz', 'wb') as out:
+    with open(SOURCE / 'tagsource.tar.gz', 'wb') as out:
         with gzip.GzipFile(filename='', mode='wb', fileobj=out, mtime=0) as packed:
             packed.write(tar_bytes())
 

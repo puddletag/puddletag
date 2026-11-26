@@ -1,7 +1,7 @@
 """The scripting language: findfunc.parsefunc and the $functions.
 
 Expected results come from three places, named next to each case:
-- docs: docsrc/source/scripting.txt and function.txt, the documented behaviour;
+- docs: docs/source/scripting.txt and function.txt, the documented behaviour;
 - shared: scripts users posted in the puddletag tracker or published in
   their configs (linked);
 - bug: reports in the tracker, with the input and expectation they gave.

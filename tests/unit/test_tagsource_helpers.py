@@ -2,7 +2,7 @@
 downloading a page, the errors a download ends in, and reading the search
 box, the files' ids and a page's encoding.
 
-The docs' example tag source plugin (docsrc/source/tagsource.tar.gz) asks
+The docs' example tag source plugin (docs/source/tagsource.tar.gz) asks
 plugins to "use puddlestuff.tagsources.urlopen instead of the generic urllib
 functions ... Pass it your url and it'll return your data", and to "Raise
 puddlestuff.tagsources.RetrievalError if an error occurs". Pages come from

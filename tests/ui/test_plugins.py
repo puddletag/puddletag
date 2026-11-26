@@ -29,7 +29,7 @@ pytestmark = pytest.mark.ui
 Key = Qt.Key
 Ctrl = Qt.KeyboardModifier.ControlModifier
 
-DOCS = Path(__file__).parents[2] / 'docsrc'
+DOCS = Path(__file__).parents[2] / 'docs'
 
 
 @pytest.fixture(autouse=True)
@@ -566,7 +566,7 @@ def test_example_source_configure_shows_its_defaults(mainwin, qtbot, user, resta
 
 def test_example_archive_is_built_from_its_folder():
     # plugins.txt: "The Tag Source Example" download is the archive; the
-    # folder docsrc/source/tagsource_plugin is its source.
+    # folder docs/source/tagsource_plugin is its source.
     spec = importlib.util.spec_from_file_location('make_tagsource_example', DOCS / 'make_tagsource_example.py')
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
@@ -732,7 +732,7 @@ FUNCTION_EXAMPLE = DOCS / 'source' / 'functionplugin.tar.gz'
 def test_function_example_archive_is_built_from_its_folder():
     # plugins.txt: "The Function plugin example contains a short tutorial on
     # writing scripting functions"; the download is built from the folder
-    # docsrc/source/functionplugin.
+    # docs/source/functionplugin.
     spec = importlib.util.spec_from_file_location('make_functionplugin_example',
                                                   DOCS / 'make_functionplugin_example.py')
     module = importlib.util.module_from_spec(spec)
