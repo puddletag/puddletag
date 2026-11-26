@@ -57,3 +57,27 @@ jobs:
     - name: Publish distribution 📦 to PyPI
       if: startsWith(github.ref, 'refs/tags')
       uses: pypa/gh-action-pypi-publish@release/v1
+
+  # Deploys the site that tests.yml's docs job built to GitHub Pages
+  # (docs.puddletag.net), on pushes to master only. The repository's Pages
+  # settings take their source from GitHub Actions and hold the custom domain.
+  deploy-docs:
+    needs: tests
+    if: github.ref == 'refs/heads/master'
+    name: Publish the docs to GitHub Pages
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      pages: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    # One deployment at a time: a run waiting here gives way to a newer one,
+    # and a deployment under way finishes.
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+    steps:
+    - name: Deploy to GitHub Pages
+      id: deployment
+      uses: actions/deploy-pages@v5
