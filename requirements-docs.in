@@ -1,3 +1,5 @@
 # building the docs (docs/); never published
+# myst-parser: the News page includes CHANGELOG.md, which is Markdown
+myst-parser
 sphinx
 sphinx-bootstrap-theme

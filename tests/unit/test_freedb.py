@@ -395,9 +395,9 @@ def test_search_without_files(gnudb):
 
 
 # The pause -------------------------------------------------------------------
-# No docs describe it; the changelog gives the intent: "Rate limiting for FreeDB
-# as too many requests at once causes errors." The gap is one second between
-# requests to gnudb.
+# No docs describe it; CHANGELOG.md's 1.0.0beta5 gives the intent: "Rate
+# limiting for FreeDB as too many requests at once causes errors." The gap is
+# one second between requests to gnudb.
 
 TWO_HITS = reply("211 Found inexact matches, list follows (until terminating `.')",
                  f'data {DISC_ID} Some Artist / Some Album', 'data 0c025699 Other / Second', '.')

@@ -1,12 +1,7 @@
 *#*#
-/puddletag-docs/_build
 *#*
-puddletag-docs/translations
 .idea/
 venv
-rss_temp*.txt
-rss_temp*.html
-rss_temp*.doctree
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

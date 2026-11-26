@@ -509,8 +509,8 @@ def test_filename_drops_reserved_characters(user, loaded, qtbot):
 
 
 def test_edit_keeps_frames_puddletag_does_not_list(mainwin, make_audio, tmp_path, qtbot, user):
-    # news.txt: "There was a pretty nasty bug where puddletag would remove
-    # any unsupported tags." Decided on 2026-11-10: what puddletag doesn't
+    # CHANGELOG.md, 0.4.5: "There was a pretty nasty bug where puddletag
+    # would remove any unsupported tags." Decided on 2026-11-10: what puddletag doesn't
     # show is kept when it saves. A chapter, its table of contents and a
     # private frame, as podcast tools and Picard write them. Synthetic values.
     music = tmp_path / 'music'

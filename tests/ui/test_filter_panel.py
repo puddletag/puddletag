@@ -154,7 +154,8 @@ TOGGLE = {
 @pytest.mark.parametrize('toggle', TOGGLE.values(), ids=TOGGLE.keys())
 def test_panel_shown_and_hidden(user, loaded, mainwin, qtbot, toggle):
     # filter.txt: "They can be entered into the Filter Panel (Windows->Filter
-    # or F3)." news.txt: "A filter like in Mp3tag. F3 shows/hides it."
+    # or F3)." CHANGELOG.md, 0.2.5: "A filter like in Mp3tag. F3
+    # shows/hides it."
     table, paths = loaded
     [view] = mainwin.findChildren(FilterView)
     action = user.action('Filter')
@@ -270,8 +271,9 @@ def test_a_hidden_file_leaves_the_selection(loaded, mainwin, qtbot, user):
 
 
 def test_filter_stays_while_the_panel_is_hidden(loaded, mainwin, qtbot, user):
-    # news.txt: "A filter like in Mp3tag. F3 shows/hides it." Beyond it,
-    # hiding the panel doesn't clear the filter: the files stay hidden.
+    # CHANGELOG.md, 0.2.5: "A filter like in Mp3tag. F3 shows/hides it."
+    # Beyond it, hiding the panel doesn't clear the filter: the files stay
+    # hidden.
     table, paths = loaded
     enter_filter(user, mainwin, 'Maffin')
     table.setFocus()

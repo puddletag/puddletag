@@ -1,6 +1,0 @@
-15 November 2014 - 1.0.5
-########################
-
-This is a bug fix which fixes an issue in Actions where floating point values were handled incorrectly.
-
-`.tar.gz download <http://sourceforge.net/projects/puddletag/files/puddletag-1.0.5.tar.gz>`_ | `.deb download <http://sourceforge.net/projects/puddletag/files/puddletag_1.0.5-1_all.deb>`_
