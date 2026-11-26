@@ -9,7 +9,7 @@
 [![License](https://img.shields.io/badge/license-GPL--3.0--or--later-blue)](https://github.com/puddletag/puddletag/blob/master/LICENSE)
 [![Docs](https://img.shields.io/badge/docs-docs.puddletag.net-blue)](https://docs.puddletag.net/)
 
-![Screenshot](docs/_images/5.png)
+![Screenshot](https://raw.githubusercontent.com/puddletag/puddletag/master/docsrc/screenshots/5.png)
 
 puddletag is an audio tag editor (primarily created) for GNU/Linux similar to the Windows program, Mp3tag. Unlike most taggers for GNU/Linux, it uses a spreadsheet-like layout so that all the tags you want to edit by hand are visible and easily editable.
 
