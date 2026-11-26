@@ -167,6 +167,9 @@ html_static_path = ["_static"]
 # Custom sidebar templates, maps document names to template names.
 # html_sidebars = {}
 html_sidebars = {
+    # No sidebar on the other pages: Sphinx 9 reads the theme's empty
+    # default as unset and would add the basic theme's.
+    "**": [],
     "source/filter": ["my_sidebar.html"],
     "source/function": ["my_sidebar.html"],
     "source/id3": ["my_sidebar.html"],
