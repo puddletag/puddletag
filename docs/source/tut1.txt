@@ -5,8 +5,7 @@ Start puddletag. It should not look dissimilar to this.
 
 .. image:: tut1/1full.png
    :align: center
-   :height: 529
-   :width: 644
+   :class: img-responsive
    :alt: puddletag at startup
    :target: ../_images/1full.png
 
@@ -19,8 +18,7 @@ Here's what puddletag looks like after I've opened a folder.
 .. image:: tut1/2full.png
    :alt: puddletag after loading a directory.
    :align: center
-   :width: 773
-   :height: 383
+   :class: img-responsive
    :target: ../_images/2full.png
 
 1. Is the heart of puddletag. The pattern combo. THIS is where you'll be spending a lot of you time.
@@ -29,7 +27,7 @@ Here's what puddletag looks like after I've opened a folder.
 
 Okay, so normally music files have tags, but these here files of mine don't have any. Their filenames though, contain some useful info, which I'd like to extract.
 
-Consider the first file named **Bob Marley & The Wailers - 01 - Positive Vibration.mp3**, which contains the **artist**, **track number** and **title** of the song. I can enter these values by typing them directly into their respective field in the File-View (the large table taking up most of the viewing area), use the Tag Panel on the left or extract them using a Pattern.
+Consider the first file named **The Silent Frames - 01 - Opening Hush.mp3**, which contains the **artist**, **track number** and **title** of the song. I can enter these values by typing them directly into their respective field in the File-View (the large table taking up most of the viewing area), use the Tag Panel on the left or extract them using a Pattern.
 
 The third option is the one that I will concern myself with.
 
@@ -38,8 +36,6 @@ In patterns a field of any name can be specified using the **%field%** notation.
 After typing **%artist% - %track% - %title%** into the Pattern Combo [1] and using **File->Tag** from the Convert menu (|filetotag|). I get this:
 
 .. |filetotag| image:: tut1/filetotag.png
-   :width: 27px
-   :height: 28px
    :alt: File -> Tag
    :align: middle
 
@@ -47,8 +43,7 @@ After typing **%artist% - %track% - %title%** into the Pattern Combo [1] and usi
 .. image:: tut1/3full.png
    :alt: puddletag after performing a File -> Tag operation.
    :align: center
-   :width: 773
-   :height: 383
+   :class: img-responsive
    :target: ../_images/3full.png
 
 
@@ -59,19 +54,16 @@ Any number of files can be edited at once by selecting them. Just by pressing **
 .. image:: tut1/4full.png
    :alt: Everything is selected
    :align: center
-   :width: 778
-   :height: 403
+   :class: img-responsive
    :target: ../_images/4full.png
 
-The **Tag Panel** on the left is really useful for writing common data between files. Notice that the **artist** combo box contains **Bob Marley & The Wailers**. This is because all files have the same artist. On occasions where the value differs between files it would contain **<keep>**, signifying that upon saving that field will remain unchanged for each file. So in this instance, the **artist** field for all the files will be left as-is upon saving.
+The **Tag Panel** on the left is really useful for writing common data between files. Notice that the **artist** combo box contains **The Silent Frames**. This is because all files have the same artist. On occasions where the value differs between files it would contain **<keep>**, signifying that upon saving that field will remain unchanged for each file. So in this instance, the **artist** field for all the files will be left as-is upon saving.
 
 To remove a field, change the text to **<blank>** and the field'll be removed upon saving. I'll fill in the album, year and genre tags (and click Save) while you get some coffee.
 
 Okay, now some people like their filenames in a **%track% - %title%** format. This can be done by entering it in the pattern combo and using **Tag-File** from the Convert menu ( or |tagtofile|).
 
 .. |tagtofile| image:: tut1/tagtofile.png
-   :width: 35px
-   :height: 36px
    :alt: Tag -> File
    :align: middle
 
@@ -80,8 +72,7 @@ Here's what I see...
 .. image:: tut1/5full.png
    :alt: This mofo right here is impossible for me to describe.
    :align: center
-   :width: 778
-   :height: 403
+   :class: img-responsive
    :target: ../_images/5full.png
 
 Hmm, the leading zeroes are a bit of an eye-sore. puddletag allows you to use :doc:`scripting functions <scripting>` when renaming files using **Tag->File**. The functions are just like normal programming functions except they're prepended with the **$** character. In this case, the **$num(tag, length)** function is appropriate since it pads the field's value with leading zeroes until it is of the same length as the **length** argument (otherwise remove all leading zeroes until it is).
@@ -91,8 +82,7 @@ I don't want any so I'll use **$num(%track%, 1)** and rename the files again usi
 .. image:: tut1/6full.png
    :alt: puddletag after using a pattern to rename some files.
    :align: center
-   :width: 773
-   :height: 383
+   :class: img-responsive
    :target: ../_images/6full.png
       
 Want more? Check out :doc:`Part 2 <tut2>`

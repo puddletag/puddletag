@@ -77,7 +77,7 @@ def focused_field(panel):
                  if widget in (combo, combo.lineEdit())), None)
 
 
-# "Notice that the artist combo box contains Bob Marley & The Wailers.
+# "Notice that the artist combo box contains The Silent Frames.
 # This is because all files have the same artist. On occasions where the
 # value differs between files it would contain <keep>" (tut1.txt): a
 # field one file lacks differs too.

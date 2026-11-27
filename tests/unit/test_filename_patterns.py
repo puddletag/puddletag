@@ -58,12 +58,12 @@ def tag_to_file(make_audio, tmp_path):
     # A function with one field sets it. The pattern is the first of the
     # Pattern Combo's defaults (mainwin/patterncombo.py), #210's case.
     ('%artist% - $num(%track%,2) - %title%',
-     '/music/Bob Marley & The Wailers - 01 - Positive Vibration.mp3',
-     {'artist': 'Bob Marley & The Wailers', 'track': '01', 'title': 'Positive Vibration'}),
-    # tut1.txt, and its status bar in tut1/3full.png
+     '/music/The Silent Frames - 01 - Opening Hush.mp3',
+     {'artist': 'The Silent Frames', 'track': '01', 'title': 'Opening Hush'}),
+    # tut1.txt
     ('%artist% - %track% - %title%',
-     '/mnt/home/storage/puddle/Bob Marley - Babylon By Bus/Bob Marley & The Wailers - 01 - Positive Vibration.mp3',
-     {'artist': 'Bob Marley & The Wailers', 'track': '01', 'title': 'Positive Vibration'}),
+     '/music/The Silent Frames - Nothing to Hear/The Silent Frames - 01 - Opening Hush.mp3',
+     {'artist': 'The Silent Frames', 'track': '01', 'title': 'Opening Hush'}),
 ])
 def test_documented_file_to_tag(pattern, path, expected):
     assert file_to_tag(pattern, path) == expected
@@ -144,8 +144,8 @@ BEFORE_THE_FAME = {'artist': 'Before The Fame', 'album': 'The Vinyl LP',
 UNKNOWN_PATH = 'home/concentricpuddle/multimedia/music/Indie/unsorted/unknown.mp3'
 UNKNOWN = {'artist': 'Relatively Unknown', 'title': 'Horrible for everyone else',
            'album': 'Fans like it', 'track': '5'}
-BOB_MARLEY_PATH = 'mnt/home/storage/puddle/Bob Marley - Babylon By Bus/01 - Positive Vibration.mp3'
-BOB_MARLEY = {'artist': 'Bob Marley & The Wailers', 'title': 'Positive Vibration', 'track': '01'}
+TUTORIAL_PATH = 'mnt/home/storage/puddle/The Silent Frames - Nothing to Hear/01 - Opening Hush.mp3'
+TUTORIAL = {'artist': 'The Silent Frames', 'title': 'Opening Hush', 'track': '01'}
 
 
 @pytest.mark.parametrize('pattern, path, tags, expected', [
@@ -177,10 +177,10 @@ BOB_MARLEY = {'artist': 'Bob Marley & The Wailers', 'title': 'Positive Vibration
      dict(BEFORE_THE_FAME, discnumber='1'),
      '/mnt/music/The Vinyl LP/Disc 1/Sounds Better Than Anything After.m4a'),
     # tut1.txt, with the patterns and new names in tut1/5full.png and 6full.png
-    ('$num(%track%,2) - %title%', BOB_MARLEY_PATH, BOB_MARLEY,
-     'mnt/home/storage/puddle/Bob Marley - Babylon By Bus/01 - Positive Vibration.mp3'),
-    ('$num(%track%, 1) - %title%', BOB_MARLEY_PATH, BOB_MARLEY,
-     'mnt/home/storage/puddle/Bob Marley - Babylon By Bus/1 - Positive Vibration.mp3'),
+    ('$num(%track%,2) - %title%', TUTORIAL_PATH, TUTORIAL,
+     'mnt/home/storage/puddle/The Silent Frames - Nothing to Hear/01 - Opening Hush.mp3'),
+    ('$num(%track%, 1) - %title%', TUTORIAL_PATH, TUTORIAL,
+     'mnt/home/storage/puddle/The Silent Frames - Nothing to Hear/1 - Opening Hush.mp3'),
 ])
 def test_documented_tag_to_file(tag_to_file, pattern, path, tags, expected):
     assert tag_to_file(pattern, path, **tags) == expected

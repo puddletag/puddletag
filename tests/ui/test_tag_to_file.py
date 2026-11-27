@@ -18,9 +18,9 @@ Key = Qt.Key
 Ctrl = Qt.KeyboardModifier.ControlModifier
 Shift = Qt.KeyboardModifier.ShiftModifier
 
-# tut1.txt's album: Bob Marley & The Wailers, track numbers with a leading
+# tut1.txt's album: The Silent Frames, track numbers with a leading
 # zero. Synthetic titles.
-TITLES = ['Positive Vibration', 'Punky Reggae Party', 'Exodus']
+TITLES = ['Opening Hush', 'Zero Crossing', 'Room Tone']
 
 
 def load(mainwin, qtbot, user, paths):
@@ -34,9 +34,9 @@ def load(mainwin, qtbot, user, paths):
 
 @pytest.fixture
 def loaded(mainwin, make_audio, tmp_path, qtbot, user):
-    music = tmp_path / 'Bob Marley - Babylon By Bus'
-    paths = [make_audio(f'Bob Marley & The Wailers - 0{i} - {title}.mp3', music,
-                        artist='Bob Marley & The Wailers', tracknumber=f'0{i}', title=title)
+    music = tmp_path / 'The Silent Frames - Nothing to Hear'
+    paths = [make_audio(f'The Silent Frames - 0{i} - {title}.mp3', music,
+                        artist='The Silent Frames', tracknumber=f'0{i}', title=title)
              for i, title in enumerate(TITLES, 1)]
     return load(mainwin, qtbot, user, paths), paths
 
@@ -203,7 +203,7 @@ def test_rename_to_another_filesystem(user, loaded, qtbot):
         user.click_cell(user.cell(0, 'title'))
         set_pattern(user, f'{target}/%title%')
         user.press(Key.Key_F, Ctrl)
-        moved = target / 'Positive Vibration.mp3'
+        moved = target / 'Opening Hush.mp3'
         qtbot.waitUntil(moved.exists)
         assert not paths[0].exists()
         assert table.model().taginfo[0].filepath == str(moved)

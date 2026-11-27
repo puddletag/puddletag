@@ -1,14 +1,15 @@
 Tutorial 2
 ==========
 
-Consider the puddletag toolbar without the pattern combo:
+Consider the puddletag toolbar:
 
 .. image:: tut1/toolbarbuttonscomplete.png
    :alt: puddletag toolbar
    :align: center
+   :class: img-responsive
 
 
-Let's pick buttons at random and start with the right the **Reload** (|reload.png|) button (found in **File** menu). All it does is reload the currently opened directory. If you've added files ad hoc to puddletag, it re-reads those files again (useful if you've moved or deleted files outside of puddletag).
+Let's pick buttons at random and start with the **Refresh** (|reload.png|) button (found in the **File** menu). All it does is reload the currently opened directory. If you've added files ad hoc to puddletag, it re-reads those files again (useful if you've moved or deleted files outside of puddletag).
 
 .. |reload.png| image:: tut1/reload.png
    :alt: Reload
@@ -29,13 +30,13 @@ What you see right there is the :ref:`Case Conversion <case_conversion>` puddlet
 
 The Case Conversion function can do three types of erm...case conversion: **UPPER, lower and Mixed Case**. **Mixed Case** being special in that capitalises the first letter of each word and lowers the rest. Words boundaries are defined by the characters listed, so don't be hollering at me when every letter after r is capitalized after some change you made.
 
-Note that **__selected** is listed in fields. This means that the function will be applied to all the selected cells. You can specify your own list by entering a bunch of comma-separated fields eg. **artist, title, album** or all fields by using **__all**. For more info check out the :ref:`Things You Should Know <functions_fields_know>` page.
+**Fields** shows the fields you used last time with this function, or **__all** (every field of the selected files) the first time. Here it says **__selected**, typed in, so the function is applied to the selected cells only. You can specify your own list by entering a bunch of comma-separated fields eg. **artist, title, album**. For more info check out the :ref:`Things You Should Know <functions_fields_know>` page.
     
-Clicking "OK" will apply the Function each selected file using appropriate fields (ie. those selected).
+Clicking "OK" applies the function to each selected file, in the fields **Fields** lists.
 
 .. _actions_tut:
 
-Three spaces to the left of the Pattern Combo is the **Actions** button (|actionsbutton.png|) also from the **Actions** menu. It opens up the Actions window:
+The **Actions** button (|actionsbutton.png|), also from the **Actions** menu, opens up the Actions window:
 
 .. |actionsbutton.png| image:: tut1/actionsbutton.png
    :alt: Actions
@@ -90,28 +91,34 @@ The **Add Folder** button (|addfolder.png|) from the **File** menu appends a fol
    :alt: Append Folder
    :align: middle
 
+The **Go to parent folder** button (|parentfolder.png|) from the **Actions** menu opens the Filesystem window, if it's closed, and shows the folder of the selected file.
 
-The **Rename Dir** button (|renamedir.png|) from the **Convert menu** renames the currently selected folder using the pattern in the Pattern Combo. For instance if the Pattern Combo contained, **%artist% - %album%**, it would behave the same way as file renaming (except on the directory).
+.. |parentfolder.png| image:: tut1/parentfolder.png
+   :alt: Go to parent folder
+   :align: middle
 
-.. |renamedir.png| image:: tut1/addfolder.png
+
+The **Rename Directories** button (|renamedir.png|) from the **Convert** menu renames the currently selected folder using the pattern in the Pattern Combo. For instance if the Pattern Combo contained, **%artist% - %album%**, it would behave the same way as file renaming (except on the directory).
+
+.. |renamedir.png| image:: tut1/renamedir.png
    :alt: Rename dir button
    :align: middle
 
-The last item on our agenda for this tutorial is **Import File** (|importfile.png|), also from the **Tools menu**. Use it to import a text file to read tags from.
+The last item on our agenda for this tutorial is **Text File->Tag** (|importfile.png|), from the **Convert** menu. Use it to import a text file to read tags from.
 
-.. |importfile.png| image:: tut1/addfolder.png
-   :alt: Text->Tag button.
+.. |importfile.png| image:: tut1/importfile.png
+   :alt: Text File->Tag button.
    :align: middle
     
 
 .. image:: tut1/importfilewindow.png
-   :alt: Import File dialog.
+   :alt: Text File->Tag dialog.
    :align: center
 
 You have the option of opening a different file and obtaining the tags from each line in the file in exactly the same way as extracting tags from filenames. Editing the text on the left will change the tags, but editing the tags themselves will not.
 
 .. image:: tut1/textedit.png
-   :alt: Using the Import File dialog to import a text file and convert it to tags.
+   :alt: Using the Text File->Tag dialog to import a text file and convert it to tags.
    :align: center
   
 Clicking OK will write the tags to the selected files.

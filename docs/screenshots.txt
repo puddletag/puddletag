@@ -9,7 +9,7 @@ First, here's puddletag at startup.
 .. image:: screenshots/1.png
    :alt: puddletag is empty
    :align: center
-   :scale: 50 %
+   :class: img-responsive
    :target: _images/1.png
 
 
@@ -19,8 +19,7 @@ And after opening a couple of directories it looks like this:
 .. image:: screenshots/2.png
    :alt: puddletag lets you open multiple folders concurrently
    :align: center
-   :width: 800
-   :height: 600
+   :class: img-responsive
    :target: _images/2.png
 
 Actions can do some menial tasks for you:
@@ -43,7 +42,6 @@ You can modify puddletag's layout to suit your workflow.
 .. image:: screenshots/5.png
    :alt: Configure puddletag to suit you.
    :align: center
-   :width: 800
-   :height: 600
+   :class: img-responsive
    :target: _images/5.png
 

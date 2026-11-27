@@ -12,8 +12,7 @@ There's more with regards editing album art :ref:`below <album_art>`.
 
 .. image:: images/tut3_window.png
    :align: center
-   :width: 640px
-   :height: 466px
+   :class: img-responsive
    :alt: puddletag with artwork window shown and folder loaded.
    :target: ../_images/tut3_window.png
 

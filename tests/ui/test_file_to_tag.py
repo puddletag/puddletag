@@ -16,8 +16,8 @@ Ctrl = Qt.KeyboardModifier.ControlModifier
 
 # tut1.txt's album, its first file named as in the tutorial. Synthetic
 # titles for the others.
-TITLES = ['Positive Vibration', 'Punky Reggae Party', 'Exodus']
-NAMES = [f'Bob Marley & The Wailers - 0{i} - {title}.mp3' for i, title in enumerate(TITLES, 1)]
+TITLES = ['Opening Hush', 'Zero Crossing', 'Room Tone']
+NAMES = [f'The Silent Frames - 0{i} - {title}.mp3' for i, title in enumerate(TITLES, 1)]
 
 
 def load(mainwin, qtbot, user, paths):
@@ -31,7 +31,7 @@ def load(mainwin, qtbot, user, paths):
 
 @pytest.fixture
 def loaded(mainwin, make_audio, tmp_path, qtbot, user):
-    paths = [make_audio(name, tmp_path / 'Bob Marley - Babylon By Bus') for name in NAMES]
+    paths = [make_audio(name, tmp_path / 'The Silent Frames - Nothing to Hear') for name in NAMES]
     return load(mainwin, qtbot, user, paths), paths
 
 
@@ -66,15 +66,15 @@ def test_tutorial(user, loaded, qtbot, file_to_tag):
     user.click_cell(user.cell(0, 'title'))
     set_pattern(user, '%artist% - %track% - %title%')
     file_to_tag(user)
-    qtbot.waitUntil(lambda: in_file(paths[0], 'title') == [['Positive Vibration']])
-    assert in_file(paths[0], 'artist', 'track') == [['Bob Marley & The Wailers'], ['01']]
+    qtbot.waitUntil(lambda: in_file(paths[0], 'title') == [['Opening Hush']])
+    assert in_file(paths[0], 'artist', 'track') == [['The Silent Frames'], ['01']]
     assert in_file(paths[1], 'title') == [None]
     user.press(Key.Key_A, Ctrl)
     file_to_tag(user)
-    qtbot.waitUntil(lambda: in_file(paths[2], 'title') == [['Exodus']])
+    qtbot.waitUntil(lambda: in_file(paths[2], 'title') == [['Room Tone']])
     user.activate()
     assert [in_file(p, 'artist', 'track', 'title') for p in paths] == [
-        [['Bob Marley & The Wailers'], [f'0{i}'], [title]] for i, title in enumerate(TITLES, 1)]
+        [['The Silent Frames'], [f'0{i}'], [title]] for i, title in enumerate(TITLES, 1)]
     assert [audio['title'] for audio in table.model().taginfo] == [[title] for title in TITLES]
 
 
