@@ -1,7 +1,7 @@
 """release.py: the command that cuts a release, and the checks CI makes
 on its tag.
 
-Expected values come from CONTRIBUTING.md's "Releasing" section, PEP 440,
+Expected values come from RELEASING.md, PEP 440,
 Keep a Changelog 1.1.0, and GitHub's and gh's documentation. Every
 repository, changelog, tag, gh answer and PyPI answer here is synthetic,
 except TAGS (puddletag's own tags) and the real CHANGELOG.md read by
@@ -605,7 +605,7 @@ TAGS = ['1.0.0', '1.0.0beta1', '1.0.0beta2', '1.0.0beta3', '1.0.0beta4', '1.0.0b
     (('3', '3'), '2.5.1'),
 ])
 def test_menus_after_a_final_release(answers, capsys, typed, expected):
-    # CONTRIBUTING.md: "after a final release (2.5.0): `1) major: 3.0.0`,
+    # RELEASING.md: "after a final release (2.5.0): `1) major: 3.0.0`,
     # `2) minor: 2.6.0`, `3) patch: 2.5.1`; then, for the one chosen,
     # `1) beta: 3.0.0b1`, `2) release candidate: 3.0.0rc1`, `3) final: 3.0.0`"
     answers(*typed)
@@ -625,7 +625,7 @@ def test_menus_after_a_final_release(answers, capsys, typed, expected):
 
 
 def test_menu_after_a_beta(answers, capsys):
-    # CONTRIBUTING.md, after a beta (3.0.0b1): `1) next beta: 3.0.0b2`,
+    # RELEASING.md, after a beta (3.0.0b1): `1) next beta: 3.0.0b2`,
     # `2) release candidate: 3.0.0rc1`, `3) final: 3.0.0` (synthetic version)
     answers('1')
     assert str(release.choose_version(Version('3.0.0b1'))) == '3.0.0b2'
@@ -637,7 +637,7 @@ def test_menu_after_a_beta(answers, capsys):
 
 
 def test_menu_after_a_release_candidate(answers, capsys):
-    # CONTRIBUTING.md, after a release candidate (3.0.0rc1): `1) next release
+    # RELEASING.md, after a release candidate (3.0.0rc1): `1) next release
     # candidate: 3.0.0rc2`, `2) final: 3.0.0` (synthetic version)
     answers('2')
     assert str(release.choose_version(Version('3.0.0rc1'))) == '3.0.0'
@@ -647,7 +647,7 @@ def test_menu_after_a_release_candidate(answers, capsys):
 
 
 def test_menu_after_an_alpha(answers, capsys):
-    # CONTRIBUTING.md, after an alpha (3.0.0a1): `1) next alpha: 3.0.0a2`,
+    # RELEASING.md, after an alpha (3.0.0a1): `1) next alpha: 3.0.0a2`,
     # `2) beta: 3.0.0b1`, `3) release candidate: 3.0.0rc1`, `4) final: 3.0.0`
     # (synthetic version)
     answers('2')
@@ -659,7 +659,7 @@ def test_menu_after_an_alpha(answers, capsys):
 
 
 def test_menu_on_a_maintenance_branch(answers, capsys):
-    # CONTRIBUTING.md, on a maintenance branch (3.0.x, at 3.0.0): the menu
+    # RELEASING.md, on a maintenance branch (3.0.x, at 3.0.0): the menu
     # offers the stages of 3.0.1: `1) beta: 3.0.1b1`, `2) release candidate:
     # 3.0.1rc1`, `3) final: 3.0.1` (synthetic version)
     answers('3')
@@ -671,14 +671,14 @@ def test_menu_on_a_maintenance_branch(answers, capsys):
 
 
 def test_menu_asks_again_until_a_number_it_offers(answers, capsys):
-    # CONTRIBUTING.md: "An answer that isn't one of the numbers asks again."
+    # RELEASING.md: "An answer that isn't one of the numbers asks again."
     answers('4', 'x', '', '1', '3')
     assert str(release.choose_version(Version('2.5.0'))) == '3.0.0'
     assert capsys.readouterr().out.count('Type a number from 1 to 3.\n') == 3
 
 
 def test_menu_stops_at_the_end_of_input(answers):
-    # CONTRIBUTING.md: the command ends with "Nothing changed." at the end
+    # RELEASING.md: the command ends with "Nothing changed." at the end
     # of input; the menu lets it go up.
     with pytest.raises(EOFError):
         release.choose_version(Version('2.5.0'))
@@ -715,7 +715,7 @@ def test_release_versions(text):
     ('03.0.0', "03.0.0 isn't in normal form: write 3.0.0"),
 ])
 def test_versions_refused(text, message):
-    # CONTRIBUTING.md: "The command refuses any other spelling (`v3.0.0`,
+    # RELEASING.md: "The command refuses any other spelling (`v3.0.0`,
     # `3.0.0-beta1`, `3.0`) and `.dev` and `.post` versions". PEP 440
     # normalization: "Pre-release separators", "Pre-release spelling",
     # "Preceding v character", "Implicit pre-release number" (synthetic
@@ -727,7 +727,7 @@ def test_versions_refused(text, message):
 
 @pytest.mark.parametrize('version', ['3.0.0b1', '2.5.1'])
 def test_a_release_is_above_every_tag(version):
-    # CONTRIBUTING.md, check 1: "Tags that aren't versions (`RC1`, `rm`)
+    # RELEASING.md, check 1: "Tags that aren't versions (`RC1`, `rm`)
     # don't count; older spellings (`v2.0.0`, `1.0.0beta6`) count by their
     # value"
     release.check_above(Version(version), TAGS, None)
@@ -735,7 +735,7 @@ def test_a_release_is_above_every_tag(version):
 
 @pytest.mark.parametrize('version', ['2.4.1', '2.0.0'])
 def test_a_release_below_a_tag_is_refused(version):
-    # CONTRIBUTING.md, check 1: "Tags that aren't versions (`RC1`, `rm`)
+    # RELEASING.md, check 1: "Tags that aren't versions (`RC1`, `rm`)
     # don't count; older spellings (`v2.0.0`, `1.0.0beta6`) count by their
     # value"
     with pytest.raises(release.Refusal) as error:
@@ -744,7 +744,7 @@ def test_a_release_below_a_tag_is_refused(version):
 
 
 def test_a_maintenance_release_is_above_its_lines_tags():
-    # CONTRIBUTING.md: a maintenance branch (3.0.x) is checked against the
+    # RELEASING.md: a maintenance branch (3.0.x) is checked against the
     # 3.0 tags only, and releases 3.0 versions only.
     tags = TAGS + ['3.0.0', '3.1.0b1']
     release.check_above(Version('3.0.1'), tags, (3, 0))
@@ -767,7 +767,7 @@ def test_a_maintenance_release_is_above_its_lines_tags():
     ('2.1.0', [], '2.0.1'),
 ])
 def test_previous_tag(version, extra, expected):
-    # CONTRIBUTING.md: "The list starts at the tag before a pre-release, and
+    # RELEASING.md: "The list starts at the tag before a pre-release, and
     # at the last final for a final."
     assert release.previous_tag(Version(version), TAGS + extra) == expected
 
@@ -780,7 +780,7 @@ def test_previous_tag(version, extra, expected):
 ])
 def test_latest(version, extra, expected):
     # GitHub, "Create a release": "Drafts and prereleases cannot be set as
-    # latest". CONTRIBUTING.md: "The 3.0.1 GitHub Release is "Latest" unless
+    # latest". RELEASING.md: "The 3.0.1 GitHub Release is "Latest" unless
     # a higher final (3.1.0) is out."
     assert release.is_latest(Version(version), TAGS + extra) is expected
 
@@ -810,14 +810,14 @@ def test_unreleased_text():
     ('- A synthetic fix.', False),
 ])
 def test_empty_notes(notes, empty):
-    # CONTRIBUTING.md, "What it checks", 5: "There are notes: lines under
+    # RELEASING.md, "What it checks", 5: "There are notes: lines under
     # `[Unreleased]`, or, for a final release after pre-releases, in their
     # sections." Headings alone aren't notes.
     assert release.body_is_empty(notes) is empty
 
 
 def test_stamp_a_pre_release():
-    # CONTRIBUTING.md: "makes the notes `## [3.0.0b1] - 2026-12-01` (today's
+    # RELEASING.md: "makes the notes `## [3.0.0b1] - 2026-12-01` (today's
     # date) under a new empty `## [Unreleased]`, with the comparison link at
     # the bottom". Keep a Changelog 1.1.0: "At release time, you can move the
     # `Unreleased` section changes into a new release version section", "The
@@ -829,7 +829,7 @@ def test_stamp_a_pre_release():
 
 
 def test_a_final_opens_on_its_pre_releases_merged():
-    # CONTRIBUTING.md: "A final release after pre-releases holds everything
+    # RELEASING.md: "A final release after pre-releases holds everything
     # since the last final. For 3.0.0 after 3.0.0b1, 3.0.0b2 and 3.0.0rc1,
     # the editor opens on `[Unreleased]` and those sections merged under one
     # set of headings: Added, Changed, Deprecated, Removed, Fixed and
@@ -841,7 +841,7 @@ def test_a_final_opens_on_its_pre_releases_merged():
 
 
 def test_a_final_replaces_its_pre_releases():
-    # CONTRIBUTING.md: "The pre-releases' sections and their links leave
+    # RELEASING.md: "The pre-releases' sections and their links leave
     # `CHANGELOG.md`, and 3.0.0 gets one section, compared with 2.5.0."
     stamped = release.stamp(release.parse_changelog(PRE_RELEASES), '3.0.0', '2027-01-15',
                             MERGED, '2.5.0', 'master')
@@ -849,7 +849,7 @@ def test_a_final_replaces_its_pre_releases():
 
 
 def test_a_pre_release_opens_on_unreleased_as_written():
-    # CONTRIBUTING.md: "It opens the editor ... on `[Unreleased]`'s text, to
+    # RELEASING.md: "It opens the editor ... on `[Unreleased]`'s text, to
     # trim or reword." Only a final merges, so a pre-release's text isn't
     # reordered.
     changelog = release.parse_changelog(PRE_RELEASES)
@@ -859,7 +859,7 @@ def test_a_pre_release_opens_on_unreleased_as_written():
 
 
 def test_merge_keeps_other_headings_after():
-    # CONTRIBUTING.md: the merged headings are "Added, Changed, Deprecated,
+    # RELEASING.md: the merged headings are "Added, Changed, Deprecated,
     # Removed, Fixed and Security, in that order"; Keep a Changelog doesn't
     # forbid others, so a synthetic "Notes" heading comes after them.
     assert release.merge(['### Notes\n\n- A synthetic note.', '### Fixed\n\n- A synthetic fix.']) == (
@@ -867,14 +867,14 @@ def test_merge_keeps_other_headings_after():
 
 
 def test_merge_drops_empty_headings():
-    # CONTRIBUTING.md: a merged text holds "lines" under the headings; a
+    # RELEASING.md: a merged text holds "lines" under the headings; a
     # synthetic heading with nothing under it has none to hold.
     assert release.merge(['### Added\n\n### Fixed\n\n- A synthetic fix.']) == (
         '### Fixed\n\n- A synthetic fix.')
 
 
 def test_another_versions_pre_releases_stay():
-    # CONTRIBUTING.md: "The pre-releases' sections and their links leave
+    # RELEASING.md: "The pre-releases' sections and their links leave
     # `CHANGELOG.md`" are those of the version released: 3.1.0 merges only
     # 3.1.0's, and 3.0.0b1 stays below 3.0.0 as the real file keeps
     # 1.0.0beta1-6 below 1.0.0. Synthetic.
@@ -910,7 +910,7 @@ def test_another_versions_pre_releases_stay():
 
 
 def test_a_maintenance_release_compares_unreleased_with_its_branch():
-    # CONTRIBUTING.md, "Fix releases from a maintenance branch": the fix's
+    # RELEASING.md, "Fix releases from a maintenance branch": the fix's
     # line goes "under the branch's `[Unreleased]`", so after 3.0.1 the
     # branch's `[Unreleased]` link compares the new tag with the branch.
     stamped = release.stamp(release.parse_changelog(BRANCH_WITH_FIX), '3.0.1', '2027-03-01',
@@ -919,7 +919,7 @@ def test_a_maintenance_release_compares_unreleased_with_its_branch():
 
 
 def test_a_maintenance_release_joins_masters_changelog():
-    # CONTRIBUTING.md: the release pushes "a commit to `master` that adds the
+    # RELEASING.md: the release pushes "a commit to `master` that adds the
     # 3.0.1 section to `master`'s `CHANGELOG.md`, which the News page is built
     # from". Keep a Changelog 1.1.0: "The latest version comes first", so it
     # lands by version, below 3.1.0b1.
@@ -933,7 +933,7 @@ def test_a_maintenance_release_joins_masters_changelog():
 
 
 def test_release_page_text():
-    # CONTRIBUTING.md: the GitHub Release has "the version's section of
+    # RELEASING.md: the GitHub Release has "the version's section of
     # `CHANGELOG.md`"; "Its release page starts with a paragraph saying how
     # to install it, to back up `~/.config/puddletag` first, and how to
     # report problems." (for a pre-release)
@@ -949,7 +949,7 @@ def test_release_page_text():
 
 
 def test_release_page_text_of_a_missing_or_empty_section():
-    # CONTRIBUTING.md: "`release.py notes VERSION` prints the text of
+    # RELEASING.md: "`release.py notes VERSION` prints the text of
     # VERSION's release page: its `CHANGELOG.md` section"; with no section,
     # or nothing in it, there is no text to print. Synthetic.
     with pytest.raises(release.Refusal) as missing:
@@ -1095,7 +1095,7 @@ def refuse_tags(repo):
 
 
 def test_release_commits_tags_and_pushes_the_two_files(ready, answers, capsys, gh):
-    # CONTRIBUTING.md, "What it does": "sets `version_string`; makes the
+    # RELEASING.md, "What it does": "sets `version_string`; makes the
     # notes `## [3.0.0b1] - 2026-12-01` (today's date) under a new empty
     # `## [Unreleased]` ...; commits only those two files, as
     # `chore(release): 3.0.0b1`; makes the annotated tag `3.0.0b1`, whose
@@ -1129,7 +1129,7 @@ def test_release_commits_tags_and_pushes_the_two_files(ready, answers, capsys, g
 
 
 def test_the_menus_choose_the_version(ready, answers):
-    # CONTRIBUTING.md, "Versions": "With no version given, it offers the
+    # RELEASING.md, "Versions": "With no version given, it offers the
     # ones that can come next: after a final release (2.5.0): `1) major:
     # 3.0.0`, ...; then, for the one chosen, `1) beta: 3.0.0b1`, ...".
     answers('1', '1', 'y')
@@ -1138,13 +1138,13 @@ def test_the_menus_choose_the_version(ready, answers):
 
 
 def test_yes_skips_the_question(ready, answers):
-    # CONTRIBUTING.md: "`--yes` skips the last question."
+    # RELEASING.md: "`--yes` skips the last question."
     assert release.main(['3.0.0b1', '--yes']) == 0
     assert answers.prompts == []
 
 
 def test_the_edited_notes_become_the_section(ready, editor):
-    # CONTRIBUTING.md, "The notes": it opens the editor on `[Unreleased]`'s
+    # RELEASING.md, "The notes": it opens the editor on `[Unreleased]`'s
     # text, "to trim or reword", and "The text becomes the version's
     # section of `CHANGELOG.md`".
     editor.writes('### Fixed\n\n- A reworded synthetic fix.\n')
@@ -1156,7 +1156,7 @@ def test_the_edited_notes_become_the_section(ready, editor):
 
 @pytest.mark.parametrize('chosen', ['core.editor', 'EDITOR', 'VISUAL'])
 def test_the_editor_git_would_open(chosen, ready, editor, monkeypatch):
-    # CONTRIBUTING.md, "The notes": "It opens the editor `git commit` opens
+    # RELEASING.md, "The notes": "It opens the editor `git commit` opens
     # (`GIT_EDITOR`, `core.editor`, `VISUAL`, `EDITOR`)". Git skips VISUAL
     # on a dumb terminal, and the container has no TERM.
     monkeypatch.delenv('GIT_EDITOR')
@@ -1175,34 +1175,34 @@ def test_the_editor_git_would_open(chosen, ready, editor, monkeypatch):
 
 
 def test_refuses_a_version_not_in_normal_form(ready, capsys, gh):
-    # CONTRIBUTING.md, "What it checks" 1: "The version is in normal form".
+    # RELEASING.md, "What it checks" 1: "The version is in normal form".
     refused(ready, capsys, ['v3.0.0', '--yes'], "v3.0.0 isn't in normal form: write 3.0.0")
     assert gh.calls == []
 
 
 def test_refuses_off_master(ready, capsys):
-    # CONTRIBUTING.md, "What it checks" 2: "The branch is `master` or a
+    # RELEASING.md, "What it checks" 2: "The branch is `master` or a
     # maintenance branch".
     ready.git('switch', '-q', '-c', 'feature')
     refused(ready, capsys, ['3.0.0b1', '--yes'], 'not on feature')
 
 
 def test_refuses_a_detached_head(ready, capsys):
-    # CONTRIBUTING.md, "What it checks" 2: "The branch is `master` or a
+    # RELEASING.md, "What it checks" 2: "The branch is `master` or a
     # maintenance branch".
     ready.git('switch', '-q', '--detach')
     refused(ready, capsys, ['3.0.0b1', '--yes'], "HEAD isn't on a branch")
 
 
 def test_refuses_a_commit_to_push(ready, capsys):
-    # CONTRIBUTING.md, "What it checks" 2: "after a fetch, HEAD is the same
+    # RELEASING.md, "What it checks" 2: "after a fetch, HEAD is the same
     # commit on `origin`: nothing to push, nothing to pull."
     ready.commit({'other.txt': 'x\n'})
     refused(ready, capsys, ['3.0.0b1', '--yes'], '(1 to push, 0 to pull)')
 
 
 def test_refuses_a_commit_to_pull(ready, capsys, tmp_path):
-    # CONTRIBUTING.md, "What it checks" 2: "nothing to push, nothing to pull."
+    # RELEASING.md, "What it checks" 2: "nothing to push, nothing to pull."
     other = tmp_path / 'other'
     run_git(tmp_path, 'clone', '-q', str(ready.origin_path), str(other))
     (other / 'other.txt').write_text('x\n')
@@ -1213,7 +1213,7 @@ def test_refuses_a_commit_to_pull(ready, capsys, tmp_path):
 
 
 def test_refuses_a_changed_changelog(ready, capsys):
-    # CONTRIBUTING.md, "What it checks" 2: "`puddlestuff/__init__.py` and
+    # RELEASING.md, "What it checks" 2: "`puddlestuff/__init__.py` and
     # `CHANGELOG.md` have no local changes."
     with open(ready.path / 'CHANGELOG.md', 'a') as file:
         file.write('A synthetic line.\n')
@@ -1221,7 +1221,7 @@ def test_refuses_a_changed_changelog(ready, capsys):
 
 
 def test_refuses_a_staged_version_file(ready, capsys):
-    # CONTRIBUTING.md, "What it checks" 2: "`puddlestuff/__init__.py` and
+    # RELEASING.md, "What it checks" 2: "`puddlestuff/__init__.py` and
     # `CHANGELOG.md` have no local changes."
     with open(ready.path / 'puddlestuff' / '__init__.py', 'a') as file:
         file.write('# A synthetic line.\n')
@@ -1230,27 +1230,27 @@ def test_refuses_a_staged_version_file(ready, capsys):
 
 
 def test_refuses_a_version_below_a_tag(ready, capsys):
-    # CONTRIBUTING.md, "What it checks" 1: "The version is ... above every
+    # RELEASING.md, "What it checks" 1: "The version is ... above every
     # tag."
     refused(ready, capsys, ['2.4.1', '--yes'], "2.4.1 isn't above 2.5.0, the newest tag")
 
 
 def test_refuses_a_tag_here(ready, capsys):
-    # CONTRIBUTING.md, "What it checks" 3: "The tag exists neither here nor
+    # RELEASING.md, "What it checks" 3: "The tag exists neither here nor
     # on GitHub".
     ready.tag('3.0.0b1', annotated=False)
     refused(ready, capsys, ['3.0.0b1', '--yes'], 'Tag 3.0.0b1 already exists here')
 
 
 def test_refuses_a_tag_on_github(ready, capsys):
-    # CONTRIBUTING.md, "What it checks" 3: "The tag exists neither here nor
+    # RELEASING.md, "What it checks" 3: "The tag exists neither here nor
     # on GitHub".
     ready.origin('tag', '3.0.0b1', 'master')
     refused(ready, capsys, ['3.0.0b1', '--yes'], 'Tag 3.0.0b1 already exists on GitHub')
 
 
 def test_refuses_nothing_to_release(ready, capsys, gh):
-    # CONTRIBUTING.md, "What it checks" 5: "There are notes: lines under
+    # RELEASING.md, "What it checks" 5: "There are notes: lines under
     # `[Unreleased]`". Synthetic changelog without them.
     ready.commit({'CHANGELOG.md': CHANGELOG.replace('### Fixed\n\n- A synthetic fix.\n\n', '', 1)})
     ready.push('master')
@@ -1259,20 +1259,20 @@ def test_refuses_nothing_to_release(ready, capsys, gh):
 
 
 def test_refuses_when_pypi_has_it(ready, capsys, pypi):
-    # CONTRIBUTING.md, "What it checks" 3: "PyPI doesn't have the version."
+    # RELEASING.md, "What it checks" 3: "PyPI doesn't have the version."
     pypi.has('3.0.0b1')
     refused(ready, capsys, ['3.0.0b1', '--yes'], 'PyPI already has puddletag 3.0.0b1')
 
 
 def test_refuses_when_pypi_is_unreachable(ready, capsys, web_server):
-    # CONTRIBUTING.md, "What it checks" 3: "PyPI doesn't have the version."
+    # RELEASING.md, "What it checks" 3: "PyPI doesn't have the version."
     # An answer that isn't a plain yes or no can't be taken for a no.
     web_server.add('/pypi/puddletag/3.0.0b1/json', status=500)
     refused(ready, capsys, ['3.0.0b1', '--yes'], "Couldn't ask PyPI whether it has 3.0.0b1")
 
 
 def test_refuses_when_the_tests_failed(ready, capsys, gh):
-    # CONTRIBUTING.md, "What it checks" 4: ""All tests passed" passed on
+    # RELEASING.md, "What it checks" 4: ""All tests passed" passed on
     # HEAD's commit."
     gh.check_run(ready.head(), 'failure')
     refused(ready, capsys, ['3.0.0b1', '--yes'],
@@ -1281,20 +1281,20 @@ def test_refuses_when_the_tests_failed(ready, capsys, gh):
 
 
 def test_refuses_when_the_editor_failed(ready, capsys, monkeypatch):
-    # CONTRIBUTING.md, "The notes": it opens the editor on the notes; an
+    # RELEASING.md, "The notes": it opens the editor on the notes; an
     # editor that fails stops the release before anything changes.
     monkeypatch.setenv('GIT_EDITOR', 'false')
     refused(ready, capsys, ['3.0.0b1', '--yes'], 'The editor ended with status 1')
 
 
 def test_refuses_empty_notes(ready, capsys, editor):
-    # CONTRIBUTING.md, "The notes": "An empty text stops it".
+    # RELEASING.md, "The notes": "An empty text stops it".
     editor.writes('\n  \n')
     refused(ready, capsys, ['3.0.0b1', '--yes'], 'The notes are empty')
 
 
 def test_refuses_a_heading_in_the_notes(ready, capsys, editor):
-    # CONTRIBUTING.md, "The notes": "An empty text stops it, and so does a
+    # RELEASING.md, "The notes": "An empty text stops it, and so does a
     # `#` or `##` heading."
     editor.writes('## Fixed\n\n- x\n')
     refused(ready, capsys, ['3.0.0b1', '--yes'], "can't hold a # or ## heading")
@@ -1302,7 +1302,7 @@ def test_refuses_a_heading_in_the_notes(ready, capsys, editor):
 
 @pytest.mark.parametrize('typed', ['n', '', None])
 def test_no_changes_nothing(typed, ready, answers, capsys):
-    # CONTRIBUTING.md, "What it does": it "asks `Release 3.0.0b1? [y/N]`";
+    # RELEASING.md, "What it does": it "asks `Release 3.0.0b1? [y/N]`";
     # only a yes goes on. The end of input is a no.
     if typed is not None:
         answers(typed)
@@ -1314,7 +1314,7 @@ def test_no_changes_nothing(typed, ready, answers, capsys):
 
 
 def test_waits_while_all_tests_passed_runs(ready, clock, capsys, gh):
-    # CONTRIBUTING.md, "What it checks" 4: "While CI is still running on
+    # RELEASING.md, "What it checks" 4: "While CI is still running on
     # it, the command waits".
     head = ready.head()
     gh.check_run(head, 'in_progress', 'success')
@@ -1324,7 +1324,7 @@ def test_waits_while_all_tests_passed_runs(ready, clock, capsys, gh):
 
 
 def test_waits_for_ci_to_reach_all_tests_passed(ready, clock, gh):
-    # CONTRIBUTING.md, "What it checks" 4: "While CI is still running on
+    # RELEASING.md, "What it checks" 4: "While CI is still running on
     # it, the command waits". The job doesn't exist until the tests it
     # needs are done, so the workflow's run is what shows CI is going.
     head = ready.head()
@@ -1335,7 +1335,7 @@ def test_waits_for_ci_to_reach_all_tests_passed(ready, clock, gh):
 
 
 def test_stops_when_no_ci_run_shows_up(ready, clock, capsys, gh):
-    # CONTRIBUTING.md, "What it checks" 4: "if no run shows up within a
+    # RELEASING.md, "What it checks" 4: "if no run shows up within a
     # minute, it stops."
     head = ready.head()
     gh.check_run(head, None)
@@ -1345,7 +1345,7 @@ def test_stops_when_no_ci_run_shows_up(ready, clock, capsys, gh):
 
 
 def test_stops_when_the_run_ended_without_all_tests_passed(ready, capsys, gh):
-    # CONTRIBUTING.md, "What it checks" 4: ""All tests passed" passed on
+    # RELEASING.md, "What it checks" 4: ""All tests passed" passed on
     # HEAD's commit." A finished run with no such job didn't get there.
     head = ready.head()
     gh.check_run(head, None)
@@ -1354,7 +1354,7 @@ def test_stops_when_the_run_ended_without_all_tests_passed(ready, capsys, gh):
 
 
 def test_a_refused_push_puts_everything_back(ready, capsys):
-    # CONTRIBUTING.md, "What it does": "pushes the branch and the tag, and
+    # RELEASING.md, "What it does": "pushes the branch and the tag, and
     # nothing else, in one atomic push: both land or neither does. If the
     # push is refused, it removes the commit and the tag and puts the two
     # files back."
@@ -1363,7 +1363,7 @@ def test_a_refused_push_puts_everything_back(ready, capsys):
 
 
 def test_a_final_after_pre_releases(ready, editor, gh, pypi, monkeypatch):
-    # CONTRIBUTING.md, "The notes": "A final release after pre-releases
+    # RELEASING.md, "The notes": "A final release after pre-releases
     # holds everything since the last final. For 3.0.0 after 3.0.0b1,
     # 3.0.0b2 and 3.0.0rc1, the editor opens on `[Unreleased]` and those
     # sections merged under one set of headings".
@@ -1383,7 +1383,7 @@ def test_a_final_after_pre_releases(ready, editor, gh, pypi, monkeypatch):
 
 
 def test_a_release_candidate_becomes_final_with_nothing_new(ready, editor, gh, pypi, monkeypatch):
-    # CONTRIBUTING.md, "What it checks" 5: "There are notes: lines under
+    # RELEASING.md, "What it checks" 5: "There are notes: lines under
     # `[Unreleased]`, or, for a final release after pre-releases, in their
     # sections." Synthetic: [Unreleased] emptied.
     repo = ready
@@ -1404,7 +1404,7 @@ def test_a_release_candidate_becomes_final_with_nothing_new(ready, editor, gh, p
 
 
 def test_a_failed_ci_run_says_to_re_run_it(ready, capsys, gh):
-    # CONTRIBUTING.md: "A job that fails (an outage, a flaky test) is
+    # RELEASING.md: "A job that fails (an outage, a flaky test) is
     # re-run from the Actions page with "Re-run failed jobs"; nothing has
     # to be undone."
     gh.watch(1)
@@ -1415,7 +1415,7 @@ def test_a_failed_ci_run_says_to_re_run_it(ready, capsys, gh):
 
 
 def test_the_tag_run_shows_up_late(ready, clock, gh):
-    # CONTRIBUTING.md, "What it does": "Then it follows CI's run on the tag
+    # RELEASING.md, "What it does": "Then it follows CI's run on the tag
     # (`gh run watch`)". The run takes a few polls to appear.
     gh.tag_run('3.0.0b1', False, False, True)
     assert release.main(['3.0.0b1', '--yes']) == 0
@@ -1424,7 +1424,7 @@ def test_the_tag_run_shows_up_late(ready, clock, gh):
 
 
 def test_the_tag_run_never_shows_up(ready, clock, capsys, gh):
-    # CONTRIBUTING.md, "What it does": "Then it follows CI's run on the tag
+    # RELEASING.md, "What it does": "Then it follows CI's run on the tag
     # (`gh run watch`) and prints the PyPI and GitHub links." A run that
     # never shows up leaves the links and no watch.
     gh.tag_run('3.0.0b1', False)
@@ -1438,7 +1438,7 @@ def test_the_tag_run_never_shows_up(ready, clock, capsys, gh):
 
 
 def test_a_fix_release_from_a_maintenance_branch(maintenance):
-    # CONTRIBUTING.md, "Fix releases from a maintenance branch": run
+    # RELEASING.md, "Fix releases from a maintenance branch": run
     # `release.py` on the branch: "It offers 3.0.1, checks it against the
     # 3.0 tags only, and, in the same atomic push as the branch and the
     # tag, pushes a commit to `master` that adds the 3.0.1 section to
@@ -1463,7 +1463,7 @@ def test_a_fix_release_from_a_maintenance_branch(maintenance):
 
 
 def test_a_maintenance_branch_offers_its_next_patch(maintenance, answers):
-    # CONTRIBUTING.md, "Versions": "on a maintenance branch (3.0.x, at
+    # RELEASING.md, "Versions": "on a maintenance branch (3.0.x, at
     # 3.0.0): `1) beta: 3.0.1b1`, `2) release candidate: 3.0.1rc1`,
     # `3) final: 3.0.1`."
     answers('3')
@@ -1472,14 +1472,14 @@ def test_a_maintenance_branch_offers_its_next_patch(maintenance, answers):
 
 
 def test_a_maintenance_branch_releases_its_line_only(maintenance, capsys):
-    # CONTRIBUTING.md, "What it checks" 1: "On a maintenance branch, the
+    # RELEASING.md, "What it checks" 1: "On a maintenance branch, the
     # version is of the branch's line (3.0 on 3.0.x)".
     refused(maintenance, capsys, ['3.1.0', '--yes'],
             'The 3.0.x branch releases 3.0 versions only, not 3.1.0')
 
 
 def test_a_refused_push_leaves_master_alone(maintenance, capsys):
-    # CONTRIBUTING.md, "What it does": "both land or neither does"; a fix
+    # RELEASING.md, "What it does": "both land or neither does"; a fix
     # release's push to `master` is part of the same atomic push.
     refuse_tags(maintenance)
     refused(maintenance, capsys, ['3.0.1', '--yes'], 'The push was refused')
@@ -1501,7 +1501,7 @@ def interrupt_push(monkeypatch, after_pushing):
 
 
 def test_an_interrupt_after_the_push_landed_goes_on(ready, capsys, monkeypatch):
-    # CONTRIBUTING.md, "What it does": "pushes the branch and the tag, and
+    # RELEASING.md, "What it does": "pushes the branch and the tag, and
     # nothing else, in one atomic push: both land or neither does." A push
     # that GitHub took and whose Ctrl+C reached git afterwards is a
     # release that went out: nothing is put back, and the command follows
@@ -1516,7 +1516,7 @@ def test_an_interrupt_after_the_push_landed_goes_on(ready, capsys, monkeypatch):
 
 
 def test_an_interrupt_before_the_push_landed_puts_everything_back(ready, capsys, monkeypatch):
-    # CONTRIBUTING.md, "What it does": "both land or neither does. If the
+    # RELEASING.md, "What it does": "both land or neither does. If the
     # push is refused, it removes the commit and the tag and puts the two
     # files back." An interrupted push that GitHub never took is the same,
     # said as an interruption. Synthetic.
@@ -1535,7 +1535,7 @@ def objects(repo):
 
 
 def test_a_dry_run_shows_the_release_and_changes_nothing(ready, answers, capsys, gh):
-    # CONTRIBUTING.md, "Releasing": "`--dry-run` makes no release: it runs
+    # RELEASING.md:"`--dry-run` makes no release: it runs
     # every check and opens your editor as for real, then shows what a
     # release would change in `puddlestuff/__init__.py` and `CHANGELOG.md`
     # ... and the commit, tag and push it would make, and stops without
@@ -1561,14 +1561,14 @@ def test_a_dry_run_shows_the_release_and_changes_nothing(ready, answers, capsys,
 
 
 def test_a_dry_run_refuses_as_the_release_does(ready, capsys):
-    # CONTRIBUTING.md, "Releasing": "A check that fails stops it as it
+    # RELEASING.md:"A check that fails stops it as it
     # would stop a release". Synthetic: the tag is already on GitHub.
     ready.origin('tag', '3.0.0b1', 'master')
     refused(ready, capsys, ['3.0.0b1', '--dry-run'], 'Tag 3.0.0b1 already exists on GitHub')
 
 
 def test_a_dry_run_of_a_fix_release_shows_masters_changelog(maintenance, answers, capsys):
-    # CONTRIBUTING.md, "Releasing": "`--dry-run` ... shows what a release
+    # RELEASING.md:"`--dry-run` ... shows what a release
     # would change in ... `master`'s `CHANGELOG.md`, for a fix release ...
     # Nothing is written or pushed."
     repo = maintenance
@@ -1601,7 +1601,7 @@ def release_commit(repo, version, changelog=CHANGELOG, tag=None, push=None, anno
     ('3.0.0b1', 'false', 'true'),
 ])
 def test_check_passes_a_tag_the_command_made(repo, capsys, version, latest, prerelease):
-    # CONTRIBUTING.md: "`release.py check TAG` exits non-zero unless ... It
+    # RELEASING.md: "`release.py check TAG` exits non-zero unless ... It
     # prints the GitHub Release's settings for `$GITHUB_OUTPUT`: `latest`,
     # `notes-start-tag` and `prerelease`." Synthetic repository.
     release_commit(repo, version)
@@ -1611,7 +1611,7 @@ def test_check_passes_a_tag_the_command_made(repo, capsys, version, latest, prer
 
 
 def test_check_refuses_a_tag_that_isnt_the_version(repo, capsys):
-    # CONTRIBUTING.md: "`release.py check TAG` exits non-zero unless the tag
+    # RELEASING.md: "`release.py check TAG` exits non-zero unless the tag
     # is annotated, is the `version_string` of its commit". Synthetic.
     release_commit(repo, '3.0.0b1', tag='3.0.0b2')
     assert release.main(['check', '3.0.0b2']) == 1
@@ -1619,7 +1619,7 @@ def test_check_refuses_a_tag_that_isnt_the_version(repo, capsys):
 
 
 def test_check_refuses_a_commit_off_master(repo, capsys):
-    # CONTRIBUTING.md: "`release.py check TAG` exits non-zero unless ... the
+    # RELEASING.md: "`release.py check TAG` exits non-zero unless ... the
     # commit is on `origin/master` or on the tag's maintenance branch".
     # Synthetic.
     repo.git('switch', '-q', '-c', 'feature')
@@ -1629,14 +1629,14 @@ def test_check_refuses_a_commit_off_master(repo, capsys):
 
 
 def test_check_refuses_a_tag_not_in_normal_form(repo, capsys):
-    # PEP 440 normal form: "v3.0.0" normalizes to "3.0.0"; CONTRIBUTING.md:
+    # PEP 440 normal form: "v3.0.0" normalizes to "3.0.0"; RELEASING.md:
     # the tag is "in normal form". Synthetic.
     assert release.main(['check', 'v3.0.0']) == 1
     assert "v3.0.0 isn't in normal form: write 3.0.0" in capsys.readouterr().err
 
 
 def test_check_refuses_a_lightweight_tag(repo, capsys):
-    # CONTRIBUTING.md: "`release.py check TAG` exits non-zero unless the tag
+    # RELEASING.md: "`release.py check TAG` exits non-zero unless the tag
     # is annotated". Synthetic.
     release_commit(repo, '3.0.0b1', annotated=False)
     assert release.main(['check', '3.0.0b1']) == 1
@@ -1644,14 +1644,14 @@ def test_check_refuses_a_lightweight_tag(repo, capsys):
 
 
 def test_check_refuses_a_missing_tag(repo, capsys):
-    # CONTRIBUTING.md: "`release.py check TAG` exits non-zero unless" the tag
+    # RELEASING.md: "`release.py check TAG` exits non-zero unless" the tag
     # exists. Synthetic.
     assert release.main(['check', '3.0.0b1']) == 1
     assert "There's no tag 3.0.0b1 here" in capsys.readouterr().err
 
 
 def test_check_passes_a_fix_on_its_maintenance_branch(repo, capsys):
-    # CONTRIBUTING.md: a fix on a maintenance branch (3.0.x) is released
+    # RELEASING.md: a fix on a maintenance branch (3.0.x) is released
     # from there; GitHub's "Latest" stays on the highest final. Synthetic.
     release_commit(repo, '3.0.0', AT_3_0_0)
     repo.git('switch', '-q', '-c', '3.0.x')
@@ -1664,14 +1664,14 @@ def test_check_passes_a_fix_on_its_maintenance_branch(repo, capsys):
 
 
 def test_notes_prints_the_section(repo, capsys):
-    # CONTRIBUTING.md: "`release.py notes VERSION` prints the text of
+    # RELEASING.md: "`release.py notes VERSION` prints the text of
     # VERSION's release page: its `CHANGELOG.md` section". Synthetic.
     assert release.main(['notes', '2.5.0']) == 0
     assert capsys.readouterr().out == '### Fixed\n\n- A synthetic 2.5.0 fix.\n'
 
 
 def test_notes_of_a_pre_release_start_with_how_to_try_it(repo, capsys):
-    # CONTRIBUTING.md: "Its release page starts with a paragraph saying how
+    # RELEASING.md: "Its release page starts with a paragraph saying how
     # to install it, to back up `~/.config/puddletag` first, and how to
     # report problems." (for a pre-release) Synthetic.
     repo.write({'CHANGELOG.md': CHANGELOG_AT_3_0_0B1})
@@ -1684,14 +1684,14 @@ def test_notes_of_a_pre_release_start_with_how_to_try_it(repo, capsys):
 
 
 def test_notes_of_a_missing_version_fail(repo, capsys):
-    # CONTRIBUTING.md: "`release.py notes VERSION` prints the text of
+    # RELEASING.md: "`release.py notes VERSION` prints the text of
     # VERSION's release page"; with no section there is none. Synthetic.
     assert release.main(['notes', '3.0.0']) == 1
     assert 'CHANGELOG.md has no section for 3.0.0' in capsys.readouterr().err
 
 
 def test_release_py_runs_as_a_script(repo):
-    # CONTRIBUTING.md: CI runs `release.py notes "$GITHUB_REF_NAME"` as a
+    # RELEASING.md: CI runs `release.py notes "$GITHUB_REF_NAME"` as a
     # script. Synthetic.
     result = subprocess.run([sys.executable, str(ROOT / 'release.py'), 'notes', '2.5.0'],
                             cwd=repo.path, capture_output=True, text=True)

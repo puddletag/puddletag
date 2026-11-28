@@ -59,9 +59,9 @@ def test_changeset_from_a_git_checkout(tmp_path, files, dirs, expected):
     assert changeset(tmp_path) == expected
 
 
-# CONTRIBUTING.md, "CI and publishing": "It appends `.post<run number>` to the
-# version (via `_buildid` in `puddlestuff/__init__.py`) and publishes to
-# TestPyPI." The workflow does it with the sed line asserted below; the run
+# RELEASING.md, "What each push publishes": "A push to `master` appends
+# `.post<run number>` to the version (via `_buildid` in
+# `puddlestuff/__init__.py`) and publishes to TestPyPI". The workflow does it with the sed line asserted below; the run
 # number 42 is synthetic.
 def test_build_number_is_appended_to_the_version(tmp_path):
     workflow = (ROOT / '.github/workflows/publish-to-pypi.yml').read_text()

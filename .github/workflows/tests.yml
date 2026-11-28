@@ -2,6 +2,8 @@ name: Tests
 
 # Pushes to master and to maintenance branches (3.0.x), and tags, run these
 # tests through publish-to-pypi.yml, which only publishes once they pass.
+# A pull request's checks run again only on its own activity (a push,
+# "Update branch", or closing and reopening it), never on a push to master.
 on:
   pull_request:
   workflow_call:

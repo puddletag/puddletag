@@ -18,7 +18,7 @@ CI, on the tag:
     release.py notes VERSION  prints the text of VERSION's GitHub
                               Release
 
-CONTRIBUTING.md ("Releasing") describes the whole process.
+RELEASING.md describes the whole process.
 """
 import argparse
 import datetime
@@ -123,7 +123,7 @@ def main(argv=None):
             return 0
         parser = argparse.ArgumentParser(
             prog='release.py',
-            description='Cuts a puddletag release; CONTRIBUTING.md has the details.')
+            description='Cuts a puddletag release; RELEASING.md has the details.')
         parser.add_argument(
             'version', nargs='?',
             help='such as 3.0.0b1; without it, menus offer the versions that can come next')
