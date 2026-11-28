@@ -18,6 +18,7 @@ iniconfig==2.3.0
     # via pytest
 packaging==26.3
     # via
+    #   -r requirements-dev.in
     #   build
     #   pytest
     #   wheel

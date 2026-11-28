@@ -12,3 +12,6 @@ pip-tools
 
 # checking the spelling (codespell; its settings are in pyproject.toml)
 codespell
+
+# the release command (release.py)
+packaging

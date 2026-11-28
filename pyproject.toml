@@ -10,7 +10,7 @@ qt_api = "pyqt6"
 timeout = 60
 
 [tool.coverage.run]
-source = ["puddlestuff"]
+source = ["puddlestuff", "release"]
 patch = ["subprocess"]
 
 [tool.codespell]
