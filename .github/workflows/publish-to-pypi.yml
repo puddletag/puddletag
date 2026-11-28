@@ -1,39 +1,89 @@
 name: Publish Python 🐍 distributions 📦 to PyPI and TestPyPI
 
+# A push to master publishes to TestPyPI (as <version>.post<run>) and the
+# docs site; a tag that release.py made publishes the release to PyPI and
+# GitHub Releases; a push to a maintenance branch (3.0.x) only runs the
+# tests. PyPI's and TestPyPI's trusted publishers for puddletag name this
+# file: keep its name.
 on:
   push:
     branches:
+      - '[0-9]+.[0-9]+.x'
       - 'master'
     tags:
       - '*'
 
 jobs:
+  # On a tag, before anything else: release.py check makes sure the tag is
+  # the version in its commit, on master or its maintenance branch, and
+  # gives the GitHub Release its settings; release.py notes writes its
+  # text. On a branch push the steps are skipped, not the job: a skipped
+  # job would skip every job after it.
+  check:
+    name: Check the tag
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      latest: ${{ steps.check.outputs.latest }}
+      notes-start-tag: ${{ steps.check.outputs.notes-start-tag }}
+      prerelease: ${{ steps.check.outputs.prerelease }}
+    steps:
+    - if: startsWith(github.ref, 'refs/tags/')
+      uses: actions/checkout@v7
+      with:
+        # Every branch and tag: the commit must be on master, and the
+        # version is compared with the other tags.
+        fetch-depth: 0
+    - name: Set up Python 3.15
+      if: startsWith(github.ref, 'refs/tags/')
+      uses: actions/setup-python@v7
+      with:
+        python-version: '3.15'
+    - name: Install packaging
+      if: startsWith(github.ref, 'refs/tags/')
+      run: python -m pip install "$(grep '^packaging==' requirements-dev.txt)"
+    - name: Check the tag
+      id: check
+      if: startsWith(github.ref, 'refs/tags/')
+      run: python release.py check "$GITHUB_REF_NAME" >> "$GITHUB_OUTPUT"
+    - name: Write the release notes
+      if: startsWith(github.ref, 'refs/tags/')
+      run: python release.py notes "$GITHUB_REF_NAME" > "$RUNNER_TEMP/notes.md"
+    - name: Upload the release notes
+      if: startsWith(github.ref, 'refs/tags/')
+      uses: actions/upload-artifact@v7
+      with:
+        name: notes
+        path: ${{ runner.temp }}/notes.md
+
   tests:
+    needs: check
     uses: ./.github/workflows/tests.yml
     # The Codecov upload in tests.yml logs in with GitHub OIDC.
     permissions:
       contents: read
       id-token: write
 
-  build-n-publish:
+  # The sdist and the wheel, built once: TestPyPI gets master's, with
+  # .post<run>; PyPI and the GitHub Release get the tag's.
+  build:
     needs: tests
-    name: Build and publish Python 🐍 distributions 📦 to PyPI and TestPyPI
+    if: github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/')
+    name: Build the sdist and the wheel
     runs-on: ubuntu-latest
     permissions:
-      id-token: write  # This is required for trusted publishing
-
+      contents: read
     steps:
-    - uses: actions/checkout@master
-    - name: Set up Python 3.14
+    - uses: actions/checkout@v7
+    - name: Set up Python 3.15
       uses: actions/setup-python@v7
       with:
-        python-version: '3.14'
-
-    - name: Bump buildid (for Test PyPI only)
-      if: ( ! startsWith(github.ref, 'refs/tags') )
+        python-version: '3.15'
+    - name: Bump buildid (for TestPyPI only)
+      if: github.ref == 'refs/heads/master'
       run: |
         sed -i "/_buildid/s/None/$GITHUB_RUN_NUMBER/" puddlestuff/__init__.py
-
     - name: Install pypa/build
       run: >-
         python -m
@@ -48,15 +98,80 @@ jobs:
         --wheel
         --outdir dist/
         .
+    - name: Upload the sdist and the wheel
+      uses: actions/upload-artifact@v7
+      with:
+        name: dist
+        path: dist/
 
-    - name: Publish distribution 📦 to Test PyPI
-      if: ( ! startsWith(github.ref, 'refs/tags') )
-      uses: pypa/gh-action-pypi-publish@release/v1
+  publish-testpypi:
+    needs: build
+    if: github.ref == 'refs/heads/master'
+    name: Publish to TestPyPI
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write  # trusted publishing and its attestations
+    steps:
+    - uses: actions/download-artifact@v8
+      with:
+        name: dist
+        path: dist/
+    - uses: pypa/gh-action-pypi-publish@release/v1
       with:
         repository-url: https://test.pypi.org/legacy/
-    - name: Publish distribution 📦 to PyPI
-      if: startsWith(github.ref, 'refs/tags')
-      uses: pypa/gh-action-pypi-publish@release/v1
+
+  publish-pypi:
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/')
+    name: Publish to PyPI
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write  # trusted publishing and its attestations
+    steps:
+    - uses: actions/download-artifact@v8
+      with:
+        name: dist
+        path: dist/
+    - uses: pypa/gh-action-pypi-publish@release/v1
+      with:
+        # A re-run after an upload that stopped halfway skips the file
+        # already there: both come from this run's build.
+        skip-existing: true
+
+  # The notes release.py wrote, then GitHub's generated list of pull
+  # requests and new contributors since the tag release.py check named.
+  github-release:
+    needs: [check, publish-pypi]
+    if: startsWith(github.ref, 'refs/tags/')
+    name: Create the GitHub Release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+    - uses: actions/download-artifact@v8
+      with:
+        name: dist
+        path: dist/
+    - uses: actions/download-artifact@v8
+      with:
+        name: notes
+        path: notes/
+    - name: Create the GitHub Release
+      env:
+        GH_REPO: ${{ github.repository }}
+        GH_TOKEN: ${{ github.token }}
+        LATEST: ${{ needs.check.outputs.latest }}
+        NOTES_START_TAG: ${{ needs.check.outputs.notes-start-tag }}
+        PRERELEASE: ${{ needs.check.outputs.prerelease }}
+      run: >-
+        gh release create "$GITHUB_REF_NAME" dist/*
+        --generate-notes
+        --latest="$LATEST"
+        --notes-file notes/notes.md
+        --notes-start-tag "$NOTES_START_TAG"
+        --prerelease="$PRERELEASE"
+        --title "$GITHUB_REF_NAME"
+        --verify-tag
 
   # Deploys the site that tests.yml's docs job built to GitHub Pages
   # (docs.puddletag.net), on pushes to master only. The repository's Pages

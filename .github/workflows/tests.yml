@@ -1,7 +1,7 @@
 name: Tests
 
-# Pushes to master and tags run these tests through publish-to-pypi.yml,
-# which only publishes once they pass.
+# Pushes to master and to maintenance branches (3.0.x), and tags, run these
+# tests through publish-to-pypi.yml, which only publishes once they pass.
 on:
   pull_request:
   workflow_call:
@@ -112,8 +112,8 @@ jobs:
     - name: Remove the duplicate page titles
       run: python docs/fix_html.py "$RUNNER_TEMP/docs"
     # Called from publish-to-pypi.yml, github.ref is the caller's: master's
-    # pushes upload, pull requests and tags don't. Hidden files (Sphinx's
-    # .doctrees and .buildinfo) stay out of the site.
+    # pushes upload; pull requests, tags and maintenance branches don't.
+    # Hidden files (Sphinx's .doctrees and .buildinfo) stay out of the site.
     - name: Upload the site for GitHub Pages
       if: github.ref == 'refs/heads/master'
       uses: actions/upload-pages-artifact@v5
