@@ -155,6 +155,10 @@ venv/bin/pip3 install -r 'requirements.txt'
 venv/bin/python3 'puddletag'
 ```
 
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md): setting up, running the tests and sending a pull request.
+
 ## License
 
 `puddletag` is licensed under the GPLv3, which you can find in its entirety at  [http://www.gnu.org/licenses/gpl-3.0.html](http://www.gnu.org/licenses/gpl-3.0.html)  
